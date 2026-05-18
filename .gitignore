@@ -1,7 +1,7 @@
 # backend
 backend/target/
 backend/.idea/
-backend/.mvn/wapper/
+backend/.mvn/wrapper/
 backend/.gitattributes
 backend/.gitignore
 backend/mvnw
