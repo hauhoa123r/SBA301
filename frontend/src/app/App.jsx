@@ -1,4 +1,6 @@
 import AppRoutes from "./routes/AppRoutes"
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 function App() {
   return (
     <>
@@ -6,5 +8,4 @@ function App() {
     </>
   )
 }
-
 export default App

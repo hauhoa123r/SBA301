@@ -1,113 +1,62 @@
-import { useState } from 'react';
-import { Container, Row, Col, Form, Button, Card, InputGroup } from 'react-bootstrap';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { loginApi } from "../api/authApi";
+import { Container, Form, Button, Card } from 'react-bootstrap';
+import HeroHeader from '../shared/component/HeroHeader';
+import HeroFooter from '../shared/component/HeroFooter';
 const LoginPage = () => {
-    const [formData, setFormData] = useState({ username: '', password: '' });
-    const [validated, setValidated] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-    };
-
-    const handleSubmit = async (event) => {
-        const form = event.currentTarget;
-        event.preventDefault();
-        if (form.checkValidity() === false) {
-            event.stopPropagation();
-        } else {
-            try {
-                const response = await loginApi(formData);
-                console.log(response.data);
-                alert("Đăng nhập thành công");
-            } catch (error) {
-                console.log(error);
-                alert("Sai tài khoản hoặc mật khẩu");
-            }
-        }
-        setValidated(true);
-    };
     return (
-        <Container fluid className="bg-light min-vh-100 d-flex align-items-center justify-content-center">
-            <Row className="w-100 justify-content-center">
-                <Col md={6} lg={4}>
-                    <Card className="shadow-lg border-0 rounded-4">
-                        <Card.Body className="p-5">
-                            <div className="text-center mb-4">
-                                <h2 className="fw-bold text-primary">Xin Chào!</h2>
-                                <p className="text-muted">Đăng nhập để tiếp tục trải nghiệm</p>
+        <div className="d-flex flex-column min-vh-100">
+            <HeroHeader />
+
+            <Container className="flex-grow-1 d-flex align-items-center justify-content-center">
+                <Card className="w-100 shadow-lg border-0" style={{ maxWidth: "550px" }}>
+                    <Card.Body className="p-4 p-md-5"> 
+                        <Card.Title className="fs-2 text-center mb-2 fw-bold">Welcome Back</Card.Title>
+                        <Card.Text className="text-muted text-center mb-4">
+                            Sign in to access your account
+                        </Card.Text>
+                        <div className="mx-auto" style={{ maxWidth: "420px" }}>
+                            <Button variant="light" className="w-100 mb-2 border text-dark fw-semibold py-2 d-flex align-items-center justify-content-center">
+                                Sign in with Google
+                            </Button>
+                            <Button variant="light" className="w-100 mb-3 border text-dark fw-semibold py-2 d-flex align-items-center justify-content-center">
+                                Sign in with LinkedIn
+                            </Button>
+                            <div className="d-flex align-items-center my-4 w-100">
+                                <div className="flex-grow-1 border-bottom border-secondary-subtle"></div>
+                                <span className="small text-muted px-3 text-nowrap">or sign in with email</span>
+                                <div className="flex-grow-1 border-bottom border-secondary-subtle"></div>
                             </div>
-                            <Form noValidate validated={validated} onSubmit={handleSubmit}>
-                                <Form.Group className="mb-3" controlId="formEmail">
-                                    <Form.Label className="fw-semibold">Tên đăng nhập</Form.Label>
-                                    <Form.Control
-                                        required
-                                        type="text"
-                                        name="username"
-                                        value={formData.username}
-                                        onChange={handleChange}
-                                        className="py-2"
-                                    />
-                                    <Form.Control.Feedback type="invalid">
-                                        Vui lòng nhập tên đăng nhập.
-                                    </Form.Control.Feedback>
+                            <Form>
+                                <Form.Group className="mb-3" controlId="formBasicEmail">
+                                    <Form.Label className="small fw-medium text-muted">Email Address</Form.Label>
+                                    <Form.Control className="border py-2" type="email" placeholder="Enter email" defaultValue="candidate@example.com" />
                                 </Form.Group>
-                                <Form.Group className="mb-3" controlId="formPassword">
-                                    <Form.Label className="fw-semibold">Mật khẩu</Form.Label>
-                                    <InputGroup>
-                                        <Form.Control
-                                            required
-                                            type={showPassword ? 'text' : 'password'}
-                                            name="password"
-                                            placeholder="Nhập mật khẩu"
-                                            value={formData.password}
-                                            onChange={handleChange}
-                                            className="py-2"
-                                        />
-                                        <InputGroup.Text
-                                            onClick={() => setShowPassword(!showPassword)}
-                                            style={{ cursor: 'pointer' }}
-                                        >
-                                            {showPassword ? <FaEyeSlash /> : <FaEye />}
-                                        </InputGroup.Text>
-                                        <Form.Control.Feedback type="invalid">
-                                            Vui lòng nhập mật khẩu.
-                                        </Form.Control.Feedback>
-                                    </InputGroup>
+                                <Form.Group className="mb-4" controlId="formBasicPassword">
+                                    <div className="d-flex justify-content-between align-items-center mb-1">
+                                        <Form.Label className="small fw-medium text-muted mb-0">Password</Form.Label>
+                                        <a href="/forgot-password" className="text-decoration-none small fw-medium" style={{ color: "#5045E6" }}>
+                                            Forget password?
+                                        </a>
+                                    </div>
+                                    <Form.Control className="border py-2" type="password" placeholder="Enter password" defaultValue="********" />
                                 </Form.Group>
-                                <div className="d-flex justify-content-between align-items-center mb-4">
-                                    <Form.Check
-                                        type="checkbox"
-                                        id="rememberMe"
-                                        label="Ghi nhớ tôi"
-                                        className="text-muted"
-                                    />
-                                    <a href="#forgot" className="text-decoration-none text-primary fw-semibold small">
-                                        Quên mật khẩu?
-                                    </a>
-                                </div>
-                                <Button variant="primary" type="submit" className="w-100 py-2 fw-bold btn-lg rounded-3 shadow-sm">
-                                    Đăng Nhập
+                                <Button className="w-100 py-2 fw-semibold" style={{ backgroundColor: "#5045E6", borderColor: "#5045E6" }}>
+                                    Sign In
                                 </Button>
                             </Form>
-
                             <div className="text-center mt-4">
-                                <p className="text-muted mb-0">
-                                    Chưa có tài khoản?{' '}
-                                    <a href="#register" className="text-decoration-none text-primary fw-semibold">
-                                        Đăng ký ngay
+                                <p className="text-muted small mb-0">
+                                    Don't have an account?{' '}
+                                    <a href="/register" className="text-decoration-none fw-semibold" style={{ color: "#5045E6" }}>
+                                        Register
                                     </a>
                                 </p>
                             </div>
-
-                        </Card.Body>
-                    </Card>
-                </Col>
-            </Row>
-        </Container>
+                        </div> 
+                    </Card.Body>
+                </Card>
+            </Container>
+            <HeroFooter />
+        </div>
     );
 };
 
