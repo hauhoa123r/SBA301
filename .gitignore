@@ -13,6 +13,6 @@ frontend/dist/
 frontend/build/
 frontend/.gitignore
 frontend/README.md
-
+out/
 # env
 .env
