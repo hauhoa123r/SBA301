@@ -3,6 +3,7 @@ package com.app.model.user.service.impl;
 import com.app.model.user.dto.request.LoginRequest;
 import com.app.model.user.dto.response.LoginResponse;
 import com.app.model.user.entity.UserEntity;
+import com.app.model.user.exception.InvalidLoginException;
 import com.app.model.user.repository.UserRepository;
 import com.app.model.user.service.UserService;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public LoginResponse IsExistUser(LoginRequest user) {
-        UserEntity userEntity = userRepositoryImpl.findByUsernameAndPassword(user.getUsername(), user.getPassword());
+        UserEntity userEntity = userRepositoryImpl.findByUsername(user.getUsername())
+                .orElseThrow(() -> new InvalidLoginException("Email không tồn tại"));
+        if (!userEntity.getPassword().equals(user.getPassword())) {
+            throw new InvalidLoginException("Sai mật khẩu");
+        }
         LoginResponse loginResponse = new LoginResponse();
         loginResponse.setUsername(userEntity.getUsername());
         return loginResponse;

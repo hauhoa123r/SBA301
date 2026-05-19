@@ -4,10 +4,12 @@ import {
     Route
 } from "react-router-dom";
 import authRoutes from "../../features/auth/routes/authRoutes";
+import userRoutes from "../../features/user/routes/userRoutes";
 function AppRoutes() {
 
     const routes = [
-        ...authRoutes
+        ...authRoutes,
+        ...userRoutes
     ];
 
     return (
