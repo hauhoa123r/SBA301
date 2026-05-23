@@ -18,13 +18,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public LoginResponse IsExistUser(LoginRequest user) {
-        UserEntity userEntity = userRepositoryImpl.findByUsername(user.getUsername())
+        UserEntity userEntity = userRepositoryImpl.findByEmail(user.getUsername())
                 .orElseThrow(() -> new InvalidLoginException("Email không tồn tại"));
         if (!userEntity.getPassword().equals(user.getPassword())) {
             throw new InvalidLoginException("Sai mật khẩu");
         }
         LoginResponse loginResponse = new LoginResponse();
-        loginResponse.setUsername(userEntity.getUsername());
+        loginResponse.setUsername(userEntity.getEmail());
         return loginResponse;
     }
 }

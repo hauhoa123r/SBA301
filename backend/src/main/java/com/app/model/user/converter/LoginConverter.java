@@ -14,7 +14,7 @@ public class LoginConverter {
 
     LoginResponse LoginConverter(UserEntity userEntity) {
         LoginResponse loginResponse = new LoginResponse();
-        loginResponse.setUsername(userEntity.getUsername());
+        loginResponse.setUsername(userEntity.getEmail());
         return loginResponse;
     }
 }
