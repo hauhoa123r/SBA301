@@ -37,6 +37,7 @@ const LoginPage = () => {
             navigate("/");
         } catch (err) {
             toast.error(err.response.data.error);
+            navigate("/404");
         }
     };
     return (
