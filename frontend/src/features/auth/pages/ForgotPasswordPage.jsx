@@ -1,6 +1,6 @@
 import { Button, Card, Container, Form } from "react-bootstrap";
-import HeroHeader from "../shared/component/HeroHeader";
-import HeroFooter from "../shared/component/HeroFooter";
+import HeroHeader from "../../../shared/components/HeroFooter.jsx";
+import HeroFooter from "../../../shared/components/HeroHeader.jsx";
 
 export default function ForgotPasswordPage() {
     return (
