@@ -20,3 +20,9 @@ export const validatePassword = (password) => {
     }
     return "";
 };
+
+export const validateToken = (token) => {
+    if(!token) {
+        return ERROR_MESSAGES.TOKEN_REQUIRED;
+    }
+}
