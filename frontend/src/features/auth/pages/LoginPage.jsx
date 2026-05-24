@@ -66,7 +66,15 @@ const LoginPage = () => {
                                     {errors.email && <Form.Text className="text-danger fw-semibold d-block mt-1">{errors.email}</Form.Text>}
                                 </Form.Group>
                                 <Form.Group className="mb-3 password-wrapper" controlId="loginPassword">
-                                    <Form.Control className="input-clean-underline" placeholder="Password" name="password" value={formData.password} onChange={handleChange} onBlur={handleBlur} />
+                                    <Form.Control
+                                        type={showPassword ? "text" : "password"} // Thêm dòng này để thay đổi kiểu hiển thị
+                                        className="input-clean-underline"
+                                        placeholder="Password"
+                                        name="password"
+                                        value={formData.password}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                    />
                                     <span className="password-toggle-icon" onClick={() => setShowPassword(!showPassword)}>
                                         {showPassword ? (
                                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z" /><path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" /></svg>
