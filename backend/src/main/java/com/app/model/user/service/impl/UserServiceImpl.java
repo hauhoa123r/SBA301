@@ -1,5 +1,6 @@
 package com.app.model.user.service.impl;
 
+import com.app.model.user.converter.LoginConverter;
 import com.app.model.user.dto.request.LoginRequest;
 import com.app.model.user.dto.response.LoginResponse;
 import com.app.model.user.entity.UserEntity;
@@ -10,10 +11,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService {
-    private UserRepository userRepositoryImpl;
-
-    UserServiceImpl(UserRepository userRepositoryImpl) {
+    private final UserRepository userRepositoryImpl;
+    private final LoginConverter loginConverter;
+    UserServiceImpl(UserRepository userRepositoryImpl, LoginConverter loginConverter) {
         this.userRepositoryImpl = userRepositoryImpl;
+        this.loginConverter = loginConverter;
     }
 
     @Override
@@ -23,8 +25,7 @@ public class UserServiceImpl implements UserService {
         if (!userEntity.getPassword().equals(user.getPassword())) {
             throw new InvalidLoginException("Sai mật khẩu");
         }
-        LoginResponse loginResponse = new LoginResponse();
-        loginResponse.setUsername(userEntity.getEmail());
+        LoginResponse loginResponse = loginConverter.loginConverter(userEntity);
         return loginResponse;
     }
 }

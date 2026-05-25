@@ -7,10 +7,7 @@ import { login } from '../service/authService.js';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import "../styles/login/login.css";
-import { useAuth } from "../../../app/provider/AuthProvider";
-
 const LoginPage = () => {
-    const { setUser } = useAuth();
     const [formData, setFormData] = useState({ email: "", password: "" });
     const [errors, setErrors] = useState({ email: "", password: "" });
     const [showPassword, setShowPassword] = useState(false);
@@ -41,8 +38,7 @@ const LoginPage = () => {
         }
         try {
             const response = await login(formData);
-            setUser(response.username);
-            localStorage.setItem("user",JSON.stringify(response.username));
+            localStorage.setItem("user", JSON.stringify(response));
             toast.success("Đăng nhập thành công");
             navigate("/");
         } catch (err) {

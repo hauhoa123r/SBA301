@@ -7,14 +7,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class LoginConverter {
-    private final UserService userService;
-    public LoginConverter(UserService userService) {
-        this.userService = userService;
-    }
-
-    LoginResponse LoginConverter(UserEntity userEntity) {
+    public LoginResponse loginConverter(UserEntity userEntity) {
         LoginResponse loginResponse = new LoginResponse();
-        loginResponse.setUsername(userEntity.getEmail());
+        loginResponse.setId(userEntity.getId());
+        loginResponse.setEmail(userEntity.getEmail());
         return loginResponse;
     }
 }
