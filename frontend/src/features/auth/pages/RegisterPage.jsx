@@ -1,6 +1,6 @@
 import { Button, Card, Container, Form } from "react-bootstrap";
-import HeroHeader from "../shared/component/HeroHeader";
-import HeroFooter from "../shared/component/HeroFooter";
+import HeroHeader from "../../../shared/components/HeroHeader";
+import HeroFooter from "../../../shared/components/HeroFooter";
 
 export default function RegisterPage() {
     return (

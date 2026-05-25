@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button, Card, Container, Form } from "react-bootstrap";
-import HeroHeader from "../shared/component/HeroHeader";
-import HeroFooter from "../shared/component/HeroFooter";
+import HeroHeader from "../../../shared/components/HeroHeader.jsx";
+import HeroFooter from "../../../shared/components/HeroFooter";
 import { validInput } from "../../../shared/utils/inputHandler.js";
 import { forgotPassword } from "../service/authService.js";
 import { toast } from "react-toastify";
