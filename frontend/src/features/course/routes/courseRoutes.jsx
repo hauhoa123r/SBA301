@@ -1,6 +1,6 @@
 import Homepage from "../pages/Homepage";
 
-const userRoutes = [
+const courseRoutes = [
     {
         path: "/",
         element: <Homepage />
@@ -8,4 +8,4 @@ const userRoutes = [
     }
 ];
 
-export default userRoutes;
+export default courseRoutes;

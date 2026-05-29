@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+@source "./**/*.{js,jsx,ts,tsx}";
+
+@theme {
+  --color-brand-dark: #090514;
+  --color-brand-light: #160e2e; 
+  --color-brand-cardBg: #1c1236;
+  --color-brand-accent: #7c3aed;
+  --color-brand-accentHover: #6d28d9;
+  --color-brand-textPrimary: #f8fafc;
+  --color-brand-textSecondary: #94a3b8; 
+}
+@layer base {
+  a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+  a:hover {
+    text-decoration: none !important;
+  }
+  button, .rounded-full {
+    border-radius: 9999px !important; 
+  }
+}

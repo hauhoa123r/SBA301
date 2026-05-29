@@ -1,63 +1,25 @@
-import { Button, Container, Nav, Navbar } from "react-bootstrap";
-import "../../styles/narbar/narbar.css"
 export default function HeroHeader() {
-    const navigationLinks = [
-        { name: "Home", path: "/jobs" },
-        { name: "About", path: "/about" },
-        { name: "Course", path: "/register" },
-        { name: "Blog", path: "/blog" },
-        { name: "Contact", path: "/contact" }
-    ];
-    const currentPath = window.location.pathname;
     return (
-        <Navbar expand="xl" className="navbar-light shadow-sm">
-            <Container>
-                <Navbar.Brand href="/">
-                    <img
-                        src="/images/logo-removebg-preview.png"
-                        alt="Logo"
-                        width="70"
-                        height="40"
-                    />
-                </Navbar.Brand>
-                <Navbar.Text
-                    className="me-3"
-                    style={{
-                        fontFamily: "Sora",
-                        fontWeight: 700,
-                        fontSize: "24px",
-                        letterSpacing: "-0.8px",
-                        color: "#050215"
-                    }}
-                >
-                    ChinCareer
-                </Navbar.Text>
-                <Navbar.Toggle aria-controls="hero-navbar-nav" />
-                <Navbar.Collapse id="hero-navbar-nav">
+        <header className="container mx-auto px-6 py-6 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-brand-accent rounded flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-accent/30">
+                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 8.56l-1.222.524a1 1 0 000 1.838l7 3a1 1 0 00.788 0l7-3a1 1 0 000-1.838l-1.222-.524-5.383 2.307a1 1 0 01-.788 0L3.31 8.56z"></path>
+                    </svg>
+                </div>
+                <span className="text-xl font-serif font-bold text-white tracking-wide">Edujar</span>
+            </div>
+            <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
+                <a className="text-white hover:text-brand-accent no-underline transition-colors" href="#">Home</a>
+                <a className="text-brand-textSecondary hover:text-white transition-colors !no-underline" href="#">About</a>                <a className="text-brand-textSecondary hover:text-white no-underline transition-colors" href="#">Course</a>
+                <a className="text-brand-textSecondary hover:text-white no-underline transition-colors" href="#">Blog</a>
+                <a className="text-brand-textSecondary hover:text-white no-underline transition-colors" href="#">Contact</a>
+            </nav>
 
-                    <Nav className="mx-auto align-items-center">
-                        {navigationLinks.map((link, index) => {
-                            const isActive = currentPath === link.path;
-                            return (
-                                <Nav.Link
-                                    key={index}
-                                    href={link.path}
-                                    className={`nav-link-custom px-3 fw-semibold ${isActive ? "active-nav-link" : ""
-                                        }`}
-                                >
-                                    {link.name}
-                                </Nav.Link>
-                            );
-                        })}
-                    </Nav>
-                    <div className="d-flex gap-2">
-                        <Button variant="outline-light rounded-5 border-0" className="login-btn px-4 fw-semibold" style={{fontSize: "14px", color: "#5145E4", borderColor: "#5145E4"}} >
-                            Login
-                        </Button>
-                        <Button variant="outline-light" style={{ backgroundColor: "#5145E4", border: "none", fontSize: "14px" }} className="start-btn fw-semibold rounded-5" >Get Started</Button>
-                    </div>
-                </Navbar.Collapse>
-            </Container>
-        </Navbar>
+            <div className="flex items-center gap-4 text-sm font-medium">
+                <a className="text-brand-textSecondary hover:text-white px-4 py-2 border border-brand-textSecondary/30 rounded-full no-underline transition-colors block" href="#">Login</a>
+                <a className="bg-brand-accent hover:bg-brand-accentHover text-white px-6 py-2 rounded-full no-underline transition-colors shadow-md shadow-brand-accent/20 block" href="#">Get Started</a>
+            </div>
+        </header>
     );
 }
