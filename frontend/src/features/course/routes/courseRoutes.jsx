@@ -1,7 +1,7 @@
 import Homepage from "../pages/Homepage";
 import ChangePasswordPage from "../pages/ChangePasswordPage";
 
-const userRoutes = [
+const courseRoutes = [
     {
         path: "/",
         element: <Homepage />
@@ -12,4 +12,4 @@ const userRoutes = [
     }
 ];
 
-export default userRoutes;
+export default courseRoutes;

@@ -1,48 +1,87 @@
-import { Button, Card, Container, Form } from "react-bootstrap";
 import HeroHeader from "../../../shared/components/HeroHeader";
 import HeroFooter from "../../../shared/components/HeroFooter";
 
 export default function RegisterPage() {
     return (
-        <Container className="d-flex flex-column min-vh-100" fluid>
+        <div className="flex min-h-screen flex-col">
             <HeroHeader />
-            <Container className="flex-grow-1 my-4 d-flex align-items-center justify-content-center">
-                <Card className="w-100 shadow-lg" style={{ maxWidth: "550px" }}>
-                    <Card.Body className="d-flex flex-column align-items-center justify-content-center">
-                        <Card.Title className="fs-2 fw-bold text-center mb-2">Create an Account</Card.Title>
-                        <Card.Text>
+            <div className="flex flex-1 items-center justify-center px-4 py-8">
+                <div className="w-full max-w-xl rounded-2xl bg-white p-8 shadow-xl">
+                    <div className="flex flex-col items-center">
+                        <h1 className="mb-2 text-center text-3xl font-bold">
+                            Create an Account
+                        </h1>
+                        <p className="mb-6 text-center text-gray-500">
                             Join our talent community to track your applications
-                        </Card.Text>
-                        <Button variant="light" className="w-100 mb-2 border text-dark fw-semibold" style={{ maxWidth: "450px" }}>Continue with Google</Button>
-                        <Button variant="light" className="w-100 mb-2 border text-dark fw-semibold" style={{ maxWidth: "450px" }}>Continue with LinkedIn</Button>
-                        <Card.Text className="small text-muted my-2">or register with email</Card.Text>
-                        <Form.Group className="w-100" style={{ maxWidth: "450px" }} controlId="formBasicFullName">
-                            <Form.Label className="small fw-semibold text-muted text-start d-block">Full Name</Form.Label>
-                            <Form.Control type="text" placeholder="e.g Nguyen Van A" className="py-2" />
-                        </Form.Group>
-                        <Form.Group className="w-100 mt-3" style={{ maxWidth: "450px" }} controlId="formBasicEmail">
-                            <Form.Label className="small fw-semibold text-muted text-start d-block">Email Address</Form.Label>
-                            <Form.Control type="email" placeholder="e.g example@email.com" className="py-2" />
-                        </Form.Group>
-                        <Form.Group className="w-100 mt-3" style={{ maxWidth: "450px" }} controlId="formBasicPassword">
-                            <Form.Label className="small fw-semibold text-muted text-start d-block">Password</Form.Label>
-                            <Form.Control type="password" placeholder="*********" className="py-2" />
-                        </Form.Group>
-                        <Button className="w-100 mt-4" style={{ maxWidth: "450px", backgroundColor: "#5045E6", borderColor: "#5045E6" }}>
+                        </p>
+                        <button
+                            className="mb-3 w-full max-w-md rounded-lg border border-gray-300 bg-white px-4 py-3 font-semibold text-gray-800 transition hover:bg-gray-50"
+                        >
+                            Continue with Google
+                        </button>
+                        <button
+                            className="mb-4 w-full max-w-md rounded-lg border border-gray-300 bg-white px-4 py-3 font-semibold text-gray-800 transition hover:bg-gray-50"
+                        >
+                            Continue with LinkedIn
+                        </button>
+
+                        <p className="mb-4 text-sm text-gray-500">
+                            or register with email
+                        </p>
+                        <div className="w-full max-w-md">
+                            <label className="mb-2 block text-sm font-semibold text-gray-500">
+                                Full Name
+                            </label>
+
+                            <input
+                                type="text"
+                                placeholder="e.g Nguyen Van A"
+                                className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-indigo-500"
+                            />
+                        </div>
+                        <div className="mt-4 w-full max-w-md">
+                            <label className="mb-2 block text-sm font-semibold text-gray-500">
+                                Email Address
+                            </label>
+
+                            <input
+                                type="email"
+                                placeholder="e.g example@email.com"
+                                className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-indigo-500"
+                            />
+                        </div>
+                        <div className="mt-4 w-full max-w-md">
+                            <label className="mb-2 block text-sm font-semibold text-gray-500">
+                                Password
+                            </label>
+
+                            <input
+                                type="password"
+                                placeholder="*********"
+                                className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-indigo-500"
+                            />
+                        </div>
+                        <button
+                            className="mt-6 w-full max-w-md rounded-lg bg-indigo-600 px-4 py-3 font-semibold text-white transition hover:bg-indigo-700"
+                        >
                             Create Account
-                        </Button>
-                        <div className="text-center mt-3">
-                            <p className="text-muted mb-0">
-                                Already have an account?{' '}
-                                <a href="/login" className="text-decoration-none fw-semibold" style={{ color: "#5045E6" }}>
+                        </button>
+                        <div className="mt-4 text-center">
+                            <p className="text-gray-500">
+                                Already have an account?{" "}
+                                <a
+                                    href="/login"
+                                    className="font-semibold text-indigo-600 hover:text-indigo-700"
+                                >
                                     Sign In
                                 </a>
                             </p>
                         </div>
-                    </Card.Body>
-                </Card>
-            </Container>
+
+                    </div>
+                </div>
+            </div>
             <HeroFooter />
-        </Container>
+        </div>
     );
 }

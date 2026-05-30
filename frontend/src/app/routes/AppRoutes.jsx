@@ -4,13 +4,14 @@ import {
     Route
 } from "react-router-dom";
 import authRoutes from "../../features/auth/routes/authRoutes";
-import userRoutes from "../../features/user/routes/userRoutes";
+import courseRoutes from "../../features/course/routes/courseRoutes";
 import errorRoutes from "../../features/error/routes/errorRoutes";
+import NotFoundPage from "../../features/error/pages/NotFoundPage";
 function AppRoutes() {
 
     const routes = [
         ...authRoutes,
-        ...userRoutes,
+        ...courseRoutes,
         ...errorRoutes
     ];
 
@@ -24,6 +25,7 @@ function AppRoutes() {
                         element={route.element}
                     />
                 ))}
+                <Route path="*" element={<NotFoundPage />} />
             </Routes>
         </BrowserRouter>
     );
