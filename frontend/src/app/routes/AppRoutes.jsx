@@ -6,6 +6,7 @@ import {
 import authRoutes from "../../features/auth/routes/authRoutes";
 import courseRoutes from "../../features/course/routes/courseRoutes";
 import errorRoutes from "../../features/error/routes/errorRoutes";
+import NotFoundPage from "../../features/error/pages/NotFoundPage";
 function AppRoutes() {
 
     const routes = [
@@ -24,6 +25,7 @@ function AppRoutes() {
                         element={route.element}
                     />
                 ))}
+                <Route path="*" element={<NotFoundPage />} />
             </Routes>
         </BrowserRouter>
     );

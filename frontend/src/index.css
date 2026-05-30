@@ -11,15 +11,3 @@
   --color-brand-textPrimary: #f8fafc;
   --color-brand-textSecondary: #94a3b8; 
 }
-@layer base {
-  a {
-    color: inherit !important;
-    text-decoration: none !important;
-  }
-  a:hover {
-    text-decoration: none !important;
-  }
-  button, .rounded-full {
-    border-radius: 9999px !important; 
-  }
-}
