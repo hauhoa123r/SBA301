@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate} from "react-router-dom"
 import HeroHeader from "../../../shared/components/HeroHeader";
 import HeroFooter from "../../../shared/components/HeroFooter";
 import { validInput } from "../../../shared/utils/inputHandler";
@@ -6,6 +7,8 @@ import { forgotPassword } from "../service/authService";
 import { toast } from "react-toastify";
 
 export default function ForgotPasswordPage() {
+    const navigate = useNavigate();
+
     const [formData, setFormData] = useState({
         email: "",
         token: "",
@@ -49,36 +52,25 @@ export default function ForgotPasswordPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const emailError = validInput(
-            "email",
-            formData.email
-        );
+        const emailError = validInput("email", formData.email);
 
         if (emailError) {
-            setErrors({
-                email: emailError,
-            });
+            setErrors({email: emailError, });
             return;
         }
 
         try {
             setLoading(true);
-
-            const response = await forgotPassword({
-                email: formData.email,
-            });
-
-            toast.success(
-                response.message ||
-                "Gửi liên kết đặt lại mật khẩu thành công"
-            );
-
+            const response = true;
+            // const response = await forgotPassword({
+            //     email: formData.email,
+            // });
+            toast.success(response.message || "Gửi liên kết đặt lại mật khẩu thành công");
             setShowTokenModel(true);
+
         } catch (err) {
-            toast.error(
-                err?.response?.data?.error ||
-                "Email không tồn tại trong hệ thống. Vui lòng kiểm tra lại."
-            );
+            toast.error(err?.response?.data?.error || "Email không tồn tại trong hệ thống. Vui lòng kiểm tra lại.");
+
         } finally {
             setLoading(false);
         }
@@ -87,10 +79,7 @@ export default function ForgotPasswordPage() {
     const handleTokenSubmit = async (e) => {
         e.preventDefault();
 
-        const tokenError = validInput(
-            "token",
-            formData.token
-        );
+        const tokenError = validInput("token", formData.token);
 
         if (tokenError) {
             setErrors((prev) => ({
@@ -102,10 +91,14 @@ export default function ForgotPasswordPage() {
 
         try {
             setLoading(true);
-
-            toast.success(
-                "Xác thực thành công. Đang chuyển hướng..."
-            );
+            // Cần gọi API check token để chuyển hướng.
+            toast.success("Xác thực thành công. Đang chuyển hướng...");
+            navigate("/reset-password", {
+                state: {
+                    email: formData.email,
+                    token: formData.token,
+                }
+            })
         } catch (err) {
             toast.error(
                 err?.response?.data?.error ||
@@ -125,9 +118,7 @@ export default function ForgotPasswordPage() {
 
                     <div className="text-center">
                         <h2 className="text-2xl font-bold text-gray-900">
-                            {showTokenModel
-                                ? "Reset your password"
-                                : "Enter Security Token"}
+                            {showTokenModel ? "Reset your password" : "Enter Security Token"}
                         </h2>
 
                         <p className="mt-2 text-sm text-gray-500">

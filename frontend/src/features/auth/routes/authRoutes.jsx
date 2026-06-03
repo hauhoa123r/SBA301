@@ -1,6 +1,7 @@
 import ForgotPasswordPage from "../pages/ForgotPasswordPage";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
+import ChangePasswordPage from "../../course/pages/ChangePasswordPage";
 
 const authRoutes = [
     {
@@ -14,6 +15,10 @@ const authRoutes = [
     {
         path: "/forgot-password",
         element: <ForgotPasswordPage />
+    },
+    {
+        path: "/reset-password",
+        element: <ChangePasswordPage mode = "reset" />
     }
 ];
 
