@@ -21,7 +21,9 @@ export default function HeroHeader() {
                 <NavLink to="/about" className={navClass}>About</NavLink>
                 <NavLink to="/courses" className={navClass}>Course</NavLink>
                 <NavLink to="/blog" className={navClass}>Blog</NavLink>
-                <NavLink to="/contact" className={navClass}>Contact</NavLink>            </nav>
+                <NavLink to="/contact" className={navClass}>Contact</NavLink> 
+                <NavLink to="/contact" className={navClass}>Hello world</NavLink> 
+                           </nav>
             <div className="flex items-center gap-4 text-sm font-medium">
                 <NavLink className="text-brand-textSecondary hover:text-brand-accent px-4 py-2 border border-brand-textSecondary/30 rounded-full no-underline transition-colors block" to="/login">
                     Login

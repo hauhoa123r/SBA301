@@ -12,7 +12,6 @@ export default function HeroSection() {
                     Provides you with the latest online learning system and material that help your knowledge growing.
                 </p>
 
-                {/* Đảm bảo ô tìm kiếm có overflow-hidden để bo tròn tuyệt đối */}
                 <div className="bg-white rounded-full p-2 flex items-center shadow-xl max-w-md overflow-hidden">
                     <div className="pl-4 text-gray-400 flex items-center">
                         <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">

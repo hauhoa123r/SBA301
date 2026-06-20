@@ -18,38 +18,24 @@ const LoginPage = () => {
     });
 
     const [showPassword, setShowPassword] = useState(false);
-
     const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
+        setFormData((prev) => ({...prev,[name]: value,}));
         if (errors[name]) {
-            setErrors((prev) => ({
-                ...prev,
-                [name]: "",
-            }));
+            setErrors((prev) => ({...prev,[name]: "",}));
         }
     };
     const handleBlur = (e) => {
         const { name, value } = e.target;
-
         const errorMessage = validInput(name, value);
-
-        setErrors((prev) => ({
-            ...prev,
-            [name]: errorMessage,
-        }));
+        setErrors((prev) => ({...prev,[name]: errorMessage,}));
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
         const emailError = validInput("email", formData.email);
         const passwordError = validInput("password", formData.password);
-
         if (emailError || passwordError) {
             setErrors({
                 email: emailError,
@@ -59,18 +45,12 @@ const LoginPage = () => {
         }
         try {
             const response = await login(formData);
-
             localStorage.setItem("user", JSON.stringify(response));
-
             toast.success("Đăng nhập thành công");
-
             navigate("/");
         } catch (err) {
-            const errMsg =
-                err.response?.data?.error || "Đăng nhập thất bại";
-
+            const errMsg = err.response?.data?.error || "Đăng nhập thất bại";
             toast.error(errMsg);
-
             navigate("/404");
         }
     };
@@ -84,7 +64,6 @@ const LoginPage = () => {
                             <h2 className="mb-2 text-3xl font-bold">
                                 Login
                             </h2>
-
                             <p className="mb-8 text-sm text-gray-500">
                                 Enter your account details
                             </p>
@@ -99,7 +78,6 @@ const LoginPage = () => {
                                         onBlur={handleBlur}
                                         className="w-full border-b border-gray-300 bg-transparent py-3 outline-none focus:border-purple-500"
                                     />
-
                                     {errors.email && (
                                         <p className="mt-1 text-sm font-semibold text-red-500">
                                             {errors.email}
@@ -118,7 +96,6 @@ const LoginPage = () => {
                                         onBlur={handleBlur}
                                         className="w-full border-b border-gray-300 bg-transparent py-3 pr-10 outline-none focus:border-purple-500"
                                     />
-
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}

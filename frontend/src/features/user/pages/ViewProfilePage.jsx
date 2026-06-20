@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import HeroHeader from "../../../shared/components/HeroHeader";
 import HeroFooter from "../../../shared/components/HeroFooter";
-
+import { useNavigate } from "react-router-dom";
 export default function ViewProfilePage() {
-  const [user, setUser] = useState({
+  const navigate = useNavigate();
+  const [user] = useState({
     fullName: "Nguyễn Văn A",
     username: "nguyenvana123",
     email: "nguyenvana@example.com",
@@ -12,55 +13,11 @@ export default function ViewProfilePage() {
     joinDate: "Tháng 5, 2023",
     status: "active",
   });
-
-  const [errorStatus, setErrorStatus] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const renderError = () => {
-    if (errorStatus === "404") {
-      return (
-        <div className="w-full max-w-md bg-red-900/20 border border-red-500/50 rounded-2xl p-6 text-center">
-          <h3 className="text-2xl font-bold text-red-400 mb-2">Lỗi 404</h3>
-          <p className="text-brand-textSecondary">
-            Người dùng không tồn tại hoặc đã bị xóa.
-          </p>
-        </div>
-      );
-    }
-    if (errorStatus === "500") {
-      return (
-        <div className="w-full max-w-md bg-orange-900/20 border border-orange-500/50 rounded-2xl p-6 text-center">
-          <h3 className="text-2xl font-bold text-orange-400 mb-2">Lỗi 500</h3>
-          <p className="text-brand-textSecondary">
-            Lỗi hệ thống hoặc cơ sở dữ liệu. Vui lòng thử lại sau.
-          </p>
-        </div>
-      );
-    }
-    if (user?.status === "banned") {
-      return (
-        <div className="w-full max-w-md bg-red-900/20 border border-red-500/50 rounded-2xl p-6 text-center">
-          <h3 className="text-2xl font-bold text-red-400 mb-2">
-            Tài khoản bị vô hiệu hóa
-          </h3>
-          <p className="text-brand-textSecondary">
-            Tài khoản này đã bị cấm truy cập vào hệ thống.
-          </p>
-        </div>
-      );
-    }
-    return null;
+  const handleNavigateBack = () => {
+    navigate("/");
   };
 
   const renderMainContent = () => {
-    if (isLoading) {
-      return <div className="text-brand-accent">Đang tải dữ liệu...</div>;
-    }
-
-    if (errorStatus || user?.status === "banned") {
-      return renderError();
-    }
-
     return (
       <div className="w-full max-w-3xl bg-brand-cardBg rounded-3xl shadow-2xl border border-brand-light overflow-hidden">
         <div className="h-32 bg-gradient-to-r from-brand-accent to-purple-900 relative"></div>
@@ -82,7 +39,7 @@ export default function ViewProfilePage() {
             <h2 className="text-3xl font-bold text-white tracking-wide">
               {user.fullName}
             </h2>
-            <p className="text-brand-textSecondary mt-1">@{user.username}</p>
+            <p className="text-brand-textSecondary mt-1">{user.username}</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -113,7 +70,7 @@ export default function ViewProfilePage() {
           </div>
 
           <div className="mt-10">
-            <button className="w-full md:w-auto bg-brand-accent hover:bg-brand-accentHover text-white px-8 py-3 rounded-full font-semibold transition-all shadow-lg shadow-brand-accent/25 hover:shadow-brand-accentHover/40 active:scale-95">
+            <button onClick={handleNavigateBack} className="w-full md:w-auto bg-brand-accent hover:bg-brand-accentHover text-white px-8 py-3 rounded-full font-semibold transition-all shadow-lg shadow-brand-accent/25 hover:shadow-brand-accentHover/40 active:scale-95">
               Back to Dashboard
             </button>
           </div>

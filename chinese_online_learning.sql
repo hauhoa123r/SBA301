@@ -1,260 +1,497 @@
--- 1. XÓA VÀ TẠO MỚI DATABASE
 DROP DATABASE IF EXISTS chinese_online_learning;
-CREATE DATABASE chinese_online_learning;
+CREATE DATABASE chinese_online_learning CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE chinese_online_learning;
 
-CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    full_name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- ==========================================
+-- 1. TỪ ĐIỂN DỮ LIỆU ĐỘC LẬP (MASTER DATA)
+-- ==========================================
+
+CREATE TABLE roles (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    description VARCHAR(255),
+    CONSTRAINT uk_roles_name UNIQUE (name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE permissions (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    code VARCHAR(100) NOT NULL,
+    name VARCHAR(150) NOT NULL,
+    CONSTRAINT uk_permissions_code UNIQUE (code)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE categories (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    parent_id BIGINT NULL,
+    name VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) UNIQUE NOT NULL,
+    order_index INT DEFAULT 0,
+    CONSTRAINT fk_categories_parent FOREIGN KEY (parent_id) REFERENCES categories(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE tags (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    slug VARCHAR(100) NOT NULL UNIQUE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE plans (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,exercises
-    duration_months INT NOT NULL,
-    price DECIMAL(10, 2) NOT NULL 
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    duration_days INT NOT NULL,
+    price DECIMAL(12, 2) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE user_subscriptions (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    plan_id INT NOT NULL,
-    start_date DATE NOT NULL,
-    end_date DATE NOT NULL,           
-    status ENUM('active', 'expired', 'cancelled') DEFAULT 'active',
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE CASCADE
+-- ==========================================
+-- 2. AUTHENTICATION & USER MANAGEMENT (UPDATE PHASE 2)
+-- ==========================================
+
+CREATE TABLE users (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    status ENUM('ACTIVE', 'LOCKED', 'DELETED') DEFAULT 'ACTIVE',
+    total_learning_points INT DEFAULT 0, -- NEW: Điểm tích lũy cho Leaderboard
+    referral_code VARCHAR(50) UNIQUE NULL, -- NEW: Mã giới thiệu Affiliate
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT uk_users_email UNIQUE (email)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE user_roles (
+    user_id BIGINT NOT NULL,
+    role_id BIGINT NOT NULL,
+    PRIMARY KEY (user_id, role_id),
+    CONSTRAINT fk_ur_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_ur_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE role_permissions (
+    role_id BIGINT NOT NULL,
+    permission_id BIGINT NOT NULL,
+    PRIMARY KEY (role_id, permission_id),
+    CONSTRAINT fk_rp_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
+    CONSTRAINT fk_rp_permission FOREIGN KEY (permission_id) REFERENCES permissions(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ==========================================
+-- 3. COURSE & LEARNING LOGIC
+-- ==========================================
 
 CREATE TABLE courses (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    plan_id INT NOT NULL,                
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    teacher_id BIGINT NOT NULL,
+    category_id BIGINT NULL,
     title VARCHAR(255) NOT NULL,
     description TEXT,
-    FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE CASCADE
+    thumbnail_url VARCHAR(500),
+    status ENUM('DRAFT', 'PENDING', 'PUBLISHED', 'HIDDEN') DEFAULT 'DRAFT',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_courses_teacher FOREIGN KEY (teacher_id) REFERENCES users(id),
+    CONSTRAINT fk_courses_category FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE course_plan_access (
+    course_id BIGINT NOT NULL,
+    plan_id BIGINT NOT NULL,
+    PRIMARY KEY (course_id, plan_id),
+    CONSTRAINT fk_cpa_course FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
+    CONSTRAINT fk_cpa_plan FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE course_tags (
+    course_id BIGINT NOT NULL,
+    tag_id BIGINT NOT NULL,
+    PRIMARY KEY (course_id, tag_id),
+    CONSTRAINT fk_ct_course FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
+    CONSTRAINT fk_ct_tag FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE chapters (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    course_id INT NOT NULL,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    course_id BIGINT NOT NULL,
     title VARCHAR(255) NOT NULL,
-    `order` INT NOT NULL,
-    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
+    order_index INT NOT NULL,
+    CONSTRAINT uk_course_chapter_order UNIQUE (course_id, order_index),
+    CONSTRAINT fk_chapters_course FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE lessons (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    chapter_id INT NOT NULL,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    chapter_id BIGINT NOT NULL,
     title VARCHAR(255) NOT NULL,
-    video_url VARCHAR(500),               
-    `order` INT NOT NULL,              
-    FOREIGN KEY (chapter_id) REFERENCES chapters(id) ON DELETE CASCADE
+    video_url VARCHAR(500),
+    duration_seconds INT DEFAULT 0,
+    order_index INT NOT NULL,
+    CONSTRAINT uk_chapter_lesson_order UNIQUE (chapter_id, order_index),
+    CONSTRAINT fk_lessons_chapter FOREIGN KEY (chapter_id) REFERENCES chapters(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE exercises (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    lesson_id INT NOT NULL,              
+CREATE TABLE lesson_documents (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    lesson_id BIGINT NOT NULL,
     title VARCHAR(255) NOT NULL,
-    content_url VARCHAR(500),             
-    FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE CASCADE
+    file_url VARCHAR(500) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_docs_lesson FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ==========================================
+-- 4. INTERACTIVE QUIZ, ASSIGNMENT & EXERCISE
+-- ==========================================
+-- (Đã bao gồm bảng quizzes, questions, answers, assignments)
+-- (Phần này giữ nguyên cấu trúc cũ vì đã chuẩn)
 CREATE TABLE quizzes (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
-    type ENUM('mini_quiz', 'chapter_quiz') NOT NULL,
-    lesson_id INT NULL,                    
-    chapter_id INT NULL,                  
-    pass_score INT NOT NULL DEFAULT 50,   
-    FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE SET NULL,
-    FOREIGN KEY (chapter_id) REFERENCES chapters(id) ON DELETE SET NULL
+    type ENUM('SINGLE_CHOICE', 'MULTIPLE_CHOICE', 'FILL_IN_BLANK', 'MATCHING', 'LISTENING', 'HSK_MOCK') NOT NULL,
+    lesson_id BIGINT NULL,
+    chapter_id BIGINT NULL,
+    time_limit_minutes INT NOT NULL DEFAULT 0,
+    pass_score INT NOT NULL DEFAULT 50,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_quizzes_lesson FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE SET NULL,
+    CONSTRAINT fk_quizzes_chapter FOREIGN KEY (chapter_id) REFERENCES chapters(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE questions (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    quiz_id INT NOT NULL,
-    content TEXT NOT NULL,              
-    points INT NOT NULL DEFAULT 10,       
-    FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE CASCADE
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    quiz_id BIGINT NOT NULL,
+    content TEXT NOT NULL,
+    audio_url VARCHAR(500) NULL,
+    points INT NOT NULL DEFAULT 10,
+    order_index INT NOT NULL,
+    CONSTRAINT fk_questions_quiz FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE answers (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    question_id INT NOT NULL,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    question_id BIGINT NOT NULL,
     content TEXT NOT NULL,
-    is_correct BOOLEAN DEFAULT FALSE,    
-    FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE
+    is_correct BOOLEAN DEFAULT FALSE,
+    matching_pair TEXT NULL,
+    CONSTRAINT fk_answers_question FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE user_quiz_attempts (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    quiz_id INT NOT NULL,
-    score INT NOT NULL,                    
-    is_passed BOOLEAN DEFAULT FALSE,    
-    attempt_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE CASCADE
+CREATE TABLE assignments (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    lesson_id BIGINT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    attachment_url VARCHAR(500) NULL,
+    deadline_days INT NULL,
+    CONSTRAINT fk_assignments_lesson FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE user_lesson_progress (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    lesson_id INT NOT NULL,
-    current_time_seconds INT DEFAULT 0,  
-    is_completed BOOLEAN DEFAULT FALSE,   
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE CASCADE,
-    UNIQUE KEY unique_user_lesson (user_id, lesson_id) 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+-- ==========================================
+-- 5. STUDENT PROGRESS & TRACKING
+-- ==========================================
 
-CREATE TABLE user_exercise_submissions (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    exercise_id INT NOT NULL,
-    file_submission_url VARCHAR(500),   
-    status ENUM('submitted', 'reviewed') DEFAULT 'submitted',
-    grade VARCHAR(10) NULL,            
-    submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (exercise_id) REFERENCES exercises(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE user_chapter_progress (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    chapter_id INT NOT NULL,
-    is_completed BOOLEAN DEFAULT FALSE,
+CREATE TABLE course_enrollments (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    course_id BIGINT NOT NULL,
+    enrolled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     completed_at TIMESTAMP NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (chapter_id) REFERENCES chapters(id) ON DELETE CASCADE,
-    UNIQUE KEY unique_user_chapter (user_id, chapter_id)
+    CONSTRAINT uk_user_course UNIQUE (user_id, course_id),
+    CONSTRAINT fk_enrollments_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_enrollments_course FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Thêm 10 Users với mật khẩu Sba12345
-INSERT INTO users (full_name, email, password) VALUES
-('Nguyễn Văn A', 'nguyenvana@gmail.com', 'Sba12345'),
-('Trần Thị B', 'tranthib@gmail.com', 'Sba12345'),
-('Lê Hoàng C', 'lehoangc@gmail.com', 'Sba12345'),
-('Phạm Minh D', 'phamminhd@gmail.com', 'Sba12345'),
-('Vũ Thị E', 'vuthie@gmail.com', 'Sba12345'),
-('Đặng Văn F', 'dangvanf@gmail.com', 'Sba12345'),
-('Hoàng Thị G', 'hoangthig@gmail.com', 'Sba12345'),
-('Bùi Minh H', 'buiminhh@gmail.com', 'Sba12345'),
-('Ngô Thanh I', 'ngothanhi@gmail.com', 'Sba12345'),
-('Đỗ Hoàng K', 'dohoangk@gmail.com', 'Sba12345');
+CREATE TABLE lesson_progress (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    lesson_id BIGINT NOT NULL,
+    watch_seconds INT DEFAULT 0,
+    is_completed BOOLEAN DEFAULT FALSE,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT uk_user_lesson UNIQUE (user_id, lesson_id),
+    CONSTRAINT fk_lp_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_lp_lesson FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Thêm 3 Gói Học
-INSERT INTO plans (name, duration_months, price) VALUES 
-('Gói Học Pro 3 Tháng', 3, 499000),
-('Gói Học Pro 6 Tháng', 6, 899000),
-('Gói Học Pro 12 Tháng', 12, 1499000);
+CREATE TABLE quiz_attempts (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    quiz_id BIGINT NOT NULL,
+    score INT NOT NULL DEFAULT 0,
+    is_passed BOOLEAN DEFAULT FALSE,
+    started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    submitted_at TIMESTAMP NULL,
+    status ENUM('DOING', 'SUBMITTED', 'CHEATING_SUSPECTED') DEFAULT 'DOING',
+    CONSTRAINT fk_qa_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_qa_quiz FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Thêm Lịch Sử Đăng Ký Gói Học
-INSERT INTO user_subscriptions (user_id, plan_id, start_date, end_date, status) VALUES 
-(1, 1, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 3 MONTH), 'active'), 
-(2, 2, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 6 MONTH), 'active'), 
-(3, 3, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 12 MONTH), 'active'), 
-(4, 1, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 3 MONTH), 'active');
+CREATE TABLE student_answers (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    attempt_id BIGINT NOT NULL,
+    question_id BIGINT NOT NULL,
+    selected_answer_id BIGINT NULL,
+    input_text TEXT NULL,
+    is_correct BOOLEAN DEFAULT FALSE,
+    CONSTRAINT fk_sa_attempt FOREIGN KEY (attempt_id) REFERENCES quiz_attempts(id) ON DELETE CASCADE,
+    CONSTRAINT fk_sa_question FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE,
+    CONSTRAINT fk_sa_answer FOREIGN KEY (selected_answer_id) REFERENCES answers(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- BỔ SUNG: Chèn 3 Khóa Học liên kết với 3 Gói Học trên
-INSERT INTO courses (plan_id, title, description) VALUES
-(1, 'Khóa Học Tiếng Trung Sơ Cấp (HSK 1 - HSK 2)', 'Khóa học dành cho người mới bắt đầu, làm quen với Pinyin và các mẫu câu cơ bản.'),
-(2, 'Khóa Học Tiếng Trung Trung Cấp (HSK 3 - HSK 4)', 'Mở rộng vốn từ vựng, ngữ pháp phức tạp và luyện giao tiếp phản xạ.'),
-(3, 'Khóa Học Tiếng Trung Cao Cấp (HSK 5 - HSK 6)', 'Luyện dịch thuật, viết luận và làm quen với tiếng Trung thương mại chuyên sâu.');
+CREATE TABLE assignment_submissions (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    assignment_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    submission_text TEXT NULL,
+    file_url VARCHAR(500) NULL,
+    status ENUM('SUBMITTED', 'GRADED', 'NEEDS_REVISION') DEFAULT 'SUBMITTED',
+    score INT NULL,
+    teacher_feedback TEXT NULL,
+    submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    graded_at TIMESTAMP NULL,
+    CONSTRAINT uk_user_assignment UNIQUE (user_id, assignment_id),
+    CONSTRAINT fk_as_assignment FOREIGN KEY (assignment_id) REFERENCES assignments(id) ON DELETE CASCADE,
+    CONSTRAINT fk_as_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELIMITER $$
+CREATE TABLE certificates (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    course_id BIGINT NOT NULL,
+    certificate_code VARCHAR(100) UNIQUE NOT NULL,
+    issued_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    pdf_url VARCHAR(500) NOT NULL,
+    CONSTRAINT uk_user_cert_course UNIQUE (user_id, course_id),
+    CONSTRAINT fk_certs_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_certs_course FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DROP PROCEDURE IF EXISTS GenerateCourseStructure$$
+-- ==========================================
+-- 6. SUBSCRIPTION & PAYMENT MANAGEMENT (UPDATE PHASE 2)
+-- ==========================================
 
-CREATE PROCEDURE GenerateCourseStructure()
-BEGIN
-    DECLARE current_course_id INT;
-    DECLARE current_chapter_id INT;
-    DECLARE current_lesson_id INT;
-    DECLARE current_quiz_id INT;
-    DECLARE current_question_id INT;
-    
-    DECLARE c_idx INT DEFAULT 1;
-    DECLARE ch_idx INT;
-    DECLARE l_idx INT;
-    DECLARE qn_idx INT;
-    
-    -- Lặp qua 3 Khóa học
-    WHILE c_idx <= 3 DO
-        SET current_course_id = c_idx;
-        SET ch_idx = 1;
-        WHILE ch_idx <= 10 DO
-            INSERT INTO chapters (course_id, title, `order`) 
-            VALUES (
-                current_course_id, 
-                CONCAT('Chương ', ch_idx, ': Nội dung nhóm ', ch_idx, ' - Khóa ', current_course_id), 
-                ch_idx
-            );
-            SET current_chapter_id = LAST_INSERT_ID();
-            SET l_idx = 1;
-            WHILE l_idx <= 5 DO
-                INSERT INTO lessons (chapter_id, title, video_url, `order`) 
-                VALUES (
-                    current_chapter_id, 
-                    CONCAT('Bài ', l_idx, ': Bài giảng thực hành số ', l_idx), 
-                    CONCAT('https://storage.learningchinese.edu/videos/course_', current_course_id, '_ch_', ch_idx, '_l_', l_idx, '.mp4'), 
-                    l_idx
-                );
-                SET current_lesson_id = LAST_INSERT_ID();
-                
-                INSERT INTO exercises (lesson_id, title, content_url)
-                VALUES (
-                    current_lesson_id, 
-                    CONCAT('Bài tập về nhà - Bài học ', l_idx), 
-                    CONCAT('https://storage.learningchinese.edu/exercises/homework_lesson_', current_lesson_id, '.pdf')
-                );
-                INSERT INTO quizzes (title, type, lesson_id, chapter_id, pass_score)
-                VALUES (
-                    CONCAT('Mini Quiz - Kiểm tra Bài ', l_idx), 
-                    'mini_quiz', 
-                    current_lesson_id, 
-                    NULL, 
-                    60
-                );
-                SET current_quiz_id = LAST_INSERT_ID();
-                
-                -- Mỗi bài kiểm tra tự động tạo thêm 10 Câu hỏi (Questions)
-                SET qn_idx = 1;
-                WHILE qn_idx <= 10 DO
-                    INSERT INTO questions (quiz_id, content, points)
-                    VALUES (
-                        current_quiz_id, 
-                        CONCAT('Câu hỏi số ', qn_idx, ': Chọn đáp án chính xác nhất.'), 
-                        10
-                    );
-                    SET current_question_id = LAST_INSERT_ID();
-                    
-                    -- Mỗi câu hỏi sinh 4 đáp án (Đáp án A luôn đúng)
-                    INSERT INTO answers (question_id, content, is_correct) VALUES
-                    (current_question_id, CONCAT('Đáp án A (Đúng) cho câu hỏi ', qn_idx), TRUE),
-                    (current_question_id, CONCAT('Đáp án B (Sai) cho câu hỏi ', qn_idx), FALSE),
-                    (current_question_id, CONCAT('Đáp án C (Sai) cho câu hỏi ', qn_idx), FALSE),
-                    (current_question_id, CONCAT('Đáp án D (Sai) cho câu hỏi ', qn_idx), FALSE);
-                    
-                    SET qn_idx = qn_idx + 1;
-                END WHILE;
-                
-                SET l_idx = l_idx + 1;
-            END WHILE;
-            
-            SET ch_idx = ch_idx + 1;
-        END WHILE;
-        
-        SET c_idx = c_idx + 1;
-    END WHILE;
-    
-END$$
+-- BẢNG MỚI: Quản lý Mã giảm giá
+CREATE TABLE coupons (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    code VARCHAR(50) UNIQUE NOT NULL,
+    discount_type ENUM('PERCENTAGE', 'FIXED_AMOUNT') NOT NULL,
+    discount_value DECIMAL(12, 2) NOT NULL,
+    max_uses INT NULL, -- NULL = Không giới hạn lượt dùng
+    used_count INT DEFAULT 0,
+    valid_from TIMESTAMP NULL,
+    valid_until TIMESTAMP NULL,
+    created_by BIGINT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_coupons_creator FOREIGN KEY (created_by) REFERENCES users(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELIMITER ;
-CALL GenerateCourseStructure();
-DROP PROCEDURE IF EXISTS GenerateCourseStructure;
+CREATE TABLE subscriptions (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    plan_id BIGINT NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    status ENUM('ACTIVE', 'EXPIRED', 'CANCELLED') DEFAULT 'ACTIVE',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_subs_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_subs_plan FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE invoices (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    subscription_id BIGINT NULL,
+    coupon_id BIGINT NULL, -- NEW: Liên kết mã giảm giá
+    original_amount DECIMAL(12, 2) NOT NULL, -- Giá gốc
+    discount_amount DECIMAL(12, 2) DEFAULT 0, -- Số tiền được giảm
+    amount DECIMAL(12, 2) NOT NULL, -- Giá cuối cùng phải thanh toán
+    status ENUM('PENDING', 'PAID', 'FAILED', 'REFUNDED') DEFAULT 'PENDING',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_invoices_user FOREIGN KEY (user_id) REFERENCES users(id),
+    CONSTRAINT fk_invoices_sub FOREIGN KEY (subscription_id) REFERENCES subscriptions(id) ON DELETE SET NULL,
+    CONSTRAINT fk_invoices_coupon FOREIGN KEY (coupon_id) REFERENCES coupons(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE payments (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    invoice_id BIGINT NOT NULL,
+    provider ENUM('VNPAY', 'MOMO', 'STRIPE') NOT NULL,
+    transaction_id VARCHAR(150) NOT NULL,
+    amount DECIMAL(12, 2) NOT NULL,
+    status ENUM('SUCCESS', 'FAILED') NOT NULL,
+    raw_response JSON NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uk_payments_transaction UNIQUE (provider, transaction_id),
+    CONSTRAINT fk_payments_invoice FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE refunds (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    payment_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    amount DECIMAL(12, 2) NOT NULL,
+    reason TEXT NOT NULL,
+    status ENUM('PENDING', 'APPROVED', 'REJECTED', 'PROCESSED') DEFAULT 'PENDING',
+    processed_by BIGINT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    processed_at TIMESTAMP NULL,
+    CONSTRAINT fk_refunds_payment FOREIGN KEY (payment_id) REFERENCES payments(id) ON DELETE CASCADE,
+    CONSTRAINT fk_refunds_user FOREIGN KEY (user_id) REFERENCES users(id),
+    CONSTRAINT fk_refunds_processor FOREIGN KEY (processed_by) REFERENCES users(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ==========================================
+-- 7. AUDIT LOG, NOTIFICATION & REPORT
+-- ==========================================
+
+CREATE TABLE audit_logs (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NULL,
+    action VARCHAR(100) NOT NULL,
+    method VARCHAR(10) NOT NULL,
+    endpoint VARCHAR(255) NOT NULL,
+    before_data JSON NULL,
+    after_data JSON NULL,
+    ip_address VARCHAR(45) NOT NULL,
+    user_agent VARCHAR(500),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE notifications (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_notifications_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE reports (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    reporter_id BIGINT NOT NULL,
+    target_type ENUM('COURSE', 'USER', 'COMMENT', 'REVIEW') NOT NULL,
+    target_id BIGINT NOT NULL,
+    reason TEXT NOT NULL,
+    status ENUM('PENDING', 'INVESTIGATING', 'RESOLVED', 'DISMISSED') DEFAULT 'PENDING',
+    resolved_by BIGINT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    resolved_at TIMESTAMP NULL,
+    CONSTRAINT fk_reports_reporter FOREIGN KEY (reporter_id) REFERENCES users(id),
+    CONSTRAINT fk_reports_resolver FOREIGN KEY (resolved_by) REFERENCES users(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ==========================================
+-- 8. GAMIFICATION & MOTIVATION (PHASE 2)
+-- ==========================================
+
+-- Bảng theo dõi chuỗi ngày học liên tiếp (Streak)
+CREATE TABLE user_streaks (
+    user_id BIGINT PRIMARY KEY,
+    current_streak INT DEFAULT 0,
+    longest_streak INT DEFAULT 0,
+    last_activity_date DATE NULL,
+    CONSTRAINT fk_streaks_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Bảng định nghĩa các Huy hiệu (Badges)
+CREATE TABLE badges (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    description VARCHAR(255) NOT NULL,
+    icon_url VARCHAR(500) NOT NULL,
+    requirement_type ENUM('LESSON_COMPLETED', 'QUIZ_PASSED', 'STREAK_DAYS', 'HSK_PASSED') NOT NULL,
+    requirement_value INT NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Bảng mapping Huy hiệu học viên đã đạt được
+CREATE TABLE user_badges (
+    user_id BIGINT NOT NULL,
+    badge_id BIGINT NOT NULL,
+    earned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, badge_id),
+    CONSTRAINT fk_ub_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_ub_badge FOREIGN KEY (badge_id) REFERENCES badges(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ==========================================
+-- 9. SOCIAL & COMMUNITY (PHASE 2)
+-- ==========================================
+
+-- Bảng Đánh giá & Review Khóa học
+CREATE TABLE course_reviews (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    course_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
+    comment TEXT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT uk_user_course_review UNIQUE (user_id, course_id),
+    CONSTRAINT fk_reviews_course FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
+    CONSTRAINT fk_reviews_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Bảng Hỏi đáp (Q&A) trong từng Video Bài học
+CREATE TABLE lesson_qa (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    lesson_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    parent_id BIGINT NULL,
+    content TEXT NOT NULL,
+    is_resolved BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_lesson_qa_lesson
+        FOREIGN KEY (lesson_id)
+        REFERENCES lessons(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_lesson_qa_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_lesson_qa_parent
+        FOREIGN KEY (parent_id)
+        REFERENCES lesson_qa(id)
+        ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ==========================================
+-- 10. AFFILIATE & REFERRAL (PHASE 2)
+-- ==========================================
+
+-- Bảng ghi nhận giới thiệu (Mời bạn bè)
+CREATE TABLE referrals (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    referrer_id BIGINT NOT NULL, -- Người gửi link
+    referred_user_id BIGINT NOT NULL, -- Người đăng ký qua link
+    status ENUM('REGISTERED', 'PURCHASED') DEFAULT 'REGISTERED',
+    reward_granted BOOLEAN DEFAULT FALSE, -- Cờ đánh dấu đã trả hoa hồng/tặng tháng học chưa
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uk_referred_user UNIQUE (referred_user_id),
+    CONSTRAINT fk_referrals_referrer FOREIGN KEY (referrer_id) REFERENCES users(id),
+    CONSTRAINT fk_referrals_referred FOREIGN KEY (referred_user_id) REFERENCES users(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ==========================================
+-- 11. INDEXING TỐI ƯU TRUY VẤN
+-- ==========================================
+
+CREATE INDEX idx_users_status ON users(status);
+CREATE INDEX idx_users_points ON users(total_learning_points DESC); -- Phục vụ bảng xếp hạng (Leaderboard)
+CREATE INDEX idx_courses_status_teacher ON courses(status, teacher_id);
+CREATE INDEX idx_lessons_chapter ON lessons(chapter_id);
+CREATE INDEX idx_quizzes_lesson_chapter ON quizzes(lesson_id, chapter_id);
+CREATE INDEX idx_quiz_attempts_user_quiz ON quiz_attempts(user_id, quiz_id, status);
+CREATE INDEX idx_subscriptions_range ON subscriptions(user_id, status, end_date);
+CREATE INDEX idx_invoices_status_user ON invoices(status, user_id);
+CREATE INDEX idx_audit_logs_search ON audit_logs(action, created_at);
+CREATE INDEX idx_notifications_user_unread ON notifications(user_id, is_read);
+CREATE INDEX idx_categories_slug ON categories(slug);
+CREATE INDEX idx_assignments_lesson ON assignments(lesson_id);
+CREATE INDEX idx_coupons_code ON coupons(code);
+CREATE INDEX idx_lesson_qa_thread ON lesson_qa(lesson_id, parent_id);

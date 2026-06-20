@@ -38,17 +38,6 @@ export default function ForgotPasswordPage() {
         }
     };
 
-    const handleBlur = (e) => {
-        const { name, value } = e.target;
-
-        const errorMessage = validInput(name, value);
-
-        setErrors((prev) => ({
-            ...prev,
-            [name]: errorMessage,
-        }));
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -92,6 +81,9 @@ export default function ForgotPasswordPage() {
         try {
             setLoading(true);
             // Cần gọi API check token để chuyển hướng.
+            // const response = await forgotPassword({
+            //     email: formData.token,
+            // });
             toast.success("Xác thực thành công. Đang chuyển hướng...");
             navigate("/reset-password", {
                 state: {
@@ -143,7 +135,7 @@ export default function ForgotPasswordPage() {
                                     name="email"
                                     value={formData.email}
                                     onChange={handleChange}
-                                    onBlur={handleBlur}
+                                    
                                     placeholder="candidate@example.com"
                                     className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-indigo-500"
                                 />
@@ -180,7 +172,7 @@ export default function ForgotPasswordPage() {
                                     name="token"
                                     value={formData.token}
                                     onChange={handleChange}
-                                    onBlur={handleBlur}
+                                    
                                     placeholder="Enter token"
                                     className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none transition focus:border-indigo-500"
                                 />
