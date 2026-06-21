@@ -37,7 +37,7 @@ export default function HeroSection() {
                         Join 120,000+ learners mastering in-demand skills through hands-on courses taught by Vietnam's top industry practitioners.
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-14">
-                        <a href="#" className="flex items-center gap-2 bg-[#7c3aed] hover:bg-[#6d28d9] text-white px-8 py-3.5 rounded-full font-semibold text-sm no-underline transition-all shadow-lg shadow-[#7c3aed]/30 hover:scale-[1.02]">
+                        <a href="/courses" className="flex items-center gap-2 bg-[#7c3aed] hover:bg-[#6d28d9] text-white px-8 py-3.5 rounded-full font-semibold text-sm no-underline transition-all shadow-lg shadow-[#7c3aed]/30 hover:scale-[1.02]">
                             Explore Courses <ArrowRight className="w-4 h-4" />
                         </a>
                         <a href="#" className="flex items-center gap-2 text-[#f8fafc] border border-[#7c3aed]/30 hover:border-[#7c3aed]/60 px-8 py-3.5 rounded-full font-semibold text-sm no-underline transition-all hover:bg-[#7c3aed]/5">

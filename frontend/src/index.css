@@ -11,3 +11,28 @@
   --color-brand-textPrimary: #f8fafc;
   --color-brand-textSecondary: #94a3b8; 
 }
+
+.learning-video-shell:fullscreen {
+  position: relative;
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0;
+  border: 0;
+  background: #000;
+}
+
+.learning-video-shell:fullscreen .learning-video {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  object-fit: contain;
+}
+
+.learning-video-shell:fullscreen .learning-video-controls {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+}

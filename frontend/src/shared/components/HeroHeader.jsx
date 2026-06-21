@@ -29,7 +29,7 @@ export default function HeroHeader() {
                     <a href="/login" className="text-[#94a3b8] hover:text-[#7c3aed] px-4 py-2 border border-[#7c3aed]/30 rounded-full no-underline transition-colors">
                         Login
                     </a>
-                    <a href="/signup" className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white px-6 py-2 rounded-full no-underline transition-colors shadow-md shadow-[#7c3aed]/25">
+                    <a href="/register" className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white px-6 py-2 rounded-full no-underline transition-colors shadow-md shadow-[#7c3aed]/25">
                         Get Started
                     </a>
                 </div>
@@ -39,12 +39,27 @@ export default function HeroHeader() {
             </div>
             {mobileOpen && (
                 <div className="md:hidden bg-[#090514] border-t border-[#7c3aed]/10 px-6 py-4 flex flex-col gap-4">
-                    {NAV_LINKS.map((link) => (
-                        <a key={link} href="#" className="text-[#94a3b8] hover:text-[#7c3aed] text-sm no-underline">{link}</a>
+                    {NAV_LINKS.map((item) => (
+                        <NavLink
+                            key={item.path}
+                            to={item.path}
+                            onClick={() => setMobileOpen(false)}
+                            className={({ isActive }) =>
+                                isActive
+                                    ? "text-white text-sm no-underline"
+                                    : "text-[#94a3b8] hover:text-[#7c3aed] text-sm no-underline transition-colors"
+                            }
+                        >
+                            {item.label}
+                        </NavLink>
                     ))}
                     <div className="flex gap-3 pt-2">
-                        <a href="#" className="text-sm text-[#94a3b8] border border-[#7c3aed]/30 px-4 py-2 rounded-full no-underline">Login</a>
-                        <a href="#" className="text-sm text-white bg-[#7c3aed] px-4 py-2 rounded-full no-underline">Get Started</a>
+                        <NavLink to="/login" onClick={() => setMobileOpen(false)} className="text-sm text-[#94a3b8] border border-[#7c3aed]/30 px-4 py-2 rounded-full no-underline">
+                            Login
+                        </NavLink>
+                        <NavLink to="/register" onClick={() => setMobileOpen(false)} className="text-sm text-white bg-[#7c3aed] px-4 py-2 rounded-full no-underline">
+                            Get Started
+                        </NavLink>
                     </div>
                 </div>
             )}

@@ -1,0 +1,65 @@
+export const ENROLLED_COURSE_LESSONS = [
+    {
+        id: 1,
+        course_id: 1,
+        chapter: "Chapter 1",
+        title: "Course orientation and learning goals",
+        duration: "08:12",
+        video_url: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+        summary: "Understand how the course is structured, how progress is tracked, and how to complete each lesson.",
+        materials: [
+            { id: 1, name: "Course roadmap.pdf", type: "PDF", size: "1.2 MB" },
+            { id: 2, name: "Learning checklist.docx", type: "DOCX", size: "740 KB" },
+        ],
+    },
+    {
+        id: 2,
+        course_id: 1,
+        chapter: "Chapter 1",
+        title: "Setting up your study workspace",
+        duration: "12:45",
+        video_url: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+        summary: "Prepare the tools, account settings, and learning routine needed before starting practice lessons.",
+        materials: [
+            { id: 3, name: "Setup guide.pdf", type: "PDF", size: "2.4 MB" },
+            { id: 4, name: "Resource links.txt", type: "TXT", size: "28 KB" },
+        ],
+    },
+    {
+        id: 3,
+        course_id: 1,
+        chapter: "Chapter 2",
+        title: "Core concept walkthrough",
+        duration: "18:30",
+        video_url: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+        summary: "Learn the foundation concepts through examples, guided explanation, and short reflection prompts.",
+        materials: [
+            { id: 5, name: "Concept notes.pdf", type: "PDF", size: "3.1 MB" },
+        ],
+    },
+    {
+        id: 4,
+        course_id: 1,
+        chapter: "Chapter 2",
+        title: "Practice lesson with guided task",
+        duration: "21:04",
+        video_url: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+        summary: "Apply what you learned in a guided exercise before moving to quiz and assignment activities.",
+        materials: [
+            { id: 6, name: "Practice worksheet.pdf", type: "PDF", size: "1.8 MB" },
+            { id: 7, name: "Starter file.zip", type: "ZIP", size: "5.6 MB" },
+        ],
+    },
+    {
+        id: 5,
+        course_id: 1,
+        chapter: "Chapter 3",
+        title: "Review and next steps",
+        duration: "10:18",
+        video_url: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+        summary: "Review completed lessons, check your progress, and prepare for quiz or assignment submission.",
+        materials: [
+            { id: 8, name: "Review summary.pdf", type: "PDF", size: "960 KB" },
+        ],
+    },
+];

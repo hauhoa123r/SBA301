@@ -18,7 +18,7 @@ export default function CoursesSection() {
                             Learn From the Best
                         </h2>
                     </div>
-                    <a href="#" className="flex items-center gap-1.5 text-[#a78bfa] hover:text-white text-sm font-semibold no-underline transition-colors shrink-0">
+                    <a href="/courses" className="flex items-center gap-1.5 text-[#a78bfa] hover:text-white text-sm font-semibold no-underline transition-colors shrink-0">
                         View all courses <ChevronRight className="w-4 h-4" />
                     </a>
                 </div>

@@ -211,10 +211,7 @@ const LoginPage = () => {
                                 { value: "4.9★", label: "Rating" },
                             ].map(({ value, label }) => (
                                 <div key={label} className="bg-[#7c3aed]/10 border border-[#7c3aed]/20 rounded-xl p-3 text-center">
-                                    <div
-                                        className="text-white font-bold text-base"
-                                        style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
-                                    >
+                                    <div className="text-white font-bold text-base" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                                         {value}
                                     </div>
                                     <div className="text-[#94a3b8] text-xs mt-0.5">{label}</div>

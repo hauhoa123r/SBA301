@@ -4,10 +4,12 @@ import courseRoutes from "../../features/course/routes/courseRoutes";
 import errorRoutes from "../../features/error/routes/errorRoutes";
 import NotFoundPage from "../../features/error/pages/NotFoundPage";
 import userRoutes from "../../features/user/routes/UserRouters";
+import learningRoutes from "../../features/learning/routes/learningRoutes";
 function AppRoutes() {
   const routes = [
     ...authRoutes,
     ...courseRoutes,
+    ...learningRoutes,
     ...errorRoutes,
     ...userRoutes,
   ];
