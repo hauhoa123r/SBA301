@@ -1,37 +1,53 @@
+import { useState } from "react";
+import Logo from "./Logo"; 
+import { Menu, X } from "lucide-react";
+import { NAV_LINKS } from "../../features/course/services/mockup";
 import { NavLink } from "react-router-dom";
 
 export default function HeroHeader() {
-    const navClass = ({ isActive }) =>
-        `no-underline transition-colors ${isActive
-            ? "text-brand-accent"
-            : "text-brand-textSecondary hover:text-brand-accent"
-        }`;
+    const [mobileOpen, setMobileOpen] = useState(false);
     return (
-        <header className="container mx-auto px-6 py-6 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-brand-accent rounded flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-accent/30">
-                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 8.56l-1.222.524a1 1 0 000 1.838l7 3a1 1 0 00.788 0l7-3a1 1 0 000-1.838l-1.222-.524-5.383 2.307a1 1 0 01-.788 0L3.31 8.56z"></path>
-                    </svg>
+        <header className="sticky top-0 z-50 border-b border-[#7c3aed]/10 bg-[#090514]/80 backdrop-blur-xl">
+            <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+                <Logo />
+                <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
+                    {NAV_LINKS.map((item) => (
+                        <NavLink
+                            key={item.path}
+                            to={item.path}
+                            className={({ isActive }) =>
+                                isActive
+                                    ? "text-white no-underline"
+                                    : "text-[#94a3b8] hover:text-[#7c3aed] no-underline transition-colors"
+                            }
+                        >
+                            {item.label}
+                        </NavLink>
+                    ))}
+                </nav>
+                <div className="hidden md:flex items-center gap-3 text-sm font-medium">
+                    <a href="/login" className="text-[#94a3b8] hover:text-[#7c3aed] px-4 py-2 border border-[#7c3aed]/30 rounded-full no-underline transition-colors">
+                        Login
+                    </a>
+                    <a href="/signup" className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white px-6 py-2 rounded-full no-underline transition-colors shadow-md shadow-[#7c3aed]/25">
+                        Get Started
+                    </a>
                 </div>
-                <span className="text-xl font-serif font-bold text-brand-accent tracking-wide">Edujar</span>
+                <button className="md:hidden text-[#94a3b8] hover:text-white p-1" onClick={() => setMobileOpen(!mobileOpen)}>
+                    {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                </button>
             </div>
-            <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
-                <NavLink to="/" className={navClass}>Home</NavLink>
-                <NavLink to="/about" className={navClass}>About</NavLink>
-                <NavLink to="/courses" className={navClass}>Course</NavLink>
-                <NavLink to="/blog" className={navClass}>Blog</NavLink>
-                <NavLink to="/contact" className={navClass}>Contact</NavLink> 
-                <NavLink to="/contact" className={navClass}>Hello world</NavLink> 
-                           </nav>
-            <div className="flex items-center gap-4 text-sm font-medium">
-                <NavLink className="text-brand-textSecondary hover:text-brand-accent px-4 py-2 border border-brand-textSecondary/30 rounded-full no-underline transition-colors block" to="/login">
-                    Login
-                </NavLink>
-                <NavLink className="bg-brand-accent hover:bg-brand-accentHover text-white px-6 py-2 rounded-full no-underline transition-colors shadow-md shadow-brand-accent/20 block" to="/get-started">
-                    Get Started
-                </NavLink>
-            </div>
+            {mobileOpen && (
+                <div className="md:hidden bg-[#090514] border-t border-[#7c3aed]/10 px-6 py-4 flex flex-col gap-4">
+                    {NAV_LINKS.map((link) => (
+                        <a key={link} href="#" className="text-[#94a3b8] hover:text-[#7c3aed] text-sm no-underline">{link}</a>
+                    ))}
+                    <div className="flex gap-3 pt-2">
+                        <a href="#" className="text-sm text-[#94a3b8] border border-[#7c3aed]/30 px-4 py-2 rounded-full no-underline">Login</a>
+                        <a href="#" className="text-sm text-white bg-[#7c3aed] px-4 py-2 rounded-full no-underline">Get Started</a>
+                    </div>
+                </div>
+            )}
         </header>
     );
 }
