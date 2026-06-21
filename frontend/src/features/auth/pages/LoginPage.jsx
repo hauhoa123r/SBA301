@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { FaFacebookF, FaGoogle } from "react-icons/fa";
 import { Eye, EyeOff, Zap } from "lucide-react";
 import HeroFooter from "../../../shared/components/HeroFooter";
 import HeroHeader from "../../../shared/components/HeroHeader";
@@ -93,6 +94,31 @@ const LoginPage = () => {
                                 <p className="text-[#94a3b8] text-sm">
                                     Enter your account details to continue
                                 </p>
+                            </div>
+
+                            <div className="grid gap-3 sm:grid-cols-2">
+                                <button
+                                    type="button"
+                                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#7c3aed]/20 bg-[#160e2e] px-4 py-3 text-sm font-semibold text-white transition hover:border-[#7c3aed]/50 hover:bg-[#7c3aed]/10"
+                                >
+                                    <FaGoogle className="h-4 w-4 text-red-400" />
+                                    Google
+                                </button>
+                                <button
+                                    type="button"
+                                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#7c3aed]/20 bg-[#160e2e] px-4 py-3 text-sm font-semibold text-white transition hover:border-[#7c3aed]/50 hover:bg-[#7c3aed]/10"
+                                >
+                                    <FaFacebookF className="h-4 w-4 text-blue-400" />
+                                    Facebook
+                                </button>
+                            </div>
+
+                            <div className="my-7 flex items-center gap-3">
+                                <div className="h-px flex-1 bg-[#7c3aed]/10" />
+                                <span className="text-xs font-semibold uppercase tracking-wider text-[#94a3b8]">
+                                    or login with email
+                                </span>
+                                <div className="h-px flex-1 bg-[#7c3aed]/10" />
                             </div>
 
                             <form onSubmit={handleSubmit} noValidate>

@@ -280,20 +280,64 @@ export default function LearnCoursePage() {
                         </div>
                         <div className="mt-3 flex items-center justify-between text-xs text-brand-textSecondary">
                             <span>{completedLessons.size}/{lessons.length} lessons completed</span>
-                            <button
-                                type="button"
-                                onClick={resetProgress}
-                                className="inline-flex items-center gap-1 font-semibold text-brand-textSecondary transition hover:text-white"
-                            >
-                                <RotateCcw className="h-3.5 w-3.5" />
-                                Reset
-                            </button>
+                    
                         </div>
                     </div>
                 </div>
 
-                <div className="grid gap-8 xl:grid-cols-[1fr_380px]">
-                    <section className="space-y-6">
+                <div className="grid gap-8 xl:grid-cols-[360px_1fr]">
+                    <aside className="order-2 rounded-2xl border border-brand-accent/10 bg-brand-cardBg p-5 xl:sticky xl:top-24 xl:order-1 xl:h-fit">
+                        <div className="mb-5 flex items-center justify-between">
+                            <div>
+                                <h2 className="text-xl font-bold text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                                    Course Content
+                                </h2>
+                                <p className="mt-1 text-sm text-brand-textSecondary">{lessons.length} lessons</p>
+                            </div>
+                            <BookOpen className="h-5 w-5 text-[#a78bfa]" />
+                        </div>
+
+                        <div className="flex flex-col gap-5">
+                            {Object.entries(chapterGroups).map(([chapter, chapterLessons]) => (
+                                <div key={chapter}>
+                                    <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-brand-textSecondary">
+                                        {chapter}
+                                    </p>
+                                    <div className="flex flex-col gap-2">
+                                        {chapterLessons.map((lesson) => {
+                                            const isActive = lesson.id === activeLesson.id;
+                                            const isCompleted = completedLessons.has(lesson.id);
+
+                                            return (
+                                                <button
+                                                    key={lesson.id}
+                                                    type="button"
+                                                    onClick={() => setActiveLessonId(lesson.id)}
+                                                    className={`flex w-full items-start gap-3 rounded-xl border p-3 text-left transition ${isActive
+                                                            ? "border-brand-accent/60 bg-brand-accent/10"
+                                                            : "border-brand-accent/10 bg-brand-light/50 hover:border-brand-accent/40"
+                                                        }`}
+                                                >
+                                                    <span className="mt-0.5 text-[#a78bfa]">
+                                                        {isCompleted ? <CheckCircle2 className="h-4 w-4" /> : <Circle className="h-4 w-4" />}
+                                                    </span>
+                                                    <span className="min-w-0 flex-1">
+                                                        <span className="block text-sm font-semibold text-white">{lesson.title}</span>
+                                                        <span className="mt-1 flex items-center gap-1 text-xs text-brand-textSecondary">
+                                                            <Clock className="h-3.5 w-3.5" />
+                                                            {lesson.duration}
+                                                        </span>
+                                                    </span>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </aside>
+
+                    <section className="order-1 space-y-6 xl:order-2">
                         <div
                             ref={videoShellRef}
                             onMouseMove={showFullscreenControls}
@@ -471,57 +515,6 @@ export default function LearnCoursePage() {
                             </div>
                         </div>
                     </section>
-
-                    <aside className="rounded-2xl border border-brand-accent/10 bg-brand-cardBg p-5 xl:sticky xl:top-24 xl:h-fit">
-                        <div className="mb-5 flex items-center justify-between">
-                            <div>
-                                <h2 className="text-xl font-bold text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-                                    Course Content
-                                </h2>
-                                <p className="mt-1 text-sm text-brand-textSecondary">{lessons.length} lessons</p>
-                            </div>
-                            <BookOpen className="h-5 w-5 text-[#a78bfa]" />
-                        </div>
-
-                        <div className="flex flex-col gap-5">
-                            {Object.entries(chapterGroups).map(([chapter, chapterLessons]) => (
-                                <div key={chapter}>
-                                    <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-brand-textSecondary">
-                                        {chapter}
-                                    </p>
-                                    <div className="flex flex-col gap-2">
-                                        {chapterLessons.map((lesson) => {
-                                            const isActive = lesson.id === activeLesson.id;
-                                            const isCompleted = completedLessons.has(lesson.id);
-
-                                            return (
-                                                <button
-                                                    key={lesson.id}
-                                                    type="button"
-                                                    onClick={() => setActiveLessonId(lesson.id)}
-                                                    className={`flex w-full items-start gap-3 rounded-xl border p-3 text-left transition ${isActive
-                                                            ? "border-brand-accent/60 bg-brand-accent/10"
-                                                            : "border-brand-accent/10 bg-brand-light/50 hover:border-brand-accent/40"
-                                                        }`}
-                                                >
-                                                    <span className="mt-0.5 text-[#a78bfa]">
-                                                        {isCompleted ? <CheckCircle2 className="h-4 w-4" /> : <Circle className="h-4 w-4" />}
-                                                    </span>
-                                                    <span className="min-w-0 flex-1">
-                                                        <span className="block text-sm font-semibold text-white">{lesson.title}</span>
-                                                        <span className="mt-1 flex items-center gap-1 text-xs text-brand-textSecondary">
-                                                            <Clock className="h-3.5 w-3.5" />
-                                                            {lesson.duration}
-                                                        </span>
-                                                    </span>
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </aside>
                 </div>
             </main>
 
