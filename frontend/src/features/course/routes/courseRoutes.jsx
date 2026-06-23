@@ -1,5 +1,5 @@
 import Homepage from "../pages/Homepage";
-import ChangePasswordPage from "../pages/ChangePasswordPage";
+import ChangePasswordPage from "../../auth/pages/ChangePasswordPage.jsx";
 import CourseDetailPage from "../../course-catalog/pages/CourseDetailPage";
 import ViewCoursesPage from "../../course-catalog/pages/ViewCoursesPage";
 import AboutPage from "../../public/pages/AboutPage";
@@ -30,10 +30,6 @@ const courseRoutes = [
     {
         path: "/contact",
         element: <ContactPage />
-    },
-    {
-        path: "/user/change-password",
-        element: <ChangePasswordPage />
     }
 ];
 

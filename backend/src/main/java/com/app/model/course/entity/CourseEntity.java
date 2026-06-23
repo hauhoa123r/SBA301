@@ -1,7 +1,9 @@
 package com.app.model.course.entity;
 
 import com.app.model.user.entity.PlanEntity;
+import com.app.model.user.entity.UserEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.List;
@@ -31,4 +33,8 @@ public class CourseEntity {
 
     @OneToMany(mappedBy = "courseEntity", cascade = CascadeType.ALL)
     private List<ChapterEntity> chapterEntities;
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "teacher_id", nullable = false)
+    private UserEntity teacher;
 }

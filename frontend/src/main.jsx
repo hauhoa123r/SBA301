@@ -6,10 +6,10 @@ import { AuthProvider } from './app/provider/AuthProvider';
 import './index.css'
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <AuthProvider>
-      <App />
-    </AuthProvider>
-    <ToastContainer />
-  </StrictMode>,
+    <StrictMode>
+        <AuthProvider>
+            <App />
+        </AuthProvider>
+        <ToastContainer />
+    </StrictMode>,
 )

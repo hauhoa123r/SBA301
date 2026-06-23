@@ -25,4 +25,30 @@ export const validateToken = (token) => {
     if(!token) {
         return ERROR_MESSAGES.TOKEN_REQUIRED;
     }
-}
+};
+
+export const validateResetPasswordToken = (mode, email, token) => {
+    if (mode === "reset" && (!email || !token)) {
+        return ERROR_MESSAGES.INVALID_RESET_SESSION;
+    }
+};
+
+export const validateResetPassword = (newPassword, confirmPassword) => {
+    if (validatePassword(newPassword)){
+        return validatePassword(newPassword);
+    }
+    if (newPassword !== confirmPassword){
+        return ERROR_MESSAGES.CONFIRM_PASSWORD_NOT_MATCH;
+    }
+};
+export const validateChangePassword = (oldPassword, newPassword, confirmPassword) => {
+    if (validatePassword(newPassword)){
+        return validatePassword(newPassword);
+    }
+    if (oldPassword !== newPassword){
+        return ERROR_MESSAGES.INVALID_CHANGE_PASSWORD;
+    }
+    if (newPassword !== confirmPassword){
+        return ERROR_MESSAGES.CONFIRM_PASSWORD_NOT_MATCH;
+    }
+};
