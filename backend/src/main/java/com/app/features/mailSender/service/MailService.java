@@ -28,6 +28,7 @@ public class MailService {
                 </div>
                 """.formatted(token);
 
+
         EmailRequest emailRequest = new EmailRequest(
                 fromEmail,
                 List.of(userEmail),

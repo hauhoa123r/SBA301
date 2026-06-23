@@ -9,8 +9,10 @@ export default function HeroHeader() {
     return (
         <header className="sticky top-0 z-50 border-b border-[#7c3aed]/10 bg-[#090514]/80 backdrop-blur-xl">
             <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-                <Logo />
-                <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
+                <NavLink className="flex-1 justify-start" to={"/"}>
+                    <Logo />
+                </NavLink>
+                <nav className="hidden md:flex mx-auto items-center gap-7 text-sm font-medium">
                     {NAV_LINKS.map((item) => (
                         <NavLink
                             key={item.path}
@@ -25,7 +27,7 @@ export default function HeroHeader() {
                         </NavLink>
                     ))}
                 </nav>
-                <div className="hidden md:flex items-center gap-3 text-sm font-medium">
+                <div className="hidden md:flex flex-1 justify-end items-center gap-3 text-sm font-medium">
                     <a href="/login" className="text-[#94a3b8] hover:text-[#7c3aed] px-4 py-2 border border-[#7c3aed]/30 rounded-full no-underline transition-colors">
                         Login
                     </a>
