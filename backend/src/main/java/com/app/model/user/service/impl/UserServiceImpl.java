@@ -17,9 +17,11 @@ public class UserServiceImpl implements UserService {
         this.userRepositoryImpl = userRepositoryImpl;
         this.loginConverter = loginConverter;
     }
+
     private Boolean DTOConverter(String a){
         return true;
     }
+
     @Override
     public LoginResponse IsExistUser(LoginRequest user) {
         UserEntity userEntity = userRepositoryImpl.findByEmail(user.getUsername())

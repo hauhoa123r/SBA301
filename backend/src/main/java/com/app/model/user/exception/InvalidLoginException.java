@@ -1,7 +1,10 @@
 package com.app.model.user.exception;
 
-public class InvalidLoginException extends RuntimeException{
-    public InvalidLoginException(String message){
-        super(message);
-    }
+import com.app.exception.BaseException;
+import org.springframework.http.HttpStatus;
+
+public class InvalidLoginException extends BaseException{
+        public InvalidLoginException(String message) {
+            super(HttpStatus.BAD_REQUEST, message);
+        }
 }
