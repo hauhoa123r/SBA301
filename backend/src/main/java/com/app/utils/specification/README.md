@@ -137,7 +137,7 @@ public interface UserRepository extends
 
 ```java
 Specification<User> specification =
-        new MySpecification<>(searchDto);
+        new MySpecification<Entity>(searchDto);
 ```
 
 ---
