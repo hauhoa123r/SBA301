@@ -1,18 +1,15 @@
-package com.app.utils.valid.email;
-
-import org.hibernate.validator.internal.constraintvalidators.bv.EmailValidator;
+package com.app.utils.valid.phone;
 
 import java.lang.reflect.Field;
 
-public class ValidationEngine {
-
+public class ValidationPhoneEngine {
     public static void validate(Object object) throws IllegalAccessException {
         for (Field field : object.getClass().getDeclaredFields()) {
             field.setAccessible(true);
-            if (field.isAnnotationPresent(MyValidEmail.class)) {
+            if (field.isAnnotationPresent(VietnamPhone.class)) {
                 String value = (String) field.get(object);
-                if (!MyEmailValidator.isValid(value)) {
-                    MyValidEmail annotation = field.getAnnotation(MyValidEmail.class);
+                if (!MyPhoneValidator.isValid(value)) {
+                    VietnamPhone annotation = field.getAnnotation(VietnamPhone.class);
                     throw new RuntimeException(annotation.message());
                 }
             }
