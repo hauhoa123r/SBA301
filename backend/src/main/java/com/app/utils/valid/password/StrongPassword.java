@@ -1,6 +1,7 @@
-package com.app.utils.valid.phone;
+package com.app.utils.valid.password;
 
 import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,7 +10,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = VietnamPhoneValidator.class)
-public @interface VietnamPhone {
-    String message() default "Số điện thoại không đúng định dạng số Việt Nam ";
+@Constraint(validatedBy = PasswordValidator.class)
+public @interface StrongPassword {
+    String message() default "Mật khẩu cần 1 chữ cái hoa, thường, kí tự đặc biệt";
 }

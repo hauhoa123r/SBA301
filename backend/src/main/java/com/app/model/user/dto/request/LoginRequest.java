@@ -1,5 +1,6 @@
 package com.app.model.user.dto.request;
 
+import com.app.utils.valid.email.CustomEmail;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -16,7 +17,7 @@ import lombok.Setter;
 public class LoginRequest {
     @JsonProperty("email")
     @NotBlank
-    @Email(message = "Email is invalid")
+    @CustomEmail
     private String username;
 
     @NotBlank(message = "Password is required")
