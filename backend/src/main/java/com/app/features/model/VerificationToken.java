@@ -1,5 +1,6 @@
 package com.app.features.model;
 
+import com.app.model.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,14 +29,14 @@ public class VerificationToken {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private UserEntity user;
 
     @Column(name = "expiry_date", nullable = false)
     private Instant expiryDate;
 
     @Column(name = "is_used", nullable = false)
     @Builder.Default
-    private boolean used;
+    private boolean used = false;
 
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;

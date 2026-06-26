@@ -1,8 +1,13 @@
 package com.app.model.course.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.jspecify.annotations.NonNull;
+
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "chapters")
@@ -23,9 +28,15 @@ public class ChapterEntity {
     @Column(nullable = false)
     private String title;
 
-    @Column(name = "`order`", nullable = false)
-    private Integer order;
-
-    @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL)
-    private List<LessonEntity> lessonEntities;
+    @Builder.Default
+    @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("orderIndex ASC")
+    private List<LessonEntity> lessonEntities = new java.util.ArrayList<>();
+    @NotNull
+    @Column(name = "order_index", nullable = false)
+    private Integer orderIndex;
+    @Builder.Default
+    @NonNull
+    @OneToMany(mappedBy = "chapter")
+    private Set<QuizEntity> quizzes = new LinkedHashSet<>();
 }

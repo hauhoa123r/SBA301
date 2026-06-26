@@ -1,22 +1,20 @@
 package com.app.model.user.entity;
 
+import com.app.features.model.QuizAttempt;
+import com.app.features.model.Subscription;
 import com.app.model.course.entity.CourseEntity;
+import com.app.features.model.enums.UserStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 import org.jspecify.annotations.NonNull;
 
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 @Table(name = "users")
@@ -36,30 +34,28 @@ public class UserEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
-    private String password;
-
     @Column(name = "created_at", insertable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
-    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL)
-    private List<UserSubcriptionEntity> subscriptions;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<Subscription> subscriptions = new LinkedHashSet<>();
     @Size(max = 255)
     @NotNull
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
-    @ColumnDefault("'ACTIVE'")
-    @Lob
-    @Column(name = "status")
-    private String status;
-    @ColumnDefault("0")
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private UserStatus status = UserStatus.ACTIVE;
+
     @Column(name = "total_learning_points")
-    private Integer totalLearningPoints;
+    private Integer totalLearningPoints = 0;
+
     @Size(max = 50)
     @Column(name = "referral_code", length = 50)
     private String referralCode;
-    @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "updated_at")
+
+    @Column(name = "updated_at", insertable = false, updatable = false)
     private Instant updatedAt;
     @NonNull
     @OneToMany
@@ -101,10 +97,10 @@ public class UserEntity {
     @OneToMany
     @JoinColumn(name = "user_id")
     private Set<com.app.model.user.entity.Notification> notifications = new LinkedHashSet<>();
+    @Builder.Default
     @NonNull
-    @OneToMany
-    @JoinColumn(name = "user_id")
-    private Set<com.app.model.user.entity.QuizAttempt> quizAttempts = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "user")
+    private Set<QuizAttempt> quizAttempts = new LinkedHashSet<>();
     @NonNull
     @OneToMany
     @JoinColumn(name = "referrer_id")
