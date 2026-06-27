@@ -1,8 +1,6 @@
 import { useMemo, useState } from "react";
 import { Eye, EyeOff, Info, LockKeyhole, Pencil, ReceiptText, Save, Ticket, UserRound } from "lucide-react";
 import { toast } from "react-toastify";
-import HeroHeader from "../../../shared/components/HeroHeader";
-import HeroFooter from "../../../shared/components/HeroFooter";
 import { useAuth } from "../../../app/provider/AuthProvider";
 
 const menuGroups = [
@@ -104,10 +102,7 @@ export default function ViewProfilePage() {
     };
 
     return (
-        <div className="flex min-h-screen flex-col bg-brand-dark font-sans text-brand-textPrimary">
-            <HeroHeader />
-
-            <main className="grid flex-grow grid-cols-1 px-5 py-10 xl:grid-cols-12 xl:px-0">
+        <div className="grid grid-cols-1 px-5 py-10 font-sans text-brand-textPrimary xl:grid-cols-12 xl:px-0">
                 <div className="flex w-full flex-col gap-6 lg:flex-row xl:col-span-10 xl:col-start-2">
                     <aside className="w-full shrink-0 rounded-2xl border border-brand-accent/10 bg-brand-cardBg p-3 shadow-2xl shadow-brand-accent/5 lg:w-72">
                         {menuGroups.map((group) => (
@@ -242,9 +237,6 @@ export default function ViewProfilePage() {
                         )}
                     </section>
                 </div>
-            </main>
-
-            <HeroFooter />
         </div>
     );
 }

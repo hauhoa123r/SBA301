@@ -1,26 +1,40 @@
 import LearnCoursePage from "../pages/LearnCoursePage";
+import LearnCourseLayout from "../layouts/LearnCourseLayout";
+import LearningLayout from "../layouts/LearningLayout";
 import StartLearningPage from "../pages/StartLearningPage";
 
 const learningRoutes = [
     {
         path: "/learning",
-        element: <StartLearningPage />,
+        element: <LearningLayout />,
+        children: [
+            {
+                index: true,
+                element: <StartLearningPage />,
+            },
+        ],
     },
     {
         path: "/learning/courses/:courseId",
-        element: <LearnCoursePage />,
-    },
-    {
-        path: "/learning/courses/:courseId/lessons/:lessonId",
-        element: <LearnCoursePage />,
-    },
-    {
-        path: "/learning/courses/:courseId/quizzes/:quizId",
-        element: <LearnCoursePage />,
-    },
-    {
-        path: "/learning/courses/:courseId/chapters/:chapterId/assignment",
-        element: <LearnCoursePage />,
+        element: <LearnCourseLayout />,
+        children: [
+            {
+                index: true,
+                element: <LearnCoursePage />,
+            },
+            {
+                path: "lessons/:lessonId",
+                element: <LearnCoursePage />,
+            },
+            {
+                path: "quizzes/:quizId",
+                element: <LearnCoursePage />,
+            },
+            {
+                path: "chapters/:chapterId/assignment",
+                element: <LearnCoursePage />,
+            },
+        ],
     },
 ];
 

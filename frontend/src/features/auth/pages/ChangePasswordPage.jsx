@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
-import HeroHeader from "../../../shared/components/HeroHeader";
-import HeroFooter from "../../../shared/components/HeroFooter";
 import { toast } from "react-toastify";
 import {
     validateChangePassword,
-    validatePassword,
     validateResetPassword,
     validateResetPasswordToken
 } from "../shared/utils/validator.js";
@@ -73,7 +70,7 @@ export default function ChangePasswordPage({ mode = "change" }) {
     };
 
     return (
-        <div className="min-h-screen bg-brand-dark flex flex-col" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <div className="relative overflow-hidden text-brand-textPrimary" style={{ fontFamily: "'Inter', sans-serif" }}>
             <div className="fixed inset-0 pointer-events-none">
                 <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-brand-accent/15 blur-[120px]" />
                 <div className="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] rounded-full bg-brand-accentDeep/20 blur-[100px]" />
@@ -86,9 +83,7 @@ export default function ChangePasswordPage({ mode = "change" }) {
                 />
             </div>
 
-            <HeroHeader />
-
-            <main className="relative z-10 flex flex-1 items-center justify-center p-6">
+            <section className="relative z-10 flex min-h-[calc(100vh-160px)] items-center justify-center p-6">
                 <div className="w-full max-w-5xl overflow-hidden rounded-3xl border border-brand-accent/15 shadow-2xl shadow-brand-accent/10 grid md:grid-cols-[0.9fr_1.1fr]">
                     <section className="relative hidden overflow-hidden bg-brand-dark p-10 md:flex md:flex-col md:justify-between">
                         <div className="absolute inset-0 bg-gradient-to-br from-brand-accentDeep/60 via-brand-dark to-brand-dark" />
@@ -227,9 +222,7 @@ export default function ChangePasswordPage({ mode = "change" }) {
                         </form>
                     </section>
                 </div>
-            </main>
-
-            <HeroFooter />
+            </section>
         </div>
     );
 }

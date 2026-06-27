@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useOutletContext, useParams } from "react-router-dom";
 import { BookOpen, Users } from "lucide-react";
-import HeroHeader from "../../../shared/components/HeroHeader";
 import { COURSES } from "../../course/services/mockup";
 import NotFoundPage from "../../error/pages/NotFoundPage";
 import CourseContent from "../components/CourseContent";
@@ -11,6 +10,8 @@ import { courseChapters } from "../shared/courseDetailData";
 
 export default function CourseDetailPage() {
     const { id } = useParams();
+    const layoutContext = useOutletContext();
+    const setShowChrome = layoutContext?.setShowChrome;
     const [voucher, setVoucher] = useState("");
     const [voucherStatus, setVoucherStatus] = useState(null);
     const [expandedChapters, setExpandedChapters] = useState(() => new Set([1]));
@@ -27,6 +28,12 @@ export default function CourseDetailPage() {
 
         return () => window.clearInterval(timerId);
     }, [isPaymentPageOpen]);
+
+    useEffect(() => {
+        setShowChrome?.(!isPaymentPageOpen);
+
+        return () => setShowChrome?.(true);
+    }, [isPaymentPageOpen, setShowChrome]);
 
     if (!course) return <NotFoundPage />;
 
@@ -79,7 +86,7 @@ export default function CourseDetailPage() {
     }
 
     return (
-        <div className="min-h-screen bg-brand-dark text-brand-textPrimary" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <div className="relative overflow-hidden text-brand-textPrimary" style={{ fontFamily: "'Inter', sans-serif" }}>
             <div className="fixed inset-0 pointer-events-none">
                 <div className="absolute left-[-12%] top-[-20%] h-[520px] w-[520px] rounded-full bg-brand-accent/15 blur-[120px]" />
                 <div className="absolute bottom-[-18%] right-[-10%] h-[520px] w-[520px] rounded-full bg-brand-accentDeep/25 blur-[120px]" />
@@ -92,9 +99,7 @@ export default function CourseDetailPage() {
                 />
             </div>
 
-            <HeroHeader />
-
-            <main className="relative z-10 mx-auto grid max-w-[1500px] gap-10 px-6 py-12 lg:grid-cols-[minmax(0,1fr)_440px] xl:gap-14">
+            <section className="relative z-10 mx-auto grid max-w-[1500px] gap-10 px-6 py-12 lg:grid-cols-[minmax(0,1fr)_440px] xl:gap-14">
                 <section className="min-w-0">
                     <div className="mb-7 flex items-center gap-2 text-sm font-bold text-brand-textSecondary">
                         <BookOpen className="h-4 w-4 text-brand-accentSoft" />
@@ -143,7 +148,7 @@ export default function CourseDetailPage() {
                     onVerifyVoucher={handleVerifyVoucher}
                     onPurchase={openPaymentPage}
                 />
-            </main>
+            </section>
         </div>
     );
 }

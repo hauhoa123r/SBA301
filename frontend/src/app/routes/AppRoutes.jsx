@@ -5,11 +5,25 @@ import errorRoutes from "../../features/error/routes/errorRoutes";
 import NotFoundPage from "../../features/error/pages/NotFoundPage";
 import userRoutes from "../../features/user/routes/UserRouters";
 import learningRoutes from "../../features/learning/routes/learningRoutes";
+import MainLayout from "../../shared/layouts/MainLayout";
+
+function renderRoute(route) {
+  return (
+    <Route
+      key={route.path || "index"}
+      index={route.index}
+      path={route.path}
+      element={route.element}
+    >
+      {route.children?.map((childRoute) => renderRoute(childRoute))}
+    </Route>
+  );
+}
+
 function AppRoutes() {
-  const routes = [
+  const routesWithLayout = [
     ...authRoutes,
     ...courseRoutes,
-    ...learningRoutes,
     ...errorRoutes,
     ...userRoutes,
   ];
@@ -17,9 +31,10 @@ function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        {routes.map((route) => (
-          <Route key={route.path} path={route.path} element={route.element} />
-        ))}
+        <Route element={<MainLayout />}>
+          {routesWithLayout.map((route) => renderRoute(route))}
+        </Route>
+        {learningRoutes.map((route) => renderRoute(route))}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>

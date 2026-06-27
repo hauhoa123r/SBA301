@@ -1,6 +1,4 @@
 import { Mail, MapPin, MessageCircle, Phone, Send } from "lucide-react";
-import HeroFooter from "../components/HeroFooter";
-import HeroHeader from "../components/HeroHeader";
 
 const contactMethods = [
     {
@@ -25,10 +23,7 @@ const contactMethods = [
 
 export default function ContactPage() {
     return (
-        <div className="min-h-screen bg-brand-dark text-brand-textPrimary" style={{ fontFamily: "'Inter', sans-serif" }}>
-            <HeroHeader />
-
-            <main className="container mx-auto px-6 py-14">
+        <section className="container mx-auto px-6 py-14 text-brand-textPrimary" style={{ fontFamily: "'Inter', sans-serif" }}>
                 <div className="mb-12 max-w-3xl">
                     <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-brand-accent">
                         Contact
@@ -128,9 +123,6 @@ export default function ContactPage() {
                         </form>
                     </section>
                 </div>
-            </main>
-
-            <HeroFooter />
-        </div>
+        </section>
     );
 }

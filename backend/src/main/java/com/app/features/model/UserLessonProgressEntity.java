@@ -1,0 +1,40 @@
+package com.app.features.model;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "user_lesson_progress",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "lesson_id"})})
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class UserLessonProgressEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserEntity userEntity;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lesson_id", nullable = false)
+    private LessonEntity lessonEntity;
+
+    @Column(name = "current_time_seconds", nullable = false)
+    @Builder.Default
+    private Integer currentTimeSeconds = 0;
+
+    @Column(name = "is_completed", nullable = false)
+    @Builder.Default
+    private Boolean isCompleted = false;
+
+    @Column(name = "updated_at", insertable = false, updatable = false,
+            columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    private LocalDateTime updatedAt;
+}

@@ -1,7 +1,5 @@
 import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import HeroFooter from "../../../shared/components/HeroFooter";
-import HeroHeader from "../../../shared/components/HeroHeader";
 import { COURSES } from "../../course/services/mockup";
 import CourseList from "../components/CourseList";
 import CourseSearchSection from "../components/CourseSearchSection";
@@ -47,10 +45,7 @@ export default function ViewCoursesPage() {
     };
 
     return (
-        <div className="min-h-screen bg-brand-dark text-brand-textPrimary" style={{ fontFamily: "'Inter', sans-serif" }}>
-            <HeroHeader />
-
-            <main className="container mx-auto px-6 py-12">
+        <section className="container mx-auto px-6 py-12 text-brand-textPrimary" style={{ fontFamily: "'Inter', sans-serif" }}>
                 <CourseSearchSection
                     keyword={keyword}
                     onKeywordChange={setKeyword}
@@ -101,9 +96,6 @@ export default function ViewCoursesPage() {
                         <ChevronRight className="h-4 w-4" />
                     </button>
                 </div>
-            </main>
-
-            <HeroFooter />
-        </div>
+        </section>
     );
 }

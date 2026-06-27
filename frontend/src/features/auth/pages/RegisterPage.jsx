@@ -3,8 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaFacebookF, FaGoogle } from "react-icons/fa";
 import { Lock, Mail, User, UserPlus, Zap } from "lucide-react";
 import { toast } from "react-toastify";
-import HeroHeader from "../../../shared/components/HeroHeader";
-import HeroFooter from "../../../shared/components/HeroFooter";
 import { validInput } from "../../../shared/utils/inputHandler";
 
 const baseInputClass =
@@ -80,7 +78,7 @@ export default function RegisterPage() {
     };
 
     return (
-        <div className="min-h-screen bg-brand-dark flex flex-col" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <div className="relative overflow-hidden text-brand-textPrimary" style={{ fontFamily: "'Inter', sans-serif" }}>
             <div className="fixed inset-0 pointer-events-none">
                 <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-brand-accent/15 blur-[120px]" />
                 <div className="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] rounded-full bg-brand-accentDeep/20 blur-[100px]" />
@@ -93,9 +91,7 @@ export default function RegisterPage() {
                 />
             </div>
 
-            <HeroHeader />
-
-            <main className="relative z-10 flex flex-1 items-center justify-center p-6">
+            <section className="relative z-10 flex min-h-[calc(100vh-160px)] items-center justify-center p-6">
                 <div className="w-full max-w-5xl overflow-hidden rounded-3xl border border-brand-accent/15 shadow-2xl shadow-brand-accent/10 grid md:grid-cols-2">
                     <div className="bg-brand-cardBg flex flex-col justify-between p-10 min-h-[580px]">
                         <div>
@@ -261,9 +257,7 @@ export default function RegisterPage() {
                         </div>
                     </div>
                 </div>
-            </main>
-
-            <HeroFooter />
+            </section>
         </div>
     );
 }

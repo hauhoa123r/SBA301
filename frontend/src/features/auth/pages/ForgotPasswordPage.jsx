@@ -2,10 +2,8 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, KeyRound, Mail, ShieldCheck } from "lucide-react";
 import { toast } from "react-toastify";
-import HeroHeader from "../../../shared/components/HeroHeader";
-import HeroFooter from "../../../shared/components/HeroFooter";
 import { validInput } from "../../../shared/utils/inputHandler";
-import {forgotPassword, verifyToken} from "../service/authService.js";
+import { verifyToken } from "../service/authService.js";
 
 const baseInputClass =
     "w-full bg-brand-light border border-brand-accent/20 focus:border-brand-accent/60 text-brand-textPrimary placeholder-brand-textSecondary/50 rounded-xl px-4 py-3 text-sm outline-none transition-colors";
@@ -94,7 +92,7 @@ export default function ForgotPasswordPage() {
     }
 
     return (
-        <div className="min-h-screen bg-brand-dark text-brand-textPrimary flex flex-col" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <div className="relative overflow-hidden text-brand-textPrimary" style={{ fontFamily: "'Inter', sans-serif" }}>
             <div className="fixed inset-0 pointer-events-none">
                 <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-brand-accent/15 blur-[120px]" />
                 <div className="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] rounded-full bg-brand-accentDeep/20 blur-[100px]" />
@@ -107,9 +105,7 @@ export default function ForgotPasswordPage() {
                 />
             </div>
 
-            <HeroHeader />
-
-            <main className="relative z-10 flex flex-1 items-center justify-center p-6">
+            <section className="relative z-10 flex min-h-[calc(100vh-160px)] items-center justify-center p-6">
                 <div className="grid w-full max-w-5xl overflow-hidden rounded-3xl border border-brand-accent/15 shadow-2xl shadow-brand-accent/10 md:grid-cols-[0.9fr_1.1fr]">
                     <section className="relative hidden overflow-hidden bg-brand-dark p-10 md:flex md:flex-col md:justify-between">
                         <div className="absolute inset-0 bg-gradient-to-br from-brand-accentDeep/60 via-brand-dark to-brand-dark" />
@@ -240,9 +236,7 @@ export default function ForgotPasswordPage() {
                         )}
                     </section>
                 </div>
-            </main>
-
-            <HeroFooter />
+            </section>
         </div>
     );
 }

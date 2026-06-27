@@ -1,6 +1,4 @@
 import { Award, BookOpen, GraduationCap, ShieldCheck, Users, Zap } from "lucide-react";
-import HeroFooter from "../components/HeroFooter";
-import HeroHeader from "../components/HeroHeader";
 
 const highlights = [
     { icon: Users, value: "120K+", label: "Active learners" },
@@ -29,10 +27,7 @@ const values = [
 
 export default function AboutPage() {
     return (
-        <div className="min-h-screen bg-brand-dark text-brand-textPrimary" style={{ fontFamily: "'Inter', sans-serif" }}>
-            <HeroHeader />
-
-            <main>
+        <div className="text-brand-textPrimary" style={{ fontFamily: "'Inter', sans-serif" }}>
                 <section className="relative overflow-hidden px-6 py-24">
                     <div className="absolute inset-0 pointer-events-none">
                         <div className="absolute left-[-10%] top-[-25%] h-[520px] w-[520px] rounded-full bg-brand-accent/15 blur-[120px]" />
@@ -91,9 +86,6 @@ export default function AboutPage() {
                         ))}
                     </div>
                 </section>
-            </main>
-
-            <HeroFooter />
         </div>
     );
 }

@@ -1,6 +1,4 @@
 import { ArrowRight, CalendarDays, Clock, Search } from "lucide-react";
-import HeroFooter from "../components/HeroFooter";
-import HeroHeader from "../components/HeroHeader";
 
 const posts = [
     {
@@ -61,10 +59,7 @@ const posts = [
 
 export default function BlogPage() {
     return (
-        <div className="min-h-screen bg-brand-dark text-brand-textPrimary" style={{ fontFamily: "'Inter', sans-serif" }}>
-            <HeroHeader />
-
-            <main className="container mx-auto px-6 py-14">
+        <section className="container mx-auto px-6 py-14 text-brand-textPrimary" style={{ fontFamily: "'Inter', sans-serif" }}>
                 <div className="mb-12 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                     <div className="max-w-2xl">
                         <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-brand-accent">
@@ -132,9 +127,6 @@ export default function BlogPage() {
                         </article>
                     ))}
                 </div>
-            </main>
-
-            <HeroFooter />
-        </div>
+        </section>
     );
 }
