@@ -1,6 +1,7 @@
 package com.app.model.user.dto.request;
 
 import com.app.utils.valid.email.CustomEmail;
+import com.app.utils.valid.password.StrongPassword;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -15,12 +16,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginRequest {
-    @JsonProperty("email")
-    @NotBlank
     @CustomEmail
-    private String username;
-
-    @NotBlank(message = "Password is required")
-    @Size(min = 8, message = "Password must be at least 8 characters")
+    private String email;
     private String password;
 }

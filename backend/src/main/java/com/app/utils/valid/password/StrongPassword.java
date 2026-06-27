@@ -13,4 +13,7 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = PasswordValidator.class)
 public @interface StrongPassword {
     String message() default "Mật khẩu cần 1 chữ cái hoa, thường, kí tự đặc biệt";
+    Class<?>[] groups() default {};
+    Class<? extends Payload>[] payload() default {};
+
 }

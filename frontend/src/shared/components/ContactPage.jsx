@@ -1,6 +1,6 @@
 import { Mail, MapPin, MessageCircle, Phone, Send } from "lucide-react";
-import HeroFooter from "../../../shared/components/HeroFooter";
-import HeroHeader from "../../../shared/components/HeroHeader";
+import HeroFooter from "../components/HeroFooter";
+import HeroHeader from "../components/HeroHeader";
 
 const contactMethods = [
     {

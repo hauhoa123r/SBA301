@@ -12,6 +12,40 @@
   --color-brand-textSecondary: #94a3b8; 
 }
 
+.learning-course-sidebar,
+.learning-start-sidebar {
+  scrollbar-width: thin;
+  scrollbar-color: #4f2f8f #120922;
+}
+
+.learning-course-sidebar::-webkit-scrollbar,
+.learning-start-sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.learning-course-sidebar::-webkit-scrollbar-track,
+.learning-start-sidebar::-webkit-scrollbar-track {
+  background: #120922;
+}
+
+.learning-course-sidebar::-webkit-scrollbar-thumb,
+.learning-start-sidebar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #7c3aed, #4f2f8f);
+  border: 2px solid #120922;
+  border-radius: 999px;
+}
+
+.learning-course-sidebar::-webkit-scrollbar-thumb:hover,
+.learning-start-sidebar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #8b5cf6, #6d28d9);
+}
+
+.start-learning-surface {
+  background-color: #07030f;
+  background-image: radial-gradient(circle, rgba(124, 58, 237, 0.16) 1.2px, transparent 1.2px);
+  background-size: 18px 18px;
+}
+
 .learning-video-shell:fullscreen {
   position: relative;
   display: block;

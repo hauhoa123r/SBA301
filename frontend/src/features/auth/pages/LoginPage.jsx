@@ -4,11 +4,14 @@ import { FaFacebookF, FaGoogle } from "react-icons/fa";
 import { Eye, EyeOff, Zap } from "lucide-react";
 import HeroFooter from "../../../shared/components/HeroFooter";
 import HeroHeader from "../../../shared/components/HeroHeader";
+import {login} from "../service/authService";
+import { useAuth } from "../../../app/provider/AuthProvider";
 const LoginPage = () => {
     const [formData, setFormData] = useState({ email: "", password: "" });
     const [errors, setErrors] = useState({ email: "", password: "" });
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
+    const { setUser } = useAuth();
 
     const validInput = (name, value) => {
         if (!value.trim())
@@ -57,6 +60,15 @@ const LoginPage = () => {
             return;
         }
         try {
+            const response = await login(formData);
+            const loggedInUser = response?.user || response?.data?.user || response?.data || response;
+            const token = response?.token || response?.data?.token || response?.accessToken || response?.data?.accessToken;
+
+            localStorage.setItem("user", JSON.stringify(loggedInUser));
+            if (token) {
+                localStorage.setItem("token", token);
+            }
+            setUser(loggedInUser);
             navigate("/");
         } catch (err) {
             const errMsg =

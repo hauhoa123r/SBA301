@@ -1,7 +1,7 @@
 package com.app.utils.valid.email;
 
 import jakarta.validation.Constraint;
-import org.hibernate.validator.internal.constraintvalidators.bv.EmailValidator;
+import jakarta.validation.Payload;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,7 +10,9 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = EmailValidator.class)
+@Constraint(validatedBy = CustomEmailValidator.class)
 public @interface CustomEmail {
     String message() default "Email không hợp lệ";
+    Class<?>[] groups() default {};
+    Class<? extends Payload>[] payload() default {};
 }

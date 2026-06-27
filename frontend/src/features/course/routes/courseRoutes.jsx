@@ -2,9 +2,9 @@ import Homepage from "../pages/Homepage";
 import ChangePasswordPage from "../pages/ChangePasswordPage";
 import CourseDetailPage from "../../course-catalog/pages/CourseDetailPage";
 import ViewCoursesPage from "../../course-catalog/pages/ViewCoursesPage";
-import AboutPage from "../../public/pages/AboutPage";
-import BlogPage from "../../public/pages/BlogPage";
-import ContactPage from "../../public/pages/ContactPage";
+import AboutPage from "../../../shared/components/AboutPage";
+import BlogPage from "../../../shared/components/BlogPage";
+import ContactPage from "../../../shared/components/ContactPage";
 
 const courseRoutes = [
     {
