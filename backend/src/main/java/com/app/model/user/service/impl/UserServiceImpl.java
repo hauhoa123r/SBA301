@@ -17,15 +17,14 @@ public class UserServiceImpl implements UserService {
         this.userRepositoryImpl = userRepositoryImpl;
         this.loginConverter = loginConverter;
     }
-
     private Boolean DTOConverter(String a){
         return true;
     }
-
     @Override
     public LoginResponse IsExistUser(LoginRequest user) {
-        UserEntity userEntity = userRepositoryImpl.findByEmail(user.getEmail()).orElseThrow(() -> new InvalidLoginException("Email không tồn tại"));
-        if (!userEntity.getPassword().equals(user.getPassword())) {
+        UserEntity userEntity = userRepositoryImpl.findByEmail(user.getEmail())
+                .orElseThrow(() -> new InvalidLoginException("Email không tồn tại"));
+        if (!userEntity.getPasswordHash().equals(user.getPassword())) {
             throw new InvalidLoginException("Sai mật khẩu");
         }
         LoginResponse loginResponse = loginConverter.loginConverter(userEntity);

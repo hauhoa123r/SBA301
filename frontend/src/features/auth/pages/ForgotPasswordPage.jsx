@@ -5,6 +5,13 @@ import { toast } from "react-toastify";
 import HeroHeader from "../../../shared/components/HeroHeader";
 import HeroFooter from "../../../shared/components/HeroFooter";
 import { validInput } from "../../../shared/utils/inputHandler";
+import {forgotPassword, verifyToken} from "../service/authService.js";
+
+const baseInputClass =
+    "w-full bg-[#160e2e] border border-[#7c3aed]/20 focus:border-[#7c3aed]/60 text-[#f8fafc] placeholder-[#94a3b8]/50 rounded-xl px-4 py-3 text-sm outline-none transition-colors";
+const baseButtonClass =
+    "inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#7c3aed] px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-[#7c3aed]/30 transition hover:bg-[#6d28d9] hover:shadow-[#7c3aed]/50 disabled:cursor-not-allowed disabled:opacity-60";
+const fieldLabelClass = "mb-2 block text-xs font-semibold uppercase tracking-wider text-[#94a3b8]";
 
 export default function ForgotPasswordPage() {
     const navigate = useNavigate();
@@ -13,14 +20,12 @@ export default function ForgotPasswordPage() {
         email: "",
         token: "",
     });
-
     const [errors, setErrors] = useState({
         email: "",
         token: "",
     });
-
     const [loading, setLoading] = useState(false);
-    const [showTokenModel, setShowTokenModel] = useState(false);
+    const [showTokenModal, setShowTokenModal] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -40,64 +45,59 @@ export default function ForgotPasswordPage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        const emailError = validInput("email", formData.email);
-
-        if (emailError) {
-            setErrors({ email: emailError, token: "" });
-            return;
-        }
-
-        try {
-            setLoading(true);
-            const response = true;
-            // const response = await forgotPassword({
-            //     email: formData.email,
-            // });
-            toast.success(response.message || "Gửi liên kết đặt lại mật khẩu thành công");
-            setShowTokenModel(true);
-        } catch (err) {
-            toast.error(err?.response?.data?.error || "Email không tồn tại trong hệ thống. Vui lòng kiểm tra lại.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleTokenSubmit = async (e) => {
-        e.preventDefault();
-
-        const tokenError = validInput("token", formData.token);
-
-        if (tokenError) {
-            setErrors((prev) => ({
-                ...prev,
-                token: tokenError,
-            }));
-            return;
-        }
-
-        try {
-            setLoading(true);
-            // Cần gọi API check token để chuyển hướng.
-            toast.success("Xác thực thành công. Đang chuyển hướng...");
-            navigate("/reset-password", {
-                state: {
+        //Email handling
+        if(!showTokenModal){
+            const emailError = validInput("email", formData.email);
+            if(emailError) {
+                setErrors({email: emailError, token: ""});
+                return;
+            }
+            try{
+                setLoading(true);
+                const response = 'a' //await forgotPassword({ email: formData.email });
+                toast.success(response?.message || "Reset token sent successfully");
+                setShowTokenModal(true);
+            } catch (error) {
+                toast.error(error?.response?.data?.message || "Error sending reset token, please try again.");
+                return;
+            } finally {
+                setLoading(false);
+            }
+        } else {
+            //Token verify
+            const tokenError = validInput("token", formData.token);
+            if (tokenError) {
+                setErrors((prev) => ({...prev, token: tokenError}));
+                return;
+            }
+            try {
+                setLoading(true);
+                const response = await verifyToken({
                     email: formData.email,
                     token: formData.token,
-                },
-            });
-        } catch (err) {
-            toast.error(err?.response?.data?.error || "Có lỗi xảy ra, vui lòng thử lại.");
-        } finally {
-            setLoading(false);
+                });
+
+                const searchParams = new URLSearchParams({
+                    email: formData.email,
+                    token: formData.token,
+                });
+
+                toast.success(response?.message || "Token verified. Continue to reset password.");
+                navigate(`/reset-password?${searchParams.toString()}`);
+            } catch (error) {
+                toast.error(error?.response?.data?.message || "Error verifying token, please try again.");
+                return;
+            } finally {
+                setLoading(false);
+            }
         }
-    };
+    }
 
     return (
-        <div className="min-h-screen bg-brand-dark text-brand-textPrimary flex flex-col" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <div className="min-h-screen bg-[#090514] text-[#f8fafc] flex flex-col" style={{ fontFamily: "'Inter', sans-serif" }}>
             <div className="fixed inset-0 pointer-events-none">
-                <div className="absolute top-[-20%] left-[-10%] h-[500px] w-[500px] rounded-full bg-brand-accent/15 blur-[120px]" />
-                <div className="absolute bottom-[-10%] right-[-5%] h-[420px] w-[420px] rounded-full bg-[#4c1d95]/20 blur-[100px]" />
+                <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-[#7c3aed]/15 blur-[120px]" />
+                <div className="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] rounded-full bg-[#4c1d95]/20 blur-[100px]" />
                 <div
                     className="absolute inset-0 opacity-[0.03]"
                     style={{
@@ -110,10 +110,10 @@ export default function ForgotPasswordPage() {
             <HeroHeader />
 
             <main className="relative z-10 flex flex-1 items-center justify-center p-6">
-                <div className="grid w-full max-w-5xl overflow-hidden rounded-3xl border border-brand-accent/15 shadow-2xl shadow-brand-accent/10 md:grid-cols-[0.9fr_1.1fr]">
-                    <section className="relative hidden overflow-hidden bg-brand-dark p-10 md:flex md:flex-col md:justify-between">
-                        <div className="absolute inset-0 bg-gradient-to-br from-[#4c1d95]/60 via-brand-dark to-brand-dark" />
-                        <div className="absolute left-[-70px] bottom-[-70px] h-[260px] w-[260px] rounded-full bg-brand-accent/20 blur-[80px]" />
+                <div className="grid w-full max-w-5xl overflow-hidden rounded-3xl border border-[#7c3aed]/15 shadow-2xl shadow-[#7c3aed]/10 md:grid-cols-[0.9fr_1.1fr]">
+                    <section className="relative hidden overflow-hidden bg-[#090514] p-10 md:flex md:flex-col md:justify-between">
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#4c1d95]/60 via-[#090514] to-[#090514]" />
+                        <div className="absolute left-[-70px] bottom-[-70px] h-[260px] w-[260px] rounded-full bg-[#7c3aed]/20 blur-[80px]" />
                         <div
                             className="absolute inset-0 opacity-[0.05]"
                             style={{
@@ -123,8 +123,8 @@ export default function ForgotPasswordPage() {
                         />
 
                         <div className="relative z-10">
-                            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-brand-accent/25 bg-brand-accent/15 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-[#a78bfa]">
-                                <ShieldCheck className="h-3 w-3" />
+                            <div className="inline-flex items-center gap-2 bg-[#7c3aed]/15 border border-[#7c3aed]/25 text-[#a78bfa] text-xs font-semibold px-3 py-1.5 rounded-full mb-6 tracking-wider uppercase">
+                                <ShieldCheck className="w-3 h-3" />
                                 Account Recovery
                             </div>
                             <h1
@@ -133,8 +133,8 @@ export default function ForgotPasswordPage() {
                             >
                                 Restore access to your learning account
                             </h1>
-                            <p className="max-w-sm text-sm leading-6 text-brand-textSecondary">
-                                Verify your email and security token to continue to password reset safely.
+                            <p className="max-w-sm text-sm leading-6 text-[#94a3b8]">
+                                Verify your email and token before resetting the password.
                             </p>
                         </div>
 
@@ -145,113 +145,94 @@ export default function ForgotPasswordPage() {
                                 className="max-h-72 w-auto drop-shadow-2xl"
                             />
                         </div>
-
-                        <div className="relative z-10 rounded-2xl border border-brand-accent/15 bg-brand-accent/10 p-5">
-                            <p className="text-sm font-semibold text-white">Secure reset flow</p>
-                            <p className="mt-2 text-sm leading-6 text-brand-textSecondary">
-                                Your token is used only to confirm account ownership before changing the password.
-                            </p>
-                        </div>
                     </section>
 
-                    <section className="bg-brand-cardBg p-8 md:p-10">
+                    <section className="bg-[#1c1236] p-8 md:p-10">
                         <Link
                             to="/login"
-                            className="mb-8 inline-flex items-center gap-2 text-sm font-semibold text-brand-textSecondary no-underline transition hover:text-white"
+                            className="mb-8 inline-flex items-center gap-2 text-sm font-semibold text-[#94a3b8] no-underline transition hover:text-white"
                         >
                             <ArrowLeft className="h-4 w-4" />
                             Back to login
                         </Link>
 
                         <div className="mb-8">
-                            <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-brand-accent/20 bg-brand-accent/10 text-[#a78bfa]">
-                                {showTokenModel ? <KeyRound className="h-5 w-5" /> : <Mail className="h-5 w-5" />}
+                            <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-[#7c3aed]/20 bg-[#7c3aed]/10 text-[#a78bfa]">
+                                {showTokenModal ? <KeyRound className="h-5 w-5" /> : <Mail className="h-5 w-5" />}
                             </div>
                             <h2
                                 className="mb-2 text-3xl font-extrabold text-white"
                                 style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
                             >
-                                {showTokenModel ? "Verify security token" : "Forgot password"}
+                                {showTokenModal ? "Verify security token" : "Forgot password"}
                             </h2>
-                            <p className="text-sm leading-6 text-brand-textSecondary">
-                                {!showTokenModel
-                                    ? "Enter your email address and we will send you a token to reset your password."
+                            <p className="text-sm leading-6 text-[#94a3b8]">
+                                {!showTokenModal
+                                    ? "Enter your email address and we will send you a reset token."
                                     : `We sent a security token to ${formData.email}. Enter it below to continue.`}
                             </p>
                         </div>
 
-                        {!showTokenModel ? (
+                        {!showTokenModal ? (
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div>
-                                    <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-brand-textSecondary">
-                                        Email Address
-                                    </label>
+                                    <label className={fieldLabelClass}>Email Address</label>
                                     <div className="relative">
-                                        <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-textSecondary" />
+                                        <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94a3b8]" />
                                         <input
                                             type="email"
                                             name="email"
                                             value={formData.email}
                                             onChange={handleChange}
                                             placeholder="you@example.com"
-                                            className="w-full rounded-xl border border-brand-accent/20 bg-brand-light px-4 py-3 pl-11 text-sm text-white outline-none transition placeholder:text-brand-textSecondary/50 focus:border-brand-accent/60"
+                                            className={`${baseInputClass} pl-11`}
                                         />
                                     </div>
 
-                                    {errors.email && (
-                                        <p className="mt-1.5 text-xs font-semibold text-red-400">
-                                            {errors.email}
-                                        </p>
-                                    )}
+                                    {errors.email ? (
+                                        <p className="mt-1.5 text-xs font-semibold text-red-400">{errors.email}</p>
+                                    ) : null}
                                 </div>
 
-                                <button
-                                    type="submit"
-                                    disabled={loading}
-                                    className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-accent px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-accent/30 transition hover:bg-brand-accentHover hover:shadow-brand-accent/50 disabled:cursor-not-allowed disabled:opacity-60"
-                                >
+                                <button type="submit" disabled={loading} className={baseButtonClass}>
                                     <Mail className="h-4 w-4" />
                                     {loading ? "Sending..." : "Send Reset Token"}
                                 </button>
                             </form>
                         ) : (
-                            <form onSubmit={handleTokenSubmit} className="space-y-6">
+                            <form onSubmit={handleSubmit} className="space-y-6">
                                 <div>
-                                    <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-brand-textSecondary">
-                                        Security Token
-                                    </label>
+                                    <label className={fieldLabelClass}>Security Token</label>
                                     <div className="relative">
-                                        <KeyRound className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-textSecondary" />
+                                        <KeyRound className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94a3b8]" />
                                         <input
                                             type="text"
                                             name="token"
                                             value={formData.token}
                                             onChange={handleChange}
                                             placeholder="Enter token"
-                                            className="w-full rounded-xl border border-brand-accent/20 bg-brand-light px-4 py-3 pl-11 text-sm text-white outline-none transition placeholder:text-brand-textSecondary/50 focus:border-brand-accent/60"
+                                            className={`${baseInputClass} pl-11`}
                                         />
                                     </div>
 
-                                    {errors.token && (
-                                        <p className="mt-1.5 text-xs font-semibold text-red-400">
-                                            {errors.token}
-                                        </p>
-                                    )}
+                                    {errors.token ? (
+                                        <p className="mt-1.5 text-xs font-semibold text-red-400">{errors.token}</p>
+                                    ) : null}
                                 </div>
 
-                                <button
-                                    type="submit"
-                                    disabled={loading}
-                                    className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-accent px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-accent/30 transition hover:bg-brand-accentHover hover:shadow-brand-accent/50 disabled:cursor-not-allowed disabled:opacity-60"
-                                >
+                                <button type="submit" disabled={loading} className={baseButtonClass}>
                                     <ShieldCheck className="h-4 w-4" />
                                     {loading ? "Verifying..." : "Verify Token"}
                                 </button>
 
                                 <button
                                     type="button"
-                                    onClick={() => setShowTokenModel(false)}
-                                    className="w-full text-sm font-semibold text-brand-textSecondary transition hover:text-[#a78bfa]"
+                                    onClick={() => {
+                                        setShowTokenModal(false);
+                                        setFormData((prev) => ({ ...prev, token: "" }));
+                                        setErrors((prev) => ({ ...prev, token: "" }));
+                                    }}
+                                    className="w-full text-sm font-semibold text-[#94a3b8] transition hover:text-[#a78bfa]"
                                 >
                                     Use a different email
                                 </button>
