@@ -1,7 +1,7 @@
 package com.app.features.model;
 
-import com.app.model.course.entity.AnswerEntity;
-import com.app.model.course.entity.QuestionEntity;
+import com.app.features.course.entity.AnswerEntity;
+import com.app.features.course.entity.QuestionEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

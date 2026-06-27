@@ -12,10 +12,10 @@ import {
 } from "../shared/utils/validator.js";
 
 const baseInputClass =
-    "w-full bg-[#160e2e] border border-[#7c3aed]/20 focus:border-[#7c3aed]/60 text-[#f8fafc] placeholder-[#94a3b8]/50 rounded-xl px-4 py-3 text-sm outline-none transition-colors";
+    "w-full bg-brand-light border border-brand-accent/20 focus:border-brand-accent/60 text-brand-textPrimary placeholder-brand-textSecondary/50 rounded-xl px-4 py-3 text-sm outline-none transition-colors";
 const baseButtonClass =
-    "w-full mt-4 bg-[#7c3aed] hover:bg-[#6d28d9] text-white py-3 rounded-xl font-semibold text-sm transition-all shadow-lg shadow-[#7c3aed]/30 hover:shadow-[#7c3aed]/50 hover:scale-[1.01] active:scale-[0.99]";
-const fieldLabelClass = "block text-xs font-semibold text-[#94a3b8] uppercase tracking-wider mb-2";
+    "w-full mt-4 bg-brand-accent hover:bg-brand-accentHover text-brand-white py-3 rounded-xl font-semibold text-sm transition-all shadow-lg shadow-brand-accent/30 hover:shadow-brand-accent/50 hover:scale-[1.01] active:scale-[0.99]";
+const fieldLabelClass = "block text-xs font-semibold text-brand-textSecondary uppercase tracking-wider mb-2";
 
 export default function ChangePasswordPage({ mode = "change" }) {
     const navigate = useNavigate();
@@ -73,14 +73,14 @@ export default function ChangePasswordPage({ mode = "change" }) {
     };
 
     return (
-        <div className="min-h-screen bg-[#090514] flex flex-col" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <div className="min-h-screen bg-brand-dark flex flex-col" style={{ fontFamily: "'Inter', sans-serif" }}>
             <div className="fixed inset-0 pointer-events-none">
-                <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-[#7c3aed]/15 blur-[120px]" />
-                <div className="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] rounded-full bg-[#4c1d95]/20 blur-[100px]" />
+                <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-brand-accent/15 blur-[120px]" />
+                <div className="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] rounded-full bg-brand-accentDeep/20 blur-[100px]" />
                 <div
                     className="absolute inset-0 opacity-[0.03]"
                     style={{
-                        backgroundImage: `linear-gradient(#7c3aed 1px, transparent 1px), linear-gradient(90deg, #7c3aed 1px, transparent 1px)`,
+                        backgroundImage: `linear-gradient(var(--color-brand-accent) 1px, var(--color-brand-transparent) 1px), linear-gradient(90deg, var(--color-brand-accent) 1px, var(--color-brand-transparent) 1px)`,
                         backgroundSize: "60px 60px",
                     }}
                 />
@@ -89,20 +89,20 @@ export default function ChangePasswordPage({ mode = "change" }) {
             <HeroHeader />
 
             <main className="relative z-10 flex flex-1 items-center justify-center p-6">
-                <div className="w-full max-w-5xl overflow-hidden rounded-3xl border border-[#7c3aed]/15 shadow-2xl shadow-[#7c3aed]/10 grid md:grid-cols-[0.9fr_1.1fr]">
-                    <section className="relative hidden overflow-hidden bg-[#090514] p-10 md:flex md:flex-col md:justify-between">
-                        <div className="absolute inset-0 bg-gradient-to-br from-[#4c1d95]/60 via-[#090514] to-[#090514]" />
-                        <div className="absolute left-[-70px] bottom-[-70px] h-[260px] w-[260px] rounded-full bg-[#7c3aed]/20 blur-[80px]" />
+                <div className="w-full max-w-5xl overflow-hidden rounded-3xl border border-brand-accent/15 shadow-2xl shadow-brand-accent/10 grid md:grid-cols-[0.9fr_1.1fr]">
+                    <section className="relative hidden overflow-hidden bg-brand-dark p-10 md:flex md:flex-col md:justify-between">
+                        <div className="absolute inset-0 bg-gradient-to-br from-brand-accentDeep/60 via-brand-dark to-brand-dark" />
+                        <div className="absolute left-[-70px] bottom-[-70px] h-[260px] w-[260px] rounded-full bg-brand-accent/20 blur-[80px]" />
                         <div
                             className="absolute inset-0 opacity-[0.05]"
                             style={{
-                                backgroundImage: `linear-gradient(#a78bfa 1px, transparent 1px), linear-gradient(90deg, #a78bfa 1px, transparent 1px)`,
+                                backgroundImage: `linear-gradient(var(--color-brand-accentSoft) 1px, var(--color-brand-transparent) 1px), linear-gradient(90deg, var(--color-brand-accentSoft) 1px, var(--color-brand-transparent) 1px)`,
                                 backgroundSize: "40px 40px",
                             }}
                         />
 
                         <div className="relative z-10">
-                            <div className="inline-flex items-center gap-2 bg-[#7c3aed]/15 border border-[#7c3aed]/25 text-[#a78bfa] text-xs font-semibold px-3 py-1.5 rounded-full mb-6 tracking-wider uppercase">
+                            <div className="inline-flex items-center gap-2 bg-brand-accent/15 border border-brand-accent/25 text-brand-accentSoft text-xs font-semibold px-3 py-1.5 rounded-full mb-6 tracking-wider uppercase">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     width="12"
@@ -116,12 +116,12 @@ export default function ChangePasswordPage({ mode = "change" }) {
                                 Password Security
                             </div>
                             <h1
-                                className="mb-3 text-4xl font-extrabold leading-tight text-white"
+                                className="mb-3 text-4xl font-extrabold leading-tight text-brand-white"
                                 style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
                             >
                                 {mode === "change" ? "Update your current password" : "Reset your account password"}
                             </h1>
-                            <p className="max-w-sm text-sm leading-6 text-[#94a3b8]">
+                            <p className="max-w-sm text-sm leading-6 text-brand-textSecondary">
                                 {mode === "change"
                                     ? "Use your current password to protect the account, then choose a stronger new one."
                                     : "Set a new password after verifying your email and token."}
@@ -137,17 +137,17 @@ export default function ChangePasswordPage({ mode = "change" }) {
                         </div>
                     </section>
 
-                    <section className="bg-[#1c1236] p-8 md:p-10">
+                    <section className="bg-brand-cardBg p-8 md:p-10">
                         <div className="text-center mb-8">
                             <h2
-                                className="text-3xl font-bold text-white tracking-wide"
+                                className="text-3xl font-bold text-brand-white tracking-wide"
                                 style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
                             >
                                 {mode === "change" ? "Change Password" : "Reset Password"}
                             </h2>
                             {mode === "reset" && email ? (
-                                <p className="mt-2 text-sm text-[#94a3b8]">
-                                    Resetting password for <span className="text-white">{email}</span>
+                                <p className="mt-2 text-sm text-brand-textSecondary">
+                                    Resetting password for <span className="text-brand-white">{email}</span>
                                 </p>
                             ) : null}
                         </div>
@@ -168,7 +168,7 @@ export default function ChangePasswordPage({ mode = "change" }) {
                                         />
                                         <button
                                             type="button"
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94a3b8] hover:text-[#a78bfa] transition-colors"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-textSecondary hover:text-brand-accentSoft transition-colors"
                                             onClick={() => setShowOldPassword(!showOldPassword)}
                                         >
                                             {showOldPassword ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
@@ -191,7 +191,7 @@ export default function ChangePasswordPage({ mode = "change" }) {
                                     />
                                     <button
                                         type="button"
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94a3b8] hover:text-[#a78bfa] transition-colors"
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-textSecondary hover:text-brand-accentSoft transition-colors"
                                         onClick={() => setShowNewPassword(!showNewPassword)}
                                     >
                                         {showNewPassword ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
@@ -213,7 +213,7 @@ export default function ChangePasswordPage({ mode = "change" }) {
                                     />
                                     <button
                                         type="button"
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94a3b8] hover:text-[#a78bfa] transition-colors"
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-textSecondary hover:text-brand-accentSoft transition-colors"
                                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                     >
                                         {showConfirmPassword ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}

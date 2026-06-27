@@ -34,7 +34,7 @@ export default function ContactPage() {
                         Contact
                     </p>
                     <h1
-                        className="text-4xl font-extrabold leading-tight text-white md:text-5xl"
+                        className="text-4xl font-extrabold leading-tight text-brand-white md:text-5xl"
                         style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
                     >
                         Talk to the Edujar support team
@@ -48,13 +48,13 @@ export default function ContactPage() {
                     <section className="flex flex-col gap-4">
                         {contactMethods.map(({ icon: Icon, title, value, description }) => (
                             <div key={title} className="rounded-2xl border border-brand-accent/10 bg-brand-cardBg p-6 shadow-xl shadow-brand-accent/5">
-                                <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-brand-accent/20 bg-brand-accent/10 text-[#a78bfa]">
+                                <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-brand-accent/20 bg-brand-accent/10 text-brand-accentSoft">
                                     <Icon className="h-5 w-5" />
                                 </div>
-                                <h2 className="text-lg font-bold text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                                <h2 className="text-lg font-bold text-brand-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                                     {title}
                                 </h2>
-                                <p className="mt-1 font-semibold text-[#a78bfa]">{value}</p>
+                                <p className="mt-1 font-semibold text-brand-accentSoft">{value}</p>
                                 <p className="mt-2 text-sm leading-6 text-brand-textSecondary">{description}</p>
                             </div>
                         ))}
@@ -62,11 +62,11 @@ export default function ContactPage() {
 
                     <section className="rounded-2xl border border-brand-accent/10 bg-brand-cardBg p-6 shadow-xl shadow-brand-accent/5 md:p-8">
                         <div className="mb-7 flex items-center gap-3">
-                            <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-brand-accent/20 bg-brand-accent/10 text-[#a78bfa]">
+                            <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-brand-accent/20 bg-brand-accent/10 text-brand-accentSoft">
                                 <MessageCircle className="h-5 w-5" />
                             </div>
                             <div>
-                                <h2 className="text-xl font-bold text-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                                <h2 className="text-xl font-bold text-brand-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                                     Send a message
                                 </h2>
                                 <p className="text-sm text-brand-textSecondary">We usually respond within one business day.</p>
@@ -82,7 +82,7 @@ export default function ContactPage() {
                                     <input
                                         type="text"
                                         placeholder="Nguyen Van A"
-                                        className="w-full rounded-xl border border-brand-accent/20 bg-brand-light px-4 py-3 text-sm text-white outline-none transition placeholder:text-brand-textSecondary/50 focus:border-brand-accent/60"
+                                        className="w-full rounded-xl border border-brand-accent/20 bg-brand-light px-4 py-3 text-sm text-brand-white outline-none transition placeholder:text-brand-textSecondary/50 focus:border-brand-accent/60"
                                     />
                                 </div>
                                 <div>
@@ -92,7 +92,7 @@ export default function ContactPage() {
                                     <input
                                         type="email"
                                         placeholder="you@example.com"
-                                        className="w-full rounded-xl border border-brand-accent/20 bg-brand-light px-4 py-3 text-sm text-white outline-none transition placeholder:text-brand-textSecondary/50 focus:border-brand-accent/60"
+                                        className="w-full rounded-xl border border-brand-accent/20 bg-brand-light px-4 py-3 text-sm text-brand-white outline-none transition placeholder:text-brand-textSecondary/50 focus:border-brand-accent/60"
                                     />
                                 </div>
                             </div>
@@ -101,7 +101,7 @@ export default function ContactPage() {
                                 <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-brand-textSecondary">
                                     Topic
                                 </label>
-                                <select className="w-full rounded-xl border border-brand-accent/20 bg-brand-light px-4 py-3 text-sm text-white outline-none transition focus:border-brand-accent/60">
+                                <select className="w-full rounded-xl border border-brand-accent/20 bg-brand-light px-4 py-3 text-sm text-brand-white outline-none transition focus:border-brand-accent/60">
                                     <option>Course support</option>
                                     <option>Subscription and payment</option>
                                     <option>Refund request</option>
@@ -117,11 +117,11 @@ export default function ContactPage() {
                                 <textarea
                                     rows="6"
                                     placeholder="Tell us how we can help..."
-                                    className="w-full resize-none rounded-xl border border-brand-accent/20 bg-brand-light px-4 py-3 text-sm text-white outline-none transition placeholder:text-brand-textSecondary/50 focus:border-brand-accent/60"
+                                    className="w-full resize-none rounded-xl border border-brand-accent/20 bg-brand-light px-4 py-3 text-sm text-brand-white outline-none transition placeholder:text-brand-textSecondary/50 focus:border-brand-accent/60"
                                 />
                             </div>
 
-                            <button className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-accent px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-accent/25 transition hover:bg-brand-accentHover md:w-auto">
+                            <button className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-accent px-5 py-3 text-sm font-semibold text-brand-white shadow-lg shadow-brand-accent/25 transition hover:bg-brand-accentHover md:w-auto">
                                 <Send className="h-4 w-4" />
                                 Send Message
                             </button>

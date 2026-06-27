@@ -1,7 +1,7 @@
 
 
 .page-wrapper {
-    background-color: #f8f9fa;
+    background-color: var(--color-auth-surface);
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -10,37 +10,37 @@
 .login-card-container {
     max-width: 1050px;
     width: 100%;
-    background-color: white;
+    background-color: var(--color-brand-white);
     border-radius: 24px !important;
     overflow: hidden;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15) !important;
-    border: 1px solid #f1f1f1;
+    box-shadow: 0 25px 50px -12px color-mix(in srgb, var(--color-brand-black) 15%, var(--color-brand-transparent)) !important;
+    border: 1px solid var(--color-auth-socialBg);
 }
 .left-side {
-    background-color: #ffffff;
+    background-color: var(--color-brand-white);
     padding: 3.5rem 3.8rem !important;
-    color: #1f2937;
+    color: var(--color-auth-inkSoft);
 }
 
 .left-side h2 {
     font-size: 2.25rem;
     font-weight: 700;
-    color: #111827;
+    color: var(--color-auth-ink);
     margin-bottom: 0.4rem;
 }
 
 .left-side p.small {
-    color: #6b7280;
+    color: var(--color-auth-mutedAlt);
     font-size: 0.95rem;
     font-weight: 500;
 }
 .input-clean-underline {
-    background-color: transparent !important;
+    background-color: var(--color-brand-transparent) !important;
     border: none !important;
-    border-bottom: 2px solid #d1d5db !important;
+    border-bottom: 2px solid var(--color-auth-border) !important;
     border-radius: 0 !important;
     padding: 10px 0 12px 0 !important;
-    color: #1f2937 !important;
+    color: var(--color-auth-inkSoft) !important;
     font-size: 1rem;
     width: 100%;
     transition: all 0.3s ease;
@@ -48,10 +48,10 @@
 .input-clean-underline:focus {
     outline: none !important; 
     box-shadow: none !important;
-    border-bottom: 2px solid #6d28d9 !important;
+    border-bottom: 2px solid var(--color-brand-accentHover) !important;
 }
 .input-clean-underline::placeholder {
-    color: #9ca3af !important;
+    color: var(--color-auth-placeholder) !important;
 }
 
 .password-wrapper {
@@ -63,20 +63,20 @@
     right: 0;
     top: 50%;
     transform: translateY(-40%);
-    color: #9ca3af;
+    color: var(--color-auth-placeholder);
     cursor: pointer;
     padding-bottom: 10px;
 }
 .left-side a {
-    color: #6b7280 !important;
+    color: var(--color-auth-mutedAlt) !important;
     font-size: 0.9rem;
 }
 
 .left-side a:hover {
-    color: #7c3aed !important;
+    color: var(--color-brand-accent) !important;
 }
 .btn-purple-login {
-    background-color: #6d28d9 !important;
+    background-color: var(--color-brand-accentHover) !important;
     border: none !important;
     border-radius: 12px !important;
     padding: 14px 0 !important;
@@ -86,12 +86,12 @@
 }
 
 .btn-purple-login:hover {
-    background-color: #5b21b6 !important;
+    background-color: var(--color-brand-accentStrong) !important;
     transform: translateY(-2px);
 }
 .btn-dark-signup {
-    background-color: #f3f4f6;
-    color: #4b5563;
+    background-color: var(--color-auth-pageBg);
+    color: var(--color-auth-muted);
     border: none;
     padding: 10px 22px;
     border-radius: 10px;
@@ -99,27 +99,27 @@
     font-size: 0.95rem;
 }
 .btn-dark-signup:hover {
-    background-color: #e5e7eb;
-    color: #1f2937;
+    background-color: var(--color-auth-borderLight);
+    color: var(--color-auth-inkSoft);
 }
 .right-side {
-    background-color: #ffffff !important;
-    color: #6d28d9;
+    background-color: var(--color-brand-white) !important;
+    color: var(--color-brand-accentHover);
     padding: 3.5rem 3.8rem !important;
-    border-left: 1px solid #f1f1f1;
+    border-left: 1px solid var(--color-auth-socialBg);
 }
 .right-side h1 {
     font-size: 2.8rem;
     line-height: 1.05;
     font-weight: 700;
     margin-bottom: 0.3rem;
-    color: #6d28d9;         
+    color: var(--color-brand-accentHover);         
 }
 .right-side h1:nth-child(2) {
-    color: #7c3aed;       
+    color: var(--color-brand-accent);       
 }
 .right-side p {
-    color: #7c3aed;
+    color: var(--color-brand-accent);
     font-size: 1.02rem;
     margin-top: 8px;
     font-weight: 500;
@@ -127,5 +127,5 @@
 .right-side img {
     max-width: 92%;
     max-height: 310px;
-    filter: drop-shadow(0 15px 25px rgba(109, 40, 217, 0.15));
+    filter: drop-shadow(0 15px 25px color-mix(in srgb, var(--color-brand-accentHover) 15%, var(--color-brand-transparent)));
 }

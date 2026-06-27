@@ -79,31 +79,31 @@ const LoginPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#090514] flex flex-col"style={{ fontFamily: "'Inter', sans-serif" }}>
+        <div className="min-h-screen bg-brand-dark flex flex-col"style={{ fontFamily: "'Inter', sans-serif" }}>
             <div className="fixed inset-0 pointer-events-none">
-                <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-[#7c3aed]/15 blur-[120px]" />
-                <div className="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] rounded-full bg-[#4c1d95]/20 blur-[100px]" />
+                <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-brand-accent/15 blur-[120px]" />
+                <div className="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] rounded-full bg-brand-accentDeep/20 blur-[100px]" />
                 <div
                     className="absolute inset-0 opacity-[0.03]"
                     style={{
-                        backgroundImage: `linear-gradient(#7c3aed 1px, transparent 1px), linear-gradient(90deg, #7c3aed 1px, transparent 1px)`,
+                        backgroundImage: `linear-gradient(var(--color-brand-accent) 1px, var(--color-brand-transparent) 1px), linear-gradient(90deg, var(--color-brand-accent) 1px, var(--color-brand-transparent) 1px)`,
                         backgroundSize: "60px 60px",
                     }}
                 />
             </div>
             <HeroHeader />
             <main className="relative z-10 flex flex-1 items-center justify-center p-6">
-                <div className="w-full max-w-5xl overflow-hidden rounded-3xl border border-[#7c3aed]/15 shadow-2xl shadow-[#7c3aed]/10 grid md:grid-cols-2">
-                    <div className="bg-[#1c1236] flex flex-col justify-between p-10 min-h-[580px]">
+                <div className="w-full max-w-5xl overflow-hidden rounded-3xl border border-brand-accent/15 shadow-2xl shadow-brand-accent/10 grid md:grid-cols-2">
+                    <div className="bg-brand-cardBg flex flex-col justify-between p-10 min-h-[580px]">
                         <div>
                             <div className="mb-8">
                                 <h2
-                                    className="text-3xl font-extrabold text-white mb-2"
+                                    className="text-3xl font-extrabold text-brand-white mb-2"
                                     style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
                                 >
                                     Welcome back
                                 </h2>
-                                <p className="text-[#94a3b8] text-sm">
+                                <p className="text-brand-textSecondary text-sm">
                                     Enter your account details to continue
                                 </p>
                             </div>
@@ -111,31 +111,31 @@ const LoginPage = () => {
                             <div className="grid gap-3 sm:grid-cols-2">
                                 <button
                                     type="button"
-                                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#7c3aed]/20 bg-[#160e2e] px-4 py-3 text-sm font-semibold text-white transition hover:border-[#7c3aed]/50 hover:bg-[#7c3aed]/10"
+                                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-brand-accent/20 bg-brand-light px-4 py-3 text-sm font-semibold text-brand-white transition hover:border-brand-accent/50 hover:bg-brand-accent/10"
                                 >
-                                    <FaGoogle className="h-4 w-4 text-red-400" />
+                                    <FaGoogle className="h-4 w-4 text-social-google" />
                                     Google
                                 </button>
                                 <button
                                     type="button"
-                                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#7c3aed]/20 bg-[#160e2e] px-4 py-3 text-sm font-semibold text-white transition hover:border-[#7c3aed]/50 hover:bg-[#7c3aed]/10"
+                                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-brand-accent/20 bg-brand-light px-4 py-3 text-sm font-semibold text-brand-white transition hover:border-brand-accent/50 hover:bg-brand-accent/10"
                                 >
-                                    <FaFacebookF className="h-4 w-4 text-blue-400" />
+                                    <FaFacebookF className="h-4 w-4 text-social-facebook" />
                                     Facebook
                                 </button>
                             </div>
 
                             <div className="my-7 flex items-center gap-3">
-                                <div className="h-px flex-1 bg-[#7c3aed]/10" />
-                                <span className="text-xs font-semibold uppercase tracking-wider text-[#94a3b8]">
+                                <div className="h-px flex-1 bg-brand-accent/10" />
+                                <span className="text-xs font-semibold uppercase tracking-wider text-brand-textSecondary">
                                     or login with email
                                 </span>
-                                <div className="h-px flex-1 bg-[#7c3aed]/10" />
+                                <div className="h-px flex-1 bg-brand-accent/10" />
                             </div>
 
                             <form onSubmit={handleSubmit} noValidate>
                                 <div className="mb-6">
-                                    <label className="block text-xs font-semibold text-[#94a3b8] uppercase tracking-wider mb-2">
+                                    <label className="block text-xs font-semibold text-brand-textSecondary uppercase tracking-wider mb-2">
                                         Email Address
                                     </label>
                                     <input
@@ -145,14 +145,14 @@ const LoginPage = () => {
                                         value={formData.email}
                                         onChange={handleChange}
                                         onBlur={handleBlur}
-                                        className="w-full bg-[#160e2e] border border-[#7c3aed]/20 focus:border-[#7c3aed]/60 text-[#f8fafc] placeholder-[#94a3b8]/50 rounded-xl px-4 py-3 text-sm outline-none transition-colors"
+                                        className="w-full bg-brand-light border border-brand-accent/20 focus:border-brand-accent/60 text-brand-textPrimary placeholder-brand-textSecondary/50 rounded-xl px-4 py-3 text-sm outline-none transition-colors"
                                     />
                                     {errors.email && (
-                                        <p className="mt-1.5 text-xs font-semibold text-red-400">{errors.email}</p>
+                                        <p className="mt-1.5 text-xs font-semibold text-social-google">{errors.email}</p>
                                     )}
                                 </div>
                                 <div className="mb-4">
-                                    <label className="block text-xs font-semibold text-[#94a3b8] uppercase tracking-wider mb-2">
+                                    <label className="block text-xs font-semibold text-brand-textSecondary uppercase tracking-wider mb-2">
                                         Password
                                     </label>
                                     <div className="relative">
@@ -163,24 +163,24 @@ const LoginPage = () => {
                                             value={formData.password}
                                             onChange={handleChange}
                                             onBlur={handleBlur}
-                                            className="w-full bg-[#160e2e] border border-[#7c3aed]/20 focus:border-[#7c3aed]/60 text-[#f8fafc] placeholder-[#94a3b8]/50 rounded-xl px-4 py-3 pr-11 text-sm outline-none transition-colors"
+                                            className="w-full bg-brand-light border border-brand-accent/20 focus:border-brand-accent/60 text-brand-textPrimary placeholder-brand-textSecondary/50 rounded-xl px-4 py-3 pr-11 text-sm outline-none transition-colors"
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94a3b8] hover:text-[#a78bfa] transition-colors"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-textSecondary hover:text-brand-accentSoft transition-colors"
                                         >
                                             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                         </button>
                                     </div>
                                     {errors.password && (
-                                        <p className="mt-1.5 text-xs font-semibold text-red-400">{errors.password}</p>
+                                        <p className="mt-1.5 text-xs font-semibold text-social-google">{errors.password}</p>
                                     )}
                                 </div>
                                 <div className="mb-8 text-right">
                                     <Link
                                         to="/forgot-password"
-                                        className="text-xs text-[#94a3b8] hover:text-[#a78bfa] no-underline transition-colors"
+                                        className="text-xs text-brand-textSecondary hover:text-brand-accentSoft no-underline transition-colors"
                                     >
                                         Forgot password?
                                     </Link>
@@ -188,37 +188,37 @@ const LoginPage = () => {
 
                                 <button
                                     type="submit"
-                                    className="w-full bg-[#7c3aed] hover:bg-[#6d28d9] text-white rounded-xl py-3 font-semibold text-sm transition-all shadow-lg shadow-[#7c3aed]/30 hover:shadow-[#7c3aed]/50 hover:scale-[1.01]"
+                                    className="w-full bg-brand-accent hover:bg-brand-accentHover text-brand-white rounded-xl py-3 font-semibold text-sm transition-all shadow-lg shadow-brand-accent/30 hover:shadow-brand-accent/50 hover:scale-[1.01]"
                                 >
                                     Login
                                 </button>
                             </form>
                         </div>
 
-                        <div className="mt-8 flex items-center gap-3 pt-6 border-t border-[#7c3aed]/10">
-                            <span className="text-sm text-[#94a3b8]">Don't have an account?</span>
+                        <div className="mt-8 flex items-center gap-3 pt-6 border-t border-brand-accent/10">
+                            <span className="text-sm text-brand-textSecondary">Don't have an account?</span>
                             <Link
                                 to="/register"
-                                className="text-sm font-semibold text-[#a78bfa] hover:text-white no-underline transition-colors"
+                                className="text-sm font-semibold text-brand-accentSoft hover:text-brand-white no-underline transition-colors"
                             >
                                 Sign up →
                             </Link>
                         </div>
                     </div>
-                    <div className="relative flex flex-col justify-between p-10 text-white overflow-hidden bg-[#090514]">
-                        <div className="absolute inset-0 bg-gradient-to-br from-[#4c1d95]/60 via-[#090514] to-[#090514]" />
-                        <div className="absolute top-[-60px] right-[-60px] w-[280px] h-[280px] rounded-full bg-[#7c3aed]/20 blur-[80px]" />
-                        <div className="absolute bottom-[-40px] left-[-40px] w-[200px] h-[200px] rounded-full bg-[#4c1d95]/30 blur-[60px]" />
+                    <div className="relative flex flex-col justify-between p-10 text-brand-white overflow-hidden bg-brand-dark">
+                        <div className="absolute inset-0 bg-gradient-to-br from-brand-accentDeep/60 via-brand-dark to-brand-dark" />
+                        <div className="absolute top-[-60px] right-[-60px] w-[280px] h-[280px] rounded-full bg-brand-accent/20 blur-[80px]" />
+                        <div className="absolute bottom-[-40px] left-[-40px] w-[200px] h-[200px] rounded-full bg-brand-accentDeep/30 blur-[60px]" />
                         <div
                             className="absolute inset-0 opacity-[0.05]"
                             style={{
-                                backgroundImage: `linear-gradient(#a78bfa 1px, transparent 1px), linear-gradient(90deg, #a78bfa 1px, transparent 1px)`,
+                                backgroundImage: `linear-gradient(var(--color-brand-accentSoft) 1px, var(--color-brand-transparent) 1px), linear-gradient(90deg, var(--color-brand-accentSoft) 1px, var(--color-brand-transparent) 1px)`,
                                 backgroundSize: "40px 40px",
                             }}
                         />
 
                         <div className="relative z-10">
-                            <div className="inline-flex items-center gap-2 bg-[#7c3aed]/15 border border-[#7c3aed]/25 text-[#a78bfa] text-xs font-semibold px-3 py-1.5 rounded-full mb-6 tracking-wider uppercase">
+                            <div className="inline-flex items-center gap-2 bg-brand-accent/15 border border-brand-accent/25 text-brand-accentSoft text-xs font-semibold px-3 py-1.5 rounded-full mb-6 tracking-wider uppercase">
                                 <Zap className="w-3 h-3" />
                                 Student Portal
                             </div>
@@ -227,11 +227,11 @@ const LoginPage = () => {
                                 style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
                             >
                                 Welcome to<br />
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#a78bfa] to-[#7c3aed]">
+                                <span className="text-brand-transparent bg-clip-text bg-gradient-to-r from-brand-accentSoft to-brand-accent">
                                     Edujar
                                 </span>
                             </h1>
-                            <p className="text-[#94a3b8] text-sm leading-relaxed max-w-xs">
+                            <p className="text-brand-textSecondary text-sm leading-relaxed max-w-xs">
                                 Login to access your courses, track your progress, and connect with 120,000+ learners.
                             </p>
                         </div>
@@ -248,11 +248,11 @@ const LoginPage = () => {
                                 { value: "1,800+", label: "Courses" },
                                 { value: "4.9★", label: "Rating" },
                             ].map(({ value, label }) => (
-                                <div key={label} className="bg-[#7c3aed]/10 border border-[#7c3aed]/20 rounded-xl p-3 text-center">
-                                    <div className="text-white font-bold text-base" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                                <div key={label} className="bg-brand-accent/10 border border-brand-accent/20 rounded-xl p-3 text-center">
+                                    <div className="text-brand-white font-bold text-base" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                                         {value}
                                     </div>
-                                    <div className="text-[#94a3b8] text-xs mt-0.5">{label}</div>
+                                    <div className="text-brand-textSecondary text-xs mt-0.5">{label}</div>
                                 </div>
                             ))}
                         </div>

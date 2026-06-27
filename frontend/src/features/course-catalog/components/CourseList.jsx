@@ -27,16 +27,16 @@ export default function CourseList({ courses }) {
 
                     <div className="p-5">
                         <div className="mb-3 flex items-center justify-between gap-3">
-                            <span className="rounded-lg border border-brand-accent/20 bg-brand-accent/10 px-2.5 py-1 text-xs font-semibold text-[#a78bfa]">
+                            <span className="rounded-lg border border-brand-accent/20 bg-brand-accent/10 px-2.5 py-1 text-xs font-semibold text-brand-accentSoft">
                                 {course.category}
                             </span>
-                            <span className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-400">
+                            <span className="rounded-lg border border-status-successStrong/20 bg-status-successStrong/10 px-2.5 py-1 text-xs font-semibold text-status-success">
                                 {course.status}
                             </span>
                         </div>
 
                         <h2
-                            className="mb-2 min-h-14 text-lg font-bold leading-7 text-white"
+                            className="mb-2 min-h-14 text-lg font-bold leading-7 text-brand-white"
                             style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
                         >
                             {course.title}
@@ -49,31 +49,31 @@ export default function CourseList({ courses }) {
                         <div className="mb-5 grid grid-cols-2 gap-3 text-xs text-brand-textSecondary">
                             <div className="rounded-xl border border-brand-accent/10 bg-brand-light/70 p-3">
                                 <span className="block uppercase tracking-wider">Course ID</span>
-                                <strong className="mt-1 block text-sm text-white">#{course.id}</strong>
+                                <strong className="mt-1 block text-sm text-brand-white">#{course.id}</strong>
                             </div>
                             <div className="rounded-xl border border-brand-accent/10 bg-brand-light/70 p-3">
                                 <span className="block uppercase tracking-wider">Category ID</span>
-                                <strong className="mt-1 block text-sm text-white">#{course.category_id}</strong>
+                                <strong className="mt-1 block text-sm text-brand-white">#{course.category_id}</strong>
                             </div>
                             <div className="rounded-xl border border-brand-accent/10 bg-brand-light/70 p-3">
                                 <span className="flex items-center gap-1 uppercase tracking-wider">
                                     <UserRound className="h-3.5 w-3.5" />
                                     Teacher
                                 </span>
-                                <strong className="mt-1 block text-sm text-white">#{course.teacher_id}</strong>
+                                <strong className="mt-1 block text-sm text-brand-white">#{course.teacher_id}</strong>
                             </div>
                             <div className="rounded-xl border border-brand-accent/10 bg-brand-light/70 p-3">
                                 <span className="flex items-center gap-1 uppercase tracking-wider">
                                     <CalendarDays className="h-3.5 w-3.5" />
                                     Updated
                                 </span>
-                                <strong className="mt-1 block text-sm text-white">{course.updated_at}</strong>
+                                <strong className="mt-1 block text-sm text-brand-white">{course.updated_at}</strong>
                             </div>
                         </div>
 
                         <Link
                             to={`/courses/${course.id}`}
-                            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-brand-accent/30 px-4 py-3 text-sm font-semibold text-[#a78bfa] no-underline transition hover:border-brand-accent/60 hover:bg-brand-accent/10 hover:text-white"
+                            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-brand-accent/30 px-4 py-3 text-sm font-semibold text-brand-accentSoft no-underline transition hover:border-brand-accent/60 hover:bg-brand-accent/10 hover:text-brand-white"
                         >
                             <Eye className="h-4 w-4" />
                             View Detail

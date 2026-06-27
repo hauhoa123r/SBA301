@@ -112,7 +112,7 @@ export default function ViewProfilePage() {
                     <aside className="w-full shrink-0 rounded-2xl border border-brand-accent/10 bg-brand-cardBg p-3 shadow-2xl shadow-brand-accent/5 lg:w-72">
                         {menuGroups.map((group) => (
                             <div key={group.title} className="mb-7 last:mb-0">
-                                <h2 className="px-3 pb-2 text-xs font-bold tracking-wide text-[#9aa6ba]">{group.title}</h2>
+                                <h2 className="px-3 pb-2 text-xs font-bold tracking-wide text-brand-profileMuted">{group.title}</h2>
                                 <nav className="grid gap-2">
                                     {group.items.map(({ id, label, icon: Icon }) => (
                                         <button
@@ -120,7 +120,7 @@ export default function ViewProfilePage() {
                                             type="button"
                                             onClick={() => setActiveTab(id)}
                                             className={`flex h-12 items-center gap-3 rounded-xl px-3 text-left text-sm font-semibold transition ${
-                                                activeTab === id ? "bg-brand-accent/15 text-[#c4b5fd]" : "text-brand-textSecondary hover:bg-brand-light hover:text-white"
+                                                activeTab === id ? "bg-brand-accent/15 text-brand-accentPale" : "text-brand-textSecondary hover:bg-brand-light hover:text-brand-white"
                                             }`}
                                         >
                                             <Icon className="h-5 w-5 shrink-0" />
@@ -138,7 +138,7 @@ export default function ViewProfilePage() {
                                 <PanelTitle title="Profile" />
                                 <div className="px-6 py-6 md:px-8">
                                     <div className="relative mb-8 h-24 w-24">
-                                        <div className="h-full w-full overflow-hidden rounded-full border border-brand-accent/20 bg-brand-light text-[#a78bfa]">
+                                        <div className="h-full w-full overflow-hidden rounded-full border border-brand-accent/20 bg-brand-light text-brand-accentSoft">
                                             {profile.avatar ? (
                                                 <img src={profile.avatar} alt={displayName} className="h-full w-full object-cover" />
                                             ) : (
@@ -147,7 +147,7 @@ export default function ViewProfilePage() {
                                                 </div>
                                             )}
                                         </div>
-                                        <label className="absolute bottom-0 right-0 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-[3px] border-brand-cardBg bg-brand-accent text-white shadow-md shadow-brand-accent/30 transition hover:bg-brand-accentHover">
+                                        <label className="absolute bottom-0 right-0 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-[3px] border-brand-cardBg bg-brand-accent text-brand-white shadow-md shadow-brand-accent/30 transition hover:bg-brand-accentHover">
                                             <Pencil className="h-4 w-4" />
                                             <input type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
                                         </label>
@@ -163,7 +163,7 @@ export default function ViewProfilePage() {
                                     </div>
 
                                     <div className="mt-7 flex justify-end">
-                                        <button type="submit" className="inline-flex h-10 items-center gap-2 rounded-lg bg-brand-accent px-5 text-sm font-bold text-white transition hover:bg-brand-accentHover">
+                                        <button type="submit" className="inline-flex h-10 items-center gap-2 rounded-lg bg-brand-accent px-5 text-sm font-bold text-brand-white transition hover:bg-brand-accentHover">
                                             <Save className="h-4 w-4" />
                                             Save Changes
                                         </button>
@@ -200,7 +200,7 @@ export default function ViewProfilePage() {
                                         onToggle={() => togglePassword("confirm")}
                                         onChange={handlePasswordChange}
                                     />
-                                    <button type="submit" className="mt-2 w-fit rounded-lg bg-brand-accent px-5 py-2.5 text-sm font-bold text-white transition hover:bg-brand-accentHover">
+                                    <button type="submit" className="mt-2 w-fit rounded-lg bg-brand-accent px-5 py-2.5 text-sm font-bold text-brand-white transition hover:bg-brand-accentHover">
                                         Update Password
                                     </button>
                                 </form>
@@ -215,12 +215,12 @@ export default function ViewProfilePage() {
                                         {mockOrders.map((order) => (
                                             <div key={order.id} className="grid gap-3 border-b border-brand-accent/10 bg-brand-light/40 p-4 last:border-b-0 md:grid-cols-[1fr_120px_120px_110px] md:items-center">
                                                 <div>
-                                                    <p className="text-sm font-bold text-white">{order.course}</p>
+                                                    <p className="text-sm font-bold text-brand-white">{order.course}</p>
                                                     <p className="mt-1 text-xs text-brand-textSecondary">Order ID: {order.id}</p>
                                                 </div>
                                                 <span className="text-xs text-brand-textSecondary">{order.date}</span>
-                                                <span className="text-sm font-semibold text-white">{order.total}</span>
-                                                <span className={`w-fit rounded-full px-3 py-1 text-xs font-bold ${order.status === "Completed" ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"}`}>
+                                                <span className="text-sm font-semibold text-brand-white">{order.total}</span>
+                                                <span className={`w-fit rounded-full px-3 py-1 text-xs font-bold ${order.status === "Completed" ? "bg-status-successPale text-status-successText" : "bg-status-warningPale text-status-warningText"}`}>
                                                     {order.status}
                                                 </span>
                                             </div>
@@ -252,7 +252,7 @@ export default function ViewProfilePage() {
 function PanelTitle({ title }) {
     return (
         <div className="border-b border-brand-accent/10 px-5 py-4">
-            <h1 className="text-xl font-bold text-white">{title}</h1>
+            <h1 className="text-xl font-bold text-brand-white">{title}</h1>
         </div>
     );
 }
@@ -263,15 +263,15 @@ function ProfileField({ label, required = false, readOnly = false, info = false,
             <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-brand-textSecondary">
                 {label}
                 {info && <Info className="h-4 w-4 fill-brand-textSecondary text-brand-cardBg" />}
-                {required && <span className="text-[#ff3b3b]">*</span>}
+                {required && <span className="text-brand-danger">*</span>}
             </span>
             <input
                 {...props}
                 readOnly={readOnly}
-                className={`h-11 w-full rounded-xl border px-4 text-sm font-medium outline-none transition placeholder:text-[#9aa6ba] ${
+                className={`h-11 w-full rounded-xl border px-4 text-sm font-medium outline-none transition placeholder:text-brand-profileMuted ${
                     readOnly
                         ? "cursor-not-allowed border-brand-accent/10 bg-brand-dark/60 text-brand-textSecondary"
-                        : "border-brand-accent/20 bg-brand-light text-white focus:border-brand-accent focus:ring-4 focus:ring-brand-accent/10"
+                        : "border-brand-accent/20 bg-brand-light text-brand-white focus:border-brand-accent focus:ring-4 focus:ring-brand-accent/10"
                 }`}
             />
         </label>
@@ -287,9 +287,9 @@ function PasswordField({ label, visible, onToggle, ...props }) {
                     {...props}
                     required
                     type={visible ? "text" : "password"}
-                    className="h-11 w-full rounded-xl border border-brand-accent/20 bg-brand-light px-4 pr-12 text-sm font-medium text-white outline-none transition focus:border-brand-accent focus:ring-4 focus:ring-brand-accent/10"
+                    className="h-11 w-full rounded-xl border border-brand-accent/20 bg-brand-light px-4 pr-12 text-sm font-medium text-brand-white outline-none transition focus:border-brand-accent focus:ring-4 focus:ring-brand-accent/10"
                 />
-                <button type="button" onClick={onToggle} className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-textSecondary transition hover:text-white">
+                <button type="button" onClick={onToggle} className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-textSecondary transition hover:text-brand-white">
                     {visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
             </div>

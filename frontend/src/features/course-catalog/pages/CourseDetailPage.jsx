@@ -82,11 +82,11 @@ export default function CourseDetailPage() {
         <div className="min-h-screen bg-brand-dark text-brand-textPrimary" style={{ fontFamily: "'Inter', sans-serif" }}>
             <div className="fixed inset-0 pointer-events-none">
                 <div className="absolute left-[-12%] top-[-20%] h-[520px] w-[520px] rounded-full bg-brand-accent/15 blur-[120px]" />
-                <div className="absolute bottom-[-18%] right-[-10%] h-[520px] w-[520px] rounded-full bg-[#4c1d95]/25 blur-[120px]" />
+                <div className="absolute bottom-[-18%] right-[-10%] h-[520px] w-[520px] rounded-full bg-brand-accentDeep/25 blur-[120px]" />
                 <div
                     className="absolute inset-0 opacity-[0.03]"
                     style={{
-                        backgroundImage: `linear-gradient(#7c3aed 1px, transparent 1px), linear-gradient(90deg, #7c3aed 1px, transparent 1px)`,
+                        backgroundImage: `linear-gradient(var(--color-brand-accent) 1px, var(--color-brand-transparent) 1px), linear-gradient(90deg, var(--color-brand-accent) 1px, var(--color-brand-transparent) 1px)`,
                         backgroundSize: "60px 60px",
                     }}
                 />
@@ -97,11 +97,11 @@ export default function CourseDetailPage() {
             <main className="relative z-10 mx-auto grid max-w-[1500px] gap-10 px-6 py-12 lg:grid-cols-[minmax(0,1fr)_440px] xl:gap-14">
                 <section className="min-w-0">
                     <div className="mb-7 flex items-center gap-2 text-sm font-bold text-brand-textSecondary">
-                        <BookOpen className="h-4 w-4 text-[#a78bfa]" />
+                        <BookOpen className="h-4 w-4 text-brand-accentSoft" />
                         <span>{course.category}</span>
                     </div>
 
-                    <h1 className="text-4xl font-black leading-tight text-white md:text-6xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                    <h1 className="text-4xl font-black leading-tight text-brand-white md:text-6xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                         {course.title}
                     </h1>
                     <p className="mt-6 max-w-5xl text-base leading-8 text-brand-textSecondary md:text-lg">
@@ -110,11 +110,11 @@ export default function CourseDetailPage() {
 
                     <div className="mt-7 flex flex-wrap items-center gap-6 text-base font-bold text-brand-textSecondary">
                         <span className="inline-flex items-center gap-2">
-                            <Users className="h-5 w-5 text-[#a78bfa]" />
+                            <Users className="h-5 w-5 text-brand-accentSoft" />
                             {course.students.toLocaleString("vi-VN")} học viên
                         </span>
                         <span className="inline-flex items-center gap-3">
-                            <span className="grid h-9 w-9 place-items-center rounded-full bg-brand-accent text-sm font-black text-white">{course.instructor.charAt(0)}</span>
+                            <span className="grid h-9 w-9 place-items-center rounded-full bg-brand-accent text-sm font-black text-brand-white">{course.instructor.charAt(0)}</span>
                             {course.instructor}
                         </span>
                     </div>

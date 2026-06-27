@@ -4,7 +4,7 @@ import com.app.features.auth.repository.PasswordChangeRepository;
 import com.app.features.auth.repository.VerificationTokenRepository;
 import com.app.features.mailSender.service.MailService;
 import com.app.features.model.VerificationToken;
-import com.app.model.user.entity.UserEntity;
+import com.app.features.user.entity.UserEntity;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

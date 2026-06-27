@@ -11,13 +11,13 @@ const navItems = [
 
 export default function StartLearningSidebar({ activeView }) {
     return (
-        <aside className="learning-start-sidebar group/sidebar hidden w-full overflow-x-hidden border-r border-[#7c3aed]/15 bg-[#0d0718] px-3 py-5 lg:sticky lg:top-16 lg:block lg:h-[calc(100vh-4rem)] lg:overflow-y-auto">
+        <aside className="learning-start-sidebar group/sidebar hidden w-full overflow-x-hidden border-r border-brand-accent/15 bg-brand-sidebar px-3 py-5 lg:sticky lg:top-16 lg:block lg:h-[calc(100vh-4rem)] lg:overflow-y-auto">
             <nav className="space-y-2">
                 {navItems.map((item) => (
                     <StartNavItem key={item.view} {...item} active={activeView === item.view} />
                 ))}
             </nav>
-            <Link to="/" className="mt-8 flex h-12 items-center gap-3 overflow-hidden rounded-xl border border-[#7c3aed]/20 bg-[#160e2e] px-3 text-sm font-semibold text-[#cbd5e1] no-underline transition hover:border-[#7c3aed]/50 hover:text-white">
+            <Link to="/" className="mt-8 flex h-12 items-center gap-3 overflow-hidden rounded-xl border border-brand-accent/20 bg-brand-light px-3 text-sm font-semibold text-brand-textMutedLight no-underline transition hover:border-brand-accent/50 hover:text-brand-white">
                 <span className="grid h-9 w-9 shrink-0 place-items-center">
                     <LogOut className="h-4 w-4" />
                 </span>
@@ -35,8 +35,8 @@ function StartNavItem({ to, icon: Icon, label, active }) {
             to={to}
             className={`flex h-12 w-full items-center gap-3 overflow-hidden rounded-xl px-3 text-left text-sm font-bold no-underline transition ${
                 active
-                    ? "bg-[#7c3aed] text-white shadow-lg shadow-[#7c3aed]/20"
-                    : "text-[#94a3b8] hover:bg-[#160e2e] hover:text-white"
+                    ? "bg-brand-accent text-brand-white shadow-lg shadow-brand-accent/20"
+                    : "text-brand-textSecondary hover:bg-brand-light hover:text-brand-white"
             }`}
         >
             <span className="grid h-9 w-9 shrink-0 place-items-center">

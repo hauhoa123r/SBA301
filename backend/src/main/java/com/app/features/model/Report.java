@@ -1,6 +1,6 @@
 package com.app.features.model;
 
-import com.app.model.user.entity.UserEntity;
+import com.app.features.user.entity.UserEntity;
 import com.app.features.model.enums.ReportStatus;
 import com.app.features.model.enums.ReportTargetType;
 import jakarta.persistence.*;

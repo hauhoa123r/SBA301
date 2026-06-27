@@ -1,7 +1,7 @@
 package com.app.features.auth.repository;
 
 import com.app.features.model.VerificationToken;
-import com.app.model.user.entity.UserEntity;
+import com.app.features.user.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

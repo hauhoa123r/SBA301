@@ -7,7 +7,7 @@ import HeroFooter from "../../../shared/components/HeroFooter";
 import HeroHeader from "../../../shared/components/HeroHeader";
 export default function Homepage() {
     return (
-        <div className="min-h-screen bg-[#090514] text-[#f8fafc]">
+        <div className="min-h-screen bg-brand-dark text-brand-textPrimary">
             <HeroHeader />
             <main>
                 <HeroSection />

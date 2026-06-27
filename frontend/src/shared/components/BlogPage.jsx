@@ -71,7 +71,7 @@ export default function BlogPage() {
                             Blog
                         </p>
                         <h1
-                            className="text-4xl font-extrabold text-white md:text-5xl"
+                            className="text-4xl font-extrabold text-brand-white md:text-5xl"
                             style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
                         >
                             Learning insights and platform updates
@@ -85,7 +85,7 @@ export default function BlogPage() {
                         <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-textSecondary" />
                         <input
                             placeholder="Search articles..."
-                            className="h-12 w-full rounded-xl border border-brand-accent/20 bg-brand-light py-3 pl-11 pr-4 text-sm text-white outline-none transition placeholder:text-brand-textSecondary/50 focus:border-brand-accent/60"
+                            className="h-12 w-full rounded-xl border border-brand-accent/20 bg-brand-light py-3 pl-11 pr-4 text-sm text-brand-white outline-none transition placeholder:text-brand-textSecondary/50 focus:border-brand-accent/60"
                         />
                     </div>
                 </div>
@@ -105,10 +105,10 @@ export default function BlogPage() {
                             </div>
 
                             <div className="p-6">
-                                <span className="rounded-lg border border-brand-accent/20 bg-brand-accent/10 px-2.5 py-1 text-xs font-semibold text-[#a78bfa]">
+                                <span className="rounded-lg border border-brand-accent/20 bg-brand-accent/10 px-2.5 py-1 text-xs font-semibold text-brand-accentSoft">
                                     {post.category}
                                 </span>
-                                <h2 className="mt-4 min-h-16 text-xl font-bold leading-8 text-white transition group-hover:text-[#a78bfa]" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                                <h2 className="mt-4 min-h-16 text-xl font-bold leading-8 text-brand-white transition group-hover:text-brand-accentSoft" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                                     {post.title}
                                 </h2>
                                 <p className="mt-3 min-h-18 text-sm leading-6 text-brand-textSecondary">{post.excerpt}</p>
@@ -124,7 +124,7 @@ export default function BlogPage() {
                                     </span>
                                 </div>
 
-                                <button className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-[#a78bfa] transition hover:text-white">
+                                <button className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-brand-accentSoft transition hover:text-brand-white">
                                     Read article
                                     <ArrowRight className="h-4 w-4" />
                                 </button>

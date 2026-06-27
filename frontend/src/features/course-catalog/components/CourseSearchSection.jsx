@@ -8,7 +8,7 @@ export default function CourseSearchSection({ keyword, onKeywordChange, onSearch
                     Browse Courses
                 </p>
                 <h1
-                    className="text-4xl font-extrabold text-white md:text-5xl"
+                    className="text-4xl font-extrabold text-brand-white md:text-5xl"
                     style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
                 >
                     View Courses
@@ -25,12 +25,12 @@ export default function CourseSearchSection({ keyword, onKeywordChange, onSearch
                         value={keyword}
                         onChange={(event) => onKeywordChange(event.target.value)}
                         placeholder="Search by title, category, teacher..."
-                        className="h-12 w-full rounded-xl border border-brand-accent/20 bg-brand-light py-3 pl-11 pr-4 text-sm text-white outline-none transition focus:border-brand-accent/60"
+                        className="h-12 w-full rounded-xl border border-brand-accent/20 bg-brand-light py-3 pl-11 pr-4 text-sm text-brand-white outline-none transition focus:border-brand-accent/60"
                     />
                 </div>
                 <button
                     type="submit"
-                    className="inline-flex h-12 items-center gap-2 rounded-xl bg-brand-accent px-5 text-sm font-semibold text-white shadow-lg shadow-brand-accent/25 transition hover:bg-brand-accentHover"
+                    className="inline-flex h-12 items-center gap-2 rounded-xl bg-brand-accent px-5 text-sm font-semibold text-brand-white shadow-lg shadow-brand-accent/25 transition hover:bg-brand-accentHover"
                 >
                     <Search className="h-4 w-4" />
                     Search

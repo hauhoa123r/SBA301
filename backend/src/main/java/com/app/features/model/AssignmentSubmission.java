@@ -1,6 +1,6 @@
 package com.app.features.model;
 
-import com.app.model.user.entity.UserEntity;
+import com.app.features.user.entity.UserEntity;
 import com.app.features.model.enums.AssignmentSubmissionStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

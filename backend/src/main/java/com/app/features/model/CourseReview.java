@@ -1,12 +1,11 @@
 package com.app.features.model;
 
-import com.app.model.course.entity.CourseEntity;
-import com.app.model.user.entity.UserEntity;
+import com.app.features.course.entity.CourseEntity;
+import com.app.features.user.entity.UserEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 

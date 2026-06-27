@@ -73,7 +73,7 @@ export default function ViewCoursesPage() {
                         type="button"
                         onClick={() => goToPage(currentPage - 1)}
                         disabled={currentPage === 1}
-                        className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-brand-accent/20 text-brand-textSecondary transition hover:border-brand-accent/60 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                        className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-brand-accent/20 text-brand-textSecondary transition hover:border-brand-accent/60 hover:text-brand-white disabled:cursor-not-allowed disabled:opacity-40"
                     >
                         <ChevronLeft className="h-4 w-4" />
                     </button>
@@ -84,8 +84,8 @@ export default function ViewCoursesPage() {
                             type="button"
                             onClick={() => goToPage(page)}
                             className={`h-10 w-10 rounded-xl text-sm font-semibold transition ${page === currentPage
-                                    ? "bg-brand-accent text-white"
-                                    : "border border-brand-accent/20 text-brand-textSecondary hover:border-brand-accent/60 hover:text-white"
+                                    ? "bg-brand-accent text-brand-white"
+                                    : "border border-brand-accent/20 text-brand-textSecondary hover:border-brand-accent/60 hover:text-brand-white"
                                 }`}
                         >
                             {page}
@@ -96,7 +96,7 @@ export default function ViewCoursesPage() {
                         type="button"
                         onClick={() => goToPage(currentPage + 1)}
                         disabled={currentPage === totalPages}
-                        className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-brand-accent/20 text-brand-textSecondary transition hover:border-brand-accent/60 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                        className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-brand-accent/20 text-brand-textSecondary transition hover:border-brand-accent/60 hover:text-brand-white disabled:cursor-not-allowed disabled:opacity-40"
                     >
                         <ChevronRight className="h-4 w-4" />
                     </button>

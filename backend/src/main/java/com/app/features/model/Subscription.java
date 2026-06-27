@@ -1,8 +1,8 @@
 package com.app.features.model;
 
-import com.app.model.user.entity.PlanEntity;
-import com.app.model.user.entity.UserEntity;
-import com.app.model.user.eums.SubscriptionStatus;
+import com.app.features.user.entity.PlanEntity;
+import com.app.features.user.entity.UserEntity;
+import com.app.features.user.eums.SubscriptionStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

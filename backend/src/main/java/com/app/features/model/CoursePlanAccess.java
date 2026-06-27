@@ -1,7 +1,7 @@
 package com.app.features.model;
 
-import com.app.model.course.entity.CourseEntity;
-import com.app.model.user.entity.PlanEntity;
+import com.app.features.course.entity.CourseEntity;
+import com.app.features.user.entity.PlanEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

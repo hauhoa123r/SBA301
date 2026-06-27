@@ -352,7 +352,7 @@ export const CATEGORIES = [
 ];
 
 export const BADGE_COLORS = {
-    Bestseller: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-    Hot: "bg-rose-500/10 text-rose-400 border-rose-500/20",
-    New: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+    Bestseller: "bg-status-warningStrong/10 text-status-warning border-status-warningStrong/20",
+    Hot: "bg-status-danger/10 text-status-danger border-status-danger/20",
+    New: "bg-status-successStrong/10 text-status-success border-status-successStrong/20",
 };

@@ -20,7 +20,7 @@ export default function StartLearningPage() {
     const activeView = hash.replace("#", "") || "overview";
 
     return (
-        <div className="min-h-screen bg-[#07030f] text-white" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <div className="min-h-screen bg-brand-darker text-brand-white" style={{ fontFamily: "'Inter', sans-serif" }}>
             <StartLearningHeader />
 
             <div className="group/page grid transition-[grid-template-columns] duration-300 ease-out lg:grid-cols-[80px_1fr] lg:has-[.learning-start-sidebar:hover]:grid-cols-[260px_1fr]">
@@ -51,14 +51,14 @@ export default function StartLearningPage() {
 
 function LearningGreeting() {
     return (
-        <section className="border-b border-[#7c3aed]/15 pb-5">
+        <section className="border-b border-brand-accent/15 pb-5">
             <div className="flex items-center gap-4">
-                <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#7c3aed] text-white">
+                <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-brand-accent text-brand-white">
                     <UserRound className="h-8 w-8" />
                 </div>
                 <div className="min-w-0">
                     <h1 className="truncate text-2xl font-black md:text-3xl">Xin chào, {studentName}</h1>
-                    <p className="mt-1 text-sm text-[#94a3b8]">Cùng Edujar tiến bộ mỗi ngày nào!</p>
+                    <p className="mt-1 text-sm text-brand-textSecondary">Cùng Edujar tiến bộ mỗi ngày nào!</p>
                 </div>
             </div>
         </section>

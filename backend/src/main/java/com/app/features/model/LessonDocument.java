@@ -1,6 +1,6 @@
 package com.app.features.model;
 
-import com.app.model.course.entity.LessonEntity;
+import com.app.features.course.entity.LessonEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

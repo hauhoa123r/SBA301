@@ -9,7 +9,7 @@ export default function CourseCard({ course }) {
         }).format(n);
 
     return (
-        <div className="group bg-[#1c1236] border border-[#7c3aed]/10 rounded-2xl overflow-hidden hover:border-[#7c3aed]/40 transition-all hover:shadow-xl hover:shadow-[#7c3aed]/10 hover:-translate-y-1 cursor-pointer">
+        <div className="group bg-brand-cardBg border border-brand-accent/10 rounded-2xl overflow-hidden hover:border-brand-accent/40 transition-all hover:shadow-xl hover:shadow-brand-accent/10 hover:-translate-y-1 cursor-pointer">
             <div className="relative overflow-hidden aspect-video">
                 <img
                     src={course.image}
@@ -17,10 +17,10 @@ export default function CourseCard({ course }) {
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
 
-                <div className="absolute inset-0 bg-gradient-to-t from-[#1c1236]/80 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-cardBg/80 to-brand-transparent" />
 
                 <div className="absolute bottom-3 left-3">
-                    <span className="text-xs font-semibold text-[#a78bfa] bg-[#7c3aed]/20 px-2.5 py-1 rounded-md border border-[#7c3aed]/20">
+                    <span className="text-xs font-semibold text-brand-accentSoft bg-brand-accent/20 px-2.5 py-1 rounded-md border border-brand-accent/20">
                         {course.category}
                     </span>
                 </div>
@@ -37,15 +37,15 @@ export default function CourseCard({ course }) {
                 )}
 
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="w-12 h-12 rounded-full bg-[#7c3aed]/90 flex items-center justify-center shadow-lg">
-                        <Play className="w-5 h-5 text-white fill-white ml-0.5" />
+                    <div className="w-12 h-12 rounded-full bg-brand-accent/90 flex items-center justify-center shadow-lg">
+                        <Play className="w-5 h-5 text-brand-white fill-brand-white ml-0.5" />
                     </div>
                 </div>
             </div>
 
             <div className="p-5">
                 <h3
-                    className="text-white font-semibold text-base leading-snug mb-2 line-clamp-2 group-hover:text-[#a78bfa] transition-colors"
+                    className="text-brand-white font-semibold text-base leading-snug mb-2 line-clamp-2 group-hover:text-brand-accentSoft transition-colors"
                     style={{
                         fontFamily: "'Bricolage Grotesque', sans-serif",
                     }}
@@ -54,7 +54,7 @@ export default function CourseCard({ course }) {
                 </h3>
 
                 <p
-                    className="text-[#94a3b8] text-xs mb-3"
+                    className="text-brand-textSecondary text-xs mb-3"
                     style={{
                         fontFamily: "'Inter', sans-serif",
                     }}
@@ -62,10 +62,10 @@ export default function CourseCard({ course }) {
                     by {course.instructor}
                 </p>
 
-                <div className="flex items-center gap-3 text-xs text-[#94a3b8] mb-4">
+                <div className="flex items-center gap-3 text-xs text-brand-textSecondary mb-4">
                     <div className="flex items-center gap-1">
-                        <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                        <span className="text-white font-semibold">
+                        <Star className="w-3.5 h-3.5 text-status-warning fill-status-warning" />
+                        <span className="text-brand-white font-semibold">
                             {course.rating}
                         </span>
                         <span>
@@ -86,7 +86,7 @@ export default function CourseCard({ course }) {
 
                 <div className="flex items-center justify-between">
                     <span
-                        className="text-lg font-bold text-white"
+                        className="text-lg font-bold text-brand-white"
                         style={{
                             fontFamily: "'Bricolage Grotesque', sans-serif",
                         }}
@@ -94,7 +94,7 @@ export default function CourseCard({ course }) {
                         {fmt(course.price)}
                     </span>
 
-                    <button className="text-xs text-[#a78bfa] hover:text-white border border-[#7c3aed]/30 hover:border-[#7c3aed]/60 hover:bg-[#7c3aed]/10 px-3 py-1.5 rounded-lg transition-all">
+                    <button className="text-xs text-brand-accentSoft hover:text-brand-white border border-brand-accent/30 hover:border-brand-accent/60 hover:bg-brand-accent/10 px-3 py-1.5 rounded-lg transition-all">
                         Enroll
                     </button>
                 </div>
