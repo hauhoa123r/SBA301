@@ -7,19 +7,15 @@ import com.app.features.model.UserEntity;
 import com.app.features.auth.exception.InvalidLoginException;
 import com.app.features.auth.repository.UserRepository;
 import com.app.features.auth.service.AuthService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepositoryImpl;
     private final LoginConverter loginConverter;
-    AuthServiceImpl(UserRepository userRepositoryImpl, LoginConverter loginConverter) {
-        this.userRepositoryImpl = userRepositoryImpl;
-        this.loginConverter = loginConverter;
-    }
-    private Boolean DTOConverter(String a){
-        return true;
-    }
+
     @Override
     public LoginResponse IsExistUser(LoginRequest user) {
         UserEntity userEntity = userRepositoryImpl.findByEmail(user.getEmail())

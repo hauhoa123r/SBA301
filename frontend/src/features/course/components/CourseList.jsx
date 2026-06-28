@@ -1,7 +1,15 @@
 import { Link } from "react-router-dom";
 import { CalendarDays, Eye, UserRound } from "lucide-react";
 
-export default function CourseList({ courses }) {
+export default function CourseList({ courses, isLoading = false }) {
+    if (isLoading) {
+        return (
+            <div className="rounded-2xl border border-brand-accent/10 bg-brand-cardBg p-10 text-center text-brand-textSecondary">
+                Loading courses...
+            </div>
+        );
+    }
+
     if (courses.length === 0) {
         return (
             <div className="rounded-2xl border border-brand-accent/10 bg-brand-cardBg p-10 text-center text-brand-textSecondary">
@@ -19,7 +27,7 @@ export default function CourseList({ courses }) {
                 >
                     <div className="aspect-video overflow-hidden">
                         <img
-                            src={course.thumbnail_url}
+                            src={course.thumbnail_url || "/images/logo-removebg-preview.png"}
                             alt={course.title}
                             className="h-full w-full object-cover"
                         />
@@ -36,8 +44,7 @@ export default function CourseList({ courses }) {
                         </div>
 
                         <h2
-                            className="mb-2 min-h-14 text-lg font-bold leading-7 text-brand-white"
-                            style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
+                            className="mb-2 min-h-14 break-words text-lg font-bold leading-7 text-brand-white"
                         >
                             {course.title}
                         </h2>

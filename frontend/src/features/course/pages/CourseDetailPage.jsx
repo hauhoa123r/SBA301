@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import { useOutletContext, useParams } from "react-router-dom";
-import { BookOpen, Users } from "lucide-react";
-import { COURSES } from "../services/mockup";
+import { BookOpen, CircleDollarSign, Users } from "lucide-react";
 import NotFoundPage from "../../../shared/pages/NotFoundPage";
 import CourseContent from "../components/CourseContent";
 import CoursePaymentPage from "../components/CoursePaymentPage";
 import CoursePurchaseCard from "../components/CoursePurchaseCard";
-import { courseChapters } from "../shared/courseDetailData";
+import { getCourseById } from "../service/course.service";
 
 export default function CourseDetailPage() {
     const { id } = useParams();
@@ -17,7 +16,38 @@ export default function CourseDetailPage() {
     const [expandedChapters, setExpandedChapters] = useState(() => new Set([1]));
     const [isPaymentPageOpen, setIsPaymentPageOpen] = useState(false);
     const [paymentCountdown, setPaymentCountdown] = useState(15 * 60);
-    const course = COURSES.find((item) => item.id === Number(id));
+    const [course, setCourse] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isNotFound, setIsNotFound] = useState(false);
+
+    useEffect(() => {
+        let isMounted = true;
+
+        const fetchCourse = async () => {
+            try {
+                setIsLoading(true);
+                const data = await getCourseById(id);
+                if (isMounted) {
+                    setCourse(data);
+                    setIsNotFound(false);
+                }
+            } catch {
+                if (isMounted) {
+                    setIsNotFound(true);
+                }
+            } finally {
+                if (isMounted) {
+                    setIsLoading(false);
+                }
+            }
+        };
+
+        fetchCourse();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [id]);
 
     useEffect(() => {
         if (!isPaymentPageOpen) return undefined;
@@ -35,12 +65,29 @@ export default function CourseDetailPage() {
         return () => setShowChrome?.(true);
     }, [isPaymentPageOpen, setShowChrome]);
 
-    if (!course) return <NotFoundPage />;
+    if (isLoading) {
+        return (
+            <section className="container mx-auto px-6 py-16 text-center text-brand-textSecondary">
+                Loading course...
+            </section>
+        );
+    }
+
+    if (isNotFound || !course) return <NotFoundPage />;
 
     const isVoucherValid = voucherStatus === "valid";
     const discountAmount = isVoucherValid ? course.price * 0.1 : 0;
     const finalPrice = Math.max(0, course.price - discountAmount);
-    const totalLessons = courseChapters.reduce((total, chapter) => total + chapter.lessons.length, 0);
+    const courseChapters = course.chapters ?? [];
+    const totalLessons = course.totalLessons ?? courseChapters.reduce((total, chapter) => total + chapter.lessons.length, 0);
+    const formatPrice = (value) => {
+        if (!value) return "Miễn phí";
+
+        return new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
+        }).format(value);
+    };
 
     const openPaymentPage = () => {
         setPaymentCountdown(15 * 60);
@@ -106,7 +153,7 @@ export default function CourseDetailPage() {
                         <span>{course.category}</span>
                     </div>
 
-                    <h1 className="text-4xl font-black leading-tight text-brand-white md:text-6xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                    <h1 className="max-w-5xl break-words text-4xl font-black leading-tight text-brand-white md:text-5xl lg:text-6xl">
                         {course.title}
                     </h1>
                     <p className="mt-6 max-w-5xl text-base leading-8 text-brand-textSecondary md:text-lg">
@@ -114,6 +161,10 @@ export default function CourseDetailPage() {
                     </p>
 
                     <div className="mt-7 flex flex-wrap items-center gap-6 text-base font-bold text-brand-textSecondary">
+                        <span className="inline-flex items-center gap-2 rounded-xl border border-brand-accent/20 bg-brand-accent/10 px-4 py-2 text-brand-accentSoft">
+                            <CircleDollarSign className="h-5 w-5" />
+                            {formatPrice(course.price)}
+                        </span>
                         <span className="inline-flex items-center gap-2">
                             <Users className="h-5 w-5 text-brand-accentSoft" />
                             {course.students.toLocaleString("vi-VN")} học viên

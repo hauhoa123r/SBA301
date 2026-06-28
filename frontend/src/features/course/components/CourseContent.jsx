@@ -12,7 +12,7 @@ export default function CourseContent({
         <section className="mt-16">
             <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                    <h2 className="text-3xl font-black text-brand-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                    <h2 className="text-3xl font-black text-brand-white">
                         Nội dung khóa học
                     </h2>
                     <p className="mt-4 text-base font-semibold text-brand-textSecondary">
@@ -37,8 +37,8 @@ export default function CourseContent({
                             >
                                 <span className="flex min-w-0 items-center gap-4">
                                     <span className="text-2xl font-black text-brand-accentSoft">{isExpanded ? "-" : "+"}</span>
-                                    <span className="truncate text-xl font-black text-brand-white">
-                                        {chapter.id}. {chapter.title}
+                                    <span className="min-w-0 break-words text-xl font-black text-brand-white">
+                                        {chapter.orderIndex}. {chapter.title}
                                     </span>
                                 </span>
                                 <span className="shrink-0 text-sm font-semibold text-brand-textSecondary sm:text-base">{chapter.lessons.length} bài học</span>
@@ -51,7 +51,7 @@ export default function CourseContent({
                                             <div className="flex min-w-0 items-center gap-4">
                                                 <PlayCircle className="h-5 w-5 shrink-0 text-brand-accentSoft" />
                                                 <span className="truncate text-base text-brand-white md:text-lg">
-                                                    {chapter.id}.{index + 1} {lesson.title}
+                                                    {chapter.orderIndex}.{lesson.orderIndex ?? index + 1} {lesson.title}
                                                 </span>
                                             </div>
                                             <span className="text-sm font-medium text-brand-textSecondary md:text-base">{lesson.duration}</span>

@@ -12,6 +12,9 @@ export default function CoursePurchaseCard({
     onPurchase,
 }) {
     const fmt = (n) =>
+        !n
+            ? "Miễn phí"
+            :
         new Intl.NumberFormat("vi-VN", {
             style: "currency",
             currency: "VND",
@@ -31,7 +34,7 @@ export default function CoursePurchaseCard({
 
                 <div className="mt-7 text-center">
                     <p className="text-sm font-bold text-brand-textSecondary">Chi phí khóa học</p>
-                    <div className="mt-1 text-4xl font-black text-brand-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                    <div className="mt-1 text-4xl font-black text-brand-white">
                         {fmt(finalPrice)}
                     </div>
                     {isVoucherValid && <p className="mt-1 text-sm text-brand-textSecondary">Giá gốc: <span className="line-through">{fmt(course.price)}</span></p>}

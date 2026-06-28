@@ -1,8 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { COURSES } from "../services/mockup";
 import CourseList from "../components/CourseList";
 import CourseSearchSection from "../components/CourseSearchSection";
+import { getCourses } from "../service/course.service";
 
 const COURSES_PER_PAGE = 6;
 
@@ -10,13 +10,45 @@ export default function ViewCoursesPage() {
     const [keyword, setKeyword] = useState("");
     const [submittedKeyword, setSubmittedKeyword] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
+    const [courses, setCourses] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [errorMessage, setErrorMessage] = useState("");
+
+    useEffect(() => {
+        let isMounted = true;
+
+        const fetchCourses = async () => {
+            try {
+                setIsLoading(true);
+                const data = await getCourses();
+                if (isMounted) {
+                    setCourses(data);
+                    setErrorMessage("");
+                }
+            } catch (error) {
+                if (isMounted) {
+                    setErrorMessage(error.response?.data?.message || "Cannot load courses from server.");
+                }
+            } finally {
+                if (isMounted) {
+                    setIsLoading(false);
+                }
+            }
+        };
+
+        fetchCourses();
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
 
     const filteredCourses = useMemo(() => {
         const searchValue = submittedKeyword.trim().toLowerCase();
 
-        if (!searchValue) return COURSES;
+        if (!searchValue) return courses;
 
-        return COURSES.filter((course) =>
+        return courses.filter((course) =>
             [
                 course.title,
                 course.description,
@@ -28,7 +60,7 @@ export default function ViewCoursesPage() {
                 .toLowerCase()
                 .includes(searchValue)
         );
-    }, [submittedKeyword]);
+    }, [courses, submittedKeyword]);
 
     const totalPages = Math.max(1, Math.ceil(filteredCourses.length / COURSES_PER_PAGE));
     const startIndex = (currentPage - 1) * COURSES_PER_PAGE;
@@ -61,7 +93,13 @@ export default function ViewCoursesPage() {
                     </span>
                 </div>
 
-                <CourseList courses={visibleCourses} />
+                {errorMessage ? (
+                    <div className="rounded-2xl border border-status-danger/20 bg-status-danger/10 p-6 text-sm font-semibold text-status-danger">
+                        {errorMessage}
+                    </div>
+                ) : (
+                    <CourseList courses={visibleCourses} isLoading={isLoading} />
+                )}
 
                 <div className="mt-10 flex items-center justify-center gap-3">
                     <button

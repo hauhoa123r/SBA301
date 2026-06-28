@@ -2,7 +2,6 @@ package com.app.utils;
 
 public final class ApiPath {
     private static final String BASE = "/api";
-
     public static final String API_ANSWERS = BASE + "/answers";
     public static final String API_ASSIGNMENTS = BASE + "/assignments";
     public static final String API_ASSIGNMENT_SUBMISSIONS = BASE + "/assignment-submissions";
