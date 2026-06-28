@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import authRoutes from "../../features/auth/routes/authRoutes";
 import courseRoutes from "../../features/course/routes/courseRoutes";
-import errorRoutes from "../../features/error/routes/errorRoutes";
-import NotFoundPage from "../../features/error/pages/NotFoundPage";
+import errorRoutes from "../../shared/routes/errorRoutes";
+import NotFoundPage from "../../shared/pages/NotFoundPage";
 import userRoutes from "../../features/user/routes/UserRouters";
 import learningRoutes from "../../features/learning/routes/learningRoutes";
 import MainLayout from "../../shared/layouts/MainLayout";

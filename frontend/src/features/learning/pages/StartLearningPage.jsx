@@ -1,6 +1,6 @@
 import { useOutletContext } from "react-router-dom";
 import { UserRound } from "lucide-react";
-import LearningProfileView from "../../learning-profile/pages/learning-profile-view";
+import LearningProfileView from "./learning-profile-view";
 import MyCoursesView from "../components/start-learning/MyCoursesView";
 import OverviewPanel from "../components/start-learning/OverviewPanel";
 import StudyPlanView from "../components/start-learning/StudyPlanView";
