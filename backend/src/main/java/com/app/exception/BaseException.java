@@ -9,9 +9,6 @@ public abstract class BaseException extends RuntimeException {
         this.status = status;
     }
 
-    protected BaseException() {
-    }
-
     public HttpStatus getStatus() {
         return status;
     }
