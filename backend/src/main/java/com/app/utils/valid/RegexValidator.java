@@ -9,6 +9,9 @@ public abstract class RegexValidator<A extends Annotation> implements Constraint
     protected abstract String getRegex();
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        return value != null && value.matches(getRegex());
+        if (value == null || value.isBlank()) {
+            return true;
+        }
+        return value.matches(getRegex());
     }
 }
