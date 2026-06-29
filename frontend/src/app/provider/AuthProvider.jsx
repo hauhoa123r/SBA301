@@ -1,21 +1,37 @@
-import { createContext, useState, useContext } from "react";
-
-const AuthContext = createContext();
+import { useState } from "react";
+import AuthContext from "./AuthContext";
 
 export function AuthProvider({ children }) {
 
-    const [user, setUser] = useState(() => {
+    const [user, setStoredUser] = useState(() => {
         const savedUser = localStorage.getItem("user");
-        return savedUser ? JSON.parse(savedUser): null;
+        if (!savedUser) return null;
+
+        try {
+            return JSON.parse(savedUser);
+        } catch {
+            localStorage.removeItem("user");
+            return null;
+        }
     });
+
+    const setUser = (nextUser) => {
+        setStoredUser((currentUser) => {
+            const resolvedUser = typeof nextUser === "function" ? nextUser(currentUser) : nextUser;
+
+            if (resolvedUser) {
+                localStorage.setItem("user", JSON.stringify(resolvedUser));
+            } else {
+                localStorage.removeItem("user");
+            }
+
+            return resolvedUser;
+        });
+    };
 
     return (
         <AuthContext.Provider value={{ user, setUser }}>
             {children}
         </AuthContext.Provider>
     );
-}
-
-export function useAuth() {
-    return useContext(AuthContext);
 }

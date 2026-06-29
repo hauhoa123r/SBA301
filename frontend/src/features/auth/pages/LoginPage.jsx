@@ -3,11 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Zap } from "lucide-react";
 import HeroFooter from "../../../shared/components/HeroFooter";
 import HeroHeader from "../../../shared/components/HeroHeader";
+import useAuth from "../../../app/provider/useAuth";
+
 const LoginPage = () => {
     const [formData, setFormData] = useState({ email: "", password: "" });
     const [errors, setErrors] = useState({ email: "", password: "" });
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
+    const { setUser } = useAuth();
 
     const validInput = (name, value) => {
         if (!value.trim())
@@ -56,7 +59,15 @@ const LoginPage = () => {
             return;
         }
         try {
-            navigate("/");
+            const isModerator = formData.email.trim().toLowerCase().includes("moderator");
+            const nextUser = {
+                email: formData.email.trim(),
+                name: isModerator ? "Moderator" : "Learner",
+                role: isModerator ? "MODERATOR" : "LEARNER",
+            };
+
+            setUser(nextUser);
+            navigate(isModerator ? "/moderator" : "/");
         } catch (err) {
             const errMsg =
                 err?.response?.data?.error || "Đăng nhập thất bại";

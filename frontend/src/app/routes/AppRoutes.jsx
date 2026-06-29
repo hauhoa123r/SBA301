@@ -5,11 +5,17 @@ import errorRoutes from "../../features/error/routes/errorRoutes";
 import NotFoundPage from "../../features/error/pages/NotFoundPage";
 import userRoutes from "../../features/user/routes/UserRouters";
 import learningRoutes from "../../features/learning/routes/learningRoutes";
+import reportRoutes from "../../features/report/routes/reportRoutes";
+import transactionRoutes from "../../features/transaction/routes/transactionRoutes";
+import moderatorRoutes from "../../features/moderator/routes/moderatorRoutes";
 function AppRoutes() {
   const routes = [
     ...authRoutes,
     ...courseRoutes,
     ...learningRoutes,
+    ...moderatorRoutes,
+    ...reportRoutes,
+    ...transactionRoutes,
     ...errorRoutes,
     ...userRoutes,
   ];
