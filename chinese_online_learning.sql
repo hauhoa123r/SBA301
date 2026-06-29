@@ -348,7 +348,7 @@ CREATE TABLE invoices (
     original_amount DECIMAL(12, 2) NOT NULL, -- Giá gốc
     discount_amount DECIMAL(12, 2) DEFAULT 0, -- Số tiền được giảm
     amount DECIMAL(12, 2) NOT NULL, -- Giá cuối cùng phải thanh toán
-    status ENUM('PENDING', 'PAID', 'FAILED', 'REFUNDED') DEFAULT 'PENDING',
+    status ENUM('PENDING', 'PAID', 'FAILED', 'CANCELLED', 'REFUNDED') DEFAULT 'PENDING',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_invoices_user FOREIGN KEY (user_id) REFERENCES users(id),
@@ -359,10 +359,10 @@ CREATE TABLE invoices (
 CREATE TABLE payments (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     invoice_id BIGINT NOT NULL,
-    provider ENUM('VNPAY', 'MOMO', 'STRIPE') NOT NULL,
+    provider ENUM('VNPAY', 'MOMO', 'PAYOS', 'ZALOPAY', 'STRIPE') NOT NULL,
     transaction_id VARCHAR(150) NOT NULL,
     amount DECIMAL(12, 2) NOT NULL,
-    status ENUM('SUCCESS', 'FAILED') NOT NULL,
+    status ENUM('CREATED', 'SUCCESS', 'FAILED', 'CANCELLED') NOT NULL,
     raw_response JSON NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT uk_payments_transaction UNIQUE (provider, transaction_id),
@@ -519,7 +519,28 @@ CREATE TABLE referrals (
     CONSTRAINT fk_referrals_referrer FOREIGN KEY (referrer_id) REFERENCES users(id),
     CONSTRAINT fk_referrals_referred FOREIGN KEY (referred_user_id) REFERENCES users(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS user_lesson_progress (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    lesson_id BIGINT NOT NULL,
+    current_time_seconds INT NOT NULL DEFAULT 0,
+    is_completed BOOLEAN NOT NULL DEFAULT FALSE,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT uk_user_lesson_progress UNIQUE (user_id, lesson_id),
+    CONSTRAINT fk_ulp_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_ulp_lesson FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS user_quiz_attempts (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    quiz_id BIGINT NOT NULL,
+    score INT NOT NULL,
+    is_passed BOOLEAN NOT NULL DEFAULT FALSE,
+    attempt_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_uqa_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_uqa_quiz FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 -- ==========================================
 -- 11. INDEXING TỐI ƯU TRUY VẤN
 -- ==========================================
