@@ -1,7 +1,7 @@
 import axios from "axios";
-
+import { PORT } from "../api/apiPath";
 const api = axios.create({
-    baseURL: "http://localhost:8080",
+    baseURL: PORT,
     timeout: 0,
 });
 

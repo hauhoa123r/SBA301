@@ -2,7 +2,7 @@ import ActivitySection from "../components/learning-profile/ActivitySection";
 import ProfileHero from "../components/learning-profile/ProfileHero";
 import ProfileProgress from "../components/learning-profile/ProfileProgress";
 
-const studentName = "Hậu Văn Hoà";
+const studentName = "Hầu Văn Hoà";
 
 export default function LearningProfileView({ course, totalLessons, firstLesson }) {
     return (

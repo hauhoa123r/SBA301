@@ -22,6 +22,8 @@ const normalizeCourse = (course) => ({
 });
 
 export const getCourses = async () => {
+  console.log(api.getUri);
+  console.log(API_COURSES);
   const response = await api.get(API_COURSES);
   return response.data.map(normalizeCourse);
 };

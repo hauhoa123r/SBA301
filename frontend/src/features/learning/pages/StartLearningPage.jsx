@@ -7,7 +7,7 @@ import StudyPlanView from "../components/start-learning/StudyPlanView";
 import TestPracticeView from "../components/start-learning/TestPracticeView";
 import { getLearningCourse } from "../service/learningMock";
 
-const studentName = "Hậu Văn Hoà";
+const studentName = "Hầu Văn Hoà";
 
 export default function StartLearningPage() {
     const { activeView = "overview" } = useOutletContext() || {};

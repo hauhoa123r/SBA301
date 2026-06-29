@@ -3,8 +3,8 @@ import { useOutletContext, useParams } from "react-router-dom";
 import { BookOpen, CircleDollarSign, Users } from "lucide-react";
 import NotFoundPage from "../../../shared/pages/NotFoundPage";
 import CourseContent from "../components/CourseContent";
-import CoursePaymentPage from "../components/CoursePaymentPage";
 import CoursePurchaseCard from "../components/CoursePurchaseCard";
+import PaymentMethodModal from "../components/PaymentMethodModal";
 import { getCourseById } from "../service/course.service";
 
 export default function CourseDetailPage() {
@@ -14,15 +14,13 @@ export default function CourseDetailPage() {
     const [voucher, setVoucher] = useState("");
     const [voucherStatus, setVoucherStatus] = useState(null);
     const [expandedChapters, setExpandedChapters] = useState(() => new Set([1]));
-    const [isPaymentPageOpen, setIsPaymentPageOpen] = useState(false);
-    const [paymentCountdown, setPaymentCountdown] = useState(15 * 60);
+    const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
     const [course, setCourse] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isNotFound, setIsNotFound] = useState(false);
 
     useEffect(() => {
         let isMounted = true;
-
         const fetchCourse = async () => {
             try {
                 setIsLoading(true);
@@ -50,20 +48,10 @@ export default function CourseDetailPage() {
     }, [id]);
 
     useEffect(() => {
-        if (!isPaymentPageOpen) return undefined;
-
-        const timerId = window.setInterval(() => {
-            setPaymentCountdown((prev) => Math.max(0, prev - 1));
-        }, 1000);
-
-        return () => window.clearInterval(timerId);
-    }, [isPaymentPageOpen]);
-
-    useEffect(() => {
-        setShowChrome?.(!isPaymentPageOpen);
+        setShowChrome?.(true);
 
         return () => setShowChrome?.(true);
-    }, [isPaymentPageOpen, setShowChrome]);
+    }, [setShowChrome]);
 
     if (isLoading) {
         return (
@@ -90,8 +78,7 @@ export default function CourseDetailPage() {
     };
 
     const openPaymentPage = () => {
-        setPaymentCountdown(15 * 60);
-        setIsPaymentPageOpen(true);
+        setIsPaymentModalOpen(true);
     };
 
     const handleVerifyVoucher = () => {
@@ -120,17 +107,6 @@ export default function CourseDetailPage() {
     const expandAll = () => {
         setExpandedChapters(new Set(courseChapters.map((chapter) => chapter.id)));
     };
-
-    if (isPaymentPageOpen) {
-        return (
-            <CoursePaymentPage
-                course={course}
-                amount={finalPrice}
-                countdownSeconds={paymentCountdown}
-                onBack={() => setIsPaymentPageOpen(false)}
-            />
-        );
-    }
 
     return (
         <div className="relative overflow-hidden text-brand-textPrimary" style={{ fontFamily: "'Inter', sans-serif" }}>
@@ -200,6 +176,12 @@ export default function CourseDetailPage() {
                     onPurchase={openPaymentPage}
                 />
             </section>
+
+            <PaymentMethodModal
+                course={course}
+                open={isPaymentModalOpen}
+                onClose={() => setIsPaymentModalOpen(false)}
+            />
         </div>
     );
 }

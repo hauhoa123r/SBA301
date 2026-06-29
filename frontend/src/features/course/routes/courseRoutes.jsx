@@ -1,5 +1,7 @@
 import Homepage from "../public/Homepage";
 import CourseDetailPage from "../pages/CourseDetailPage";
+import PaymentCheckoutPage from "../pages/PaymentCheckoutPage";
+import PaymentResultPage from "../pages/PaymentResultPage";
 import ViewCoursesPage from "../pages/ViewCoursesPage";
 import AboutPage from "../../../shared/components/AboutPage";
 import BlogPage from "../../../shared/components/BlogPage";
@@ -17,6 +19,14 @@ const courseRoutes = [
     {
         path: "/courses/:id",
         element: <CourseDetailPage />
+    },
+    {
+        path: "/payment/checkout",
+        element: <PaymentCheckoutPage />
+    },
+    {
+        path: "/payment/result",
+        element: <PaymentResultPage />
     },
     {
         path: "/about",
