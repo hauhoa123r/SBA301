@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, KeyRound, Mail, ShieldCheck } from "lucide-react";
 import { toast } from "react-toastify";
 import { validInput } from "../../../shared/utils/inputHandler";
-import { verifyToken } from "../service/authService.js";
+import {forgotPassword, verifyToken} from "../service/authService.js";
 
 const baseInputClass =
     "w-full bg-brand-light border border-brand-accent/20 focus:border-brand-accent/60 text-brand-textPrimary placeholder-brand-textSecondary/50 rounded-xl px-4 py-3 text-sm outline-none transition-colors";
@@ -52,12 +52,11 @@ export default function ForgotPasswordPage() {
             }
             try{
                 setLoading(true);
-                const response = 'a' //await forgotPassword({ email: formData.email });
+                const response = await forgotPassword({ email: formData.email });
                 toast.success(response?.message || "Reset token sent successfully");
                 setShowTokenModal(true);
             } catch (error) {
                 toast.error(error?.response?.data?.message || "Error sending reset token, please try again.");
-                return;
             } finally {
                 setLoading(false);
             }
@@ -84,7 +83,6 @@ export default function ForgotPasswordPage() {
                 navigate(`/reset-password?${searchParams.toString()}`);
             } catch (error) {
                 toast.error(error?.response?.data?.message || "Error verifying token, please try again.");
-                return;
             } finally {
                 setLoading(false);
             }
@@ -94,8 +92,8 @@ export default function ForgotPasswordPage() {
     return (
         <div className="relative overflow-hidden text-brand-textPrimary" style={{ fontFamily: "'Inter', sans-serif" }}>
             <div className="fixed inset-0 pointer-events-none">
-                <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-brand-accent/15 blur-[120px]" />
-                <div className="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] rounded-full bg-brand-accentDeep/20 blur-[100px]" />
+                <div className="absolute top-[-20%] left-[-10%] w-125 h-125 rounded-full bg-brand-accent/15 blur-[120px]" />
+                <div className="absolute bottom-[-10%] right-[-5%] w-100 h-100 rounded-full bg-brand-accentDeep/20 blur-[100px]" />
                 <div
                     className="absolute inset-0 opacity-[0.03]"
                     style={{
@@ -108,8 +106,8 @@ export default function ForgotPasswordPage() {
             <section className="relative z-10 flex min-h-[calc(100vh-160px)] items-center justify-center p-6">
                 <div className="grid w-full max-w-5xl overflow-hidden rounded-3xl border border-brand-accent/15 shadow-2xl shadow-brand-accent/10 md:grid-cols-[0.9fr_1.1fr]">
                     <section className="relative hidden overflow-hidden bg-brand-dark p-10 md:flex md:flex-col md:justify-between">
-                        <div className="absolute inset-0 bg-gradient-to-br from-brand-accentDeep/60 via-brand-dark to-brand-dark" />
-                        <div className="absolute left-[-70px] bottom-[-70px] h-[260px] w-[260px] rounded-full bg-brand-accent/20 blur-[80px]" />
+                        <div className="absolute inset-0 bg-linear-to-br from-brand-accentDeep/60 via-brand-dark to-brand-dark" />
+                        <div className="absolute -left-17.5 -bottom-17.5 h-65 w-65 rounded-full bg-brand-accent/20 blur-[80px]" />
                         <div
                             className="absolute inset-0 opacity-[0.05]"
                             style={{
