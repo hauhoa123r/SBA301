@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Logo from "./Logo"; 
 import { LogOut, Menu, Settings, X } from "lucide-react";
-import { NAV_LINKS } from "../../features/course/services/mockup";
+import { NAV_LINKS } from "../services/navigation/navigation.mockup";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../app/provider/AuthProvider";
 import UserProfileMenu from "./UserProfileMenu";
