@@ -1,7 +1,7 @@
 import { ExternalLink, Landmark, Link as LinkIcon, QrCode, Wallet, X } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createPayment } from "../service/payment.service";
+import { createPayment } from "../../services/api/payment.service";
 
 const PAYMENT_METHODS = [
     { value: "VNPAY", label: "VNPay", description: "Thanh toán qua cổng VNPay", icon: Landmark },

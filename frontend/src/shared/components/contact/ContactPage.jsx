@@ -1,25 +1,5 @@
-import { Mail, MapPin, MessageCircle, Phone, Send } from "lucide-react";
-
-const contactMethods = [
-    {
-        icon: Mail,
-        title: "Email",
-        value: "support@edujar.vn",
-        description: "For account, learning, and payment support.",
-    },
-    {
-        icon: Phone,
-        title: "Phone",
-        value: "+84 28 1234 5678",
-        description: "Available Monday to Friday, 8:30 - 17:30.",
-    },
-    {
-        icon: MapPin,
-        title: "Office",
-        value: "Ho Chi Minh City, Vietnam",
-        description: "Built for learners and teachers across Vietnam.",
-    },
-];
+import { MessageCircle, Send } from "lucide-react";
+import { CONTACT_METHODS, CONTACT_TOPICS } from "../../services/contact/contact.mockup";
 
 export default function ContactPage() {
     return (
@@ -32,16 +12,16 @@ export default function ContactPage() {
                         className="text-4xl font-extrabold leading-tight text-brand-white md:text-5xl"
                         style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
                     >
-                        Talk to the Edujar support team
+                        Talk to the Edujar Chinese learning team
                     </h1>
                     <p className="mt-4 text-sm leading-6 text-brand-textSecondary md:text-base">
-                        Need help with courses, subscriptions, refunds, certificates, or teacher publishing? Send us a message and our team will get back to you.
+                        Need help with HSK courses, pronunciation practice, study plans, subscriptions, or payments? Send us a message and our team will get back to you.
                     </p>
                 </div>
 
                 <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
                     <section className="flex flex-col gap-4">
-                        {contactMethods.map(({ icon: Icon, title, value, description }) => (
+                        {CONTACT_METHODS.map(({ icon: Icon, title, value, description }) => (
                             <div key={title} className="rounded-2xl border border-brand-accent/10 bg-brand-cardBg p-6 shadow-xl shadow-brand-accent/5">
                                 <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-brand-accent/20 bg-brand-accent/10 text-brand-accentSoft">
                                     <Icon className="h-5 w-5" />
@@ -97,11 +77,9 @@ export default function ContactPage() {
                                     Topic
                                 </label>
                                 <select className="w-full rounded-xl border border-brand-accent/20 bg-brand-light px-4 py-3 text-sm text-brand-white outline-none transition focus:border-brand-accent/60">
-                                    <option>Course support</option>
-                                    <option>Subscription and payment</option>
-                                    <option>Refund request</option>
-                                    <option>Teacher publishing</option>
-                                    <option>Technical issue</option>
+                                    {CONTACT_TOPICS.map((topic) => (
+                                        <option key={topic}>{topic}</option>
+                                    ))}
                                 </select>
                             </div>
 

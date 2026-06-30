@@ -1,5 +1,5 @@
-import api from "../../../api/axios";
-import { API_COURSES } from "../../../api/apiPath";
+import api from "../../../../api/axios";
+import { API_COURSES } from "../../../../api/apiPath";
 
 const normalizeCourse = (course) => ({
   ...course,

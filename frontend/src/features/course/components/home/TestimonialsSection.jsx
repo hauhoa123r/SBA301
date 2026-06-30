@@ -1,5 +1,5 @@
 import { Star } from "lucide-react";
-import { TESTIMONIALS } from "../services/mockup";
+import { TESTIMONIALS } from "../../../../shared/services/home/home.mockup";
 
 export default function TestimonialsSection() {
     return (

@@ -1,5 +1,5 @@
-import api from "../../../api/axios";
-import { API_PAYMENTS, PORT } from "../../../api/apiPath";
+import api from "../../../../api/axios";
+import { API_PAYMENTS, PORT } from "../../../../api/apiPath";
 
 const getStoredUserId = () => {
   try {

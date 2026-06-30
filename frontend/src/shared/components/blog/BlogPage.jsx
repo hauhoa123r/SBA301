@@ -1,61 +1,5 @@
 import { ArrowRight, CalendarDays, Clock, Search } from "lucide-react";
-
-const posts = [
-    {
-        id: 1,
-        category: "Learning",
-        title: "How to stay consistent when learning online",
-        excerpt: "Build a weekly study rhythm with clear goals, small wins, reminders, and progress tracking.",
-        date: "Jun 12, 2026",
-        readTime: "5 min read",
-        image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=520&fit=crop&auto=format",
-    },
-    {
-        id: 2,
-        category: "Teachers",
-        title: "Designing quizzes that actually measure skill",
-        excerpt: "Good quizzes test understanding, give useful feedback, and help students know what to practice next.",
-        date: "Jun 08, 2026",
-        readTime: "7 min read",
-        image: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&h=520&fit=crop&auto=format",
-    },
-    {
-        id: 3,
-        category: "Platform",
-        title: "Why certificates matter in self-paced learning",
-        excerpt: "Certificates help students prove completion, organize achievement, and share progress with others.",
-        date: "May 28, 2026",
-        readTime: "4 min read",
-        image: "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?w=800&h=520&fit=crop&auto=format",
-    },
-    {
-        id: 4,
-        category: "Community",
-        title: "Making discussions useful inside every course",
-        excerpt: "A strong discussion space turns questions into shared knowledge between learners and teachers.",
-        date: "May 20, 2026",
-        readTime: "6 min read",
-        image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=800&h=520&fit=crop&auto=format",
-    },
-    {
-        id: 5,
-        category: "Payments",
-        title: "Choosing the right subscription plan",
-        excerpt: "Compare access, duration, and learning goals before purchasing a paid plan.",
-        date: "May 14, 2026",
-        readTime: "3 min read",
-        image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&h=520&fit=crop&auto=format",
-    },
-    {
-        id: 6,
-        category: "Gamification",
-        title: "Using streaks and badges without losing focus",
-        excerpt: "Motivation tools work best when they support meaningful learning instead of replacing it.",
-        date: "May 03, 2026",
-        readTime: "5 min read",
-        image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=520&fit=crop&auto=format",
-    },
-];
+import { BLOG_POSTS } from "../../services/blog/blog.mockup";
 
 export default function BlogPage() {
     return (
@@ -69,10 +13,10 @@ export default function BlogPage() {
                             className="text-4xl font-extrabold text-brand-white md:text-5xl"
                             style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
                         >
-                            Learning insights and platform updates
+                            Chinese learning tips and HSK study guides
                         </h1>
                         <p className="mt-4 text-sm leading-6 text-brand-textSecondary md:text-base">
-                            Articles for students, teachers, and platform teams building better online learning experiences.
+                            Articles for learners building stronger Mandarin vocabulary, pronunciation, grammar, and exam confidence.
                         </p>
                     </div>
 
@@ -86,7 +30,7 @@ export default function BlogPage() {
                 </div>
 
                 <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                    {posts.map((post) => (
+                    {BLOG_POSTS.map((post) => (
                         <article
                             key={post.id}
                             className="group overflow-hidden rounded-2xl border border-brand-accent/10 bg-brand-cardBg shadow-xl shadow-brand-accent/5 transition hover:-translate-y-1 hover:border-brand-accent/40"

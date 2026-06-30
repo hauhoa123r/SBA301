@@ -1,4 +1,4 @@
-import { FEATURES } from "../services/mockup";
+import { FEATURES } from "../../../../shared/services/home/home.mockup";
 
 export default function FeaturesSection() {
     return (

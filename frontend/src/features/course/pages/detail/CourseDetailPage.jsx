@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useOutletContext, useParams } from "react-router-dom";
 import { BookOpen, CircleDollarSign, Users } from "lucide-react";
-import NotFoundPage from "../../../shared/pages/NotFoundPage";
-import CourseContent from "../components/CourseContent";
-import CoursePurchaseCard from "../components/CoursePurchaseCard";
-import PaymentMethodModal from "../components/PaymentMethodModal";
-import { getCourseById } from "../service/course.service";
+import NotFoundPage from "../../../../shared/pages/NotFoundPage";
+import CourseContent from "../../components/detail/CourseContent";
+import CoursePurchaseCard from "../../components/detail/CoursePurchaseCard";
+import PaymentMethodModal from "../../components/payment/PaymentMethodModal";
+import { getCourseById } from "../../services/api/course.service";
 
 export default function CourseDetailPage() {
     const { id } = useParams();

@@ -1,4 +1,4 @@
-import { STATS } from "../services/mockup";
+import { STATS } from "../../../../shared/services/home/home.mockup";
 
 export default function StatsBar() {
     return (

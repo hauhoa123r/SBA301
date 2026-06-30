@@ -1,5 +1,5 @@
 import { BarChart2, Clock, Play, Star } from "lucide-react";
-import { BADGE_COLORS } from "../services/mockup";
+import { BADGE_COLORS } from "../../services/data/courseBadges";
 
 export default function CourseCard({ course }) {
     const fmt = (n) =>

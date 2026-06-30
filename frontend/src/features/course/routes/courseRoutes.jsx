@@ -1,11 +1,11 @@
-import Homepage from "../public/Homepage";
-import CourseDetailPage from "../pages/CourseDetailPage";
-import PaymentCheckoutPage from "../pages/PaymentCheckoutPage";
-import PaymentResultPage from "../pages/PaymentResultPage";
-import ViewCoursesPage from "../pages/ViewCoursesPage";
-import AboutPage from "../../../shared/components/AboutPage";
-import BlogPage from "../../../shared/components/BlogPage";
-import ContactPage from "../../../shared/components/ContactPage";
+import Homepage from "../pages/home/Homepage";
+import CourseDetailPage from "../pages/detail/CourseDetailPage";
+import PaymentCheckoutPage from "../pages/payment/PaymentCheckoutPage";
+import PaymentResultPage from "../pages/payment/PaymentResultPage";
+import ViewCoursesPage from "../pages/catalog/ViewCoursesPage";
+import AboutPage from "../../../shared/components/about/AboutPage";
+import BlogPage from "../../../shared/components/blog/BlogPage";
+import ContactPage from "../../../shared/components/contact/ContactPage";
 
 const courseRoutes = [
     {
