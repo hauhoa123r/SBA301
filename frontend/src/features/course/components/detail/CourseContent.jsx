@@ -30,11 +30,7 @@ export default function CourseContent({
 
                     return (
                         <div key={chapter.id} className="border-b border-brand-accent/10 last:border-b-0">
-                            <button
-                                type="button"
-                                onClick={() => onToggleChapter(chapter.id)}
-                                className="flex w-full items-center justify-between gap-4 bg-brand-light/80 px-6 py-5 text-left transition hover:bg-brand-accent/10"
-                            >
+                            <button type="button" onClick={() => onToggleChapter(chapter.id)} className="flex w-full items-center justify-between gap-4 bg-brand-light/80 px-6 py-5 text-left transition hover:bg-brand-accent/10">
                                 <span className="flex min-w-0 items-center gap-4">
                                     <span className="text-2xl font-black text-brand-accentSoft">{isExpanded ? "-" : "+"}</span>
                                     <span className="min-w-0 break-words text-xl font-black text-brand-white">

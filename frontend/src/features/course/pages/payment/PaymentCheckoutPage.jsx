@@ -26,11 +26,7 @@ export default function PaymentCheckoutPage() {
 
     return (
         <section className="relative mx-auto max-w-5xl px-6 py-12 text-brand-textPrimary">
-            <button
-                type="button"
-                onClick={() => navigate(-1)}
-                className="mb-8 inline-flex items-center gap-2 text-sm font-black text-brand-textSecondary transition hover:text-brand-white"
-            >
+            <button type="button" onClick={() => navigate(-1)} className="mb-8 inline-flex items-center gap-2 text-sm font-black text-brand-textSecondary transition hover:text-brand-white">
                 <ArrowLeft className="h-4 w-4" />
                 Quay lại
             </button>
@@ -64,12 +60,7 @@ export default function PaymentCheckoutPage() {
                     </div>
 
                     {payment.paymentLink && (
-                        <a
-                            href={payment.paymentLink}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="mt-8 inline-flex h-14 items-center justify-center gap-2 rounded-full bg-brand-accent px-6 text-base font-black text-brand-white transition hover:bg-brand-accentHover"
-                        >
+                        <a href={payment.paymentLink} target="_blank" rel="noreferrer" className="mt-8 inline-flex h-14 items-center justify-center gap-2 rounded-full bg-brand-accent px-6 text-base font-black text-brand-white transition hover:bg-brand-accentHover">
                             <ExternalLink className="h-5 w-5" />
                             Tiếp tục thanh toán
                         </a>

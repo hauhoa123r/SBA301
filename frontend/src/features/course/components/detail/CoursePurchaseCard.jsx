@@ -43,12 +43,7 @@ export default function CoursePurchaseCard({
                 <div className="mt-6 rounded-2xl border border-brand-accent/10 bg-brand-light/70 p-4">
                     <label className="mb-2 block text-xs font-black uppercase tracking-wider text-brand-textSecondary">Voucher</label>
                     <div className="flex gap-2">
-                        <input
-                            value={voucher}
-                            onChange={(event) => onVoucherChange(event.target.value)}
-                            placeholder="Nhập EDUJAR10"
-                            className="h-11 min-w-0 flex-1 rounded-xl border border-brand-accent/20 bg-brand-dark px-4 text-sm font-semibold text-brand-white outline-none transition placeholder:text-brand-textSecondary/50 focus:border-brand-accent/60"
-                        />
+                        <input value={voucher} onChange={(event) => onVoucherChange(event.target.value)} placeholder="Nhập EDUJAR10" className="h-11 min-w-0 flex-1 rounded-xl border border-brand-accent/20 bg-brand-dark px-4 text-sm font-semibold text-brand-white outline-none transition placeholder:text-brand-textSecondary/50 focus:border-brand-accent/60" />
                         <button type="button" onClick={onVerifyVoucher} className="inline-flex h-11 items-center gap-2 rounded-xl border border-brand-accent/30 px-4 text-sm font-black text-brand-accentSoft transition hover:bg-brand-accent/10 hover:text-brand-white">
                             <BadgePercent className="h-4 w-4" />
                             Verify

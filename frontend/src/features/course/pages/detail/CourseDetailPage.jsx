@@ -92,6 +92,11 @@ export default function CourseDetailPage() {
         setVoucherStatus(normalizedVoucher === "EDUJAR10" ? "valid" : "invalid");
     };
 
+    const handleVoucherChange = (value) => {
+        setVoucher(value);
+        setVoucherStatus(null);
+    };
+
     const toggleChapter = (chapterId) => {
         setExpandedChapters((prev) => {
             const next = new Set(prev);
@@ -113,13 +118,7 @@ export default function CourseDetailPage() {
             <div className="fixed inset-0 pointer-events-none">
                 <div className="absolute left-[-12%] top-[-20%] h-[520px] w-[520px] rounded-full bg-brand-accent/15 blur-[120px]" />
                 <div className="absolute bottom-[-18%] right-[-10%] h-[520px] w-[520px] rounded-full bg-brand-accentDeep/25 blur-[120px]" />
-                <div
-                    className="absolute inset-0 opacity-[0.03]"
-                    style={{
-                        backgroundImage: `linear-gradient(var(--color-brand-accent) 1px, var(--color-brand-transparent) 1px), linear-gradient(90deg, var(--color-brand-accent) 1px, var(--color-brand-transparent) 1px)`,
-                        backgroundSize: "60px 60px",
-                    }}
-                />
+                <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `linear-gradient(var(--color-brand-accent) 1px, var(--color-brand-transparent) 1px), linear-gradient(90deg, var(--color-brand-accent) 1px, var(--color-brand-transparent) 1px)`, backgroundSize: "60px 60px" }} />
             </div>
 
             <section className="relative z-10 mx-auto grid max-w-[1500px] gap-10 px-6 py-12 lg:grid-cols-[minmax(0,1fr)_440px] xl:gap-14">
@@ -151,37 +150,13 @@ export default function CourseDetailPage() {
                         </span>
                     </div>
 
-                    <CourseContent
-                        chapters={courseChapters}
-                        courseDuration={course.duration}
-                        totalLessons={totalLessons}
-                        expandedChapters={expandedChapters}
-                        onToggleChapter={toggleChapter}
-                        onExpandAll={expandAll}
-                    />
+                    <CourseContent chapters={courseChapters} courseDuration={course.duration} totalLessons={totalLessons} expandedChapters={expandedChapters} onToggleChapter={toggleChapter} onExpandAll={expandAll} />
                 </section>
 
-                <CoursePurchaseCard
-                    course={course}
-                    finalPrice={finalPrice}
-                    isVoucherValid={isVoucherValid}
-                    voucher={voucher}
-                    voucherStatus={voucherStatus}
-                    totalLessons={totalLessons}
-                    onVoucherChange={(value) => {
-                        setVoucher(value);
-                        setVoucherStatus(null);
-                    }}
-                    onVerifyVoucher={handleVerifyVoucher}
-                    onPurchase={openPaymentPage}
-                />
+                <CoursePurchaseCard course={course} finalPrice={finalPrice} isVoucherValid={isVoucherValid} voucher={voucher} voucherStatus={voucherStatus} totalLessons={totalLessons} onVoucherChange={handleVoucherChange} onVerifyVoucher={handleVerifyVoucher} onPurchase={openPaymentPage} />
             </section>
 
-            <PaymentMethodModal
-                course={course}
-                open={isPaymentModalOpen}
-                onClose={() => setIsPaymentModalOpen(false)}
-            />
+            <PaymentMethodModal course={course} open={isPaymentModalOpen} onClose={() => setIsPaymentModalOpen(false)} />
         </div>
     );
 }

@@ -21,16 +21,9 @@ export default function CourseList({ courses, isLoading = false }) {
     return (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
             {courses.map((course) => (
-                <article
-                    key={course.id}
-                    className="overflow-hidden rounded-2xl border border-brand-accent/10 bg-brand-cardBg shadow-xl shadow-brand-accent/5 transition hover:-translate-y-1 hover:border-brand-accent/40"
-                >
+                <article key={course.id} className="overflow-hidden rounded-2xl border border-brand-accent/10 bg-brand-cardBg shadow-xl shadow-brand-accent/5 transition hover:-translate-y-1 hover:border-brand-accent/40">
                     <div className="aspect-video overflow-hidden">
-                        <img
-                            src={course.thumbnail_url || "/images/logo-removebg-preview.png"}
-                            alt={course.title}
-                            className="h-full w-full object-cover"
-                        />
+                        <img src={course.thumbnail_url || "/images/logo-removebg-preview.png"} alt={course.title} className="h-full w-full object-cover" />
                     </div>
 
                     <div className="p-5">
@@ -43,9 +36,7 @@ export default function CourseList({ courses, isLoading = false }) {
                             </span>
                         </div>
 
-                        <h2
-                            className="mb-2 min-h-14 break-words text-lg font-bold leading-7 text-brand-white"
-                        >
+                        <h2 className="mb-2 min-h-14 break-words text-lg font-bold leading-7 text-brand-white">
                             {course.title}
                         </h2>
 
@@ -78,10 +69,7 @@ export default function CourseList({ courses, isLoading = false }) {
                             </div>
                         </div>
 
-                        <Link
-                            to={`/courses/${course.id}`}
-                            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-brand-accent/30 px-4 py-3 text-sm font-semibold text-brand-accentSoft no-underline transition hover:border-brand-accent/60 hover:bg-brand-accent/10 hover:text-brand-white"
-                        >
+                        <Link to={`/courses/${course.id}`} className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-brand-accent/30 px-4 py-3 text-sm font-semibold text-brand-accentSoft no-underline transition hover:border-brand-accent/60 hover:bg-brand-accent/10 hover:text-brand-white">
                             <Eye className="h-4 w-4" />
                             View Detail
                         </Link>
