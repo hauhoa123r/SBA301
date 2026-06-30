@@ -1,29 +1,4 @@
-import { Award, BookOpen, GraduationCap, ShieldCheck, Users, Zap } from "lucide-react";
-
-const highlights = [
-    { icon: Users, value: "120K+", label: "Active learners" },
-    { icon: BookOpen, value: "1,800+", label: "Expert courses" },
-    { icon: GraduationCap, value: "340+", label: "Instructors" },
-    { icon: Award, value: "98%", label: "Satisfaction rate" },
-];
-
-const values = [
-    {
-        icon: Zap,
-        title: "Practical learning",
-        description: "Courses focus on usable skills, guided practice, quizzes, assignments, and measurable progress.",
-    },
-    {
-        icon: ShieldCheck,
-        title: "Quality-first content",
-        description: "Teacher courses are reviewed before publication so students can learn with confidence.",
-    },
-    {
-        icon: Users,
-        title: "Connected community",
-        description: "Students can discuss lessons, ask questions, review courses, and grow together.",
-    },
-];
+import { ABOUT_HIGHLIGHTS, ABOUT_VALUES } from "../../services/about/about.mockup";
 
 export default function AboutPage() {
     return (
@@ -50,15 +25,15 @@ export default function AboutPage() {
                                 className="text-4xl font-extrabold leading-tight text-brand-white md:text-6xl"
                                 style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
                             >
-                                A smarter place to build real learning momentum
+                                Learn Chinese with a clear path from pinyin to real conversations
                             </h1>
                             <p className="mt-5 text-base leading-7 text-brand-textSecondary md:text-lg">
-                                Edujar is an online learning platform for students, teachers, and education teams. The system supports courses, learning progress, quizzes, assignments, certificates, subscriptions, reviews, and community discussions.
+                                Edujar helps Vietnamese learners study Chinese through HSK-focused lessons, practical vocabulary, pronunciation practice, and guided review. Each course is designed to make Mandarin easier to understand, remember, and use in daily life.
                             </p>
                         </div>
 
                         <div className="mt-14 grid gap-4 md:grid-cols-4">
-                            {highlights.map(({ icon: Icon, value, label }) => (
+                            {ABOUT_HIGHLIGHTS.map(({ icon: Icon, value, label }) => (
                                 <div key={label} className="rounded-2xl border border-brand-accent/10 bg-brand-cardBg p-5 text-center shadow-xl shadow-brand-accent/5">
                                     <Icon className="mx-auto mb-3 h-5 w-5 text-brand-accentSoft" />
                                     <div className="text-2xl font-extrabold text-brand-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
@@ -73,7 +48,7 @@ export default function AboutPage() {
 
                 <section className="px-6 pb-24">
                     <div className="container mx-auto grid gap-6 md:grid-cols-3">
-                        {values.map(({ icon: Icon, title, description }) => (
+                        {ABOUT_VALUES.map(({ icon: Icon, title, description }) => (
                             <article key={title} className="rounded-2xl border border-brand-accent/10 bg-brand-cardBg p-6 shadow-xl shadow-brand-accent/5">
                                 <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-brand-accent/20 bg-brand-accent/10 text-brand-accentSoft">
                                     <Icon className="h-5 w-5" />

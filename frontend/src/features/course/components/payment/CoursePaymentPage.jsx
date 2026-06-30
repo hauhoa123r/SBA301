@@ -1,5 +1,5 @@
 import { ArrowLeft, Copy, Download, Info, LockKeyhole, Timer } from "lucide-react";
-import { paymentInfo } from "../shared/courseDetailData";
+import { paymentInfo } from "../../services/data/courseDetailData";
 
 export default function CoursePaymentPage({ course, amount, countdownSeconds, onBack }) {
     const formatAmount = (value) => `${new Intl.NumberFormat("vi-VN").format(value)}đ`;
