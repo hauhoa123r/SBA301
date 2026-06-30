@@ -171,7 +171,8 @@ INSERT INTO tags (id, name, slug) VALUES
 INSERT INTO plans (id, name, duration_days, price, created_at) VALUES
 (1, 'Basic 1 thang', 30, 199000.00, '2026-01-01 08:00:00'),
 (2, 'Standard 3 thang', 90, 499000.00, '2026-01-01 08:00:00'),
-(3, 'Premium 12 thang', 365, 1499000.00, '2026-01-01 08:00:00');
+(3, 'Premium 12 thang', 365, 1499000.00, '2026-01-01 08:00:00'),
+(4, 'Mini course 5K', 7, 5000.00, '2026-07-01 08:00:00');
 
 -- 6. users
 INSERT INTO users (id, full_name, email, password_hash, status, total_learning_points, referral_code, created_at, updated_at) VALUES
@@ -220,17 +221,18 @@ INSERT INTO courses (id, teacher_id, category_id, title, description, thumbnail_
 (5, 4, 3, 'Tieng Trung thuong mai ung dung', 'Hoi hop, email, bao gia, dam phan va cham soc khach hang bang tieng Trung.', 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80', 'PENDING', '2026-03-01 08:00:00', '2026-06-14 08:00:00'),
 (6, 6, 6, 'Phat am Pinyin chuan ngay tu dau', 'Luyen thanh mau, van mau, thanh dieu va sua loi phat am pho bien.', 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80', 'DRAFT', '2026-03-03 08:00:00', '2026-06-15 08:00:00'),
 (7, 5, 5, 'Ngu phap tieng Trung cho nguoi moi', 'Giai thich cac mau cau co ban voi vi du thuc te trong giao tiep.', 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1200&q=80', 'HIDDEN', '2026-03-05 08:00:00', '2026-06-16 08:00:00'),
-(8, 4, 6, 'Nghe noi tieng Trung moi ngay', 'Bai nghe ngan theo chu de va bai tap phan xa hoi thoai.', 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80', 'PUBLISHED', '2026-03-07 08:00:00', '2026-06-17 08:00:00');
+(8, 4, 6, 'Nghe noi tieng Trung moi ngay', 'Bai nghe ngan theo chu de va bai tap phan xa hoi thoai.', 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80', 'PUBLISHED', '2026-03-07 08:00:00', '2026-06-17 08:00:00'),
+(9, 4, 2, 'Mini HSK 1 5K', 'Khoa hoc mini gia 5.000 VND de test thanh toan PayOS va on nhanh Pinyin, chao hoi, so dem HSK 1.', 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1200&q=80', 'PUBLISHED', '2026-07-01 08:00:00', '2026-07-01 08:00:00');
 
 -- 11. course_plan_access
 INSERT INTO course_plan_access (course_id, plan_id) VALUES
 (1, 1), (1, 2), (1, 3), (2, 1), (2, 2), (2, 3), (3, 2), (3, 3), (4, 2), (4, 3),
-(5, 3), (6, 1), (6, 2), (7, 1), (7, 2), (8, 1), (8, 2), (8, 3);
+(5, 3), (6, 1), (6, 2), (7, 1), (7, 2), (8, 1), (8, 2), (8, 3), (9, 4);
 
 -- 12. course_tags
 INSERT INTO course_tags (course_id, tag_id) VALUES
 (1, 1), (1, 4), (1, 5), (2, 1), (2, 2), (2, 7), (3, 3), (3, 5), (4, 4), (4, 8),
-(5, 6), (5, 4), (6, 1), (6, 5), (7, 2), (7, 7), (8, 4), (8, 5);
+(5, 6), (5, 4), (6, 1), (6, 5), (7, 2), (7, 7), (8, 4), (8, 5), (9, 1), (9, 2);
 
 -- 13. chapters
 INSERT INTO chapters (id, course_id, title, order_index) VALUES
@@ -249,7 +251,8 @@ INSERT INTO chapters (id, course_id, title, order_index) VALUES
 (13, 7, 'Ngu phap nen tang', 1),
 (14, 7, 'Mau cau thuong dung', 2),
 (15, 8, 'Nghe noi chu de sinh hoat', 1),
-(16, 8, 'Phan xa hoi thoai ngan', 2);
+(16, 8, 'Phan xa hoi thoai ngan', 2),
+(17, 9, 'Mini HSK 1 trong 30 phut', 1);
 
 -- 14. lessons
 INSERT INTO lessons (id, chapter_id, title, video_url, duration_seconds, order_index) VALUES
@@ -284,7 +287,9 @@ INSERT INTO lessons (id, chapter_id, title, video_url, duration_seconds, order_i
 (29, 15, 'Nghe chu de an uong', 'https://cdn.chineselearning.vn/videos/lesson-029.mp4', 760, 1),
 (30, 15, 'Nghe chu de mua sam', 'https://cdn.chineselearning.vn/videos/lesson-030.mp4', 800, 2),
 (31, 16, 'Hoi thoai tai ga tau dien', 'https://cdn.chineselearning.vn/videos/lesson-031.mp4', 820, 1),
-(32, 16, 'Phan xa dat mon tai nha hang', 'https://cdn.chineselearning.vn/videos/lesson-032.mp4', 850, 2);
+(32, 16, 'Phan xa dat mon tai nha hang', 'https://cdn.chineselearning.vn/videos/lesson-032.mp4', 850, 2),
+(33, 17, 'Pinyin va chao hoi sieu nhanh', 'https://cdn.chineselearning.vn/videos/lesson-033.mp4', 600, 1),
+(34, 17, 'So dem va mau cau HSK 1 can biet', 'https://cdn.chineselearning.vn/videos/lesson-034.mp4', 720, 2);
 
 -- 15. lesson_documents
 INSERT INTO lesson_documents (id, lesson_id, title, file_url, created_at) VALUES
@@ -665,12 +670,12 @@ ALTER TABLE roles AUTO_INCREMENT = 5;
 ALTER TABLE permissions AUTO_INCREMENT = 15;
 ALTER TABLE categories AUTO_INCREMENT = 7;
 ALTER TABLE tags AUTO_INCREMENT = 9;
-ALTER TABLE plans AUTO_INCREMENT = 4;
+ALTER TABLE plans AUTO_INCREMENT = 5;
 ALTER TABLE users AUTO_INCREMENT = 16;
 ALTER TABLE verification_tokens AUTO_INCREMENT = 6;
-ALTER TABLE courses AUTO_INCREMENT = 9;
-ALTER TABLE chapters AUTO_INCREMENT = 17;
-ALTER TABLE lessons AUTO_INCREMENT = 33;
+ALTER TABLE courses AUTO_INCREMENT = 10;
+ALTER TABLE chapters AUTO_INCREMENT = 18;
+ALTER TABLE lessons AUTO_INCREMENT = 35;
 ALTER TABLE lesson_documents AUTO_INCREMENT = 9;
 ALTER TABLE quizzes AUTO_INCREMENT = 13;
 ALTER TABLE questions AUTO_INCREMENT = 25;

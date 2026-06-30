@@ -5,7 +5,8 @@ import NotFoundPage from "../../../../shared/pages/NotFoundPage";
 import CourseContent from "../../components/detail/CourseContent";
 import CoursePurchaseCard from "../../components/detail/CoursePurchaseCard";
 import PaymentMethodModal from "../../components/payment/PaymentMethodModal";
-import { getCourseById } from "../../services/api/course.service";
+import { verifyCoupon } from "../../services/api/coupon.service";
+import { getCourseById } from "../../services/api/courseService";
 
 export default function CourseDetailPage() {
     const { id } = useParams();
@@ -13,6 +14,8 @@ export default function CourseDetailPage() {
     const setShowChrome = layoutContext?.setShowChrome;
     const [voucher, setVoucher] = useState("");
     const [voucherStatus, setVoucherStatus] = useState(null);
+    const [verifiedCoupon, setVerifiedCoupon] = useState(null);
+    const [isVerifyingVoucher, setIsVerifyingVoucher] = useState(false);
     const [expandedChapters, setExpandedChapters] = useState(() => new Set([1]));
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
     const [course, setCourse] = useState(null);
@@ -63,13 +66,21 @@ export default function CourseDetailPage() {
 
     if (isNotFound || !course) return <NotFoundPage />;
 
-    const isVoucherValid = voucherStatus === "valid";
-    const discountAmount = isVoucherValid ? course.price * 0.1 : 0;
+    const isVoucherValid = voucherStatus === "VALID" && Boolean(verifiedCoupon);
+    const calculateDiscountAmount = () => {
+        if (!isVoucherValid) return 0;
+        const discountValue = Number(verifiedCoupon.discountValue || 0);
+        const discountAmount = verifiedCoupon.discountType === "PERCENTAGE"
+            ? course.price * (discountValue / 100)
+            : discountValue;
+        return Math.min(course.price, Math.max(0, discountAmount));
+    };
+    const discountAmount = calculateDiscountAmount();
     const finalPrice = Math.max(0, course.price - discountAmount);
     const courseChapters = course.chapters ?? [];
     const totalLessons = course.totalLessons ?? courseChapters.reduce((total, chapter) => total + chapter.lessons.length, 0);
     const formatPrice = (value) => {
-        if (!value) return "Miễn phí";
+        if (!value) return "Free";
 
         return new Intl.NumberFormat("vi-VN", {
             style: "currency",
@@ -81,20 +92,37 @@ export default function CourseDetailPage() {
         setIsPaymentModalOpen(true);
     };
 
-    const handleVerifyVoucher = () => {
+    const handleVerifyVoucher = async () => {
         const normalizedVoucher = voucher.trim().toUpperCase();
 
         if (!normalizedVoucher) {
             setVoucherStatus("empty");
+            setVerifiedCoupon(null);
             return;
         }
 
-        setVoucherStatus(normalizedVoucher === "EDUJAR10" ? "valid" : "invalid");
+        setIsVerifyingVoucher(true);
+        try {
+            const data = await verifyCoupon(normalizedVoucher);
+            if (data.status === "VALID") {
+                setVoucherStatus("VALID");
+                setVerifiedCoupon(data);
+            } else {
+                setVoucherStatus(data.status);
+                setVerifiedCoupon(null);
+            }
+        } catch (err) {
+            setVoucherStatus(err?.response?.data?.status || "invalid");
+            setVerifiedCoupon(null);
+        } finally {
+            setIsVerifyingVoucher(false);
+        }
     };
 
     const handleVoucherChange = (value) => {
         setVoucher(value);
         setVoucherStatus(null);
+        setVerifiedCoupon(null);
     };
 
     const toggleChapter = (chapterId) => {
@@ -142,7 +170,7 @@ export default function CourseDetailPage() {
                         </span>
                         <span className="inline-flex items-center gap-2">
                             <Users className="h-5 w-5 text-brand-accentSoft" />
-                            {course.students.toLocaleString("vi-VN")} học viên
+                            {course.students.toLocaleString("vi-VN")} students
                         </span>
                         <span className="inline-flex items-center gap-3">
                             <span className="grid h-9 w-9 place-items-center rounded-full bg-brand-accent text-sm font-black text-brand-white">{course.instructor.charAt(0)}</span>
@@ -153,10 +181,10 @@ export default function CourseDetailPage() {
                     <CourseContent chapters={courseChapters} courseDuration={course.duration} totalLessons={totalLessons} expandedChapters={expandedChapters} onToggleChapter={toggleChapter} onExpandAll={expandAll} />
                 </section>
 
-                <CoursePurchaseCard course={course} finalPrice={finalPrice} isVoucherValid={isVoucherValid} voucher={voucher} voucherStatus={voucherStatus} totalLessons={totalLessons} onVoucherChange={handleVoucherChange} onVerifyVoucher={handleVerifyVoucher} onPurchase={openPaymentPage} />
+                <CoursePurchaseCard course={course} finalPrice={finalPrice} discountAmount={discountAmount} isVoucherValid={isVoucherValid} isVerifyingVoucher={isVerifyingVoucher} voucher={voucher} voucherStatus={voucherStatus} totalLessons={totalLessons} onVoucherChange={handleVoucherChange} onVerifyVoucher={handleVerifyVoucher} onPurchase={openPaymentPage} />
             </section>
 
-            <PaymentMethodModal course={course} open={isPaymentModalOpen} onClose={() => setIsPaymentModalOpen(false)} />
+            <PaymentMethodModal course={course} open={isPaymentModalOpen} couponCode={isVoucherValid ? verifiedCoupon.code : ""} finalPrice={finalPrice} discountAmount={discountAmount} onClose={() => setIsPaymentModalOpen(false)} />
         </div>
     );
 }

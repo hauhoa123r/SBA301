@@ -1,0 +1,21 @@
+package com.app.features.coupons.service.impl;
+
+import com.app.features.coupons.converter.VerifiedCouponConverter;
+import com.app.features.coupons.dto.response.VerifiedCouponResponse;
+import com.app.features.coupons.repository.ICouponRepository;
+import com.app.features.coupons.service.ICouponService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class CouponServiceImpl implements ICouponService {
+    private final ICouponRepository couponRepository;
+    private final VerifiedCouponConverter verifiedCouponConverter;
+
+    @Override
+    public VerifiedCouponResponse verifiedCouponRequest(String vourcherCode) {
+        return verifiedCouponConverter.toVerifiedVoucher(vourcherCode);
+    }
+
+}

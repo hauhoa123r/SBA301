@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 public record PaymentCreateRequest(
         @NotNull Long courseId,
         Long planId,
-        @NotNull PaymentProvider provider
+        @NotNull PaymentProvider provider,
+        String couponCode
 ) {
 }

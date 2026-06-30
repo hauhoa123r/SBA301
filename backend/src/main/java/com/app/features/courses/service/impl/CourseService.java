@@ -1,41 +1,40 @@
 package com.app.features.courses.service.impl;
 
 import com.app.exception.ResourceNotFoundException;
-import com.app.features.courses.dto.response.ChapterResponse;
-import com.app.features.courses.dto.response.CourseResponse;
-import com.app.features.courses.dto.response.LessonResponse;
+import com.app.features.courses.converter.CourseResponseConverter;
+import com.app.features.courses.dto.response.CourseCatalogResponse;
+import com.app.features.courses.dto.response.CourseDetailResponse;
 import com.app.features.courses.repository.ICourseRepository;
+import com.app.features.courses.repository.projection.CourseLessonStats;
 import com.app.features.courses.service.ICourseService;
-import com.app.features.model.CategoryEntity;
-import com.app.features.model.ChapterEntity;
 import com.app.features.model.CourseEntity;
-import com.app.features.model.LessonEntity;
-import com.app.features.model.PlanEntity;
-import com.app.features.model.UserEntity;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
 public class CourseService implements ICourseService {
     private final ICourseRepository courseRepository;
-    private final ModelMapper modelMapper;
+    private final CourseResponseConverter courseResponseConverter;
 
     @Override
     @Transactional(readOnly = true)
-    public List<CourseResponse> getAllCourses() {
-        return courseRepository.findAll()
-                .stream()
-                .map(this::toCourseResponse)
-                .toList();
+    public List<CourseCatalogResponse> getAllCourses() {
+        List<CourseEntity> courses = courseRepository.findAll();
+        Map<Long, CourseLessonStats> lessonStatsByCourseId = getLessonStatsByCourseId(courses);
+
+        return courses.stream()
+                .map(course ->
+                        courseResponseConverter.toCourseCatalogResponse(course, lessonStatsByCourseId.get(course.getId())
+                )).toList();
     }
 
     @Override
@@ -81,90 +80,14 @@ public class CourseService implements ICourseService {
         return response;
     }
 
-    private BigDecimal getLowestPlanPrice(CourseEntity course) {
-        if (course.getPlans() == null || course.getPlans().isEmpty()) {
-            return BigDecimal.ZERO;
+    private Map<Long, CourseLessonStats> getLessonStatsByCourseId(List<CourseEntity> courses) {
+        List<Long> courseIds = courses.stream().map(CourseEntity::getId).filter(Objects::nonNull).toList();
+        if (courseIds.isEmpty()) {
+            return Map.of();
         }
-
-        return course.getPlans()
+        return courseRepository.findLessonStatsByCourseIds(courseIds)
                 .stream()
-                .map(PlanEntity::getPrice)
-                .filter(Objects::nonNull)
-                .min(BigDecimal::compareTo)
-                .orElse(BigDecimal.ZERO);
-    }
-
-    private List<ChapterResponse> toChapterResponses(CourseEntity course) {
-        if (course.getChapterEntities() == null) {
-            return List.of();
-        }
-
-        return course.getChapterEntities()
-                .stream()
-                .sorted(Comparator.comparing(ChapterEntity::getOrderIndex, Comparator.nullsLast(Integer::compareTo)))
-                .map(this::toChapterResponse)
-                .toList();
-    }
-
-    private ChapterResponse toChapterResponse(ChapterEntity chapter) {
-        List<LessonResponse> lessons = chapter.getLessonEntities() == null
-                ? List.of()
-                : chapter.getLessonEntities()
-                .stream()
-                .sorted(Comparator.comparing(LessonEntity::getOrderIndex, Comparator.nullsLast(Integer::compareTo)))
-                .map(this::toLessonResponse)
-                .toList();
-
-        return new ChapterResponse(
-                chapter.getId(),
-                chapter.getTitle(),
-                chapter.getOrderIndex(),
-                lessons
-        );
-    }
-
-    private LessonResponse toLessonResponse(LessonEntity lesson) {
-        Integer durationSeconds = lesson.getDurationSeconds() == null ? 0 : lesson.getDurationSeconds();
-        return new LessonResponse(
-                lesson.getId(),
-                lesson.getTitle(),
-                lesson.getVideoUrl(),
-                durationSeconds,
-                formatDuration(durationSeconds),
-                lesson.getOrderIndex()
-        );
-    }
-
-    private Integer countTotalLessons(List<ChapterResponse> chapters) {
-        return chapters.stream()
-                .mapToInt(chapter -> chapter.getLessons() == null ? 0 : chapter.getLessons().size())
-                .sum();
-    }
-
-    private Integer countTotalDurationSeconds(List<ChapterResponse> chapters) {
-        return chapters.stream()
-                .flatMap(chapter -> chapter.getLessons() == null ? List.<LessonResponse>of().stream() : chapter.getLessons().stream())
-                .map(LessonResponse::getDurationSeconds)
-                .filter(Objects::nonNull)
-                .mapToInt(Integer::intValue)
-                .sum();
-    }
-
-    private String formatDuration(Integer totalSeconds) {
-        int seconds = totalSeconds == null ? 0 : totalSeconds;
-        int hours = seconds / 3600;
-        int minutes = (seconds % 3600) / 60;
-
-        if (hours > 0 && minutes > 0) {
-            return hours + " giờ " + minutes + " phút";
-        }
-        if (hours > 0) {
-            return hours + " giờ";
-        }
-        if (minutes > 0) {
-            return minutes + " phút";
-        }
-        return "Đang cập nhật";
+                .collect(Collectors.toMap(CourseLessonStats::getCourseId, Function.identity()));
     }
 
 

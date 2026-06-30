@@ -1,6 +1,7 @@
 package com.app.features.payments.service.impl;
 
 import com.app.exception.ResourceNotFoundException;
+import com.app.features.model.CouponEntity;
 import com.app.features.model.InvoiceEntity;
 import com.app.features.model.PaymentEntity;
 import com.app.features.model.enums.InvoiceStatus;
@@ -53,10 +54,21 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
 
         invoiceConverter.applyPaymentResult(invoice, verifyResponse.success());
         if (verifyResponse.success()) {
+            increaseCouponUsage(invoice);
             paymentSubscriptionService.activateFromPaidInvoice(invoice, payment);
         }
         invoiceRepository.save(invoice);
 
         return verifyResponse;
+    }
+
+    private void increaseCouponUsage(InvoiceEntity invoice) {
+        CouponEntity coupon = invoice.getCoupon();
+        if (coupon == null) {
+            return;
+        }
+
+        int usedCount = coupon.getUsedCount() == null ? 0 : coupon.getUsedCount();
+        coupon.setUsedCount(usedCount + 1);
     }
 }

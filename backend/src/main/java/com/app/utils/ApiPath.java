@@ -11,7 +11,7 @@ public final class ApiPath {
     public static final String API_CATEGORIES = BASE + "/categories";
     public static final String API_CERTIFICATES = BASE + "/certificates";
     public static final String API_CHAPTERS = BASE + "/chapters";
-    public static final String API_COUPONS = BASE + "/coupons";
+    public static final String API_COUPON = BASE + "/coupon";
     public static final String API_COURSE_ENROLLMENTS = BASE + "/course-enrollments";
     public static final String API_COURSE_REVIEWS = BASE + "/course-reviews";
     public static final String API_COURSES = BASE + "/courses";

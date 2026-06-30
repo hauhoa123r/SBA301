@@ -13,14 +13,14 @@ export default function CourseContent({
             <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <h2 className="text-3xl font-black text-brand-white">
-                        Nội dung khóa học
+                        Course content
                     </h2>
                     <p className="mt-4 text-base font-semibold text-brand-textSecondary">
-                        {chapters.length} chương <span className="mx-2 text-brand-accent">•</span> {totalLessons} bài học <span className="mx-2 text-brand-accent">•</span> {courseDuration}
+                        {chapters.length} chapters <span className="mx-2 text-brand-accent">•</span> {totalLessons} lessons <span className="mx-2 text-brand-accent">•</span> {courseDuration}
                     </p>
                 </div>
                 <button type="button" onClick={onExpandAll} className="w-fit text-sm font-extrabold text-brand-accentSoft transition hover:text-brand-white">
-                    Mở rộng tất cả
+                    Expand all
                 </button>
             </div>
 
@@ -37,7 +37,7 @@ export default function CourseContent({
                                         {chapter.orderIndex}. {chapter.title}
                                     </span>
                                 </span>
-                                <span className="shrink-0 text-sm font-semibold text-brand-textSecondary sm:text-base">{chapter.lessons.length} bài học</span>
+                                <span className="shrink-0 text-sm font-semibold text-brand-textSecondary sm:text-base">{chapter.lessons.length} lessons</span>
                             </button>
 
                             {isExpanded && (

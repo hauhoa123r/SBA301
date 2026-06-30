@@ -6,30 +6,213 @@ import com.app.features.payments.dto.PaymentCreateRequest;
 import com.app.features.payments.dto.PaymentCreateResponse;
 import com.app.features.payments.dto.PaymentVerifyResponse;
 import com.app.features.payments.gateway.PaymentGateway;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
 
-import java.net.URLEncoder;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 @Component
 public class PayOSAdapter implements PaymentGateway {
+    private static final String HMAC_SHA256 = "HmacSHA256";
+
+    private final RestClient restClient;
+
+    @Value("${payos.client-id:}")
+    private String clientId;
+
+    @Value("${payos.api-key:}")
+    private String apiKey;
+
+    @Value("${payos.checksum-key:}")
+    private String checksumKey;
+
+    @Value("${payos.create-payment-url:https://api-merchant.payos.vn/v2/payment-requests}")
+    private String createPaymentUrl;
+
+    @Value("${app.frontend.payment-result-url:http://localhost:5173/payment/result}")
+    private String paymentResultUrl;
+
+    public PayOSAdapter() {
+        this.restClient = RestClient.create();
+    }
+
     @Override
     public PaymentCreateResponse createPayment(PaymentCreateRequest request, InvoiceEntity invoice, String invoiceCode) {
-        String paymentLink = "https://pay.payos.vn/web/" + invoiceCode;
-        String qrCode = "https://api.qrserver.com/v1/create-qr-code/?size=260x260&data="
-                + URLEncoder.encode(paymentLink, StandardCharsets.UTF_8);
-        return new PaymentCreateResponse(invoice.getId(), invoiceCode, provider(), invoice.getAmount(), null, qrCode, paymentLink);
+        String resolvedClientId = resolveConfig(clientId, "PAYOS_CLIENT_ID", "CLIENT_ID");
+        String resolvedApiKey = resolveConfig(apiKey, "PAYOS_API_KEY", "API_BANK_KEY");
+        String resolvedChecksumKey = resolveConfig(checksumKey, "PAYOS_CHECKSUM_KEY", "CHECKSUM_KEY");
+
+        if (isBlank(resolvedClientId) || isBlank(resolvedApiKey) || isBlank(resolvedChecksumKey)) {
+            throw new IllegalStateException("Missing payOS configuration. Please set PAYOS_CLIENT_ID, PAYOS_API_KEY, and PAYOS_CHECKSUM_KEY.");
+        }
+
+        long orderCode = invoice.getId();
+        long amount = invoice.getAmount().setScale(0, RoundingMode.HALF_UP).longValueExact();
+        String description = shorten(invoiceCode, 25);
+        String returnUrl = paymentResultUrl + "?success=true&invoiceCode=" + invoiceCode + "&message=payOS%20success";
+        String cancelUrl = paymentResultUrl + "?success=false&invoiceCode=" + invoiceCode + "&message=Payment%20cancelled";
+
+        Map<String, Object> signaturePayload = new LinkedHashMap<>();
+        signaturePayload.put("amount", amount);
+        signaturePayload.put("cancelUrl", cancelUrl);
+        signaturePayload.put("description", description);
+        signaturePayload.put("orderCode", orderCode);
+        signaturePayload.put("returnUrl", returnUrl);
+
+        Map<String, Object> requestBody = new LinkedHashMap<>(signaturePayload);
+        requestBody.put("signature", sign(signaturePayload, resolvedChecksumKey));
+        requestBody.put("items", new Object[]{
+                Map.of(
+                        "name", "Course " + request.courseId(),
+                        "quantity", 1,
+                        "price", amount
+                )
+        });
+
+        Map<String, Object> response = restClient.post()
+                .uri(createPaymentUrl)
+                .header("x-client-id", resolvedClientId)
+                .header("x-api-key", resolvedApiKey)
+                .body(requestBody)
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {
+                });
+
+        Map<String, Object> data = extractData(response);
+        String checkoutUrl = stringValue(data.get("checkoutUrl"));
+        String qrCode = stringValue(data.get("qrCode"));
+        String paymentLinkId = stringValue(data.get("paymentLinkId"));
+        String paymentLink = isBlank(checkoutUrl) ? stringValue(data.get("paymentLink")) : checkoutUrl;
+        String accountName = stringValue(data.get("accountName"));
+        String accountNumber = stringValue(data.get("accountNumber"));
+        String transferContent = stringValue(data.get("description"));
+        if (isBlank(transferContent)) {
+            transferContent = description;
+        }
+
+        return new PaymentCreateResponse(
+                invoice.getId(),
+                invoiceCode,
+                provider(),
+                invoice.getAmount(),
+                checkoutUrl,
+                qrCode,
+                paymentLink,
+                paymentLinkId,
+                accountName,
+                accountNumber,
+                transferContent,
+                String.valueOf(orderCode)
+        );
     }
 
     @Override
     public PaymentVerifyResponse verifyCallback(Map<String, String> params) {
-        boolean success = "PAID".equalsIgnoreCase(params.get("status"));
-        return new PaymentVerifyResponse(true, success, params.get("orderCode"), params.get("paymentLinkId"), success ? "payOS success" : "payOS failed");
+        String signature = params.get("signature");
+        Map<String, Object> signedData = params.entrySet().stream()
+                .filter(entry -> !"signature".equals(entry.getKey()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (left, right) -> right, TreeMap::new));
+
+        boolean valid = !isBlank(signature) && Objects.equals(signature, sign(signedData, resolveConfig(checksumKey, "PAYOS_CHECKSUM_KEY", "CHECKSUM_KEY")));
+        boolean success = valid && "PAID".equalsIgnoreCase(params.get("status"));
+        String invoiceCode = "INV-" + params.get("orderCode");
+
+        return new PaymentVerifyResponse(valid, success, invoiceCode, params.get("paymentLinkId"), success ? "payOS success" : "payOS failed");
     }
 
     @Override
     public PaymentProvider provider() {
         return PaymentProvider.PAYOS;
+    }
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> extractData(Map<String, Object> response) {
+        if (response == null || !(response.get("data") instanceof Map<?, ?> data)) {
+            throw new IllegalStateException("Invalid response from payOS.");
+        }
+        return (Map<String, Object>) data;
+    }
+    private String sign(Map<String, Object> data, String key) {
+        try {
+            String rawData = new TreeMap<>(data).entrySet().stream()
+                    .map(entry -> entry.getKey() + "=" + stringValue(entry.getValue()))
+                    .collect(Collectors.joining("&"));
+            Mac hmac = Mac.getInstance(HMAC_SHA256);
+            hmac.init(new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), HMAC_SHA256));
+            byte[] hash = hmac.doFinal(rawData.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hex = new StringBuilder(hash.length * 2);
+            for (byte value : hash) {
+                hex.append(String.format("%02x", value));
+            }
+            return hex.toString();
+        } catch (Exception ex) {
+            throw new IllegalStateException("Unable to sign payOS payload.", ex);
+        }
+    }
+    private String resolveConfig(String configuredValue, String... envNames) {
+        if (!isBlank(configuredValue)) {
+            return configuredValue;
+        }
+        for (String envName : envNames) {
+            String envValue = System.getenv(envName);
+            if (!isBlank(envValue)) {
+                return envValue;
+            }
+        }
+        for (String envName : envNames) {
+            String envValue = readDotEnv(envName);
+            if (!isBlank(envValue)) {
+                return envValue;
+            }
+        }
+        return "";
+    }
+
+    private String readDotEnv(String key) {
+        for (Path path : new Path[]{Path.of(".env"), Path.of("backend", ".env")}) {
+            if (!Files.exists(path)) {
+                continue;
+            }
+
+            try {
+                return Files.readAllLines(path).stream()
+                        .map(String::trim)
+                        .filter(line -> line.startsWith(key + "="))
+                        .map(line -> line.substring(key.length() + 1).trim())
+                        .map(value -> value.replaceAll("^\"|\"$", ""))
+                        .findFirst()
+                        .orElse("");
+            } catch (Exception ignored) {
+                return "";
+            }
+        }
+
+        return "";
+    }
+
+    private String shorten(String value, int maxLength) {
+        if (value == null || value.length() <= maxLength) {
+            return value;
+        }
+        return value.substring(0, maxLength);
+    }
+
+    private String stringValue(Object value) {
+        return value == null ? "" : String.valueOf(value);
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
     }
 }

@@ -16,7 +16,7 @@ public class VNPayAdapter implements PaymentGateway {
     public PaymentCreateResponse createPayment(PaymentCreateRequest request, InvoiceEntity invoice, String invoiceCode) {
         String paymentUrl = "/api/payments/vnpay-return?vnp_TxnRef=%s&vnp_ResponseCode=00&vnp_TransactionNo=DEMO-VNPAY-%s"
                 .formatted(invoiceCode, invoice.getId());
-        return new PaymentCreateResponse(invoice.getId(), invoiceCode, provider(), invoice.getAmount(), paymentUrl, null, null);
+        return new PaymentCreateResponse(invoice.getId(), invoiceCode, provider(), invoice.getAmount(), paymentUrl, null, null, null, null, null, null, null);
     }
 
     @Override
