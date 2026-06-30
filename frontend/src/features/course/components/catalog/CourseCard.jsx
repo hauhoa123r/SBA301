@@ -11,11 +11,7 @@ export default function CourseCard({ course }) {
     return (
         <div className="group bg-brand-cardBg border border-brand-accent/10 rounded-2xl overflow-hidden hover:border-brand-accent/40 transition-all hover:shadow-xl hover:shadow-brand-accent/10 hover:-translate-y-1 cursor-pointer">
             <div className="relative overflow-hidden aspect-video">
-                <img
-                    src={course.image}
-                    alt={course.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
+                <img src={course.image} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
 
                 <div className="absolute inset-0 bg-gradient-to-t from-brand-cardBg/80 to-brand-transparent" />
 
@@ -27,10 +23,7 @@ export default function CourseCard({ course }) {
 
                 {course.badge && (
                     <div className="absolute top-3 right-3">
-                        <span
-                            className={`text-xs font-semibold px-2.5 py-1 rounded-md border ${BADGE_COLORS[course.badge]
-                                }`}
-                        >
+                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-md border ${BADGE_COLORS[course.badge]}`}>
                             {course.badge}
                         </span>
                     </div>
@@ -44,21 +37,11 @@ export default function CourseCard({ course }) {
             </div>
 
             <div className="p-5">
-                <h3
-                    className="text-brand-white font-semibold text-base leading-snug mb-2 line-clamp-2 group-hover:text-brand-accentSoft transition-colors"
-                    style={{
-                        fontFamily: "'Bricolage Grotesque', sans-serif",
-                    }}
-                >
+                <h3 className="text-brand-white font-semibold text-base leading-snug mb-2 line-clamp-2 group-hover:text-brand-accentSoft transition-colors" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                     {course.title}
                 </h3>
 
-                <p
-                    className="text-brand-textSecondary text-xs mb-3"
-                    style={{
-                        fontFamily: "'Inter', sans-serif",
-                    }}
-                >
+                <p className="text-brand-textSecondary text-xs mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>
                     by {course.instructor}
                 </p>
 
@@ -85,12 +68,7 @@ export default function CourseCard({ course }) {
                 </div>
 
                 <div className="flex items-center justify-between">
-                    <span
-                        className="text-lg font-bold text-brand-white"
-                        style={{
-                            fontFamily: "'Bricolage Grotesque', sans-serif",
-                        }}
-                    >
+                    <span className="text-lg font-bold text-brand-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
                         {fmt(course.price)}
                     </span>
 

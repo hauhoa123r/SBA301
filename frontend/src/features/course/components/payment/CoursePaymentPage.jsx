@@ -35,13 +35,7 @@ export default function CoursePaymentPage({ course, amount, countdownSeconds, on
             <div className="fixed inset-0 pointer-events-none">
                 <div className="absolute left-[-10%] top-[-20%] h-[500px] w-[500px] rounded-full bg-brand-accent/20 blur-[120px]" />
                 <div className="absolute bottom-[-18%] right-[-8%] h-[540px] w-[540px] rounded-full bg-brand-infoDeep/30 blur-[120px]" />
-                <div
-                    className="absolute inset-0 opacity-[0.04]"
-                    style={{
-                        backgroundImage: `linear-gradient(var(--color-brand-accent) 1px, var(--color-brand-transparent) 1px), linear-gradient(90deg, var(--color-brand-accent) 1px, var(--color-brand-transparent) 1px)`,
-                        backgroundSize: "56px 56px",
-                    }}
-                />
+                <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: `linear-gradient(var(--color-brand-accent) 1px, var(--color-brand-transparent) 1px), linear-gradient(90deg, var(--color-brand-accent) 1px, var(--color-brand-transparent) 1px)`, backgroundSize: "56px 56px" }} />
             </div>
 
             <header className="relative z-10 border-b border-brand-accent/10 bg-brand-dark/90 shadow-lg shadow-brand-black/20 backdrop-blur">
@@ -82,11 +76,7 @@ export default function CoursePaymentPage({ course, amount, countdownSeconds, on
                         <div className="rounded-2xl bg-brand-white p-5">
                             <img src={qrUrl} alt="Mã QR thanh toán MB Bank" className="mx-auto aspect-square w-full max-w-[330px] object-contain" />
                         </div>
-                        <a
-                            href={qrUrl}
-                            download
-                            className="mt-5 inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl border border-brand-accent/30 text-base font-black text-brand-accentPale transition hover:bg-brand-accent/10 hover:text-brand-white"
-                        >
+                        <a href={qrUrl} download className="mt-5 inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl border border-brand-accent/30 text-base font-black text-brand-accentPale transition hover:bg-brand-accent/10 hover:text-brand-white">
                             <Download className="h-5 w-5" />
                             Tải mã QR
                         </a>
@@ -136,12 +126,7 @@ function PaymentRow({ label, value, copyValue, onCopy, highlight = false }) {
                 {value}
             </span>
             {copyValue ? (
-                <button
-                    type="button"
-                    onClick={() => onCopy(copyValue)}
-                    className="grid h-11 w-11 place-items-center rounded-full bg-brand-light text-brand-textSecondary transition hover:bg-brand-accent hover:text-brand-white sm:justify-self-end"
-                    aria-label={`Sao chép ${label}`}
-                >
+                <button type="button" onClick={() => onCopy(copyValue)} className="grid h-11 w-11 place-items-center rounded-full bg-brand-light text-brand-textSecondary transition hover:bg-brand-accent hover:text-brand-white sm:justify-self-end" aria-label={`Sao chép ${label}`}>
                     <Copy className="h-5 w-5" />
                 </button>
             ) : (

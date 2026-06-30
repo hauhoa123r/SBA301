@@ -27,6 +27,11 @@ export default function PaymentMethodModal({ course, open, onClose }) {
 
     if (!open) return null;
 
+    const handleSelectProvider = (value) => {
+        setProvider(value);
+        setPayment(null);
+    };
+
     const handleCreatePayment = async () => {
         setIsSubmitting(true);
         setError("");
@@ -65,12 +70,7 @@ export default function PaymentMethodModal({ course, open, onClose }) {
                         <p className="text-sm font-bold text-brand-accentSoft">Thanh toán khóa học</p>
                         <h2 className="mt-1 text-2xl font-black text-brand-white">Chọn phương thức thanh toán</h2>
                     </div>
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-brand-light text-brand-textSecondary transition hover:bg-brand-accent hover:text-brand-white"
-                        aria-label="Đóng"
-                    >
+                    <button type="button" onClick={onClose} className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-brand-light text-brand-textSecondary transition hover:bg-brand-accent hover:text-brand-white" aria-label="Đóng">
                         <X className="h-5 w-5" />
                     </button>
                 </div>
@@ -80,19 +80,7 @@ export default function PaymentMethodModal({ course, open, onClose }) {
                         {PAYMENT_METHODS.map(({ value, label, description, icon: Icon }) => {
                             const isActive = provider === value;
                             return (
-                                <button
-                                    key={value}
-                                    type="button"
-                                    onClick={() => {
-                                        setProvider(value);
-                                        setPayment(null);
-                                    }}
-                                    className={`flex min-h-24 items-center gap-4 rounded-2xl border p-4 text-left transition ${
-                                        isActive
-                                            ? "border-brand-accent bg-brand-accent/15 text-brand-white"
-                                            : "border-brand-accent/10 bg-brand-light/70 text-brand-textSecondary hover:border-brand-accent/40 hover:text-brand-white"
-                                    }`}
-                                >
+                                <button key={value} type="button" onClick={() => handleSelectProvider(value)} className={`flex min-h-24 items-center gap-4 rounded-2xl border p-4 text-left transition ${isActive ? "border-brand-accent bg-brand-accent/15 text-brand-white" : "border-brand-accent/10 bg-brand-light/70 text-brand-textSecondary hover:border-brand-accent/40 hover:text-brand-white"}`}>
                                     <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-full ${isActive ? "bg-brand-accent text-brand-white" : "bg-brand-dark text-brand-accentSoft"}`}>
                                         <Icon className="h-5 w-5" />
                                     </span>
@@ -126,12 +114,7 @@ export default function PaymentMethodModal({ course, open, onClose }) {
                                         Quét QR hoặc mở link để tiếp tục thanh toán. Sau khi cổng thanh toán xác nhận, hệ thống sẽ tự kích hoạt gói học.
                                     </p>
                                     {payment.paymentLink && (
-                                        <a
-                                            href={payment.paymentLink}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                            className="mt-4 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-brand-accent px-5 text-sm font-black text-brand-white transition hover:bg-brand-accentHover"
-                                        >
+                                        <a href={payment.paymentLink} target="_blank" rel="noreferrer" className="mt-4 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-brand-accent px-5 text-sm font-black text-brand-white transition hover:bg-brand-accentHover">
                                             <LinkIcon className="h-4 w-4" />
                                             Tiếp tục thanh toán
                                         </a>
@@ -143,19 +126,10 @@ export default function PaymentMethodModal({ course, open, onClose }) {
                 </div>
 
                 <div className="flex flex-col-reverse gap-3 border-t border-brand-accent/10 px-6 py-5 sm:flex-row sm:justify-end">
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        className="inline-flex h-12 items-center justify-center rounded-full border border-brand-accent/20 px-5 text-sm font-black text-brand-textSecondary transition hover:bg-brand-light hover:text-brand-white"
-                    >
+                    <button type="button" onClick={onClose} className="inline-flex h-12 items-center justify-center rounded-full border border-brand-accent/20 px-5 text-sm font-black text-brand-textSecondary transition hover:bg-brand-light hover:text-brand-white">
                         Đóng
                     </button>
-                    <button
-                        type="button"
-                        disabled={isSubmitting}
-                        onClick={handleCreatePayment}
-                        className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-brand-accent px-5 text-sm font-black text-brand-white transition hover:bg-brand-accentHover disabled:cursor-not-allowed disabled:opacity-60"
-                    >
+                    <button type="button" disabled={isSubmitting} onClick={handleCreatePayment} className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-brand-accent px-5 text-sm font-black text-brand-white transition hover:bg-brand-accentHover disabled:cursor-not-allowed disabled:opacity-60">
                         <ExternalLink className="h-4 w-4" />
                         {isSubmitting ? "Đang tạo thanh toán..." : "Xác nhận thanh toán"}
                     </button>
