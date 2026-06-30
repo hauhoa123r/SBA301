@@ -10,19 +10,29 @@ const getStoredUserId = () => {
   }
 };
 
-export const createPayment = async ({ courseId, provider, planId }) => {
+const normalizeUrl = (url) => {
+  if (!url) return "";
+  return url.startsWith("/api") ? `${PORT}${url}` : url;
+};
+
+export const createPayment = async ({ courseId, provider, planId, couponCode }) => {
   const userId = getStoredUserId();
   const response = await api.post(
     `${API_PAYMENTS}/create`,
-    { courseId, provider, planId },
+    { courseId, provider, planId, couponCode },
     {
       headers: userId ? { "X-User-Id": userId } : undefined,
     },
   );
 
   const data = response.data;
+  const paymentUrl = normalizeUrl(data.paymentUrl || data.checkoutUrl);
+  const paymentLink = normalizeUrl(data.paymentLink || data.checkoutUrl || data.paymentUrl);
+
   return {
     ...data,
-    paymentUrl: data.paymentUrl?.startsWith("/api") ? `${PORT}${data.paymentUrl}` : data.paymentUrl,
+    paymentUrl,
+    paymentLink,
+    qrCode: data.qrCode || data.qrCodeUrl,
   };
 };

@@ -4,10 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { createPayment } from "../../services/api/payment.service";
 
 const PAYMENT_METHODS = [
-    { value: "VNPAY", label: "VNPay", description: "Thanh toán qua cổng VNPay", icon: Landmark },
-    { value: "MOMO", label: "MoMo", description: "Ví điện tử MoMo", icon: Wallet },
-    { value: "PAYOS", label: "payOS", description: "QR hoặc link thanh toán", icon: QrCode },
-    { value: "ZALOPAY", label: "ZaloPay", description: "Ví điện tử ZaloPay", icon: Wallet },
+    { value: "VNPAY", label: "VNPay", description: "Pay through the VNPay gateway", icon: Landmark },
+    { value: "MOMO", label: "MoMo", description: "Pay with the MoMo wallet", icon: Wallet },
+    { value: "PAYOS", label: "payOS", description: "Pay by QR code or payment link", icon: QrCode },
+    { value: "ZALOPAY", label: "ZaloPay", description: "Pay with the ZaloPay wallet", icon: Wallet },
 ];
 
 const getPaymentErrorMessage = (err) => {
@@ -15,10 +15,16 @@ const getPaymentErrorMessage = (err) => {
     if (data?.message) return data.message;
     if (data?.error && data?.path) return `${data.error}: ${data.path}`;
     if (err?.message) return err.message;
-    return "Không thể tạo thanh toán. Vui lòng thử lại.";
+    return "Unable to create payment. Please try again.";
 };
 
-export default function PaymentMethodModal({ course, open, onClose }) {
+const formatCurrency = (value) =>
+    new Intl.NumberFormat("vi-VN", {
+        style: "currency",
+        currency: "VND",
+    }).format(Number(value || 0));
+
+export default function PaymentMethodModal({ course, open, couponCode, finalPrice, discountAmount, onClose }) {
     const navigate = useNavigate();
     const [provider, setProvider] = useState("VNPAY");
     const [payment, setPayment] = useState(null);
@@ -41,9 +47,10 @@ export default function PaymentMethodModal({ course, open, onClose }) {
             const data = await createPayment({
                 courseId: course.id,
                 provider,
+                couponCode,
             });
 
-            if (data.paymentUrl) {
+            if (data.paymentUrl && provider !== "PAYOS") {
                 window.location.href = data.paymentUrl;
                 return;
             }
@@ -53,6 +60,7 @@ export default function PaymentMethodModal({ course, open, onClose }) {
                 state: {
                     payment: data,
                     course,
+                    couponCode,
                 },
             });
         } catch (err) {
@@ -67,15 +75,30 @@ export default function PaymentMethodModal({ course, open, onClose }) {
             <div className="w-full max-w-2xl overflow-hidden rounded-3xl border border-brand-accent/15 bg-brand-cardBg shadow-2xl shadow-brand-black/40">
                 <div className="flex items-start justify-between gap-4 border-b border-brand-accent/10 px-6 py-5">
                     <div>
-                        <p className="text-sm font-bold text-brand-accentSoft">Thanh toán khóa học</p>
-                        <h2 className="mt-1 text-2xl font-black text-brand-white">Chọn phương thức thanh toán</h2>
+                        <p className="text-sm font-bold text-brand-accentSoft">Course payment</p>
+                        <h2 className="mt-1 text-2xl font-black text-brand-white">Choose a payment method</h2>
                     </div>
-                    <button type="button" onClick={onClose} className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-brand-light text-brand-textSecondary transition hover:bg-brand-accent hover:text-brand-white" aria-label="Đóng">
+                    <button type="button" onClick={onClose} className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-brand-light text-brand-textSecondary transition hover:bg-brand-accent hover:text-brand-white" aria-label="Close">
                         <X className="h-5 w-5" />
                     </button>
                 </div>
 
                 <div className="px-6 py-5">
+                    <div className="mb-5 grid gap-3 rounded-2xl border border-brand-accent/10 bg-brand-light/70 px-4 py-3 text-sm font-semibold text-brand-textSecondary sm:grid-cols-3">
+                        <span>
+                            Original price
+                            <strong className="mt-1 block text-base text-brand-white">{formatCurrency(course.price)}</strong>
+                        </span>
+                        <span>
+                            Discount
+                            <strong className="mt-1 block text-base text-status-success">{formatCurrency(discountAmount || 0)}</strong>
+                        </span>
+                        <span>
+                            Total
+                            <strong className="mt-1 block text-base text-brand-accentPale">{formatCurrency(finalPrice ?? course.price)}</strong>
+                        </span>
+                    </div>
+
                     <div className="grid gap-3 sm:grid-cols-2">
                         {PAYMENT_METHODS.map(({ value, label, description, icon: Icon }) => {
                             const isActive = provider === value;
@@ -104,19 +127,19 @@ export default function PaymentMethodModal({ course, open, onClose }) {
                             <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
                                 {payment.qrCode && (
                                     <div className="rounded-2xl bg-brand-white p-4">
-                                        <img src={payment.qrCode} alt="Mã QR thanh toán" className="h-44 w-44 object-contain" />
+                                        <img src={payment.qrCode} alt="Payment QR code" className="h-44 w-44 object-contain" />
                                     </div>
                                 )}
                                 <div className="min-w-0 flex-1">
-                                    <p className="text-sm font-bold text-brand-textSecondary">Mã hóa đơn</p>
+                                    <p className="text-sm font-bold text-brand-textSecondary">Invoice code</p>
                                     <p className="mt-1 break-words text-xl font-black text-brand-white">{payment.invoiceCode}</p>
                                     <p className="mt-3 text-sm font-semibold leading-6 text-brand-textSecondary">
-                                        Quét QR hoặc mở link để tiếp tục thanh toán. Sau khi cổng thanh toán xác nhận, hệ thống sẽ tự kích hoạt gói học.
+                                        Scan the QR code or open the payment link to continue. Once the gateway confirms the payment, your course access will be activated automatically.
                                     </p>
                                     {payment.paymentLink && (
                                         <a href={payment.paymentLink} target="_blank" rel="noreferrer" className="mt-4 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-brand-accent px-5 text-sm font-black text-brand-white transition hover:bg-brand-accentHover">
                                             <LinkIcon className="h-4 w-4" />
-                                            Tiếp tục thanh toán
+                                            Continue payment
                                         </a>
                                     )}
                                 </div>
@@ -127,11 +150,11 @@ export default function PaymentMethodModal({ course, open, onClose }) {
 
                 <div className="flex flex-col-reverse gap-3 border-t border-brand-accent/10 px-6 py-5 sm:flex-row sm:justify-end">
                     <button type="button" onClick={onClose} className="inline-flex h-12 items-center justify-center rounded-full border border-brand-accent/20 px-5 text-sm font-black text-brand-textSecondary transition hover:bg-brand-light hover:text-brand-white">
-                        Đóng
+                        Close
                     </button>
                     <button type="button" disabled={isSubmitting} onClick={handleCreatePayment} className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-brand-accent px-5 text-sm font-black text-brand-white transition hover:bg-brand-accentHover disabled:cursor-not-allowed disabled:opacity-60">
                         <ExternalLink className="h-4 w-4" />
-                        {isSubmitting ? "Đang tạo thanh toán..." : "Xác nhận thanh toán"}
+                        {isSubmitting ? "Creating payment..." : "Confirm payment"}
                     </button>
                 </div>
             </div>

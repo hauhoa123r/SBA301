@@ -1,4 +1,4 @@
-import { ArrowLeft, ExternalLink, QrCode } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Copy, Download, ExternalLink, QrCode, ShieldCheck } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 export default function PaymentCheckoutPage() {
@@ -10,10 +10,10 @@ export default function PaymentCheckoutPage() {
     if (!payment) {
         return (
             <section className="mx-auto max-w-3xl px-6 py-16 text-center text-brand-textPrimary">
-                <h1 className="text-3xl font-black text-brand-white">Không tìm thấy thông tin thanh toán</h1>
-                <p className="mt-3 text-brand-textSecondary">Vui lòng quay lại khóa học và tạo thanh toán mới.</p>
+                <h1 className="text-3xl font-black text-brand-white">Payment information not found</h1>
+                <p className="mt-3 text-brand-textSecondary">Please return to the course page and create a new payment.</p>
                 <Link to="/courses" className="mt-6 inline-flex h-12 items-center justify-center rounded-full bg-brand-accent px-6 font-black text-brand-white">
-                    Xem khóa học
+                    Browse courses
                 </Link>
             </section>
         );
@@ -23,63 +23,127 @@ export default function PaymentCheckoutPage() {
         style: "currency",
         currency: "VND",
     }).format(Number(payment.amount || 0));
+    const accountHolder = payment.accountName || payment.accountHolder || payment.beneficiaryName || payment.receiverName || "NGOC THUY NGUYEN";
+    const accountNumber = payment.accountNumber || payment.bankAccountNumber || payment.receiverAccountNumber || "";
+    const transferContent = payment.transferContent || payment.description || payment.invoiceCode;
+    const qrPayload = payment.qrCode || payment.paymentLink || "";
+    const qrCode = getQrImageSource(qrPayload);
+    const copyText = async (text) => {
+        if (!text) return;
+        try {
+            await navigator.clipboard.writeText(text);
+        } catch {
+            console.error("Failed to copy text to clipboard:", text)
+        }
+    };
 
     return (
-        <section className="relative mx-auto max-w-5xl px-6 py-12 text-brand-textPrimary">
+        <section className="relative mx-auto max-w-6xl px-6 py-12 text-brand-textPrimary">
             <button type="button" onClick={() => navigate(-1)} className="mb-8 inline-flex items-center gap-2 text-sm font-black text-brand-textSecondary transition hover:text-brand-white">
                 <ArrowLeft className="h-4 w-4" />
-                Quay lại
+                Back
             </button>
 
-            <div className="grid gap-8 lg:grid-cols-[360px_minmax(0,1fr)]">
-                <div className="rounded-3xl border border-brand-accent/10 bg-brand-cardBg p-6 shadow-2xl shadow-brand-accent/10">
-                    <div className="mb-5 inline-flex items-center gap-2 text-sm font-black text-brand-accentSoft">
-                        <QrCode className="h-5 w-5" />
-                        Quét mã thanh toán
+            <div className="grid gap-8 lg:grid-cols-[420px_minmax(0,1fr)]">
+                <div className="overflow-hidden rounded-3xl border border-brand-accent/20 bg-brand-cardBg shadow-2xl shadow-brand-black/30">
+                    <div className="border-b border-brand-accent/10 bg-brand-light/70 px-6 py-5">
+                        <div className="inline-flex items-center gap-2 rounded-full border border-brand-accent/20 bg-brand-dark px-3 py-1.5 text-xs font-black uppercase tracking-wide text-brand-accentSoft">
+                            <QrCode className="h-4 w-4" />
+                            payOS QR
+                        </div>
+                        <h1 className="mt-3 text-2xl font-black text-brand-white">Scan to complete payment</h1>
+                        <p className="mt-2 text-sm font-semibold leading-6 text-brand-textSecondary">
+                            Use any banking app that supports VietQR. Keep this page open until your payment is confirmed.
+                        </p>
                     </div>
 
-                    {payment.qrCode ? (
-                        <div className="rounded-2xl bg-brand-white p-5">
-                            <img src={payment.qrCode} alt="Mã QR thanh toán" className="mx-auto aspect-square w-full max-w-[280px] object-contain" />
+                    <div className="p-6">
+                        {qrCode ? (
+                            <div className="rounded-[28px] border border-brand-accent/20 bg-brand-dark p-4 shadow-inner shadow-brand-black/30">
+                                <div className="rounded-2xl bg-brand-white p-5 ring-1 ring-brand-accent/10">
+                                    <img src={qrCode} alt="Payment QR code" className="mx-auto aspect-square w-full max-w-[320px] object-contain" />
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="grid aspect-square place-items-center rounded-2xl border border-brand-accent/20 bg-brand-light px-6 text-center text-sm font-semibold leading-6 text-brand-textSecondary">
+                                This payment gateway uses a payment link instead of a QR code.
+                            </div>
+                        )}
+
+                        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                            {qrCode && (
+                                <a href={qrCode} download className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-brand-accent/25 bg-brand-light text-sm font-black text-brand-accentPale transition hover:border-brand-accent/50 hover:bg-brand-accent/15 hover:text-brand-white">
+                                    <Download className="h-4 w-4" />
+                                    Download QR
+                                </a>
+                            )}
+                            {payment.paymentLink && (
+                                <button type="button" onClick={() => copyText(payment.paymentLink)} className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-brand-accent/25 bg-brand-light text-sm font-black text-brand-accentPale transition hover:border-brand-accent/50 hover:bg-brand-accent/15 hover:text-brand-white">
+                                    <Copy className="h-4 w-4" />
+                                    Copy link
+                                </button>
+                            )}
                         </div>
-                    ) : (
-                        <div className="grid aspect-square place-items-center rounded-2xl border border-brand-accent/10 bg-brand-light text-center text-brand-textSecondary">
-                            Cổng thanh toán này sử dụng link chuyển hướng.
-                        </div>
-                    )}
+                    </div>
                 </div>
 
-                <div className="rounded-3xl border border-brand-accent/10 bg-brand-cardBg p-6 shadow-2xl shadow-brand-accent/10">
-                    <p className="text-sm font-bold text-brand-textSecondary">Mã hóa đơn</p>
-                    <h1 className="mt-2 break-words text-4xl font-black text-brand-white">{payment.invoiceCode}</h1>
+                <div className="rounded-3xl border border-brand-accent/10 bg-brand-cardBg p-6 shadow-2xl shadow-brand-black/30">
+                    <div className="flex flex-col gap-4 border-b border-brand-accent/10 pb-6 sm:flex-row sm:items-start sm:justify-between">
+                        <div className="min-w-0">
+                            <p className="text-sm font-bold text-brand-textSecondary">Invoice code</p>
+                            <h2 className="mt-2 break-words text-3xl font-black text-brand-white md:text-4xl">{payment.invoiceCode}</h2>
+                        </div>
+                        <span className="inline-flex w-fit items-center gap-2 rounded-full border border-status-success/20 bg-status-success/10 px-4 py-2 text-sm font-black text-status-successSoft">
+                            <ShieldCheck className="h-4 w-4" />
+                            Secure checkout
+                        </span>
+                    </div>
 
                     <div className="mt-8 grid gap-4">
-                        <PaymentInfoRow label="Khóa học" value={course?.title || "Đang cập nhật"} />
-                        <PaymentInfoRow label="Cổng thanh toán" value={payment.provider} />
-                        <PaymentInfoRow label="Số tiền" value={amount} />
+                        <PaymentInfoRow label="Course" value={course?.title || "Updating"} />
+                        <PaymentInfoRow label="Amount" value={amount} />
+                        <PaymentInfoRow label="Account holder" value={accountHolder} copyValue={accountHolder} onCopy={copyText} />
+                        {accountNumber && <PaymentInfoRow label="Account number" value={accountNumber} copyValue={accountNumber} onCopy={copyText} />}
+                        <PaymentInfoRow label="Transfer content" value={transferContent} copyValue={transferContent} onCopy={copyText} highlight />
                     </div>
 
                     {payment.paymentLink && (
-                        <a href={payment.paymentLink} target="_blank" rel="noreferrer" className="mt-8 inline-flex h-14 items-center justify-center gap-2 rounded-full bg-brand-accent px-6 text-base font-black text-brand-white transition hover:bg-brand-accentHover">
+                        <a href={payment.paymentLink} target="_blank" rel="noreferrer" className="mt-8 inline-flex h-14 items-center justify-center gap-2 rounded-full bg-brand-accent px-6 text-base font-black text-brand-white shadow-lg shadow-brand-accent/25 transition hover:bg-brand-accentHover">
                             <ExternalLink className="h-5 w-5" />
-                            Tiếp tục thanh toán
+                            Open payOS checkout
                         </a>
                     )}
 
-                    <p className="mt-6 max-w-2xl text-sm font-semibold leading-6 text-brand-textSecondary">
-                        Sau khi thanh toán thành công, cổng thanh toán sẽ gọi webhook/callback về backend để cập nhật hóa đơn và kích hoạt gói học.
-                    </p>
+                    <div className="mt-6 rounded-2xl border border-brand-infoLight/20 bg-brand-info/10 p-4">
+                        <div className="flex items-start gap-3 text-sm font-semibold leading-6 text-brand-infoSoft">
+                            <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" />
+                            <p>After payOS confirms the transfer, the backend webhook updates the invoice and activates course access automatically.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
     );
 }
 
-function PaymentInfoRow({ label, value }) {
+function getQrImageSource(value) {
+    if (!value) return "";
+    if (/^(https?:|data:image|blob:)/i.test(value)) return value;
+    return `https://api.qrserver.com/v1/create-qr-code/?size=360x360&margin=12&data=${encodeURIComponent(value)}`;
+}
+
+function PaymentInfoRow({ label, value, copyValue, onCopy, highlight = false }) {
     return (
-        <div className="grid gap-1 rounded-2xl border border-brand-accent/10 bg-brand-light/70 px-4 py-3 sm:grid-cols-[150px_minmax(0,1fr)]">
+        <div className={`grid gap-3 rounded-2xl border px-4 py-3 sm:grid-cols-[150px_minmax(0,1fr)_44px] sm:items-center ${highlight ? "border-brand-accent/30 bg-brand-accent/10" : "border-brand-accent/10 bg-brand-light/70"}`}>
             <span className="text-sm font-bold text-brand-textSecondary">{label}</span>
-            <span className="break-words font-black text-brand-white sm:text-right">{value}</span>
+            <span className={`break-words font-black sm:text-right ${highlight ? "text-brand-accentPale" : "text-brand-white"}`}>{value}</span>
+            {copyValue ? (
+                <button type="button" onClick={() => onCopy(copyValue)} className="grid h-11 w-11 place-items-center rounded-full bg-brand-dark text-brand-accentSoft transition hover:bg-brand-accent hover:text-brand-white sm:justify-self-end" aria-label={`Copy ${label}`}>
+                    <Copy className="h-4 w-4" />
+                </button>
+            ) : (
+                <span className="hidden sm:block" />
+            )}
         </div>
     );
 }

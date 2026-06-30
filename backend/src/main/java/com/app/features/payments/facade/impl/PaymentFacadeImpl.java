@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -42,7 +43,23 @@ public class PaymentFacadeImpl implements PaymentFacade {
 
     @Override
     public PaymentVerifyResponse handleWebhook(PaymentProvider provider, Map<String, Object> body) {
+        if (provider == PaymentProvider.PAYOS) {
+            return paymentService.handleCallback(provider, stringifyPayosPayload(body));
+        }
         return paymentService.handleCallback(provider, stringify(body));
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, String> stringifyPayosPayload(Map<String, Object> body) {
+        Map<String, String> params = new LinkedHashMap<>();
+        Object data = body.get("data");
+        if (data instanceof Map<?, ?> dataMap) {
+            dataMap.forEach((key, value) -> params.put(String.valueOf(key), String.valueOf(value)));
+        }
+        if (body.get("signature") != null) {
+            params.put("signature", String.valueOf(body.get("signature")));
+        }
+        return params;
     }
 
     private Map<String, String> stringify(Map<String, Object> body) {

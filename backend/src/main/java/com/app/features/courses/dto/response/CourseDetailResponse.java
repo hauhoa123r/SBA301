@@ -6,15 +6,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.Instant;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CourseResponse {
+public class CourseDetailResponse {
     private Long id;
     private Long teacherId;
     private String instructor;
@@ -29,6 +29,8 @@ public class CourseResponse {
     private Integer totalLessons;
     private Integer totalDurationSeconds;
     private String duration;
+    private String durationText;
+    private Double rating;
     private String level;
     private List<ChapterResponse> chapters;
     private Instant createdAt;

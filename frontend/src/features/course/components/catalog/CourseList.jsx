@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
-import { CalendarDays, Eye, UserRound } from "lucide-react";
+import { BookOpenText, Clock3, Eye, Star } from "lucide-react";
 
 export default function CourseList({ courses, isLoading = false }) {
+    const formatRating = (rating) => Number(rating ?? 5.0).toFixed(1);
+
     if (isLoading) {
         return (
             <div className="rounded-2xl border border-brand-accent/10 bg-brand-cardBg p-10 text-center text-brand-textSecondary">
@@ -23,16 +25,13 @@ export default function CourseList({ courses, isLoading = false }) {
             {courses.map((course) => (
                 <article key={course.id} className="overflow-hidden rounded-2xl border border-brand-accent/10 bg-brand-cardBg shadow-xl shadow-brand-accent/5 transition hover:-translate-y-1 hover:border-brand-accent/40">
                     <div className="aspect-video overflow-hidden">
-                        <img src={course.thumbnail_url || "/images/logo-removebg-preview.png"} alt={course.title} className="h-full w-full object-cover" />
+                        <img src={course.thumbnailUrl || "/images/logo-removebg-preview.png"} alt={course.title} className="h-full w-full object-cover" />
                     </div>
 
                     <div className="p-5">
-                        <div className="mb-3 flex items-center justify-between gap-3">
+                        <div className="mb-3">
                             <span className="rounded-lg border border-brand-accent/20 bg-brand-accent/10 px-2.5 py-1 text-xs font-semibold text-brand-accentSoft">
-                                {course.category}
-                            </span>
-                            <span className="rounded-lg border border-status-successStrong/20 bg-status-successStrong/10 px-2.5 py-1 text-xs font-semibold text-status-success">
-                                {course.status}
+                                {course.category ?? "Uncategorized"}
                             </span>
                         </div>
 
@@ -40,32 +39,35 @@ export default function CourseList({ courses, isLoading = false }) {
                             {course.title}
                         </h2>
 
-                        <p className="mb-4 line-clamp-2 min-h-10 text-sm leading-5 text-brand-textSecondary">
+                        <p className="mb-2 line-clamp-2 min-h-10 text-sm leading-5 text-brand-textSecondary">
                             {course.description}
                         </p>
 
-                        <div className="mb-5 grid grid-cols-2 gap-3 text-xs text-brand-textSecondary">
-                            <div className="rounded-xl border border-brand-accent/10 bg-brand-light/70 p-3">
-                                <span className="block uppercase tracking-wider">Course ID</span>
-                                <strong className="mt-1 block text-sm text-brand-white">#{course.id}</strong>
+                        <p className="mb-4 text-sm font-medium text-brand-textSecondary">
+                            {course.instructor ?? "Updating"}
+                        </p>
+
+                        <div className="mb-5 grid grid-cols-3 gap-3 text-xs">
+                            <div className="rounded-lg border border-status-warningStrong/20 bg-status-warningStrong/10 p-2">
+                                <div className="flex items-center gap-1 text-status-warningSoft">
+                                    <Star className="h-3.5 w-3.5 fill-status-warningSoft" />
+                                    <span>{formatRating(course.rating)}</span>
+                                </div>
+                                <span className="block text-xs uppercase tracking-wider text-brand-textSecondary">Rating</span>
                             </div>
-                            <div className="rounded-xl border border-brand-accent/10 bg-brand-light/70 p-3">
-                                <span className="block uppercase tracking-wider">Category ID</span>
-                                <strong className="mt-1 block text-sm text-brand-white">#{course.category_id}</strong>
+                            <div className="rounded-lg border border-status-successStrong/20 bg-status-successStrong/10 p-2">
+                                <div className="flex items-center gap-1 text-status-success">
+                                    <BookOpenText className="h-3.5 w-3.5" />
+                                    <span>{course.totalLessons ?? 0} bài học</span>
+                                </div>
+                                <span className="block text-xs uppercase tracking-wider text-brand-textSecondary">Lessons</span>
                             </div>
-                            <div className="rounded-xl border border-brand-accent/10 bg-brand-light/70 p-3">
-                                <span className="flex items-center gap-1 uppercase tracking-wider">
-                                    <UserRound className="h-3.5 w-3.5" />
-                                    Teacher
-                                </span>
-                                <strong className="mt-1 block text-sm text-brand-white">#{course.teacher_id}</strong>
-                            </div>
-                            <div className="rounded-xl border border-brand-accent/10 bg-brand-light/70 p-3">
-                                <span className="flex items-center gap-1 uppercase tracking-wider">
-                                    <CalendarDays className="h-3.5 w-3.5" />
-                                    Updated
-                                </span>
-                                <strong className="mt-1 block text-sm text-brand-white">{course.updated_at}</strong>
+                            <div className="rounded-lg border border-brand-accent/20 bg-brand-accent/10 p-2">
+                                <div className="flex items-center gap-1 text-brand-accentSoft">
+                                    <Clock3 className="h-3.5 w-3.5" />
+                                    <span>{course.durationText ?? "0m"}</span>
+                                </div>
+                                <span className="block text-xs uppercase tracking-wider text-brand-textSecondary">Duration</span>
                             </div>
                         </div>
 
