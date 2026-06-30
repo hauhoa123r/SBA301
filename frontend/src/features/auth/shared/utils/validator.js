@@ -42,10 +42,13 @@ export const validateResetPassword = (newPassword, confirmPassword) => {
     }
 };
 export const validateChangePassword = (oldPassword, newPassword, confirmPassword) => {
+    if (!oldPassword) {
+        return ERROR_MESSAGES.PASSWORD_REQUIRED;
+    }
     if (validatePassword(newPassword)){
         return validatePassword(newPassword);
     }
-    if (oldPassword !== newPassword){
+    if (oldPassword === newPassword){
         return ERROR_MESSAGES.INVALID_CHANGE_PASSWORD;
     }
     if (newPassword !== confirmPassword){

@@ -15,7 +15,7 @@ public class ZaloPayAdapter implements PaymentGateway {
     @Override
     public PaymentCreateResponse createPayment(PaymentCreateRequest request, InvoiceEntity invoice, String invoiceCode) {
         String paymentUrl = "https://sb-openapi.zalopay.vn/pay/" + invoiceCode;
-        return new PaymentCreateResponse(invoice.getId(), invoiceCode, provider(), invoice.getAmount(), paymentUrl, null, null);
+        return new PaymentCreateResponse(invoice.getId(), invoiceCode, provider(), invoice.getAmount(), paymentUrl, null, null, null, null, null, null, null);
     }
 
     @Override

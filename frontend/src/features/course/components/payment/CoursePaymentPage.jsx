@@ -21,11 +21,11 @@ export default function CoursePaymentPage({ course, amount, countdownSeconds, on
     const copyAll = () => {
         copyText(
             [
-                `Ngân hàng: ${paymentInfo.bankName}`,
-                `Số tài khoản: ${paymentInfo.accountNumber}`,
-                `Tên tài khoản: ${paymentInfo.accountName}`,
-                `Số tiền: ${formatAmount(amount)}`,
-                `Nội dung: ${paymentInfo.transferContent}`,
+                `Bank: ${paymentInfo.bankName}`,
+                `Account number: ${paymentInfo.accountNumber}`,
+                `Account name: ${paymentInfo.accountName}`,
+                `Amount: ${formatAmount(amount)}`,
+                `Transfer note: ${paymentInfo.transferContent}`,
             ].join("\n"),
         );
     };
@@ -42,12 +42,12 @@ export default function CoursePaymentPage({ course, amount, countdownSeconds, on
                 <div className="mx-auto flex h-20 max-w-[1500px] items-center justify-between px-6">
                     <button type="button" onClick={onBack} className="inline-flex items-center gap-3 text-sm font-black uppercase tracking-wide text-brand-textSecondary transition hover:text-brand-white">
                         <ArrowLeft className="h-5 w-5" />
-                        Quay lại
+                        Back
                     </button>
 
                     <div className="inline-flex items-center gap-3 rounded-full border border-brand-accent/10 bg-brand-light px-5 py-3 text-sm font-bold text-brand-textSecondary shadow-lg shadow-brand-accent/5">
                         <Timer className="h-5 w-5 text-brand-accentSoft" />
-                        <span>Đơn hàng tự động hủy sau:</span>
+                        <span>Order expires in:</span>
                         <span className="font-black text-brand-white">{formatCountdown(countdownSeconds)}</span>
                     </div>
 
@@ -63,10 +63,10 @@ export default function CoursePaymentPage({ course, amount, countdownSeconds, on
                         QR
                     </p>
                     <h1 className="text-3xl font-black text-brand-white md:text-5xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-                        Quét mã QR để thanh toán
+                        Scan the QR code to pay
                     </h1>
                     <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-brand-textSecondary md:text-lg">
-                        Mở app ngân hàng và quét mã QR. Đảm bảo nội dung chuyển khoản là{" "}
+                        Open your banking app and scan the QR code. Make sure the transfer note is{" "}
                         <span className="font-black text-brand-accentPale">{paymentInfo.transferContent}</span>.
                     </p>
                 </section>
@@ -74,26 +74,26 @@ export default function CoursePaymentPage({ course, amount, countdownSeconds, on
                 <section className="mt-10 grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
                     <div className="rounded-3xl border border-brand-accent/10 bg-brand-cardBg p-6 shadow-2xl shadow-brand-accent/10">
                         <div className="rounded-2xl bg-brand-white p-5">
-                            <img src={qrUrl} alt="Mã QR thanh toán MB Bank" className="mx-auto aspect-square w-full max-w-[330px] object-contain" />
+                            <img src={qrUrl} alt="MB Bank payment QR code" className="mx-auto aspect-square w-full max-w-[330px] object-contain" />
                         </div>
                         <a href={qrUrl} download className="mt-5 inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl border border-brand-accent/30 text-base font-black text-brand-accentPale transition hover:bg-brand-accent/10 hover:text-brand-white">
                             <Download className="h-5 w-5" />
-                            Tải mã QR
+                            Download QR code
                         </a>
                     </div>
 
                     <div className="overflow-hidden rounded-3xl border border-brand-accent/10 bg-brand-cardBg shadow-2xl shadow-brand-accent/10">
-                        <PaymentRow label="Khóa học" value={course.title} />
-                        <PaymentRow label="Ngân hàng" value={paymentInfo.bankName} />
-                        <PaymentRow label="Số tài khoản" value={paymentInfo.accountNumber} copyValue={paymentInfo.accountNumber} onCopy={copyText} />
-                        <PaymentRow label="Tên tài khoản" value={paymentInfo.accountName} />
-                        <PaymentRow label="Số tiền" value={formatAmount(amount)} copyValue={String(amount)} onCopy={copyText} />
-                        <PaymentRow label="Nội dung" value={paymentInfo.transferContent} copyValue={paymentInfo.transferContent} onCopy={copyText} highlight />
+                        <PaymentRow label="Course" value={course.title} />
+                        <PaymentRow label="Bank" value={paymentInfo.bankName} />
+                        <PaymentRow label="Account number" value={paymentInfo.accountNumber} copyValue={paymentInfo.accountNumber} onCopy={copyText} />
+                        <PaymentRow label="Account name" value={paymentInfo.accountName} />
+                        <PaymentRow label="Amount" value={formatAmount(amount)} copyValue={String(amount)} onCopy={copyText} />
+                        <PaymentRow label="Transfer note" value={paymentInfo.transferContent} copyValue={paymentInfo.transferContent} onCopy={copyText} highlight />
 
                         <div className="border-t border-brand-accent/10 p-5">
                             <button type="button" onClick={copyAll} className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-brand-accent text-base font-black text-brand-white shadow-lg shadow-brand-accent/25 transition hover:bg-brand-accentHover">
                                 <Copy className="h-5 w-5" />
-                                Sao chép toàn bộ
+                                Copy all
                             </button>
                         </div>
                     </div>
@@ -101,7 +101,7 @@ export default function CoursePaymentPage({ course, amount, countdownSeconds, on
 
                 <div className="mx-auto mt-8 flex max-w-3xl items-start gap-3 rounded-2xl border border-brand-infoLight/20 bg-brand-info/10 p-5 text-sm font-semibold leading-6 text-brand-infoSoft">
                     <Info className="mt-0.5 h-5 w-5 shrink-0" />
-                    <p>Nếu đơn hàng không tự động kích hoạt sau 5 phút, vui lòng liên hệ hỗ trợ và cung cấp nội dung chuyển khoản {paymentInfo.transferContent}.</p>
+                    <p>If your order is not activated automatically after 5 minutes, please contact support and provide the transfer note {paymentInfo.transferContent}.</p>
                 </div>
             </main>
 
@@ -109,7 +109,7 @@ export default function CoursePaymentPage({ course, amount, countdownSeconds, on
                 <div className="mx-auto flex max-w-[1500px] flex-col gap-3 px-6 py-5 text-sm font-semibold text-brand-textSecondary md:flex-row md:items-center md:justify-between">
                     <span className="inline-flex items-center gap-2">
                         <LockKeyhole className="h-4 w-4 text-status-success" />
-                        Thanh toán an toàn với chuyển khoản ngân hàng
+                        Secure payment by bank transfer
                     </span>
                     <span>MB Bank • {paymentInfo.accountNumber} • {paymentInfo.accountName}</span>
                 </div>
@@ -126,7 +126,7 @@ function PaymentRow({ label, value, copyValue, onCopy, highlight = false }) {
                 {value}
             </span>
             {copyValue ? (
-                <button type="button" onClick={() => onCopy(copyValue)} className="grid h-11 w-11 place-items-center rounded-full bg-brand-light text-brand-textSecondary transition hover:bg-brand-accent hover:text-brand-white sm:justify-self-end" aria-label={`Sao chép ${label}`}>
+                <button type="button" onClick={() => onCopy(copyValue)} className="grid h-11 w-11 place-items-center rounded-full bg-brand-light text-brand-textSecondary transition hover:bg-brand-accent hover:text-brand-white sm:justify-self-end" aria-label={`Copy ${label}`}>
                     <Copy className="h-5 w-5" />
                 </button>
             ) : (

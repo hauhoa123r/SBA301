@@ -1,5 +1,6 @@
 package com.app.features.auth.controller;
 
+import com.app.features.auth.dto.ChangePasswordRequest;
 import com.app.features.auth.dto.request.LoginRequest;
 import com.app.features.auth.dto.response.LoginResponse;
 import com.app.features.auth.service.AuthService;
@@ -9,10 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -31,19 +29,19 @@ public class AuthController {
 
     @PostMapping("/forgot-password")
     public ResponseEntity<Map<String, String>> forgotPassword(@RequestBody Map<String, String> request) {
-        String email = request.get("email").trim().toLowerCase();
+        String email = request.get("email") != null ? request.get("email").trim().toLowerCase() : "";
         if (email.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Email is required"));
         }
         try {
             passwordChangeService.processForgotPassword(email);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok(Map.of("message", "If the email exists, a reset token has been sent."));
         } catch (RuntimeException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", ex.getMessage()));
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", ex.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Failed to send email, please try again later."));
         }
     }
+
     @PostMapping("/verify-token")
     public ResponseEntity<Map<String, String>> verifyToken(@RequestBody Map<String, String> request) {
         String email = request.get("email") != null ? request.get("email").trim().toLowerCase() : "";
@@ -60,4 +58,15 @@ public class AuthController {
 
         return ResponseEntity.ok(Map.of("message", "Token verified successfully."));
     }
+
+    @PatchMapping("/change-password")
+    public ResponseEntity<Map<String, String>> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
+        try {
+            passwordChangeService.changePassword(request);
+            return ResponseEntity.ok(Map.of("message", "Password changed successfully."));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
+        }
+    }
+
 }

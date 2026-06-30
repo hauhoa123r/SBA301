@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import CourseList from "../../components/catalog/CourseList";
 import CourseSearchSection from "../../components/catalog/CourseSearchSection";
-import { getCourses } from "../../services/api/course.service";
+import { getCourses } from "../../services/api/courseService";
 
 const COURSES_PER_PAGE = 6;
 

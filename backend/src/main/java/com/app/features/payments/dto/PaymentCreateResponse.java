@@ -11,6 +11,11 @@ public record PaymentCreateResponse(
         BigDecimal amount,
         String paymentUrl,
         String qrCode,
-        String paymentLink
+        String paymentLink,
+        String paymentLinkId,
+        String accountName,
+        String accountNumber,
+        String transferContent,
+        String orderCode
 ) {
 }
