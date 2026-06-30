@@ -8,4 +8,6 @@ public interface ICourseService {
     List<CourseResponse> getAllCourses();
 
     CourseResponse getCourseById(Long id);
+
+    List<CourseResponse> getAllCourseByTeacherId(Long teacherId);
 }

@@ -6,6 +6,7 @@ import NotFoundPage from "../../shared/pages/NotFoundPage";
 import userRoutes from "../../features/user/routes/UserRouters";
 import learningRoutes from "../../features/learning/routes/learningRoutes";
 import MainLayout from "../../shared/layouts/MainLayout";
+import teacherRoutes from "../../features/teacher/routes/teacherRoutes";
 
 function renderRoute(route) {
   return (
@@ -35,6 +36,7 @@ function AppRoutes() {
           {routesWithLayout.map((route) => renderRoute(route))}
         </Route>
         {learningRoutes.map((route) => renderRoute(route))}
+        {teacherRoutes.map((route) => renderRoute(route))}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>

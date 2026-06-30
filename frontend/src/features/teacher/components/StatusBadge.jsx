@@ -1,31 +1,27 @@
 export default function StatusBadge({ status }) {
   const statusConfig = {
     PUBLISHED: {
-      backgroundColor: 'bg-green-100',
-      textColor: 'text-green-800',
-      label: 'Đã Xuất Bản',
+      className: 'bg-status-successStrong/20 text-status-successSoft',
+      label: 'Published',
     },
     DRAFT: {
-      backgroundColor: 'bg-yellow-100',
-      textColor: 'text-yellow-800',
-      label: 'Bản Nháp',
+      className: 'bg-brand-warning/20 text-status-warningSoft',
+      label: 'Draft',
     },
     PENDING: {
-      backgroundColor: 'bg-blue-100',
-      textColor: 'text-blue-800',
-      label: 'Đang Chờ',
+      className: 'bg-brand-accent/20 text-brand-accentSoft',
+      label: 'Pending',
     },
     HIDDEN: {
-      backgroundColor: 'bg-gray-100',
-      textColor: 'text-gray-800',
-      label: 'Ẩn',
+      className: 'bg-brand-mutedText/20 text-brand-mutedText',
+      label: 'Hidden',
     },
   };
 
   const config = statusConfig[status] || statusConfig.DRAFT;
 
   return (
-    <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${config.backgroundColor} ${config.textColor}`}>
+    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm ${config.className}`}>
       {config.label}
     </span>
   );

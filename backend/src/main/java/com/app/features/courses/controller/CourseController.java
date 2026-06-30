@@ -27,4 +27,11 @@ public class CourseController {
     public ResponseEntity<CourseResponse> getCourseById(@PathVariable Long id) {
         return ResponseEntity.ok(courseService.getCourseById(id));
     }
+
+    @GetMapping("/manage-course")
+    public ResponseEntity<List<CourseResponse>> getCourseByTeacherId() {
+        // Xử lí lấy id ở token sau
+        // Tạm thời hard code id
+        return ResponseEntity.ok(courseService.getAllCourseByTeacherId(4L));
+    }
 }

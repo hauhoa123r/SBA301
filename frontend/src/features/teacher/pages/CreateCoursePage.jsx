@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CourseForm from '../components/CourseForm';
-import { createCourse } from '../service/teacherService';
+import teacherService from '../service/teacherService';
 
 export default function CreateCoursePage() {
   const navigate = useNavigate();
@@ -12,12 +12,12 @@ export default function CreateCoursePage() {
     try {
       setLoading(true);
       setError(null);
-      await createCourse(formData);
+      await teacherService.createCourse(formData);
       navigate('/teacher/courses', {
-        state: { message: 'Khóa học được tạo thành công!' },
+        state: { message: 'Course created successfully!' },
       });
     } catch (err) {
-      setError(err.message || 'Lỗi khi tạo khóa học');
+      setError(err.message || 'Error creating course');
       setLoading(false);
     }
   };

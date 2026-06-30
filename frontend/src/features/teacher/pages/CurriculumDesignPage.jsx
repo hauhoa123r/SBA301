@@ -1,7 +1,27 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { ArrowLeft, Plus, ChevronDown, ChevronUp, Trash2, Edit2 } from 'lucide-react';
-import { getCourseCurriculum, updateCourseCurriculum } from '../service/teacherService';
+import { useState, useEffect, useCallback } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { ArrowLeft, Plus, Save, BookOpen, Layers } from "lucide-react";
+import teacherService from "../service/teacherService";
+
+import ChapterNode from "../components/curriculum-builder/ChapterNode";
+
+import ChapterModal from "../components/curriculum-builder/modals/ChapterModal";
+import LessonModal from "../components/curriculum-builder/modals/LessonModal";
+import ConfirmDeleteModal from "../components/curriculum-builder/modals/ConfirmDeleteModal";
+
+const enrichLesson = (ls) => ({
+  video_url: "",
+  duration_seconds: 0,
+  documents: [],
+  quizzes: [],
+  assignments: [],
+  ...ls,
+});
+const enrichChapter = (ch) => ({
+  ...ch,
+  lessons: (ch.lessons ?? []).map(enrichLesson),
+});
+
 
 export default function CurriculumDesignPage() {
   const navigate = useNavigate();
@@ -11,253 +31,328 @@ export default function CurriculumDesignPage() {
 
   const [chapters, setChapters] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [expandedChapter, setExpandedChapter] = useState(null);
-  const [newChapterTitle, setNewChapterTitle] = useState('');
-  const [newLessonTitle, setNewLessonTitle] = useState({});
+  const [saving, setSaving] = useState(false);
+
+
+  const [expandedChapterId, setExpandedChapterId] = useState(null);
+
+  const [isChapterModalOpen, setChapterModalOpen] = useState(false);
+  const [isLessonModalOpen, setLessonModalOpen] = useState(false);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [editingTarget, setEditingTarget] = useState(null);
 
   useEffect(() => {
-    const fetchCurriculum = async () => {
+    if (!courseId) return;
+    let cancelled = false;
+    (async () => {
       try {
         setLoading(true);
-        const response = await getCourseCurriculum(courseId);
-        setChapters(response.data || response || []);
+        const res = await teacherService.getCurriculum(courseId);
+        const raw = res?.data ?? res ?? [];
+        if (!cancelled) setChapters(raw.map(enrichChapter));
       } catch (err) {
-        console.error('Lỗi khi tải giáo trình:', err);
+        console.error("Error loading curriculum:", err);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
+    })();
+    return () => {
+      cancelled = true;
     };
-
-    if (courseId) {
-      fetchCurriculum();
-    }
   }, [courseId]);
 
-  const handleAddChapter = () => {
-    if (!newChapterTitle.trim()) return;
+  const openAddChapterModal = useCallback(() => {
+    setEditingTarget(null);
+    setChapterModalOpen(true);
+  }, []);
 
-    const newChapter = {
-      id: Date.now(),
-      title: newChapterTitle,
-      lessons: [],
-      isNew: true,
-    };
+  const openEditChapterModal = useCallback((chapter) => {
+    setEditingTarget({ chapterId: chapter.id, chapterData: chapter });
+    setChapterModalOpen(true);
+  }, []);
 
-    setChapters([...chapters, newChapter]);
-    setNewChapterTitle('');
-  };
+  const handleChapterSubmit = useCallback(
+    (title) => {
+      if (editingTarget?.chapterId) {
+        setChapters((prev) =>
+          prev.map((ch) =>
+            ch.id === editingTarget.chapterId ? { ...ch, title } : ch,
+          ),
+        );
+      } else {
+        const newCh = {
+          id: Date.now(),
+          title,
+          order_index: chapters.length + 1,
+          lessons: [],
+          isNew: true,
+        };
+        setChapters((prev) => [...prev, newCh]);
+        setExpandedChapterId(newCh.id);
+      }
+    },
+    [editingTarget, chapters.length],
+  );
 
-  const handleAddLesson = (chapterId) => {
-    const title = newLessonTitle[chapterId] || '';
-    if (!title.trim()) return;
+  const openAddLessonModal = useCallback((chapterId) => {
+    setEditingTarget({ chapterId, lessonData: null });
+    setLessonModalOpen(true);
+  }, []);
 
-    setChapters(
-      chapters.map((chapter) => {
-        if (chapter.id === chapterId) {
+
+  const openEditLessonModal = useCallback((chapterId, lesson) => {
+    setEditingTarget({ chapterId, lessonData: lesson });
+    setLessonModalOpen(true);
+  }, []);
+
+  const handleLessonSubmit = useCallback(
+    (lessonData) => {
+      const { chapterId, lessonData: existing } = editingTarget;
+
+      setChapters((prev) =>
+        prev.map((ch) => {
+          if (ch.id !== chapterId) return ch;
+
+          if (existing) {
+            return {
+              ...ch,
+              lessons: ch.lessons.map((ls) =>
+                ls.id === existing.id ? { ...ls, ...lessonData } : ls,
+              ),
+            };
+          } else {
+            return {
+              ...ch,
+              lessons: [
+                ...ch.lessons,
+                enrichLesson({
+                  id: Date.now(),
+                  order_index: ch.lessons.length + 1,
+                  isNew: true,
+                  ...lessonData,
+                }),
+              ],
+            };
+          }
+        }),
+      );
+    },
+    [editingTarget],
+  );
+
+
+  const openDeleteChapterModal = useCallback((chapter) => {
+    setEditingTarget({
+      type: "chapter",
+      chapterId: chapter.id,
+      label: `chapter "${chapter.title}"`,
+    });
+    setDeleteModalOpen(true);
+  }, []);
+
+  const openDeleteLessonModal = useCallback((chapterId, lesson) => {
+    setEditingTarget({
+      type: "lesson",
+      chapterId,
+      lessonId: lesson.id,
+      label: `lesson "${lesson.title}"`,
+    });
+    setDeleteModalOpen(true);
+  }, []);
+
+  const handleDeleteConfirm = useCallback(() => {
+    if (!editingTarget) return;
+
+    if (editingTarget.type === "chapter") {
+      setChapters((prev) =>
+        prev.filter((c) => c.id !== editingTarget.chapterId),
+      );
+      setExpandedChapterId((prev) =>
+        prev === editingTarget.chapterId ? null : prev,
+      );
+    } else if (editingTarget.type === "lesson") {
+      setChapters((prev) =>
+        prev.map((ch) => {
+          if (ch.id !== editingTarget.chapterId) return ch;
           return {
-            ...chapter,
-            lessons: [
-              ...(chapter.lessons || []),
-              {
-                id: Date.now(),
-                title,
-                order: (chapter.lessons?.length || 0) + 1,
-                isNew: true,
-              },
-            ],
+            ...ch,
+            lessons: ch.lessons.filter((l) => l.id !== editingTarget.lessonId),
           };
-        }
-        return chapter;
-      })
-    );
+        }),
+      );
+    }
+  }, [editingTarget]);
 
-    setNewLessonTitle({ ...newLessonTitle, [chapterId]: '' });
-  };
 
-  const handleDeleteChapter = (chapterId) => {
-    setChapters(chapters.filter((c) => c.id !== chapterId));
-  };
-
-  const handleDeleteLesson = (chapterId, lessonId) => {
-    setChapters(
-      chapters.map((chapter) => {
-        if (chapter.id === chapterId) {
-          return {
-            ...chapter,
-            lessons: chapter.lessons.filter((l) => l.id !== lessonId),
-          };
-        }
-        return chapter;
-      })
-    );
-  };
-
-  const handleSaveCurriculum = async () => {
+  const handleSave = async () => {
     try {
-      setLoading(true);
-      await updateCourseCurriculum(courseId, chapters);
-      navigate('/teacher/courses', {
-        state: { message: 'Cập nhật giáo trình thành công!' },
+      setSaving(true);
+      await teacherService.updateCurriculum(courseId, chapters);
+      navigate("/teacher/courses", {
+        state: { message: "Curriculum updated successfully!" },
       });
     } catch (err) {
-      console.error('Lỗi khi cập nhật giáo trình:', err);
+      console.error("Error saving curriculum:", err);
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
+  const totalLessons = chapters.reduce(
+    (sum, ch) => sum + (ch.lessons?.length ?? 0),
+    0,
+  );
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mb-4" />
-          <p className="text-gray-600">Đang tải giáo trình...</p>
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-2 border-brand-accent border-t-transparent mb-4" />
+          <p className="text-brand-textSecondary">Loading curriculum...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <button
-        onClick={() => navigate('/teacher/courses')}
-        className="flex items-center gap-2 text-teal-600 hover:text-teal-700 font-medium transition-colors duration-200"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        Quay Lại
-      </button>
+    <div className="space-y-6 max-w-5xl mx-auto">
+      <div className="flex items-center justify-between">
+        <button
+          onClick={() => navigate("/teacher/courses")}
+          className="flex items-center gap-2 text-brand-accentSoft hover:text-brand-accent font-medium transition-colors group"
+        >
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+          Back to My Courses
+        </button>
 
-      <div>
-        <h1 className="text-4xl font-bold text-gray-900">Thiết Kế Giáo Trình</h1>
-        <p className="text-gray-600 mt-2">{course?.title}</p>
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="flex items-center gap-2 px-5 py-2.5 bg-brand-accent hover:bg-brand-accentHover text-brand-white text-sm font-semibold rounded-lg shadow-lg shadow-brand-accent/20 hover:shadow-brand-accent/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
+        >
+          {saving ? (
+            <>
+              <div className="animate-spin rounded-full h-4 w-4 border-2 border-brand-white border-t-transparent" />
+              Saving...
+            </>
+          ) : (
+            <>
+              <Save className="w-4 h-4" />
+              Save Curriculum
+            </>
+          )}
+        </button>
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 space-y-6">
-        <div className="space-y-4">
-          {chapters.map((chapter) => (
-            <div key={chapter.id} className="border border-gray-200 rounded-lg overflow-hidden">
-              <div className="flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors duration-200">
-                <button
-                  onClick={() =>
-                    setExpandedChapter(expandedChapter === chapter.id ? null : chapter.id)
-                  }
-                  className="flex items-center gap-3 flex-1 text-left"
-                >
-                  {expandedChapter === chapter.id ? (
-                    <ChevronUp className="w-5 h-5 text-gray-500" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 text-gray-500" />
-                  )}
-                  <span className="font-semibold text-gray-900">{chapter.title}</span>
-                  <span className="ml-auto text-sm text-gray-600">
-                    {chapter.lessons?.length || 0} bài học
-                  </span>
-                </button>
-                <button
-                  onClick={() => handleDeleteChapter(chapter.id)}
-                  className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
-                >
-                  <Trash2 className="w-5 h-5" />
-                </button>
-              </div>
-
-              {expandedChapter === chapter.id && (
-                <div className="p-4 space-y-3">
-                  {chapter.lessons?.map((lesson) => (
-                    <div
-                      key={lesson.id}
-                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg group"
-                    >
-                      <div className="flex items-center gap-3 flex-1">
-                        <span className="text-sm font-medium text-gray-600 w-6 text-center">
-                          {lesson.order}
-                        </span>
-                        <span className="text-gray-900">{lesson.title}</span>
-                      </div>
-                      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        <button className="p-2 text-gray-600 hover:bg-white rounded-lg transition-colors duration-200">
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteLesson(chapter.id, lesson.id)}
-                          className="p-2 text-red-600 hover:bg-white rounded-lg transition-colors duration-200"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-
-                  <div className="flex gap-2 pt-2">
-                    <input
-                      type="text"
-                      placeholder="Tên bài học mới..."
-                      value={newLessonTitle[chapter.id] || ''}
-                      onChange={(e) =>
-                        setNewLessonTitle({
-                          ...newLessonTitle,
-                          [chapter.id]: e.target.value,
-                        })
-                      }
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                          handleAddLesson(chapter.id);
-                        }
-                      }}
-                      className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
-                    />
-                    <button
-                      onClick={() => handleAddLesson(chapter.id)}
-                      className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium rounded-lg transition-colors duration-200"
-                    >
-                      <Plus className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              )}
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-brand-textPrimary flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-accent to-brand-accentHover flex items-center justify-center shadow-lg shadow-brand-accent/20">
+              <Layers className="w-5 h-5 text-brand-white" />
             </div>
-          ))}
+            Curriculum Builder
+          </h1>
+          {course?.title && (
+            <p className="text-brand-textSecondary mt-2 ml-[52px]">
+              {course.title}
+            </p>
+          )}
         </div>
 
-        <div className="border-t border-gray-200 pt-6">
-          <div className="flex gap-2">
-            <input
-              type="text"
-              placeholder="Tên chương mới..."
-              value={newChapterTitle}
-              onChange={(e) => setNewChapterTitle(e.target.value)}
-              onKeyPress={(e) => {
-                if (e.key === 'Enter') {
-                  handleAddChapter();
-                }
-              }}
-              className="flex-1 px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+        {chapters.length > 0 && (
+          <div className="flex items-center gap-2">
+            <span className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-panel rounded-lg border border-brand-borderSoft text-xs font-medium text-brand-textSecondary">
+              <BookOpen className="w-3.5 h-3.5 text-brand-accent" />
+              {chapters.length} {chapters.length === 1 ? "Chapter" : "Chapters"}
+            </span>
+            <span className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-panel rounded-lg border border-brand-borderSoft text-xs font-medium text-brand-textSecondary">
+              <Layers className="w-3.5 h-3.5 text-brand-info" />
+              {totalLessons} {totalLessons === 1 ? "Lesson" : "Lessons"}
+            </span>
+          </div>
+        )}
+      </div>
+
+      <div className="space-y-4">
+        {chapters.length > 0 ? (
+          chapters.map((chapter, idx) => (
+            <ChapterNode
+              key={chapter.id}
+              chapter={chapter}
+              chapterIndex={idx}
+              isExpanded={expandedChapterId === chapter.id}
+              onToggle={() =>
+                setExpandedChapterId((prev) =>
+                  prev === chapter.id ? null : chapter.id,
+                )
+              }
+              onEdit={() => openEditChapterModal(chapter)}
+              onDelete={() => openDeleteChapterModal(chapter)}
+              onAddLesson={() => openAddLessonModal(chapter.id)}
+              onEditLesson={(lesson) => openEditLessonModal(chapter.id, lesson)}
+              onDeleteLesson={(lesson) =>
+                openDeleteLessonModal(chapter.id, lesson)
+              }
             />
+          ))
+        ) : (
+          <div className="flex flex-col items-center py-20 text-brand-mutedText/50 bg-brand-panel/30 rounded-xl border border-dashed border-brand-borderSoft">
+            <div className="w-16 h-16 rounded-full bg-brand-dark/40 flex items-center justify-center mb-4">
+              <Layers className="w-8 h-8 text-brand-mutedText/30" />
+            </div>
+            <p className="text-lg font-semibold text-brand-textSecondary mb-1">
+              No chapters yet
+            </p>
+            <p className="text-sm text-brand-mutedText/60 mb-6">
+              Start building your curriculum by adding the first chapter.
+            </p>
             <button
-              onClick={handleAddChapter}
-              className="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg transition-colors duration-200 flex items-center gap-2"
+              onClick={openAddChapterModal}
+              className="flex items-center gap-2 px-6 py-3 bg-brand-accent hover:bg-brand-accentHover text-brand-white text-sm font-semibold rounded-lg shadow-lg shadow-brand-accent/25 hover:shadow-brand-accent/35 transition-all"
             >
-              <Plus className="w-5 h-5" />
-              Thêm Chương
+              <Plus className="w-4 h-4" />
+              Add First Chapter
             </button>
           </div>
-        </div>
-
-        <div className="flex gap-4 pt-6 border-t border-gray-200">
-          <button
-            onClick={() => navigate('/teacher/courses')}
-            className="flex-1 px-6 py-3 border border-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors duration-200"
-          >
-            Hủy
-          </button>
-          <button
-            onClick={handleSaveCurriculum}
-            className="flex-1 px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg transition-colors duration-200"
-          >
-            Lưu Giáo Trình
-          </button>
-        </div>
+        )}
       </div>
+
+      {chapters.length > 0 && (
+        <button
+          onClick={openAddChapterModal}
+          className="w-full flex items-center justify-center gap-2 py-4 border-2 border-dashed border-brand-borderSoft text-brand-accentSoft hover:text-brand-accent hover:border-brand-accent hover:bg-brand-accent/5 rounded-xl font-medium transition-all"
+        >
+          <Plus className="w-5 h-5" />
+          Add New Chapter
+        </button>
+      )}
+
+      <ChapterModal
+        isOpen={isChapterModalOpen}
+        onClose={() => setChapterModalOpen(false)}
+        onSubmit={handleChapterSubmit}
+        initialData={editingTarget?.chapterData ?? null}
+      />
+
+      <LessonModal
+        isOpen={isLessonModalOpen}
+        onClose={() => setLessonModalOpen(false)}
+        onSubmit={handleLessonSubmit}
+        initialData={editingTarget?.lessonData ?? null}
+      />
+
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={handleDeleteConfirm}
+        title={
+          editingTarget?.type === "chapter" ? "Delete Chapter" : "Delete Lesson"
+        }
+        message={
+          editingTarget?.label
+            ? `Are you sure you want to delete ${editingTarget.label}? This action cannot be undone.`
+            : undefined
+        }
+      />
     </div>
   );
 }

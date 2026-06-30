@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import CourseForm from '../components/CourseForm';
-import { updateCourse, getTeacherCourses } from '../service/teacherService';
+import teacherService from '../service/teacherService';
 
 export default function EditCoursePage() {
   const navigate = useNavigate();
@@ -17,15 +17,15 @@ export default function EditCoursePage() {
       const fetchCourse = async () => {
         try {
           setCourseLoading(true);
-          const response = await getTeacherCourses();
+          const response = await teacherService.getCourses();
           const foundCourse = response.find((c) => c.id === parseInt(courseId));
           if (foundCourse) {
             setCourse(foundCourse);
           } else {
-            setError('Không tìm thấy khóa học');
+            setError('Course not found');
           }
         } catch (err) {
-          setError(err.message || 'Lỗi khi tải dữ liệu khóa học');
+          setError(err.message || 'Error loading course data');
         } finally {
           setCourseLoading(false);
         }
@@ -39,12 +39,12 @@ export default function EditCoursePage() {
     try {
       setLoading(true);
       setError(null);
-      await updateCourse(courseId, formData);
+      await teacherService.updateCourse(courseId, formData);
       navigate('/teacher/courses', {
-        state: { message: 'Cập nhật khóa học thành công!' },
+        state: { message: 'Course updated successfully!' },
       });
     } catch (err) {
-      setError(err.message || 'Lỗi khi cập nhật khóa học');
+      setError(err.message || 'Error updating course');
       setLoading(false);
     }
   };
@@ -53,8 +53,8 @@ export default function EditCoursePage() {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mb-4" />
-          <p className="text-gray-600">Đang tải dữ liệu khóa học...</p>
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-2 border-brand-accent border-t-transparent mb-4" />
+          <p className="text-brand-textSecondary">Loading course data...</p>
         </div>
       </div>
     );
@@ -64,12 +64,12 @@ export default function EditCoursePage() {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
-          <p className="text-red-600 font-medium mb-4">{error}</p>
+          <p className="text-brand-danger font-medium mb-4">{error}</p>
           <button
             onClick={() => navigate('/teacher/courses')}
-            className="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg transition-colors duration-200"
+            className="px-6 py-3 bg-brand-accent hover:bg-brand-accentHover text-brand-white font-medium rounded-lg transition-colors duration-200"
           >
-            Quay Lại
+            Go Back
           </button>
         </div>
       </div>

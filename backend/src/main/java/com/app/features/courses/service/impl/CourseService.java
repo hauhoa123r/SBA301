@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +45,14 @@ public class CourseService implements ICourseService {
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + id));
         return toCourseResponse(course);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CourseResponse> getAllCourseByTeacherId(Long teacherId) {
+        List<CourseEntity> courseEntities = courseRepository.findAllByTeacherId(teacherId);
+        return courseEntities.stream().map(courseEntity -> toCourseResponse(courseEntity)).toList();
+    }
+
 
     private CourseResponse toCourseResponse(CourseEntity course) {
         CourseResponse response = modelMapper.map(course, CourseResponse.class);

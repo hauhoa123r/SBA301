@@ -8,12 +8,12 @@ export default function TeacherLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const { user } = useAuth();
 
-  const displayName = user?.fullName || user?.name || user?.username || 'Giáo Viên';
+  const displayName = user?.fullName || user?.name || user?.username || 'Teacher';
   const avatarUrl = user?.avatar || user?.avatarUrl || user?.image;
   const avatarInitial = displayName.charAt(0).toUpperCase();
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-brand-dark flex">
       <TeacherSidebar sidebarOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="flex-1 flex flex-col min-h-screen">
