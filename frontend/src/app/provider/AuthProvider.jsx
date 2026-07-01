@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import AuthContext from "./AuthContext";
 
 export function AuthProvider({ children }) {
@@ -15,7 +15,7 @@ export function AuthProvider({ children }) {
         }
     });
 
-    const setUser = (nextUser) => {
+    const setUser = useCallback((nextUser) => {
         setStoredUser((currentUser) => {
             const resolvedUser = typeof nextUser === "function" ? nextUser(currentUser) : nextUser;
 
@@ -27,10 +27,12 @@ export function AuthProvider({ children }) {
 
             return resolvedUser;
         });
-    };
+    }, []);
+
+    const authValue = useMemo(() => ({ user, setUser }), [user, setUser]);
 
     return (
-        <AuthContext.Provider value={{ user, setUser }}>
+        <AuthContext.Provider value={authValue}>
             {children}
         </AuthContext.Provider>
     );
