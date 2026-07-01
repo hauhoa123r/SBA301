@@ -1,4 +1,4 @@
-export const PORT = "http://localhost:8081";
+export const PORT = "http://localhost:8080";
 const BASE = "/api";
 export const API_AUTH = `${BASE}/auth`;
 export const API_COURSES = `${BASE}/courses`;
