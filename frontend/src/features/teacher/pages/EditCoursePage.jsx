@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import CourseForm from '../components/CourseForm';
+import CourseForm from '../components/course-form/CourseForm';
 import teacherService from '../service/teacherService';
 
 export default function EditCoursePage() {

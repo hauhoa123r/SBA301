@@ -44,6 +44,11 @@ export default function CurriculumDesignPage() {
   useEffect(() => {
     if (!courseId) return;
     let cancelled = false;
+    if (location.state?.course?.chapters) {
+      setChapters(location.state.course.chapters.map(enrichChapter));
+      setLoading(false);
+      return;
+    }
     (async () => {
       try {
         setLoading(true);

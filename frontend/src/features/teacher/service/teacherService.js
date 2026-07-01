@@ -10,7 +10,7 @@ const teacherService = {
   
   getCourses: async () => {
     try {
-      const response = await axiosInstance.get('${API_COURSE}'/manage-course);
+      const response = await axiosInstance.get(`${API_COURSES}/manage-course`);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Error loading course list');
@@ -19,7 +19,7 @@ const teacherService = {
 
   createCourse: async (data) => {
     try {
-      const response = await axiosInstance.post('/courses', data);
+      const response = await axiosInstance.post(`${API_COURSES}`, data);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Error creating course');
