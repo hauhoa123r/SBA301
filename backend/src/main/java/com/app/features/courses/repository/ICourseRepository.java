@@ -2,14 +2,32 @@ package com.app.features.courses.repository;
 
 import com.app.features.courses.repository.projection.CourseLessonStats;
 import com.app.features.model.CourseEntity;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public interface ICourseRepository extends JpaRepository<CourseEntity,Long> {
+
+    @Override
+    @EntityGraph(attributePaths = {"teacher", "category"})
+    List<CourseEntity> findAll();
+
+    @Override
+    @EntityGraph(attributePaths = {"teacher", "category", "plans", "courseEnrollments", "chapterEntities"})
+    Optional<CourseEntity> findById(Long id);
+
+    @Query("SELECT c FROM CourseEntity c " +
+            "JOIN FETCH c.category " +
+            "JOIN FETCH c.teacher " +
+            "WHERE c.teacher.id = :teacherId " +
+            "ORDER BY c.createdAt DESC")
+    List<CourseEntity> findAllByTeacherId(Long teacherId);
+
     @Query("""
             select c.id as courseId,
                    count(l.id) as totalLessons,
@@ -21,4 +39,14 @@ public interface ICourseRepository extends JpaRepository<CourseEntity,Long> {
             group by c.id
             """)
     List<CourseLessonStats> findLessonStatsByCourseIds(@Param("courseIds") Collection<Long> courseIds);
+
+    @Query("select c.id as courseId, " +
+            "count(l.id) as totalLessons, " +
+            "sum(l.durationSeconds) as totalDurationSeconds " +
+            "from CourseEntity c " +
+            "left join c.chapterEntities ch " +
+            "left join ch.lessonEntities l " +
+            "where c.id = :courseId " +
+            "group by c.id")
+    CourseLessonStats getLessonStatsByCourseId(@Param("courseId") Long courseId);
 }
