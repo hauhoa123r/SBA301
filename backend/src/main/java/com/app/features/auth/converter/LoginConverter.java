@@ -9,6 +9,7 @@ public class LoginConverter {
     public LoginResponse loginConverter(UserEntity userEntity) {
         LoginResponse loginResponse = new LoginResponse();
         loginResponse.setId(userEntity.getId());
+        loginResponse.setFullName(userEntity.getFullName());
         loginResponse.setEmail(userEntity.getEmail());
         return loginResponse;
     }

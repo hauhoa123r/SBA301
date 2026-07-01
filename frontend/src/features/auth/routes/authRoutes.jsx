@@ -1,7 +1,7 @@
 import ForgotPasswordPage from "../pages/ForgotPasswordPage";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
-import ChangePasswordPage from "../pages/ChangePasswordPage.jsx";
+import ResetPasswordPage from "../pages/ResetPasswordPage.jsx";
 
 const authRoutes = [
     {
@@ -18,11 +18,7 @@ const authRoutes = [
     },
     {
         path: "/reset-password",
-        element: <ChangePasswordPage mode = "reset" />
-    },
-    {
-        path: "/user/change-password",
-        element: <ChangePasswordPage />
+        element: <ResetPasswordPage />
     }
 ];
 
