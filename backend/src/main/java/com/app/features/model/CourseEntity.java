@@ -81,4 +81,22 @@ public class CourseEntity {
     @ManyToMany
     @JoinTable(name = "course_tags", joinColumns = {@JoinColumn(name = "course_id")}, inverseJoinColumns = {@JoinColumn(name = "tag_id")})
     private Set<TagEntity> tags = new LinkedHashSet<>();
+
+    public void addTag(TagEntity tag) {
+        if(this.tags == null){
+            this.tags = new LinkedHashSet<>();
+        }
+        this.tags.add(tag);
+    }
+
+    public void addPlan(PlanEntity plan) {
+        if(this.plans== null){
+            this.plans = new LinkedHashSet<>();
+        }
+        this.plans.add(plan);
+        if(plan.getCourses() == null){
+            plan.setCourses(new LinkedHashSet<>());
+        }
+        plan.getCourses().add(this);
+    }
 }
