@@ -1,44 +1,17 @@
 import {
-    CheckCircle2,
     ClipboardList,
     Eye,
-    EyeOff,
     ReceiptText,
-    XCircle,
 } from "lucide-react";
 
 export const MODERATOR_FEATURES = [
     {
-        title: "Review Courses",
-        description: "Kiem tra noi dung, metadata, gia va ghi chu cua khoa hoc dang cho duyet.",
-        path: "/moderator/courses/review",
+        title: "Course Management",
+        description: "Review and manage pending, approved, rejected, and hidden courses in one place.",
+        path: "/moderator/courses",
         icon: Eye,
         tone: "text-sky-600",
         bg: "bg-sky-50",
-    },
-    {
-        title: "Approve Courses",
-        description: "Duyet cac khoa hoc dat chat luong de hien thi cho hoc vien.",
-        path: "/moderator/courses/approve",
-        icon: CheckCircle2,
-        tone: "text-emerald-600",
-        bg: "bg-emerald-50",
-    },
-    {
-        title: "Reject Courses",
-        description: "Tu choi khoa hoc va de lai ly do ro rang cho instructor chinh sua.",
-        path: "/moderator/courses/reject",
-        icon: XCircle,
-        tone: "text-rose-600",
-        bg: "bg-rose-50",
-    },
-    {
-        title: "Hide Courses",
-        description: "An khoa hoc da public khi co van de ve chat luong, ban quyen hoac chinh sach.",
-        path: "/moderator/courses/hide",
-        icon: EyeOff,
-        tone: "text-amber-600",
-        bg: "bg-amber-50",
     },
     {
         title: "Manage Violation Reports",

@@ -9,7 +9,7 @@ import {
     ShieldAlert,
     XCircle,
 } from "lucide-react";
-import { NavLink, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import ModeratorLayout from "../../moderator/components/ModeratorLayout";
 import { COURSES } from "../services/mockup";
 
@@ -39,55 +39,35 @@ const STATUS_STYLES = {
     HIDDEN: "border-slate-200 bg-slate-100 text-slate-700",
 };
 
-const COURSE_MODERATION_MODES = [
+const COURSE_STATUS_TABS = [
     {
-        title: "Review Courses",
+        title: "Pending Review",
         path: "/moderator/courses/review",
-        eyebrow: "Feature Course",
-        pageTitle: "Review Courses",
-        pageDescription: "Kiem tra khoa hoc dang cho duyet truoc khi moderator quyet dinh approve, reject hoac hide.",
-        defaultStatus: REVIEW_STATUS.PENDING,
-        value: "12",
-        description: "Kiem tra noi dung, metadata, gia va chat luong submission.",
+        status: REVIEW_STATUS.PENDING,
         icon: Eye,
         tone: "text-sky-600",
         bg: "bg-sky-50",
     },
     {
-        title: "Approve Courses",
+        title: "Approved",
         path: "/moderator/courses/approve",
-        eyebrow: "Feature Course",
-        pageTitle: "Approve Courses",
-        pageDescription: "Duyet khoa hoc dat chuan de co the publish cho hoc vien.",
-        defaultStatus: REVIEW_STATUS.PENDING,
-        value: "8",
-        description: "Publish cac khoa hoc dat yeu cau noi dung va chinh sach.",
+        status: REVIEW_STATUS.APPROVED,
         icon: CheckCircle2,
         tone: "text-emerald-600",
         bg: "bg-emerald-50",
     },
     {
-        title: "Reject Courses",
+        title: "Rejected",
         path: "/moderator/courses/reject",
-        eyebrow: "Feature Course",
-        pageTitle: "Reject Courses",
-        pageDescription: "Tu choi khoa hoc chua dat va de lai review note de instructor sua lai.",
-        defaultStatus: REVIEW_STATUS.PENDING,
-        value: "3",
-        description: "Tra ve khoa hoc kem ly do va ghi chu chinh sua.",
+        status: REVIEW_STATUS.REJECTED,
         icon: XCircle,
         tone: "text-rose-600",
         bg: "bg-rose-50",
     },
     {
-        title: "Hide Courses",
+        title: "Hidden",
         path: "/moderator/courses/hide",
-        eyebrow: "Feature Course",
-        pageTitle: "Hide Courses",
-        pageDescription: "An khoa hoc da public khi co van de ve chat luong, ban quyen hoac policy.",
-        defaultStatus: REVIEW_STATUS.APPROVED,
-        value: "5",
-        description: "Tam an khoa hoc co van de khoi learner access.",
+        status: REVIEW_STATUS.HIDDEN,
         icon: EyeOff,
         tone: "text-amber-600",
         bg: "bg-amber-50",
@@ -96,19 +76,10 @@ const COURSE_MODERATION_MODES = [
 
 export default function CourseModerationPage() {
     const location = useLocation();
-    const activeMode =
-        COURSE_MODERATION_MODES.find((mode) => mode.path === location.pathname) ||
-        COURSE_MODERATION_MODES[0];
+    const initialTab = COURSE_STATUS_TABS.find((tab) => tab.path === location.pathname);
     const [courses, setCourses] = useState(REVIEW_COURSES);
     const [keyword, setKeyword] = useState("");
-    const [statusFilters, setStatusFilters] = useState({});
-    const statusFilter = statusFilters[activeMode.path] || activeMode.defaultStatus;
-    const setStatusFilter = (nextStatus) => {
-        setStatusFilters((currentFilters) => ({
-            ...currentFilters,
-            [activeMode.path]: nextStatus,
-        }));
-    };
+    const [statusFilter, setStatusFilter] = useState(initialTab?.status || "ALL");
 
     const filteredCourses = useMemo(() => {
         const searchValue = keyword.trim().toLowerCase();
@@ -134,34 +105,34 @@ export default function CourseModerationPage() {
 
     return (
         <ModeratorLayout
-            eyebrow={activeMode.eyebrow}
-            title={activeMode.pageTitle}
-            description={activeMode.pageDescription}
+            eyebrow="Course Moderation"
+            title="Course Management"
+            description="Review submissions and manage approved, rejected, or hidden courses from one workspace."
             actions={
                 <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4 lg:min-w-[520px]">
-                    {COURSE_MODERATION_MODES.map((item) => {
+                    {COURSE_STATUS_TABS.map((item) => {
                         const Icon = item.icon;
+                        const count = courses.filter((course) => course.status === item.status).length;
 
                         return (
-                            <NavLink
+                            <button
+                                type="button"
                                 key={item.title}
-                                to={item.path}
-                                className={({ isActive }) =>
-                                    `rounded-lg border p-4 text-slate-950 no-underline shadow-sm transition ${
-                                        isActive
+                                onClick={() => setStatusFilter(item.status)}
+                                className={`rounded-lg border p-4 text-left text-slate-950 shadow-sm transition ${
+                                        statusFilter === item.status
                                             ? "border-violet-300 bg-violet-50"
                                             : "border-slate-200 bg-white hover:border-violet-200"
-                                    }`
-                                }
+                                    }`}
                             >
                                 <div className="mb-3 flex items-center justify-between">
                                     <span className={`inline-flex h-9 w-9 items-center justify-center rounded-lg ${item.bg} ${item.tone}`}>
                                         <Icon className="h-5 w-5" />
                                     </span>
-                                    <span className="text-2xl font-bold text-slate-950">{item.value}</span>
+                                    <span className="text-2xl font-bold text-slate-950">{count}</span>
                                 </div>
                                 <h2 className="text-sm font-semibold text-slate-800">{item.title}</h2>
-                            </NavLink>
+                            </button>
                         );
                     })}
                 </div>
@@ -263,22 +234,6 @@ export default function CourseModerationPage() {
                         No courses match the current moderation filters.
                     </div>
                 )}
-            </section>
-
-            <section className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                {COURSE_MODERATION_MODES.map((item) => {
-                    const Icon = item.icon;
-
-                    return (
-                        <article key={item.description} className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-                            <span className={`mb-4 inline-flex h-10 w-10 items-center justify-center rounded-lg ${item.bg} ${item.tone}`}>
-                                <Icon className="h-5 w-5" />
-                            </span>
-                            <h2 className="mb-2 text-base font-semibold text-slate-950">{item.title}</h2>
-                            <p className="text-sm leading-6 text-slate-600">{item.description}</p>
-                        </article>
-                    );
-                })}
             </section>
 
             <div className="mt-8 flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">

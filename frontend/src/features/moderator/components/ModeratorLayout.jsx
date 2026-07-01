@@ -1,16 +1,13 @@
 import {
-  CheckCircle2,
   ChevronUp,
   ClipboardList,
   Eye,
-  EyeOff,
   LayoutDashboard,
   LogOut,
   Menu,
   ReceiptText,
   ShieldCheck,
   UserRoundCheck,
-  XCircle,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -19,18 +16,12 @@ const MENU_GROUPS = [
     icon: LayoutDashboard,
     items: [
       { label: "Dashboard", path: "/moderator", icon: ShieldCheck },
-      { label: "Review Courses", path: "/moderator/courses/review", icon: Eye },
       {
-        label: "Approve Courses",
-        path: "/moderator/courses/approve",
-        icon: CheckCircle2,
+        label: "Course Management",
+        path: "/moderator/courses",
+        activePathPrefix: "/moderator/courses",
+        icon: Eye,
       },
-      {
-        label: "Reject Courses",
-        path: "/moderator/courses/reject",
-        icon: XCircle,
-      },
-      { label: "Hide Courses", path: "/moderator/courses/hide", icon: EyeOff },
       {
         label: "Violation Reports",
         path: "/moderator/reports/violations",
@@ -104,7 +95,10 @@ export default function ModeratorLayout({
                   {group.items.map((item) => {
                     const Icon = item.icon;
                     const isActive =
-                      !item.inactive && location.pathname === item.path;
+                      !item.inactive &&
+                      (item.activePathPrefix
+                        ? location.pathname.startsWith(item.activePathPrefix)
+                        : location.pathname === item.path);
 
                     return (
                       <Link

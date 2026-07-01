@@ -9,6 +9,7 @@ import CourseModerationPage from "../pages/CourseModerationPage";
 import ProtectedRoute from "../../../app/routes/ProtectedRoute";
 
 const courseModeratorPaths = [
+    "/moderator/courses",
     "/moderator/courses/review",
     "/moderator/courses/approve",
     "/moderator/courses/reject",
