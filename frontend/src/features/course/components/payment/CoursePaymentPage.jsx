@@ -1,5 +1,6 @@
 import { ArrowLeft, Copy, Download, Info, LockKeyhole, Timer } from "lucide-react";
 import { paymentInfo } from "../../services/data/courseDetailData";
+import PaymentRow from "./PaymentRow";
 
 export default function CoursePaymentPage({ course, amount, countdownSeconds, onBack }) {
     const formatAmount = (value) => `${new Intl.NumberFormat("vi-VN").format(value)}đ`;
@@ -14,7 +15,7 @@ export default function CoursePaymentPage({ course, amount, countdownSeconds, on
         try {
             await navigator.clipboard.writeText(text);
         } catch {
-            // Clipboard can be blocked on non-secure origins; users can still copy manually.
+            console.error("Failed to copy text to clipboard");
         }
     };
 
@@ -114,24 +115,6 @@ export default function CoursePaymentPage({ course, amount, countdownSeconds, on
                     <span>MB Bank • {paymentInfo.accountNumber} • {paymentInfo.accountName}</span>
                 </div>
             </footer>
-        </div>
-    );
-}
-
-function PaymentRow({ label, value, copyValue, onCopy, highlight = false }) {
-    return (
-        <div className="grid gap-3 border-b border-brand-accent/10 px-5 py-5 sm:grid-cols-[150px_minmax(0,1fr)_48px] sm:items-center">
-            <span className="text-sm font-bold text-brand-textSecondary">{label}</span>
-            <span className={`text-base font-black sm:text-right ${highlight ? "text-brand-accentPale" : "text-brand-white"}`}>
-                {value}
-            </span>
-            {copyValue ? (
-                <button type="button" onClick={() => onCopy(copyValue)} className="grid h-11 w-11 place-items-center rounded-full bg-brand-light text-brand-textSecondary transition hover:bg-brand-accent hover:text-brand-white sm:justify-self-end" aria-label={`Copy ${label}`}>
-                    <Copy className="h-5 w-5" />
-                </button>
-            ) : (
-                <span className="hidden sm:block" />
-            )}
         </div>
     );
 }

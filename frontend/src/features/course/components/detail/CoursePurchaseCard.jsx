@@ -25,10 +25,7 @@ export default function CoursePurchaseCard({
     onPurchase,
 }) {
     const voucherMessage = VOUCHER_STATUS_MESSAGES[voucherStatus];
-    const fmt = (n) =>
-        !n
-            ? "Free"
-            :
+    const fmt = (n) => !n ? "Free" :
         new Intl.NumberFormat("vi-VN", {
             style: "currency",
             currency: "VND",

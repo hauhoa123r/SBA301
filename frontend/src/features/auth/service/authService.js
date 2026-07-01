@@ -16,8 +16,8 @@ export const verifyToken = async (data) => {
   return response.data;
 };
 
-export const changePassword = async (data) => {
-  const response = await api.patch("/api/auth/change-password", data);
+export const resetPassword = async (data) => {
+  const response = await api.patch(`${API_AUTH}/reset-password`, data);
   return response.data;
 }
 
