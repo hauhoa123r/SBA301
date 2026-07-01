@@ -1,6 +1,6 @@
 import React from "react";
-import HeroHeader from "../../../shared/components/HeroHeader";
-import HeroFooter from "../../../shared/components/HeroFooter";
+// import HeroHeader from "../../../shared/components/HeroHeader";
+// import HeroFooter from "../../../shared/components/HeroFooter";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 
 const NAV_ITEMS = [
@@ -41,7 +41,7 @@ export default function ManagerLayout() {
 
   return (
     <div className="flex flex-col min-h-screen bg-brand-dark font-sans text-brand-textPrimary">
-      <HeroHeader />
+      {/* <HeroHeader /> */}
 
       <main className="flex-grow flex items-center justify-center p-4 sm:p-6 lg:p-8">
         <div className="w-full max-w-7xl mx-auto bg-brand-cardBg rounded-3xl shadow-2xl border border-brand-light overflow-hidden flex flex-col md:flex-row min-h-[80vh]">
@@ -111,7 +111,7 @@ export default function ManagerLayout() {
         </div>
       </main>
 
-      <HeroFooter />
+      {/* <HeroFooter /> */}
     </div>
   );
 }
