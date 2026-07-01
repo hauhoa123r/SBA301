@@ -23,6 +23,10 @@ import java.util.Objects;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import static com.app.utils.StringUtils.isBlank;
+import static com.app.utils.StringUtils.shorten;
+import static com.app.utils.StringUtils.stringValue;
+
 @Component
 public class PayOSAdapter implements PaymentGateway {
     private static final String HMAC_SHA256 = "HmacSHA256";
@@ -80,16 +84,10 @@ public class PayOSAdapter implements PaymentGateway {
                         "price", amount
                 )
         });
-
-        Map<String, Object> response = restClient.post()
-                .uri(createPaymentUrl)
+        Map<String, Object> response = restClient.post().uri(createPaymentUrl)
                 .header("x-client-id", resolvedClientId)
-                .header("x-api-key", resolvedApiKey)
-                .body(requestBody)
-                .retrieve()
-                .body(new ParameterizedTypeReference<>() {
-                });
-
+                .header("x-api-key", resolvedApiKey).body(requestBody)
+                .retrieve().body(new ParameterizedTypeReference<>() {});
         Map<String, Object> data = extractData(response);
         String checkoutUrl = stringValue(data.get("checkoutUrl"));
         String qrCode = stringValue(data.get("qrCode"));
@@ -101,20 +99,8 @@ public class PayOSAdapter implements PaymentGateway {
         if (isBlank(transferContent)) {
             transferContent = description;
         }
-
-        return new PaymentCreateResponse(
-                invoice.getId(),
-                invoiceCode,
-                provider(),
-                invoice.getAmount(),
-                checkoutUrl,
-                qrCode,
-                paymentLink,
-                paymentLinkId,
-                accountName,
-                accountNumber,
-                transferContent,
-                String.valueOf(orderCode)
+        return new PaymentCreateResponse(invoice.getId(), invoiceCode, provider(), invoice.getAmount(), checkoutUrl, qrCode,
+                paymentLink, paymentLinkId, accountName, accountNumber, transferContent, String.valueOf(orderCode)
         );
     }
 
@@ -184,7 +170,6 @@ public class PayOSAdapter implements PaymentGateway {
             if (!Files.exists(path)) {
                 continue;
             }
-
             try {
                 return Files.readAllLines(path).stream()
                         .map(String::trim)
@@ -197,22 +182,7 @@ public class PayOSAdapter implements PaymentGateway {
                 return "";
             }
         }
-
         return "";
     }
 
-    private String shorten(String value, int maxLength) {
-        if (value == null || value.length() <= maxLength) {
-            return value;
-        }
-        return value.substring(0, maxLength);
-    }
-
-    private String stringValue(Object value) {
-        return value == null ? "" : String.valueOf(value);
-    }
-
-    private boolean isBlank(String value) {
-        return value == null || value.trim().isEmpty();
-    }
 }
