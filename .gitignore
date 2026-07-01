@@ -18,3 +18,4 @@ frontend/README.md
 out/
 # env
 .env
+.package-lock.json
