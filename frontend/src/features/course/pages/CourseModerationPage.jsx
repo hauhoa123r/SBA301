@@ -11,7 +11,65 @@ import {
 } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import ModeratorLayout from "../../moderator/components/ModeratorLayout";
-import { COURSES } from "../services/mockup";
+
+const COURSES = [
+    {
+        id: 1,
+        title: "React Fundamentals",
+        instructor: "Nguyen Minh Hai",
+        category: "Frontend",
+        thumbnail_url: "/images/undraw_morning-news_h9nz.svg",
+    },
+    {
+        id: 2,
+        title: "Node.js API Design",
+        instructor: "Tran Quoc Bao",
+        category: "Backend",
+        thumbnail_url: "/images/undraw_morning-news_h9nz.svg",
+    },
+    {
+        id: 3,
+        title: "UI Design Essentials",
+        instructor: "Le Thu Anh",
+        category: "Design",
+        thumbnail_url: "/images/undraw_morning-news_h9nz.svg",
+    },
+    {
+        id: 4,
+        title: "Data Analysis with SQL",
+        instructor: "Pham Gia Huy",
+        category: "Data",
+        thumbnail_url: "/images/undraw_morning-news_h9nz.svg",
+    },
+    {
+        id: 5,
+        title: "Java Spring Boot",
+        instructor: "Doan Nhat Linh",
+        category: "Backend",
+        thumbnail_url: "/images/undraw_morning-news_h9nz.svg",
+    },
+    {
+        id: 6,
+        title: "Python for Automation",
+        instructor: "Hoang Nam",
+        category: "Programming",
+        thumbnail_url: "/images/undraw_morning-news_h9nz.svg",
+    },
+    {
+        id: 7,
+        title: "Cloud Deployment Basics",
+        instructor: "Vo Khanh Duy",
+        category: "DevOps",
+        thumbnail_url: "/images/undraw_morning-news_h9nz.svg",
+    },
+    {
+        id: 8,
+        title: "Business English",
+        instructor: "Mai Phuong",
+        category: "Language",
+        thumbnail_url: "/images/undraw_morning-news_h9nz.svg",
+    },
+];
 
 const REVIEW_STATUS = {
     PENDING: "PENDING_REVIEW",

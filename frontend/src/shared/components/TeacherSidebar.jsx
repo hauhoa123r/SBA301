@@ -1,6 +1,6 @@
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { BarChart3, BookOpen, Star, Settings, LogOut } from 'lucide-react';
-import { useAuth } from '../../app/provider/AuthProvider';
+import useAuth from '../../app/provider/useAuth';
 
 export default function TeacherSidebar({ sidebarOpen, onClose }) {
   const location = useLocation();

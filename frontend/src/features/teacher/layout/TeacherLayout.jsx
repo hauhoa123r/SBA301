@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import { useAuth } from '../../../app/provider/AuthProvider';
+import useAuth from '../../../app/provider/useAuth';
 import TeacherHeader from '../../../shared/components/TeacherHeader';
 import TeacherSidebar from '../../../shared/components/TeacherSidebar';
 

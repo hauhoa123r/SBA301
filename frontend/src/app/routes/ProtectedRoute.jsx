@@ -32,17 +32,16 @@ const extractRoles = (user) => {
         .filter(Boolean);
 };
 
-export default function ProtectedRoute({ allowedRoles = [], demoRole = "", children }) {
+export default function ProtectedRoute({ allowedRoles = [], children }) {
     const { user } = useAuth();
     const location = useLocation();
-    const effectiveUser = user || (demoRole ? { role: demoRole } : null);
 
-    if (!effectiveUser) {
+    if (!user) {
         return <Navigate to="/login" replace state={{ from: location }} />;
     }
 
     const acceptedRoles = allowedRoles.map(normalizeRole);
-    const userRoles = extractRoles(effectiveUser);
+    const userRoles = extractRoles(user);
     const hasRequiredRole =
         acceptedRoles.length === 0 || userRoles.some((role) => acceptedRoles.includes(role));
 

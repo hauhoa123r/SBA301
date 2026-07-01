@@ -3,7 +3,7 @@ import Logo from "./Logo";
 import { Menu, X } from "lucide-react";
 import { NAV_LINKS } from "../services/navigation/navigation.mockup";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useAuth } from "../../app/provider/AuthProvider";
+import useAuth from "../../app/provider/useAuth";
 import UserProfileMenu from "./UserProfileMenu";
 import MobileMenu from "./MobileMenu";
 
