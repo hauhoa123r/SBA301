@@ -13,7 +13,7 @@ export default function TeacherLayout() {
   const avatarInitial = displayName.charAt(0).toUpperCase();
 
   return (
-    <div className="min-h-screen bg-brand-dark flex">
+    <div className="h-screen bg-brand-dark flex">
       <TeacherSidebar sidebarOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="flex-1 flex flex-col min-h-screen">

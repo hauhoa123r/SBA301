@@ -1,5 +1,6 @@
 package com.app.features.courses.service.impl;
 
+import com.app.exception.BadRequestException;
 import com.app.exception.ResourceNotFoundException;
 import com.app.features.categories.service.ICategoryService;
 import com.app.features.courses.converter.CourseResponseConverter;
@@ -70,7 +71,9 @@ public class CourseService implements ICourseService {
         UserEntity teacher = userRepository.findById(teacherId).orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + teacherId));
 
         CategoryEntity category = categoryService.findCategoryById(request.getCategoryId());
-
+        if (category == null) {
+            throw new ResourceNotFoundException("Category not found with id: " + request.getCategoryId());
+        }
         CourseEntity course = new  CourseEntity();
         course.setTitle(request.getTitle());
         course.setTeacher(teacher);
@@ -91,6 +94,8 @@ public class CourseService implements ICourseService {
             for(PlanEntity plan : plans) {
                 course.addPlan(plan);
             }
+        } else{
+            throw new BadRequestException("Please choose at least one plan.");
         }
 
         return courseRepository.save(course).getId();
