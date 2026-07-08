@@ -1,0 +1,46 @@
+services:
+  mysql:
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+    container_name: chinese-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: chinese_online_learning
+      MYSQL_USER: chinese_app
+      MYSQL_PASSWORD: devhoa
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - chinese-net
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: chinese-backend
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/chinese_online_learning
+      DB_USERNAME: chinese_app
+      DB_PASSWORD: devhoa
+      JWT_SECRET: your_jwt_secret_here
+      SERVER_PORT: 8081
+    depends_on:
+      - mysql
+    networks:
+      - chinese-net
+    restart: unless-stopped
+
+  nginx:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: chinese-nginx
+    ports:
+      - "800:80"
+    depends_on:
+      - backend
+    networks:
+      - chinese-net
+    restart: unless-stopped
