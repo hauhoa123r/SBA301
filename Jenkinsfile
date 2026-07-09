@@ -5,7 +5,7 @@ pipeline {
         stage('CHECK_ENVIRONMENT') {
             steps {
                 sh 'java -version'
-                sh 'docker -version'
+                sh 'docker --version'
                 sh 'pwd'
                 sh 'whoami'
             }
