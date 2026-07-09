@@ -1,4 +1,5 @@
 export default function Logo() {
+
     return (
         <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-brand-accent rounded flex items-center justify-center text-brand-white shadow-lg shadow-brand-accent/30">
@@ -10,7 +11,7 @@ export default function Logo() {
                 className="text-xl font-bold text-brand-accent tracking-wide"
                 style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
             >
-                Edujar
+                FUEdujar
             </span>
         </div>
     );
