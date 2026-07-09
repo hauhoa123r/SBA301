@@ -44,3 +44,8 @@ services:
     networks:
       - chinese-net
     restart: unless-stopped
+volumes: 
+  mysql_data:
+networks: 
+  chinese-net:
+    driver: bridge
