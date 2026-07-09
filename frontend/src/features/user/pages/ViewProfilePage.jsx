@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { AlertCircle } from "lucide-react";
 import { toast } from "react-toastify";
-import { useAuth } from "../../../app/provider/AuthProvider";
+import useAuth from "../../../app/provider/useAuth";
 import { changePassword, getUserProfile, updateUserProfile } from "../services/userProfileService";
 import { validateChangePassword } from "../shared/utils/validator";
 import ActivationCode from "../components/profile/ActivationCode";

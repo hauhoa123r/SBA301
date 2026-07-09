@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaFacebookF, FaGoogle } from "react-icons/fa";
 import { Eye, EyeOff, Zap } from "lucide-react";
 import {login} from "../service/authService";
-import { useAuth } from "../../../app/provider/AuthProvider";
+import useAuth from "../../../app/provider/useAuth";
 const LoginPage = () => {
     const [formData, setFormData] = useState({ email: "", password: "" });
     const [errors, setErrors] = useState({ email: "", password: "" });

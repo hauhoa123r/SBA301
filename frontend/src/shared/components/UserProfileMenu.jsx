@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ChevronDown, LogOut, Settings } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../app/provider/AuthProvider";
+import useAuth from "../../app/provider/useAuth";
 
 export default function UserProfileMenu({ variant = "pill" }) {
     const [open, setOpen] = useState(false);

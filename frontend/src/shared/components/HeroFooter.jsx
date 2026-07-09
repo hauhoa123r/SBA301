@@ -1,4 +1,4 @@
-import Logo from "./logo";
+import HeroLogo from "./HeroLogo";
 import {
     FaTwitter,
     FaGithub,
@@ -11,7 +11,7 @@ export default function HeroFooter() {
             <div className="container mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
                     <div className="md:col-span-1">
-                        <Logo />
+                        <HeroLogo />
                         <p className="text-brand-textSecondary text-sm mt-4 leading-relaxed max-w-xs" style={{ fontFamily: "'Inter', sans-serif" }}>
                             Vietnam's premium online learning platform. Master skills that matter.
                         </p>
