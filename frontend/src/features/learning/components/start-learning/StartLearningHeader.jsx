@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Bell, ChevronDown, Flame, LayoutGrid, Menu } from "lucide-react";
-import Logo from "../../../../shared/components/logo";
+import HeroLogo from "../../../../shared/components/HeroLogo";
 import UserProfileMenu from "../../../../shared/components/UserProfileMenu";
 
 export default function StartLearningHeader() {
@@ -11,7 +11,7 @@ export default function StartLearningHeader() {
                     <Menu className="h-5 w-5" />
                 </button>
                 <Link to="/" className="shrink-0 no-underline">
-                    <Logo />
+                    <HeroLogo />
                 </Link>
                 <button type="button" className="hidden min-w-0 items-center gap-2 rounded-full border border-brand-accent/25 bg-brand-light px-4 py-2 text-sm font-medium text-brand-textMutedLight md:inline-flex">
                     <LayoutGrid className="h-4 w-4 text-brand-accentSoft" />

@@ -1,4 +1,4 @@
-export default function Logo() {
+export default function HeroLogo() {
 
     return (
         <div className="flex items-center gap-2">

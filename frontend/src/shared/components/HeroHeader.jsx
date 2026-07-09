@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Logo from "./Logo"; 
+import HeroLogo from "./HeroLogo"; 
 import { Menu, X } from "lucide-react";
 import { NAV_LINKS } from "../services/navigation/navigation.mockup";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -23,7 +23,7 @@ export default function HeroHeader() {
     return (
         <header className="sticky top-0 z-50 border-b border-brand-accent/10 bg-brand-dark/80 backdrop-blur-xl">
             <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-                <Logo />
+                <HeroLogo />
                 <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
                     {NAV_LINKS.map((item) => (
                         <NavLink
