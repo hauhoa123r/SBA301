@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ArrowLeft, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import teacherService from '../../service/teacherService';
+import teacherService from '@/features/course/services/api/courseManagementService';
 import CategorySelect from './CategorySelect';
 import TagSelector from './TagSelector';
 import PlanSelector from './PlanSelector';

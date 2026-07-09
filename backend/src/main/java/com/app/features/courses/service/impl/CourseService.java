@@ -101,9 +101,6 @@ public class CourseService implements ICourseService {
         return courseRepository.save(course).getId();
     }
 
-
-
-
     private Map<Long, CourseLessonStats> getLessonStatsByCourseId(List<CourseEntity> courses) {
         List<Long> courseIds = courses.stream().map(CourseEntity::getId).filter(Objects::nonNull).toList();
         if (courseIds.isEmpty()) {

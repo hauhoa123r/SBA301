@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import CourseForm from '../components/course-form/CourseForm';
-import teacherService from '../service/teacherService';
+import CourseForm from '@/features/course/components/management/course-form/CourseForm';
+import teacherService from '@/features/course/services/api/courseManagementService';
 
 export default function EditCoursePage() {
   const navigate = useNavigate();
@@ -40,7 +40,7 @@ export default function EditCoursePage() {
       setLoading(true);
       setError(null);
       await teacherService.updateCourse(courseId, formData);
-      navigate('/teacher/courses', {
+      navigate('/management/courses', {
         state: { message: 'Course updated successfully!' },
       });
     } catch (err) {

@@ -1,12 +1,12 @@
-import axiosInstance from '../../../api/axios';
+import axiosInstance from '../../../../api/axios';
 import {
   API_CATEGORIES,
   API_TAGS,
   API_PLANS,
   API_COURSES
-} from '../../../api/apiPath';
+} from '../../../../api/apiPath';
 
-const teacherService = {
+const courseManagementService = {
   
   getCourses: async () => {
     try {
@@ -115,4 +115,4 @@ const teacherService = {
   },
 };
 
-export default teacherService;
+export default courseManagementService;

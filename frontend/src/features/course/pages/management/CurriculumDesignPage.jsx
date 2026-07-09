@@ -1,13 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { ArrowLeft, Plus, Save, BookOpen, Layers } from "lucide-react";
-import teacherService from "../service/teacherService";
+import teacherService from '@/features/course/services/api/courseManagementService';
 
-import ChapterNode from "../components/curriculum-builder/ChapterNode";
+import ChapterNode from '@/features/course/components/management/curriculum-builder/ChapterNode';
 
-import ChapterModal from "../components/curriculum-builder/modals/ChapterModal";
-import LessonModal from "../components/curriculum-builder/modals/LessonModal";
-import ConfirmDeleteModal from "../components/curriculum-builder/modals/ConfirmDeleteModal";
+import ChapterModal from '@/features/course/components/management/curriculum-builder/modals/ChapterModal';
+import LessonModal from '@/features/course/components/management/curriculum-builder/modals/LessonModal';
+import ConfirmDeleteModal from '@/features/course/components/management/curriculum-builder/modals/ConfirmDeleteModal';
 
 const enrichLesson = (ls) => ({
   video_url: "",

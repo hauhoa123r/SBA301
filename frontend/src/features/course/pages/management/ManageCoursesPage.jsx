@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, TrendingUp, Users, BookOpen } from 'lucide-react';
-import CourseCard from '../components/CourseCard';
-import teacherService from '../service/teacherService';
+import CourseCard from '../../components/management/ManageCourseCard';
+import teacherService from '@/features/course/services/api/courseManagementService';
 
 export default function ManageCoursesPage() {
   const navigate = useNavigate();
@@ -29,15 +29,15 @@ export default function ManageCoursesPage() {
   }, []);
 
   const handleCreateCourse = () => {
-    navigate('/teacher/courses/create');
+    navigate('/management/courses/create');
   };
 
   const handleEditCourse = (course) => {
-    navigate(`/teacher/courses/edit/${course.id}`, { state: { course } });
+    navigate(`/management/courses/edit/${course.id}`, { state: { course } });
   };
 
   const handleDesignCurriculum = (course) => {
-    navigate(`/teacher/courses/${course.id}/curriculum`, { state: { course } });
+    navigate(`/management/courses/${course.id}/curriculum`, { state: { course } });
   };
 
   return (

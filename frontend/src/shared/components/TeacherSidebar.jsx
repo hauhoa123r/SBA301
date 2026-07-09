@@ -16,17 +16,17 @@ export default function TeacherSidebar({ sidebarOpen, onClose }) {
 
   const sidebarItems = [
     {
-      path: '/teacher/dashboard',
+      path: '/management/dashboard',
       label: 'Dashboard',
       icon: BarChart3,
     },
     {
-      path: '/teacher/courses',
+      path: '/management/courses',
       label: 'My Courses',
       icon: BookOpen,
     },
     {
-      path: '/teacher/reviews',
+      path: '/management/reviews',
       label: 'Student Reviews',
       icon: Star,
     },
