@@ -2,19 +2,19 @@ import { LockKeyhole, ReceiptText, Ticket, UserRound } from "lucide-react";
 
 const menuGroups = [
     {
-        title: "ACCOUNT",
+        title: "TÀI KHOẢN",
         items: [
-            { id: "profile", label: "Profile", icon: UserRound },
-            { id: "password", label: "Change Password", icon: LockKeyhole },
+            { id: "profile", label: "Hồ sơ cá nhân", icon: UserRound },
+            { id: "password", label: "Đổi mật khẩu", icon: LockKeyhole },
         ],
     },
     {
-        title: "PAYMENT",
-        items: [{ id: "orders", label: "Order History", icon: ReceiptText }],
+        title: "THANH TOÁN",
+        items: [{ id: "orders", label: "Lịch sử đơn hàng", icon: ReceiptText }],
     },
     {
-        title: "TOOLS",
-        items: [{ id: "activation", label: "Activation Code", icon: Ticket }],
+        title: "CÔNG CỤ",
+        items: [{ id: "activation", label: "Mã kích hoạt", icon: Ticket }],
     },
 ];
 

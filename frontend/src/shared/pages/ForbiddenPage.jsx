@@ -5,7 +5,7 @@ export default function ForbiddenPage() {
     const navigate = useNavigate();
 
     return (
-        <div className="min-h-screen bg-slate-50 px-6 py-10 text-slate-950" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <div className="min-h-screen bg-slate-50 px-6 py-10 text-slate-950" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
             <main className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-3xl items-center justify-center">
                 <section className="w-full rounded-lg border border-slate-200 bg-white p-8 shadow-sm">
                     <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-rose-50 text-rose-600">

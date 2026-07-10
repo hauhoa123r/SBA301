@@ -1,22 +1,22 @@
 export const NAV_LINKS = [
     {
-        label: "Home",
+        label: "Trang chủ",
         path: "/",
     },
     {
-        label: "About",
+        label: "Giới thiệu",
         path: "/about",
     },
     {
-        label: "Courses",
+        label: "Khóa học",
         path: "/courses",
     },
     {
-        label: "Blog",
+        label: "Bài viết",
         path: "/blog",
     },
     {
-        label: "Contact",
+        label: "Liên hệ",
         path: "/contact",
     },
 ];

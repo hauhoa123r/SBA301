@@ -59,7 +59,7 @@ export default function CourseDetailPage() {
     if (isLoading) {
         return (
             <section className="container mx-auto px-6 py-16 text-center text-brand-textSecondary">
-                Loading course...
+                Đang tải khóa học...
             </section>
         );
     }
@@ -80,7 +80,7 @@ export default function CourseDetailPage() {
     const courseChapters = course.chapters ?? [];
     const totalLessons = course.totalLessons ?? courseChapters.reduce((total, chapter) => total + chapter.lessons.length, 0);
     const formatPrice = (value) => {
-        if (!value) return "Free";
+        if (!value) return "Miễn phí";
 
         return new Intl.NumberFormat("vi-VN", {
             style: "currency",
@@ -142,7 +142,7 @@ export default function CourseDetailPage() {
     };
 
     return (
-        <div className="relative overflow-hidden text-brand-textPrimary" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <div className="relative overflow-hidden text-brand-textPrimary" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
             <div className="fixed inset-0 pointer-events-none">
                 <div className="absolute left-[-12%] top-[-20%] h-[520px] w-[520px] rounded-full bg-brand-accent/15 blur-[120px]" />
                 <div className="absolute bottom-[-18%] right-[-10%] h-[520px] w-[520px] rounded-full bg-brand-accentDeep/25 blur-[120px]" />
@@ -170,7 +170,7 @@ export default function CourseDetailPage() {
                         </span>
                         <span className="inline-flex items-center gap-2">
                             <Users className="h-5 w-5 text-brand-accentSoft" />
-                            {course.students.toLocaleString("vi-VN")} students
+                            {course.students.toLocaleString("vi-VN")} học viên
                         </span>
                         <span className="inline-flex items-center gap-3">
                             <span className="grid h-9 w-9 place-items-center rounded-full bg-brand-accent text-sm font-black text-brand-white">{course.instructor.charAt(0)}</span>

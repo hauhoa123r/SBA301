@@ -47,7 +47,7 @@ export default function RegisterPage() {
         if (name === "fullName") {
             setErrors((prev) => ({
                 ...prev,
-                fullName: value.trim() ? "" : "Full name is required.",
+                fullName: value.trim() ? "" : "Vui lòng nhập họ và tên.",
             }));
             return;
         }
@@ -62,7 +62,7 @@ export default function RegisterPage() {
         e.preventDefault();
 
         const nextErrors = {
-            fullName: formData.fullName.trim() ? "" : "Full name is required.",
+            fullName: formData.fullName.trim() ? "" : "Vui lòng nhập họ và tên.",
             email: validInput("email", formData.email),
             password: validInput("password", formData.password),
         };
@@ -73,12 +73,12 @@ export default function RegisterPage() {
             return;
         }
 
-        toast.success("Account created successfully. Please sign in.");
+        toast.success("Tạo tài khoản thành công. Vui lòng đăng nhập.");
         navigate("/login", { replace: true });
     };
 
     return (
-        <div className="relative overflow-hidden text-brand-textPrimary" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <div className="relative overflow-hidden text-brand-textPrimary" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
             <div className="fixed inset-0 pointer-events-none">
                 <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-brand-accent/15 blur-[120px]" />
                 <div className="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] rounded-full bg-brand-accentDeep/20 blur-[100px]" />
@@ -98,16 +98,16 @@ export default function RegisterPage() {
                             <div className="mb-8">
                                 <div className="inline-flex items-center gap-2 bg-brand-accent/15 border border-brand-accent/25 text-brand-accentSoft text-xs font-semibold px-3 py-1.5 rounded-full mb-6 tracking-wider uppercase">
                                     <UserPlus className="w-3 h-3" />
-                                    Student Portal
+                                    Cổng học viên
                                 </div>
                                 <h2
                                     className="text-3xl font-extrabold text-brand-white mb-2"
-                                    style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
+                                    style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}
                                 >
-                                    Create your account
+                                    Tạo tài khoản của bạn
                                 </h2>
                                 <p className="text-brand-textSecondary text-sm leading-relaxed max-w-md">
-                                    Join Edujar to save courses, track your progress, and continue learning wherever you are.
+                                    Tham gia Edujar để lưu khóa học, theo dõi tiến độ và tiếp tục học ở bất cứ đâu.
                                 </p>
                             </div>
 
@@ -125,20 +125,20 @@ export default function RegisterPage() {
                             <div className="my-7 flex items-center gap-3">
                                 <div className="h-px flex-1 bg-brand-accent/10" />
                                 <span className="text-xs font-semibold uppercase tracking-wider text-brand-textSecondary">
-                                    or register with email
+                                    hoặc đăng ký bằng email
                                 </span>
                                 <div className="h-px flex-1 bg-brand-accent/10" />
                             </div>
 
                             <form onSubmit={handleSubmit} noValidate>
                                 <div className="mb-5">
-                                    <label className={fieldLabelClass}>Full Name</label>
+                                    <label className={fieldLabelClass}>Họ và tên</label>
                                     <div className="relative">
                                         <User className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-textSecondary" />
                                         <input
                                             type="text"
                                             name="fullName"
-                                            placeholder="Nguyen Van A"
+                                            placeholder="Nguyễn Văn A"
                                             value={formData.fullName}
                                             onChange={handleChange}
                                             onBlur={handleBlur}
@@ -151,7 +151,7 @@ export default function RegisterPage() {
                                 </div>
 
                                 <div className="mb-5">
-                                    <label className={fieldLabelClass}>Email Address</label>
+                                    <label className={fieldLabelClass}>Địa chỉ email</label>
                                     <div className="relative">
                                         <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-textSecondary" />
                                         <input
@@ -170,13 +170,13 @@ export default function RegisterPage() {
                                 </div>
 
                                 <div className="mb-4">
-                                    <label className={fieldLabelClass}>Password</label>
+                                    <label className={fieldLabelClass}>Mật khẩu</label>
                                     <div className="relative">
                                         <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-textSecondary" />
                                         <input
                                             type="password"
                                             name="password"
-                                            placeholder="At least 8 characters, 1 uppercase"
+                                            placeholder="Ít nhất 8 ký tự, có 1 chữ hoa"
                                             value={formData.password}
                                             onChange={handleChange}
                                             onBlur={handleBlur}
@@ -190,14 +190,14 @@ export default function RegisterPage() {
 
                                 <button type="submit" className={baseButtonClass}>
                                     <UserPlus className="inline-block h-4 w-4 mr-2" />
-                                    Create Account
+                                    Tạo tài khoản
                                 </button>
                             </form>
 
                             <p className="mt-6 text-center text-sm text-brand-textSecondary">
-                                Already have an account?{" "}
+                                Đã có tài khoản?{" "}
                                 <Link to="/login" className="font-semibold text-brand-accentSoft no-underline transition hover:text-brand-white">
-                                    Sign in
+                                    Đăng nhập
                                 </Link>
                             </p>
                         </div>
@@ -217,37 +217,37 @@ export default function RegisterPage() {
                         <div className="relative z-10">
                             <div className="inline-flex items-center gap-2 bg-brand-accent/15 border border-brand-accent/25 text-brand-accentSoft text-xs font-semibold px-3 py-1.5 rounded-full mb-6 tracking-wider uppercase">
                                 <Zap className="w-3 h-3" />
-                                Student Portal
+                                Cổng học viên
                             </div>
                             <h1
                                 className="text-4xl font-extrabold leading-tight mb-3"
-                                style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
+                                style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}
                             >
-                                Start learning with expert courses
+                                Bắt đầu học với các khóa học chất lượng
                             </h1>
                             <p className="text-brand-textSecondary text-sm leading-relaxed max-w-xs">
-                                Create your account to save courses, follow your progress, and earn certificates as you learn.
+                                Tạo tài khoản để lưu khóa học, theo dõi tiến độ và nhận chứng nhận khi hoàn thành.
                             </p>
                         </div>
 
                         <div className="relative z-10 mt-10 flex justify-center">
                             <img
                                 src="/images/undraw_morning-news_h9nz.svg"
-                                alt="Student learning illustration"
+                                alt="Minh họa học viên đang học"
                                 className="max-h-72 w-auto drop-shadow-2xl"
                             />
                         </div>
 
                         <div className="relative z-10 mt-8 grid grid-cols-3 gap-3">
                             {[
-                                { value: "1,800+", label: "Courses" },
-                                { value: "340+", label: "Teachers" },
-                                { value: "98%", label: "Success" },
+                                { value: "1.800+", label: "Khóa học" },
+                                { value: "340+", label: "Giảng viên" },
+                                { value: "98%", label: "Thành công" },
                             ].map(({ value, label }) => (
                                 <div key={label} className="bg-brand-accent/10 border border-brand-accent/20 rounded-xl p-3 text-center">
                                     <div
                                         className="text-brand-white font-bold text-base"
-                                        style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
+                                        style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}
                                     >
                                         {value}
                                     </div>

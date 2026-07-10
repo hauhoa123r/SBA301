@@ -15,7 +15,7 @@ export default function ProfileProgress({ course, firstLesson, totalLessons }) {
                 <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                     <h3 className="text-lg font-black">Tiến độ học tập</h3>
                     <div className="inline-flex w-fit rounded-full border border-brand-accent/20 bg-brand-light p-1">
-                        {["Overview", "Learning", "Test Practice"].map((tab, index) => (
+                        {["Tổng quan", "Bài học", "Luyện kiểm tra"].map((tab, index) => (
                             <button key={tab} type="button" className={`rounded-full px-4 py-2 text-sm font-bold ${index === 0 ? "bg-brand-accent text-brand-white" : "text-brand-textSecondary"}`}>
                                 {tab}
                             </button>

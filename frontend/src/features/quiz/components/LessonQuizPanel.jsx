@@ -7,12 +7,12 @@ export default function LessonQuizPanel({ quiz, answers, result, onAnswer, onSub
         <section className="rounded-2xl border border-brand-border bg-brand-surface p-6">
             <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                 <div>
-                    <p className="text-sm font-bold text-brand-accentSoft">Quiz của lesson: {quiz.lesson.title}</p>
+                    <p className="text-sm font-bold text-brand-accentSoft">Trắc nghiệm của bài học: {quiz.lesson.title}</p>
                     <h2 className="mt-2 text-2xl font-extrabold">{quiz.title}</h2>
                     <p className="mt-2 text-sm text-brand-courseMuted">Thời gian {quiz.time_limit_minutes} phút · Điểm đạt {quiz.pass_score}%</p>
                 </div>
                 <button type="button" onClick={onBackLesson} className="rounded-xl border border-brand-scrollbar px-4 py-2 text-sm font-bold text-brand-textSoft hover:text-brand-white">
-                    Quay lại lesson
+                    Quay lại bài học
                 </button>
             </div>
 
@@ -41,7 +41,7 @@ export default function LessonQuizPanel({ quiz, answers, result, onAnswer, onSub
 
             {result && (
                 <div className={`mt-5 rounded-2xl border p-4 text-sm font-bold ${result.isPassed ? "border-status-successStrong/30 bg-status-successStrong/10 text-status-successSoft" : "border-status-warningStrong/30 bg-status-warningStrong/10 text-status-warningSoft"}`}>
-                    Điểm của bạn: {result.score}%. {result.isPassed ? "Đã đạt, quiz được tính hoàn thành." : "Chưa đạt, hãy thử lại."}
+                    Điểm của bạn: {result.score}%. {result.isPassed ? "Đã đạt, bài trắc nghiệm được tính hoàn thành." : "Chưa đạt, hãy thử lại."}
                 </div>
             )}
 
@@ -52,7 +52,7 @@ export default function LessonQuizPanel({ quiz, answers, result, onAnswer, onSub
                 className="mt-6 inline-flex items-center gap-2 rounded-xl bg-brand-accent px-5 py-3 text-sm font-bold transition hover:bg-brand-accentHover disabled:cursor-not-allowed disabled:bg-brand-borderHover disabled:text-brand-learningMuted"
             >
                 <Send className="h-4 w-4" />
-                Nộp quiz
+                Nộp trắc nghiệm
             </button>
         </section>
     );

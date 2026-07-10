@@ -12,8 +12,8 @@ export default function HeroFooter() {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
                     <div className="md:col-span-1">
                         <HeroLogo />
-                        <p className="text-brand-textSecondary text-sm mt-4 leading-relaxed max-w-xs" style={{ fontFamily: "'Inter', sans-serif" }}>
-                            Vietnam's premium online learning platform. Master skills that matter.
+                        <p className="text-brand-textSecondary text-sm mt-4 leading-relaxed max-w-xs" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
+                            Nền tảng học trực tuyến chất lượng cao tại Việt Nam. Làm chủ những kỹ năng thật sự cần thiết.
                         </p>
                         <div className="flex items-center gap-3 mt-6">
                             {[FaTwitter, FaGithub, FaLinkedin, FaYoutube].map((Icon, i) => (
@@ -24,16 +24,16 @@ export default function HeroFooter() {
                         </div>
                     </div>
                     {[
-                        { title: "Platform", links: ["Browse Courses", "Become an Instructor", "Enterprise", "Pricing"] },
-                        { title: "Company", links: ["About Us", "Blog", "Careers", "Press Kit"] },
-                        { title: "Support", links: ["Help Center", "Community", "Terms of Service", "Privacy Policy"] },
+                        { title: "Nền tảng", links: ["Khám phá khóa học", "Trở thành giảng viên", "Doanh nghiệp", "Bảng giá"] },
+                        { title: "Công ty", links: ["Về chúng tôi", "Bài viết", "Tuyển dụng", "Bộ nhận diện"] },
+                        { title: "Hỗ trợ", links: ["Trung tâm trợ giúp", "Cộng đồng", "Điều khoản dịch vụ", "Chính sách bảo mật"] },
                     ].map(({ title, links }) => (
                         <div key={title}>
-                            <h4 className="text-brand-white font-semibold text-sm mb-4" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>{title}</h4>
+                            <h4 className="text-brand-white font-semibold text-sm mb-4" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>{title}</h4>
                             <ul className="flex flex-col gap-2.5">
                                 {links.map((link) => (
                                     <li key={link}>
-                                        <a href="#" className="text-brand-textSecondary hover:text-brand-accentSoft text-sm no-underline transition-colors" style={{ fontFamily: "'Inter', sans-serif" }}>
+                                        <a href="#" className="text-brand-textSecondary hover:text-brand-accentSoft text-sm no-underline transition-colors" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
                                             {link}
                                         </a>
                                     </li>
@@ -43,8 +43,8 @@ export default function HeroFooter() {
                     ))}
                 </div>
                 <div className="border-t border-brand-accent/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-3">
-                    <p className="text-brand-textSecondary text-xs" style={{ fontFamily: "'Inter', sans-serif" }}>© 2025 Edujar. All rights reserved.</p>
-                    <p className="text-brand-textSecondary text-xs" style={{ fontFamily: "'Inter', sans-serif" }}>Built with passion in Vietnam 🇻🇳</p>
+                    <p className="text-brand-textSecondary text-xs" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>© 2025 Edujar. Đã đăng ký bản quyền.</p>
+                    <p className="text-brand-textSecondary text-xs" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>Xây dựng bằng tâm huyết tại Việt Nam 🇻🇳</p>
                 </div>
             </div>
         </footer>

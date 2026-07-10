@@ -48,7 +48,7 @@ export default function ModeratorLayout({
   return (
     <div
       className="min-h-screen bg-[#eef4ff] text-[#17172f]"
-      style={{ fontFamily: "'Inter', sans-serif" }}
+      style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}
     >
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-80 flex-col border-r border-slate-200 bg-white shadow-[10px_0_30px_rgba(88,80,160,0.06)] lg:flex">
         <div className="flex h-[90px] items-center justify-between border-b border-slate-200 px-5">

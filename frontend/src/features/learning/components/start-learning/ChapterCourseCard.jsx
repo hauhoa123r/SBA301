@@ -19,7 +19,7 @@ export default function ChapterCourseCard({ course, chapter }) {
                 <h4 className="line-clamp-2 min-h-10 text-base font-black text-brand-white">{chapter.title}</h4>
                 <p className="mt-2 line-clamp-2 min-h-10 text-sm text-brand-textSecondary">{chapter.description}</p>
                 <div className="mt-4 flex items-center justify-between text-sm">
-                    <span className="text-brand-textMutedLight">{doneLessons}/{chapter.lessons.length} lessons</span>
+                    <span className="text-brand-textMutedLight">{doneLessons}/{chapter.lessons.length} bài học</span>
                     <span className="inline-flex items-center gap-1 text-status-warningSoft">
                         <Trophy className="h-4 w-4" />
                         {chapter.order_index * 8}/{chapter.lessons.length * 12}

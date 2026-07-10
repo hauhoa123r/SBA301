@@ -20,7 +20,7 @@ export default function ActivitySection() {
             </div>
             <ActivityHeatmap days={days} values={values} />
             <p className="mt-5 text-sm text-brand-textSecondary">
-                <span className="font-bold text-brand-textMutedLight">Lưu ý:</span> Dữ liệu tần suất đang là mock để mô phỏng dashboard trước khi nối API tiến độ.
+                <span className="font-bold text-brand-textMutedLight">Lưu ý:</span> Dữ liệu tần suất hiện là dữ liệu mẫu để mô phỏng bảng điều khiển trước khi kết nối API tiến độ.
             </p>
         </div>
     );

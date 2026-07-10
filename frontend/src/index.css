@@ -1,6 +1,17 @@
 @import "tailwindcss";
 
 @source "./**/*.{js,jsx,ts,tsx}";
+
+html,
+body,
+#root {
+  font-family: "Be Vietnam Pro", "Noto Sans SC", sans-serif;
+}
+
+body {
+  margin: 0;
+}
+
 /* theme color layout chính: blue and white */
 @theme {
   --color-brand-black: #000;

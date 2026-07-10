@@ -8,100 +8,100 @@ import {
 } from "lucide-react";
 
 export const HOME_HERO = {
-    badge: "#1 Chinese Learning Platform for Vietnamese Learners",
-    titlePrefix: "Master Chinese",
-    titleHighlight: "with Confidence",
-    titleSuffix: "from Pinyin to HSK",
-    description: "Build Mandarin vocabulary, pronunciation, grammar, and conversation skills through guided lessons designed for Vietnamese learners.",
-    primaryCta: "Explore Chinese Courses",
-    secondaryCta: "Watch Demo",
+    badge: "#1 Nền tảng học tiếng Trung cho người Việt",
+    titlePrefix: "Chinh phục tiếng Trung",
+    titleHighlight: "tự tin",
+    titleSuffix: "từ Pinyin đến HSK",
+    description: "Xây dựng vốn từ, phát âm, ngữ pháp và kỹ năng giao tiếp tiếng Trung qua lộ trình bài học dành riêng cho người Việt.",
+    primaryCta: "Khám phá khóa học tiếng Trung",
+    secondaryCta: "Xem demo",
     image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=900&h=480&fit=crop&auto=format",
-    imageAlt: "Students learning Chinese together on Edujar",
+    imageAlt: "Học viên cùng học tiếng Trung trên Edujar",
     leftStat: {
-        value: "80+ Lessons",
-        label: "HSK-focused practice",
+        value: "80+ bài học",
+        label: "Luyện tập theo HSK",
     },
     rightStat: {
-        value: "4.9 / 5 Stars",
-        label: "From Chinese learners",
+        value: "4,9 / 5 sao",
+        label: "Từ học viên tiếng Trung",
     },
 };
 
 export const STATS = [
     {
         value: "12K+",
-        label: "Chinese Learners",
+        label: "Học viên tiếng Trung",
     },
     {
         value: "80+",
-        label: "Guided Lessons",
+        label: "Bài học có hướng dẫn",
     },
     {
         value: "98%",
-        label: "Satisfaction Rate",
+        label: "Mức độ hài lòng",
     },
     {
         value: "6",
-        label: "HSK Paths",
+        label: "Lộ trình HSK",
     },
 ];
 
 export const FEATURES = [
     {
         icon: BookOpenText,
-        title: "HSK-Focused Lessons",
-        desc: "Study vocabulary, grammar, and reading skills by clear HSK levels.",
+        title: "Bài học bám sát HSK",
+        desc: "Học từ vựng, ngữ pháp và kỹ năng đọc theo từng cấp độ HSK rõ ràng.",
     },
     {
         icon: Award,
-        title: "Exam-Ready Practice",
-        desc: "Train with quizzes and mock tests that match real Chinese exam formats.",
+        title: "Luyện thi sẵn sàng",
+        desc: "Rèn luyện với quiz và đề mô phỏng sát cấu trúc bài thi tiếng Trung.",
     },
     {
         icon: Mic,
-        title: "Pronunciation Coaching",
-        desc: "Improve tones, pinyin, and speaking confidence with guided practice.",
+        title: "Hướng dẫn phát âm",
+        desc: "Cải thiện thanh điệu, pinyin và sự tự tin khi nói qua bài luyện có hướng dẫn.",
     },
     {
         icon: Globe,
-        title: "Vietnamese Explanations",
-        desc: "Learn Chinese through practical Vietnamese explanations and examples.",
+        title: "Giải thích bằng tiếng Việt",
+        desc: "Học tiếng Trung qua ví dụ thực tế và phần giải thích dễ hiểu bằng tiếng Việt.",
     },
     {
         icon: BarChart2,
-        title: "Progress Tracking",
-        desc: "Follow your vocabulary, lesson completion, and test readiness over time.",
+        title: "Theo dõi tiến độ",
+        desc: "Nắm rõ vốn từ, mức hoàn thành bài học và độ sẵn sàng cho kỳ thi theo thời gian.",
     },
     {
         icon: Users,
-        title: "Real Conversation Skills",
-        desc: "Practice everyday Chinese for travel, study, work, and daily communication.",
+        title: "Giao tiếp thực tế",
+        desc: "Luyện tiếng Trung dùng hằng ngày cho du lịch, học tập, công việc và giao tiếp.",
     },
 ];
 
 export const TESTIMONIALS = [
     {
-        name: "Minh Anh Tran",
-        role: "HSK 3 learner",
+        name: "Trần Minh Anh",
+        role: "Học viên HSK 3",
         avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&auto=format",
-        text: "The pinyin and tone lessons finally made Chinese pronunciation feel clear. After 3 months, I could hold basic conversations with confidence.",
+        text: "Các bài học pinyin và thanh điệu giúp mình hiểu cách phát âm rõ ràng hơn. Sau 3 tháng, mình đã tự tin giao tiếp những câu cơ bản.",
         stars: 5,
-        course: "Chinese Foundations",
+        course: "Nền tảng tiếng Trung",
     },
     {
-        name: "Hoang Nam Le",
-        role: "HSK 4 student",
+        name: "Lê Hoàng Nam",
+        role: "Học viên HSK 4",
         avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&auto=format",
-        text: "The Vietnamese explanations helped me understand grammar patterns much faster. The mock tests were very close to what I saw in HSK practice.",
+        text: "Phần giải thích bằng tiếng Việt giúp mình hiểu mẫu ngữ pháp nhanh hơn nhiều. Các đề mô phỏng cũng rất sát với bài luyện HSK.",
         stars: 5,
-        course: "HSK 4 Intensive",
+        course: "HSK 4 tăng tốc",
     },
     {
-        name: "Ngoc Linh Pham",
-        role: "Business Chinese learner",
+        name: "Phạm Ngọc Linh",
+        role: "Học viên tiếng Trung công việc",
         avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop&auto=format",
-        text: "I needed Chinese for work, and the conversation lessons were practical from day one. I can now introduce products and reply to clients more naturally.",
+        text: "Mình cần tiếng Trung cho công việc và các bài hội thoại rất thực tế ngay từ buổi đầu. Giờ mình giới thiệu sản phẩm và phản hồi khách hàng tự nhiên hơn.",
         stars: 5,
-        course: "Workplace Chinese",
+        course: "Tiếng Trung nơi làm việc",
     },
 ];

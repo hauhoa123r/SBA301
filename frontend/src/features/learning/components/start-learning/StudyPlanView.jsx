@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
 import { CalendarDays, CheckCircle2, CircleDot, LayoutGrid, List, Route, Trophy } from "lucide-react";
 
+const quizTypeLabels = {
+    SINGLE_CHOICE: "Trắc nghiệm một đáp án",
+};
+
 export default function StudyPlanView({ course }) {
     const sessions = course.chapters.flatMap((chapter) =>
         chapter.lessons.map((lesson) => ({
@@ -16,7 +20,7 @@ export default function StudyPlanView({ course }) {
         <section id="study-plan" className="scroll-mt-24">
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                    <h2 className="text-xl font-black">Study Plan</h2>
+                    <h2 className="text-xl font-black">Kế hoạch học</h2>
                     <p className="mt-1 text-sm text-brand-textSecondary">Theo dõi lịch học và số hoạt động đã hoàn thành theo từng buổi.</p>
                 </div>
                 <button type="button" className="inline-flex items-center gap-2 rounded-xl border border-brand-accent/30 bg-brand-light px-4 py-2 text-sm font-bold text-brand-accentPale transition hover:border-brand-accent/60 hover:text-brand-white">
@@ -111,7 +115,7 @@ function SessionCard({ session, index }) {
             <h4 className="mt-5 line-clamp-1 text-sm font-bold text-brand-white">{session.lesson.title}</h4>
             <p className="mt-2 text-xs text-brand-textSecondary">Chương {session.chapter.order_index}: {session.chapter.title}</p>
             <span className="mt-4 inline-flex rounded-full border border-brand-accent/20 bg-brand-menu px-3 py-1 text-xs font-semibold text-brand-accentPale">
-                {session.lesson.quiz.type.replace("_", " ")}
+                {quizTypeLabels[session.lesson.quiz.type] || session.lesson.quiz.type.replace("_", " ")}
             </span>
         </Link>
     );

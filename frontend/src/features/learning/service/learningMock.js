@@ -21,7 +21,7 @@ export const LEARNING_COURSES = [
         title: "Tieng Trung HSK 3",
         displayTitle: "Tiếng Trung HSK 3",
         teacherName: "Nguyễn Minh Hải",
-        description: "Lộ trình HSK 3 gồm video bài học, quiz sau từng lesson và bài tập tổng kết cuối mỗi chương.",
+        description: "Lộ trình HSK 3 gồm video bài học, trắc nghiệm sau từng bài học và bài tập tổng kết cuối mỗi chương.",
         thumbnail_url: "https://images.unsplash.com/photo-1528164344705-47542687000d?w=900&h=500&fit=crop&auto=format",
         status: "PUBLISHED",
         chapters: [
@@ -41,7 +41,7 @@ export const LEARNING_COURSES = [
                         order_index: 1,
                         summary: "Nhận diện thanh điệu cơ bản, mẫu câu chào hỏi và cách đáp lại lịch sự.",
                         documents: [{ id: 1, title: "Từ vựng chào hỏi.pdf", file_url: "/documents/hsk3-greetings.pdf" }],
-                        quiz: makeQuiz(5001, 1001, "Quiz: Bài 1", [
+                        quiz: makeQuiz(5001, 1001, "Trắc nghiệm: Bài 1", [
                             {
                                 id: 9001,
                                 content: "'你好' có nghĩa là gì?",
@@ -75,7 +75,7 @@ export const LEARNING_COURSES = [
                         order_index: 2,
                         summary: "Hỏi tên, nói quốc tịch và dùng mẫu câu 'Tôi là người...'.",
                         documents: [{ id: 2, title: "Mẫu câu giới thiệu.docx", file_url: "/documents/hsk3-introduction.docx" }],
-                        quiz: makeQuiz(5002, 1002, "Quiz: Bài 2", [
+                        quiz: makeQuiz(5002, 1002, "Trắc nghiệm: Bài 2", [
                             {
                                 id: 9003,
                                 content: "'我叫...' dùng để nói gì?",
@@ -98,7 +98,7 @@ export const LEARNING_COURSES = [
                         order_index: 3,
                         summary: "Luyện số đếm, hỏi tuổi và dùng số trong hội thoại ngắn.",
                         documents: [{ id: 3, title: "Bảng số đếm.pdf", file_url: "/documents/hsk3-numbers.pdf" }],
-                        quiz: makeQuiz(5003, 1003, "Quiz: Bài 3", [
+                        quiz: makeQuiz(5003, 1003, "Trắc nghiệm: Bài 3", [
                             {
                                 id: 9004,
                                 content: "Số 8 trong tiếng Trung là gì?",
@@ -138,7 +138,7 @@ export const LEARNING_COURSES = [
                         order_index: 1,
                         summary: "Gọi tên các thành viên gia đình và giới thiệu quan hệ thân thuộc.",
                         documents: [],
-                        quiz: makeQuiz(5004, 1004, "Quiz: Bài 4", [
+                        quiz: makeQuiz(5004, 1004, "Trắc nghiệm: Bài 4", [
                             {
                                 id: 9005,
                                 content: "'妈妈' nghĩa là gì?",
@@ -157,7 +157,7 @@ export const LEARNING_COURSES = [
                         order_index: 2,
                         summary: "Mô tả lịch sinh hoạt theo thời gian trong ngày.",
                         documents: [],
-                        quiz: makeQuiz(5005, 1005, "Quiz: Bài 5", [
+                        quiz: makeQuiz(5005, 1005, "Trắc nghiệm: Bài 5", [
                             {
                                 id: 9006,
                                 content: "'今天' nghĩa là gì?",
@@ -193,7 +193,7 @@ export const LEARNING_COURSES = [
                         order_index: 1,
                         summary: "Dùng mẫu câu hỏi giá, số lượng và cách trả lời ngắn.",
                         documents: [],
-                        quiz: makeQuiz(5006, 1006, "Quiz: Bài 6", [
+                        quiz: makeQuiz(5006, 1006, "Trắc nghiệm: Bài 6", [
                             {
                                 id: 9007,
                                 content: "'多少钱' dùng để hỏi gì?",
@@ -212,7 +212,7 @@ export const LEARNING_COURSES = [
                         order_index: 2,
                         summary: "Gọi món ăn, đồ uống và nói khẩu vị cá nhân.",
                         documents: [],
-                        quiz: makeQuiz(5007, 1007, "Quiz: Bài 7", [
+                        quiz: makeQuiz(5007, 1007, "Trắc nghiệm: Bài 7", [
                             {
                                 id: 9008,
                                 content: "'茶' nghĩa là gì?",
@@ -248,7 +248,7 @@ export const LEARNING_COURSES = [
                         order_index: 1,
                         summary: "Hỏi vị trí địa điểm và chỉ hướng cơ bản.",
                         documents: [],
-                        quiz: makeQuiz(5008, 1008, "Quiz: Bài 8", [
+                        quiz: makeQuiz(5008, 1008, "Trắc nghiệm: Bài 8", [
                             {
                                 id: 9009,
                                 content: "'在哪里' nghĩa là gì?",
@@ -267,7 +267,7 @@ export const LEARNING_COURSES = [
                         order_index: 2,
                         summary: "Nói về xe buýt, tàu điện, đi bộ và thời gian di chuyển.",
                         documents: [],
-                        quiz: makeQuiz(5009, 1009, "Quiz: Bài 9", [
+                        quiz: makeQuiz(5009, 1009, "Trắc nghiệm: Bài 9", [
                             {
                                 id: 9010,
                                 content: "'坐车' liên quan đến hành động nào?",
@@ -303,7 +303,7 @@ export const LEARNING_COURSES = [
                         order_index: 1,
                         summary: "Hệ thống lại nhóm từ vựng thường gặp trong HSK 3.",
                         documents: [],
-                        quiz: makeQuiz(5010, 1010, "Quiz: Bài 10", [
+                        quiz: makeQuiz(5010, 1010, "Trắc nghiệm: Bài 10", [
                             {
                                 id: 9011,
                                 content: "'学习' nghĩa là gì?",
@@ -322,7 +322,7 @@ export const LEARNING_COURSES = [
                         order_index: 2,
                         summary: "Làm quen với nhịp độ câu hỏi và cách tự kiểm tra trước kỳ thi.",
                         documents: [],
-                        quiz: makeQuiz(5011, 1011, "Quiz: Bài 11", [
+                        quiz: makeQuiz(5011, 1011, "Trắc nghiệm: Bài 11", [
                             {
                                 id: 9012,
                                 content: "Mục tiêu chính của luyện đề là gì?",

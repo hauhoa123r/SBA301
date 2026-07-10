@@ -12,14 +12,15 @@ const LoginPage = () => {
     const { setUser } = useAuth();
 
     const validInput = (name, value) => {
-        if (!value.trim())
-            return `${name.charAt(0).toUpperCase() + name.slice(1)} is required`;
+        if (!value.trim()) {
+            return name === "email" ? "Vui lòng nhập email." : "Vui lòng nhập mật khẩu.";
+        }
 
         if (name === "email" && !/\S+@\S+\.\S+/.test(value))
-            return "Enter a valid email address";
+            return "Vui lòng nhập địa chỉ email hợp lệ.";
 
         if (name === "password" && value.length < 6)
-            return "Password must be at least 6 characters";
+            return "Mật khẩu phải có ít nhất 6 ký tự.";
 
         return "";
     };
@@ -77,7 +78,7 @@ const LoginPage = () => {
     };
 
     return (
-        <div className="relative overflow-hidden text-brand-textPrimary" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <div className="relative overflow-hidden text-brand-textPrimary" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
             <div className="fixed inset-0 pointer-events-none">
                 <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-brand-accent/15 blur-[120px]" />
                 <div className="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] rounded-full bg-brand-accentDeep/20 blur-[100px]" />
@@ -96,12 +97,12 @@ const LoginPage = () => {
                             <div className="mb-8">
                                 <h2
                                     className="text-3xl font-extrabold text-brand-white mb-2"
-                                    style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
+                                    style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}
                                 >
-                                    Welcome back
+                                    Chào mừng trở lại
                                 </h2>
                                 <p className="text-brand-textSecondary text-sm">
-                                    Enter your account details to continue
+                                    Nhập thông tin tài khoản để tiếp tục
                                 </p>
                             </div>
 
@@ -125,7 +126,7 @@ const LoginPage = () => {
                             <div className="my-7 flex items-center gap-3">
                                 <div className="h-px flex-1 bg-brand-accent/10" />
                                 <span className="text-xs font-semibold uppercase tracking-wider text-brand-textSecondary">
-                                    or login with email
+                                    hoặc đăng nhập bằng email
                                 </span>
                                 <div className="h-px flex-1 bg-brand-accent/10" />
                             </div>
@@ -133,7 +134,7 @@ const LoginPage = () => {
                             <form onSubmit={handleSubmit} noValidate>
                                 <div className="mb-6">
                                     <label className="block text-xs font-semibold text-brand-textSecondary uppercase tracking-wider mb-2">
-                                        Email Address
+                                        Địa chỉ email
                                     </label>
                                     <input
                                         type="text"
@@ -150,7 +151,7 @@ const LoginPage = () => {
                                 </div>
                                 <div className="mb-4">
                                     <label className="block text-xs font-semibold text-brand-textSecondary uppercase tracking-wider mb-2">
-                                        Password
+                                        Mật khẩu
                                     </label>
                                     <div className="relative">
                                         <input
@@ -179,7 +180,7 @@ const LoginPage = () => {
                                         to="/forgot-password"
                                         className="text-xs text-brand-textSecondary hover:text-brand-accentSoft no-underline transition-colors"
                                     >
-                                        Forgot password?
+                                        Quên mật khẩu?
                                     </Link>
                                 </div>
 
@@ -187,18 +188,18 @@ const LoginPage = () => {
                                     type="submit"
                                     className="w-full bg-brand-accent hover:bg-brand-accentHover text-brand-white rounded-xl py-3 font-semibold text-sm transition-all shadow-lg shadow-brand-accent/30 hover:shadow-brand-accent/50 hover:scale-[1.01]"
                                 >
-                                    Login
+                                    Đăng nhập
                                 </button>
                             </form>
                         </div>
 
                         <div className="mt-8 flex items-center gap-3 pt-6 border-t border-brand-accent/10">
-                            <span className="text-sm text-brand-textSecondary">Don't have an account?</span>
+                            <span className="text-sm text-brand-textSecondary">Chưa có tài khoản?</span>
                             <Link
                                 to="/register"
                                 className="text-sm font-semibold text-brand-accentSoft hover:text-brand-white no-underline transition-colors"
                             >
-                                Sign up →
+                                Đăng ký →
                             </Link>
                         </div>
                     </div>
@@ -217,36 +218,36 @@ const LoginPage = () => {
                         <div className="relative z-10">
                             <div className="inline-flex items-center gap-2 bg-brand-accent/15 border border-brand-accent/25 text-brand-accentSoft text-xs font-semibold px-3 py-1.5 rounded-full mb-6 tracking-wider uppercase">
                                 <Zap className="w-3 h-3" />
-                                Student Portal
+                                Cổng học viên
                             </div>
                             <h1
                                 className="text-4xl font-extrabold leading-tight mb-3"
-                                style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
+                                style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}
                             >
-                                Welcome to<br />
+                                Chào mừng đến với<br />
                                 <span className="text-brand-transparent bg-clip-text bg-gradient-to-r from-brand-accentSoft to-brand-accent">
                                     Edujar
                                 </span>
                             </h1>
                             <p className="text-brand-textSecondary text-sm leading-relaxed max-w-xs">
-                                Login to access your courses, track your progress, and connect with 120,000+ learners.
+                                Đăng nhập để truy cập khóa học, theo dõi tiến độ và kết nối cùng hơn 120.000 học viên.
                             </p>
                         </div>
                         <div className="relative z-10 mt-10 flex justify-center">
                             <img
                                 src="/images/undraw_morning-news_h9nz.svg"
-                                alt="Student learning illustration"
+                                alt="Minh họa học viên đang học"
                                 className="max-h-72 w-auto drop-shadow-2xl"
                             />
                         </div>
                         <div className="relative z-10 mt-8 grid grid-cols-3 gap-3">
                             {[
-                                { value: "120K+", label: "Learners" },
-                                { value: "1,800+", label: "Courses" },
-                                { value: "4.9★", label: "Rating" },
+                                { value: "120K+", label: "Học viên" },
+                                { value: "1.800+", label: "Khóa học" },
+                                { value: "4,9★", label: "Đánh giá" },
                             ].map(({ value, label }) => (
                                 <div key={label} className="bg-brand-accent/10 border border-brand-accent/20 rounded-xl p-3 text-center">
-                                    <div className="text-brand-white font-bold text-base" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                                    <div className="text-brand-white font-bold text-base" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
                                         {value}
                                     </div>
                                     <div className="text-brand-textSecondary text-xs mt-0.5">{label}</div>

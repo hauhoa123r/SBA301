@@ -2,7 +2,7 @@ import { ABOUT_HIGHLIGHTS, ABOUT_VALUES } from "../../services/about/about.mocku
 
 export default function AboutPage() {
     return (
-        <div className="text-brand-textPrimary" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <div className="text-brand-textPrimary" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
                 <section className="relative overflow-hidden px-6 py-24">
                     <div className="absolute inset-0 pointer-events-none">
                         <div className="absolute left-[-10%] top-[-25%] h-[520px] w-[520px] rounded-full bg-brand-accent/15 blur-[120px]" />
@@ -19,16 +19,16 @@ export default function AboutPage() {
                     <div className="container relative z-10 mx-auto">
                         <div className="mx-auto max-w-3xl text-center">
                             <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-brand-accent">
-                                About Edujar
+                                Về Edujar
                             </p>
                             <h1
                                 className="text-4xl font-extrabold leading-tight text-brand-white md:text-6xl"
-                                style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
+                                style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}
                             >
-                                Learn Chinese with a clear path from pinyin to real conversations
+                                Học tiếng Trung theo lộ trình rõ ràng từ pinyin đến giao tiếp thực tế
                             </h1>
                             <p className="mt-5 text-base leading-7 text-brand-textSecondary md:text-lg">
-                                Edujar helps Vietnamese learners study Chinese through HSK-focused lessons, practical vocabulary, pronunciation practice, and guided review. Each course is designed to make Mandarin easier to understand, remember, and use in daily life.
+                                Edujar giúp người Việt học tiếng Trung qua bài học bám sát HSK, từ vựng thực tế, luyện phát âm và ôn tập có hướng dẫn. Mỗi khóa học được thiết kế để tiếng Trung dễ hiểu, dễ nhớ và dùng được trong đời sống hằng ngày.
                             </p>
                         </div>
 
@@ -36,7 +36,7 @@ export default function AboutPage() {
                             {ABOUT_HIGHLIGHTS.map(({ icon: Icon, value, label }) => (
                                 <div key={label} className="rounded-2xl border border-brand-accent/10 bg-brand-cardBg p-5 text-center shadow-xl shadow-brand-accent/5">
                                     <Icon className="mx-auto mb-3 h-5 w-5 text-brand-accentSoft" />
-                                    <div className="text-2xl font-extrabold text-brand-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                                    <div className="text-2xl font-extrabold text-brand-white" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
                                         {value}
                                     </div>
                                     <div className="mt-1 text-sm text-brand-textSecondary">{label}</div>
@@ -53,7 +53,7 @@ export default function AboutPage() {
                                 <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-brand-accent/20 bg-brand-accent/10 text-brand-accentSoft">
                                     <Icon className="h-5 w-5" />
                                 </div>
-                                <h2 className="text-xl font-bold text-brand-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                                <h2 className="text-xl font-bold text-brand-white" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
                                     {title}
                                 </h2>
                                 <p className="mt-3 text-sm leading-6 text-brand-textSecondary">{description}</p>

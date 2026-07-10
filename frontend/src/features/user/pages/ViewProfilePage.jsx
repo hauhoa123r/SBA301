@@ -11,10 +11,10 @@ import Profile from "../components/profile/Profile";
 import Sidebar from "../components/profile/Sidebar.jsx";
 
 const tabTitles = {
-    profile: "Profile",
-    password: "Change Password",
-    orders: "Order History",
-    activation: "Activation Code",
+    profile: "Hồ sơ cá nhân",
+    password: "Đổi mật khẩu",
+    orders: "Lịch sử đơn hàng",
+    activation: "Mã kích hoạt",
 };
 
 export default function ViewProfilePage() {
@@ -62,7 +62,7 @@ export default function ViewProfilePage() {
                 });
             } catch (error) {
                 if (!controller.signal.aborted) {
-                    setErrorMsg(getError(error, "Could not load profile."));
+                    setErrorMsg(getError(error, "Không thể tải hồ sơ."));
                 }
             } finally {
                 if (!controller.signal.aborted) setIsLoading(false);
@@ -85,7 +85,7 @@ export default function ViewProfilePage() {
 
     const handleSaveProfile = async (e) => {
         e.preventDefault();
-        if (!profile.fullName.trim()) return toast.error("Full name is required.");
+        if (!profile.fullName.trim()) return toast.error("Vui lòng nhập họ và tên.");
 
         setIsSaving(true);
         try {
@@ -94,9 +94,9 @@ export default function ViewProfilePage() {
             setProfile(data);
             setUser(nextUser);
             localStorage.setItem("user", JSON.stringify(nextUser));
-            toast.success("Profile updated successfully!");
+            toast.success("Cập nhật hồ sơ thành công!");
         } catch (error) {
-            toast.error(getError(error, "Could not update profile."));
+            toast.error(getError(error, "Không thể cập nhật hồ sơ."));
         } finally {
             setIsSaving(false);
         }
@@ -116,9 +116,9 @@ export default function ViewProfilePage() {
                 confirm_password: passwordForm.confirmPassword,
             });
             setPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
-            toast.success("Password updated successfully!");
+            toast.success("Cập nhật mật khẩu thành công!");
         } catch (error) {
-            setErrorMsg(getError(error, "Could not update password."));
+            setErrorMsg(getError(error, "Không thể cập nhật mật khẩu."));
         } finally {
             setIsSaving(false);
         }
@@ -129,7 +129,7 @@ export default function ViewProfilePage() {
         setErrorMsg("");
     };
 
-    const formatDate = (val) => val ? new Date(val).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" }) : "N/A";
+    const formatDate = (val) => val ? new Date(val).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" }) : "Chưa có";
 
     return (
         <div className="grid grid-cols-1 px-5 py-10 font-sans text-brand-textPrimary xl:grid-cols-12 xl:px-0">

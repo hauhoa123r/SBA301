@@ -24,7 +24,7 @@ export default function HeroSection() {
                     </div>
                     <h1
                         className="text-5xl md:text-7xl font-extrabold text-brand-white leading-[1.1] tracking-tight mb-6"
-                        style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
+                        style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}
                     >
                         {HOME_HERO.titlePrefix}{" "}
                         <span className="relative inline-block">
@@ -34,7 +34,7 @@ export default function HeroSection() {
                         </span>
                         <br />{HOME_HERO.titleSuffix}
                     </h1>
-                    <p className="text-brand-textSecondary text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed" style={{ fontFamily: "'Inter', sans-serif" }}>
+                    <p className="text-brand-textSecondary text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
                         {HOME_HERO.description}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-14">

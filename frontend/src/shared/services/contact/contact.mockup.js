@@ -5,26 +5,26 @@ export const CONTACT_METHODS = [
         icon: Mail,
         title: "Email",
         value: "support@edujar.vn",
-        description: "For course access, HSK study plans, pronunciation practice, and payment support.",
+        description: "Hỗ trợ truy cập khóa học, lộ trình HSK, luyện phát âm và thanh toán.",
     },
     {
         icon: Phone,
-        title: "Phone",
+        title: "Điện thoại",
         value: "+84 28 1234 5678",
-        description: "Available Monday to Friday, 8:30 - 17:30.",
+        description: "Hoạt động từ thứ Hai đến thứ Sáu, 8:30 - 17:30.",
     },
     {
         icon: MapPin,
-        title: "Office",
-        value: "Ho Chi Minh City, Vietnam",
-        description: "Built for Vietnamese learners studying Chinese with confidence.",
+        title: "Văn phòng",
+        value: "Thành phố Hồ Chí Minh, Việt Nam",
+        description: "Được xây dựng cho người Việt học tiếng Trung tự tin hơn mỗi ngày.",
     },
 ];
 
 export const CONTACT_TOPICS = [
-    "Course support",
-    "HSK learning path",
-    "Pronunciation practice",
-    "Subscription and payment",
-    "Technical issue",
+    "Hỗ trợ khóa học",
+    "Lộ trình học HSK",
+    "Luyện phát âm",
+    "Gói đăng ký và thanh toán",
+    "Sự cố kỹ thuật",
 ];

@@ -87,7 +87,7 @@ export default function LearnCourseSidebar({
                                         done={submittedAssignments.has(chapter.assignment.id)}
                                         icon={Award}
                                         label={chapter.assignment.title}
-                                        sub={chapterStats[chapter.id].done >= chapter.lessons.length * 2 ? "Sẵn sàng" : "Hoàn thành lesson trước"}
+                                        sub={chapterStats[chapter.id].done >= chapter.lessons.length * 2 ? "Sẵn sàng" : "Hoàn thành bài học trước"}
                                         highlight
                                         onClick={() => onAssignmentSelect(chapter.id)}
                                     />

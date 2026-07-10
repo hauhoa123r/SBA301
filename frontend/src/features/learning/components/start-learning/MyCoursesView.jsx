@@ -10,7 +10,7 @@ export default function MyCoursesView({ course }) {
                 <div>
                     <h2 className="text-xl font-black">Khóa học của tôi</h2>
                     <p className="mt-1 max-w-3xl text-sm text-brand-textSecondary">
-                        Các chapter trong {course.displayTitle} được chia theo từng mục tiêu học. Chọn chapter để bắt đầu lesson đầu tiên.
+                        Các chương trong {course.displayTitle} được chia theo từng mục tiêu học. Chọn một chương để bắt đầu bài học đầu tiên.
                     </p>
                 </div>
                 <div className="inline-flex w-fit items-center gap-2 rounded-xl border border-brand-accent/20 bg-brand-menu px-4 py-2 text-sm font-bold text-brand-textMutedLight">
@@ -37,13 +37,13 @@ export default function MyCoursesView({ course }) {
                 </div>
                 <label className="flex w-full items-center gap-2 rounded-full border border-brand-accent/20 bg-brand-menu px-4 py-2 text-sm text-brand-textSecondary lg:w-64">
                     <Search className="h-4 w-4" />
-                    <span>Tìm kiếm chapter</span>
+                    <span>Tìm kiếm chương</span>
                 </label>
             </div>
 
             <div className="mb-5 flex items-center gap-4">
                 <h3 className="text-lg font-black">{course.displayTitle}</h3>
-                <span className="text-sm text-brand-textSecondary">{course.chapters.length} chapters</span>
+                <span className="text-sm text-brand-textSecondary">{course.chapters.length} chương</span>
                 <span className="text-sm text-status-warningSoft">🏆 92/243</span>
             </div>
 

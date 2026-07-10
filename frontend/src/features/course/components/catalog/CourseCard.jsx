@@ -14,7 +14,7 @@ export default function CourseCard({ course }) {
 
                 <div className="absolute bottom-3 left-3">
                     <span className="text-xs font-semibold text-brand-accentSoft bg-brand-accent/20 px-2.5 py-1 rounded-md border border-brand-accent/20">
-                        {course.category ?? "Uncategorized"}
+                        {course.category ?? "Chưa phân loại"}
                     </span>
                 </div>
 
@@ -26,12 +26,12 @@ export default function CourseCard({ course }) {
             </div>
 
             <div className="p-5">
-                <h3 className="text-brand-white font-semibold text-base leading-snug mb-2 line-clamp-2 group-hover:text-brand-accentSoft transition-colors" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                <h3 className="text-brand-white font-semibold text-base leading-snug mb-2 line-clamp-2 group-hover:text-brand-accentSoft transition-colors" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
                     {course.title}
                 </h3>
 
-                <p className="text-brand-textSecondary text-xs mb-3" style={{ fontFamily: "'Inter', sans-serif" }}>
-                    by {course.instructor ?? "Updating"}
+                <p className="text-brand-textSecondary text-xs mb-3" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
+                    Giảng viên: {course.instructor ?? "Đang cập nhật"}
                 </p>
 
                 <p className="line-clamp-2 min-h-10 text-sm leading-5 text-brand-textSecondary mb-4">

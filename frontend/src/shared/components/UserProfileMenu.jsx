@@ -8,7 +8,7 @@ export default function UserProfileMenu({ variant = "pill" }) {
     const { user, setUser } = useAuth();
     const navigate = useNavigate();
 
-    const displayName = user?.fullName || user?.name || user?.username || "User";
+    const displayName = user?.fullName || user?.name || user?.username || "Người dùng";
     const email = user?.email;
     const avatarUrl = user?.avatar || user?.avatarUrl || user?.image;
     const avatarInitial = displayName.charAt(0).toUpperCase();
@@ -33,7 +33,7 @@ export default function UserProfileMenu({ variant = "pill" }) {
                         : "flex items-center gap-2 rounded-full border border-brand-accent/30 bg-brand-light py-1 pl-1 pr-3 text-sm font-medium text-brand-white transition-colors hover:border-brand-accent/60"
                 }
                 aria-expanded={open}
-                aria-label="User menu"
+                aria-label="Menu người dùng"
             >
                 <Avatar avatarUrl={avatarUrl} displayName={displayName} avatarInitial={avatarInitial} size={isIcon ? "h-10 w-10" : "h-9 w-9"} />
                 {!isIcon && <ChevronDown className={`h-4 w-4 text-brand-textSecondary transition-transform ${open ? "rotate-180" : ""}`} />}

@@ -28,7 +28,7 @@ export default function ResetPasswordPage() {
 
     useEffect(() => {
         if (validateResetPasswordToken(email, token)) {
-            toast.error("Your reset session is invalid or expired.");
+            toast.error("Phiên đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.");
             navigate("/forgot-password", {replace: true});
         }
     }, [email, token, navigate]);
@@ -61,10 +61,10 @@ export default function ResetPasswordPage() {
         try {
             setLoading(true);
             const response = await resetPassword(payload);
-            toast.success(response?.message || "Password reset successfully. Please login again.");
+            toast.success(response?.message || "Đặt lại mật khẩu thành công. Vui lòng đăng nhập lại.");
             navigate("/login", {replace: true});
         } catch (error) {
-            const message = error?.response?.data?.message || error?.message || "Could not reset password, please try again.";
+            const message = error?.response?.data?.message || error?.message || "Không thể đặt lại mật khẩu, vui lòng thử lại.";
             setFormError(message);
         } finally {
             setLoading(false);
@@ -72,7 +72,7 @@ export default function ResetPasswordPage() {
     };
 
     return (
-        <div className="relative overflow-hidden text-brand-textPrimary" style={{fontFamily: "'Inter', sans-serif"}}>
+        <div className="relative overflow-hidden text-brand-textPrimary" style={{fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif"}}>
             <div className="fixed inset-0 pointer-events-none">
                 <div
                     className="absolute top-[-20%] left-[-10%] w-125 h-125 rounded-full bg-brand-accent/15 blur-[120px]"/>
@@ -108,23 +108,23 @@ export default function ResetPasswordPage() {
                             <div
                                 className="inline-flex items-center gap-2 bg-brand-accent/15 border border-brand-accent/25 text-brand-accentSoft text-xs font-semibold px-3 py-1.5 rounded-full mb-6 tracking-wider uppercase">
                                 <ShieldCheck className="h-3.5 w-3.5"/>
-                                Password Security
+                                Bảo mật mật khẩu
                             </div>
                             <h1
                                 className="mb-3 text-4xl font-extrabold leading-tight text-brand-white"
-                                style={{fontFamily: "'Bricolage Grotesque', sans-serif"}}
+                                style={{fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif"}}
                             >
-                                Reset your account password
+                                Đặt lại mật khẩu tài khoản
                             </h1>
                             <p className="max-w-sm text-sm leading-6 text-brand-textSecondary">
-                                Set a new password after verifying your email and token.
+                                Tạo mật khẩu mới sau khi xác minh email và mã bảo mật.
                             </p>
                         </div>
 
                         <div className="relative z-10 my-10 flex justify-center">
                             <img
                                 src="/images/undraw_morning-news_h9nz.svg"
-                                alt="Password management illustration"
+                                alt="Minh họa quản lý mật khẩu"
                                 className="max-h-72 w-auto drop-shadow-2xl"
                             />
                         </div>
@@ -136,7 +136,7 @@ export default function ResetPasswordPage() {
                             onClick={() => navigate("/forgot-password")}
                             className="mb-8 inline-flex items-center gap-2 text-sm font-semibold text-brand-textSecondary transition hover:text-brand-white"
                         >
-                            <ArrowLeft className="h-4 w-4"/> Use another mail
+                            <ArrowLeft className="h-4 w-4"/> Dùng email khác
                         </button>
                         <div className="text-center mb-8">
                             <div className="mx-auto mb-5 inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-brand-accent/20 bg-brand-accent/10 text-brand-accentSoft">
@@ -144,13 +144,13 @@ export default function ResetPasswordPage() {
                             </div>
                             <h2
                                 className="text-3xl font-bold text-brand-white tracking-wide"
-                                style={{fontFamily: "'Bricolage Grotesque', sans-serif"}}
+                                style={{fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif"}}
                             >
-                                Reset Password
+                                Đặt lại mật khẩu
                             </h2>
                             {email ? (
                                 <p className="mt-2 text-sm text-brand-textSecondary">
-                                    Resetting password for <span className="text-brand-white">{email}</span>
+                                    Đang đặt lại mật khẩu cho <span className="text-brand-white">{email}</span>
                                 </p>
                             ) : null}
                         </div>
@@ -162,7 +162,7 @@ export default function ResetPasswordPage() {
                                 </p>
                             ) : null}
                             <div className="relative">
-                                <label className={fieldLabelClass}>New Password</label>
+                                <label className={fieldLabelClass}>Mật khẩu mới</label>
                                 <div className="relative">
                                     <input
                                         name="new_password"
@@ -170,7 +170,7 @@ export default function ResetPasswordPage() {
                                         value={formData.new_password}
                                         onChange={handleChange}
                                         type={showNewPassword ? "text" : "password"}
-                                        placeholder="New Password"
+                                        placeholder="Mật khẩu mới"
                                         autoComplete="new-password"
                                         className={`${baseInputClass} pr-10`}
                                     />
@@ -178,7 +178,7 @@ export default function ResetPasswordPage() {
                                         type="button"
                                         className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-textSecondary hover:text-brand-accentSoft transition-colors"
                                         onClick={() => setShowNewPassword(!showNewPassword)}
-                                        aria-label={showNewPassword ? "Hide new password" : "Show new password"}
+                                        aria-label={showNewPassword ? "Ẩn mật khẩu mới" : "Hiện mật khẩu mới"}
                                     >
                                         {showNewPassword ? <EyeOff className="h-4 w-4"/> : <Eye className="h-4 w-4"/>}
                                     </button>
@@ -186,7 +186,7 @@ export default function ResetPasswordPage() {
                             </div>
 
                             <div className="relative">
-                                <label className={fieldLabelClass}>Confirm New Password</label>
+                                <label className={fieldLabelClass}>Xác nhận mật khẩu mới</label>
                                 <div className="relative">
                                     <input
                                         name="confirm_password"
@@ -194,7 +194,7 @@ export default function ResetPasswordPage() {
                                         value={formData.confirm_password}
                                         onChange={handleChange}
                                         type={showConfirmPassword ? "text" : "password"}
-                                        placeholder="Confirm New Password"
+                                        placeholder="Xác nhận mật khẩu mới"
                                         autoComplete="new-password"
                                         className={`${baseInputClass} pr-10`}
                                     />
@@ -202,7 +202,7 @@ export default function ResetPasswordPage() {
                                         type="button"
                                         className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-textSecondary hover:text-brand-accentSoft transition-colors"
                                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                        aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+                                        aria-label={showConfirmPassword ? "Ẩn xác nhận mật khẩu" : "Hiện xác nhận mật khẩu"}
                                     >
                                         {showConfirmPassword ? <EyeOff className="h-4 w-4"/> :
                                             <Eye className="h-4 w-4"/>}
@@ -212,7 +212,7 @@ export default function ResetPasswordPage() {
 
                             <button className={baseButtonClass} type="submit" disabled={loading}>
                                 {loading ? <RefreshCw className="h-4 w-4 animate-spin"/> : <LockKeyhole className="h-4 w-4"/>}
-                                {loading ? "Saving..." : "Reset Password"}
+                                {loading ? "Đang lưu..." : "Đặt lại mật khẩu"}
                             </button>
                         </form>
                     </section>

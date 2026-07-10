@@ -7,7 +7,7 @@ export default function CourseList({ courses, isLoading = false }) {
     if (isLoading) {
         return (
             <div className="rounded-2xl border border-brand-accent/10 bg-brand-cardBg p-10 text-center text-brand-textSecondary">
-                Loading courses...
+                Đang tải khóa học...
             </div>
         );
     }
@@ -15,7 +15,7 @@ export default function CourseList({ courses, isLoading = false }) {
     if (courses.length === 0) {
         return (
             <div className="rounded-2xl border border-brand-accent/10 bg-brand-cardBg p-10 text-center text-brand-textSecondary">
-                No courses found. Try another search keyword.
+                Không tìm thấy khóa học nào. Hãy thử từ khóa khác.
             </div>
         );
     }
@@ -31,7 +31,7 @@ export default function CourseList({ courses, isLoading = false }) {
                     <div className="p-5">
                         <div className="mb-3">
                             <span className="rounded-lg border border-brand-accent/20 bg-brand-accent/10 px-2.5 py-1 text-xs font-semibold text-brand-accentSoft">
-                                {course.category ?? "Uncategorized"}
+                                {course.category ?? "Chưa phân loại"}
                             </span>
                         </div>
 
@@ -44,7 +44,7 @@ export default function CourseList({ courses, isLoading = false }) {
                         </p>
 
                         <p className="mb-4 text-sm font-medium text-brand-textSecondary">
-                            {course.instructor ?? "Updating"}
+                            {course.instructor ?? "Đang cập nhật"}
                         </p>
 
                         <div className="mb-5 grid grid-cols-3 gap-3 text-xs">
@@ -53,27 +53,27 @@ export default function CourseList({ courses, isLoading = false }) {
                                     <Star className="h-3.5 w-3.5 fill-status-warningSoft" />
                                     <span>{formatRating(course.rating)}</span>
                                 </div>
-                                <span className="block text-xs uppercase tracking-wider text-brand-textSecondary">Rating</span>
+                                <span className="block text-xs uppercase tracking-wider text-brand-textSecondary">Đánh giá</span>
                             </div>
                             <div className="rounded-lg border border-status-successStrong/20 bg-status-successStrong/10 p-2">
                                 <div className="flex items-center gap-1 text-status-success">
                                     <BookOpenText className="h-3.5 w-3.5" />
                                     <span>{course.totalLessons ?? 0} bài học</span>
                                 </div>
-                                <span className="block text-xs uppercase tracking-wider text-brand-textSecondary">Lessons</span>
+                                <span className="block text-xs uppercase tracking-wider text-brand-textSecondary">Bài học</span>
                             </div>
                             <div className="rounded-lg border border-brand-accent/20 bg-brand-accent/10 p-2">
                                 <div className="flex items-center gap-1 text-brand-accentSoft">
                                     <Clock3 className="h-3.5 w-3.5" />
                                     <span>{course.durationText ?? "0m"}</span>
                                 </div>
-                                <span className="block text-xs uppercase tracking-wider text-brand-textSecondary">Duration</span>
+                                <span className="block text-xs uppercase tracking-wider text-brand-textSecondary">Thời lượng</span>
                             </div>
                         </div>
 
                         <Link to={`/courses/${course.id}`} className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-brand-accent/30 px-4 py-3 text-sm font-semibold text-brand-accentSoft no-underline transition hover:border-brand-accent/60 hover:bg-brand-accent/10 hover:text-brand-white">
                             <Eye className="h-4 w-4" />
-                            View Detail
+                            Xem chi tiết
                         </Link>
                     </div>
                 </article>

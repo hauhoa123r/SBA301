@@ -2,11 +2,11 @@ import { Link } from "react-router-dom";
 import { BarChart3, ClipboardList, Home, LogOut, PlaySquare, Route } from "lucide-react";
 
 const navItems = [
-    { view: "overview", to: "/learning", icon: Home, label: "Overview" },
-    { view: "study-plan", to: "/learning#study-plan", icon: Route, label: "Study plan" },
-    { view: "my-courses", to: "/learning#my-courses", icon: PlaySquare, label: "My courses" },
-    { view: "test-practice", to: "/learning#test-practice", icon: ClipboardList, label: "Test Practice" },
-    { view: "profile", to: "/learning#profile", icon: BarChart3, label: "Learning Profile" },
+    { view: "overview", to: "/learning", icon: Home, label: "Tổng quan" },
+    { view: "study-plan", to: "/learning#study-plan", icon: Route, label: "Kế hoạch học" },
+    { view: "my-courses", to: "/learning#my-courses", icon: PlaySquare, label: "Khóa học của tôi" },
+    { view: "test-practice", to: "/learning#test-practice", icon: ClipboardList, label: "Luyện kiểm tra" },
+    { view: "profile", to: "/learning#profile", icon: BarChart3, label: "Hồ sơ học tập" },
 ];
 
 export default function StartLearningSidebar({ activeView }) {

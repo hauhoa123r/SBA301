@@ -10,9 +10,9 @@ export default function ProfileHero({ studentName }) {
                         <UserRound className="h-9 w-9" />
                     </div>
                     <div>
-                        <p className="text-sm font-bold text-brand-accentSoft">Hi, {studentName}</p>
+                        <p className="text-sm font-bold text-brand-accentSoft">Xin chào, {studentName}</p>
                         <h3 className="mt-1 text-xl font-black">Hãy tiếp tục học mỗi ngày</h3>
-                        <p className="mt-2 text-sm text-brand-textSecondary">Nỗ lực của bạn sẽ được đền đáp qua từng chapter.</p>
+                        <p className="mt-2 text-sm text-brand-textSecondary">Nỗ lực của bạn sẽ được đền đáp qua từng chương.</p>
                     </div>
                 </div>
             </div>
