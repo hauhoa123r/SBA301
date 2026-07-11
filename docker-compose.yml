@@ -64,7 +64,7 @@ services:
       SMTP_USERNAME: ${SMTP_USERNAME:?SMTP_USERNAME is required}
       SMTP_PASSWORD: ${SMTP_PASSWORD:?SMTP_PASSWORD is required}
 
-      FRONTEND_PAYMENT_RESULT_URL: ${FRONTEND_PAYMENT_RESULT_URL:-http://localhost:800/payment/result}
+      FRONTEND_PAYMENT_RESULT_URL: ${FRONTEND_PAYMENT_RESULT_URL:-https://edujar.site/payment/result}
 
     depends_on:
       mysql:
@@ -84,13 +84,13 @@ services:
 
     ports:
       - "80:80"
-
+      - "443:443"
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - backend
-
     networks:
       - chinese-net
-
     restart: unless-stopped
 
 volumes:
