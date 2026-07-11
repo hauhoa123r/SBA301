@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaFacebookF, FaGoogle } from "react-icons/fa";
 import { Eye, EyeOff, Zap } from "lucide-react";
+import { toast } from "react-toastify";
 import {login} from "../service/authService";
 import useAuth from "../../../app/provider/useAuth";
 const LoginPage = () => {
@@ -70,9 +71,8 @@ const LoginPage = () => {
             setUser(loggedInUser);
             navigate("/");
         } catch (err) {
-            const errMsg =
-                err?.response?.data?.error || "Đăng nhập thất bại";
-
+            const errMsg = getLoginErrorMessage(err);
+            toast.error(errMsg);
             console.error(errMsg);
         }
     };
@@ -260,5 +260,16 @@ const LoginPage = () => {
         </div>
     );
 };
+
+function getLoginErrorMessage(error) {
+    const data = error?.response?.data;
+
+    if (typeof data === "string") return data;
+    if (data?.message && data?.data && typeof data.data === "object") {
+        return Object.values(data.data)[0] || data.message;
+    }
+
+    return data?.message || data?.error || "Đăng nhập thất bại. Vui lòng kiểm tra email hoặc mật khẩu.";
+}
 
 export default LoginPage;
