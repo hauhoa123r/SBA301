@@ -94,7 +94,7 @@ pipeline {
                 timeout(time: 5, unit: 'MINUTES') {
                     withCredentials([
                         sshUserPrivateKey(
-                            credentialsId: 'production-server-ssh',
+                            credentialsId: 'azure-server-ssh',
                             keyFileVariable: 'SSH_KEY',
                             usernameVariable: 'SSH_USER'
                         )
