@@ -5,15 +5,29 @@ services:
       dockerfile: Dockerfile
     container_name: chinese-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: 123456
-      MYSQL_DATABASE: chinese_online_learning
-      MYSQL_USER: chinese_app
-      MYSQL_PASSWORD: devhoa
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
       - chinese-net
     restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-uroot",
+          "-p${MYSQL_ROOT_PASSWORD}"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   backend:
     build:
@@ -21,13 +35,30 @@ services:
       dockerfile: Dockerfile
     container_name: chinese-backend
     environment:
+#      driver connect database
       DB_URL: jdbc:mysql://mysql:3306/chinese_online_learning
-      DB_USERNAME: chinese_app
-      DB_PASSWORD: devhoa
-      JWT_SECRET: your_jwt_secret_here
-      SERVER_PORT: 8081
+      DB_USERNAME: ${MYSQL_USER:?MYSQL_USER is required}
+      DB_PASSWORD: ${MYSQL_PASSWORD:?MYSQL_PASSWORD is required}
+#      jwtkey
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+
+      SERVER_PORT: ${SERVER_PORT:-8081}
+#      bankAPI
+      CLIENT_ID: ${CLIENT_ID:?CLIENT_ID is required}
+      API_BANK_KEY: ${API_BANK_KEY:?API_BANK_KEY is required}
+      CHECKSUM_KEY: ${CHECKSUM_KEY:?CHECKSUM_KEY is required}
+#      emailAPI
+      RESEND_API_KEY: ${RESEND_API_KEY:?RESEND_API_KEY is required}
+      RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL:?RESEND_FROM_EMAIL is required}
+      MAIL_PROVIDER: ${MAIL_PROVIDER:?MAIL_PROVIDER is required}
+      SMTP_HOST: ${SMTP_HOST:?SMTP_HOST is required}
+      SMTP_PORT: ${SMTP_PORT:?SMTP_PORT is required}
+      SMTP_STARTTLS_ENABLE: ${SMTP_STARTTLS_ENABLE:?SMTP_STARTTLS_ENABLE is required}
+      SMTP_USERNAME: ${SMTP_USERNAME:?SMTP_USERNAME is required}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:?SMTP_PASSWORD is required}
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     networks:
       - chinese-net
     restart: unless-stopped
@@ -44,8 +75,10 @@ services:
     networks:
       - chinese-net
     restart: unless-stopped
-volumes: 
+
+volumes:
   mysql_data:
-networks: 
+
+networks:
   chinese-net:
     driver: bridge
