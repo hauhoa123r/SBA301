@@ -81,26 +81,29 @@ pipeline {
 
         stage('CONNECT_SERVER') {
             steps {
-                withCredentials([
-                    sshUserPrivateKey(
-                        credentialsId: 'azure-server-ssh',
-                        keyFileVariable: 'SSH_KEY',
-                        usernameVariable: 'SSH_USER'
-                    )
-                ]) {
-                    sh '''
-                        chmod 600 "$SSH_KEY"
+                timeout(time: 5, unit: 'MINUTES') {
+                    withCredentials([
+                        sshUserPrivateKey(
+                            credentialsId: 'azure-server-ssh',
+                            keyFileVariable: 'SSH_KEY',
+                            usernameVariable: 'SSH_USER'
+                        )
+                    ]) {
+                        sh '''
+                            chmod 600 "$SSH_KEY"
 
-                        ssh \
-                            -o StrictHostKeyChecking=no \
-                            -i "$SSH_KEY" \
-                            "$SSH_USER@$SERVER_IP" \
-                            "cd $DEPLOY_PATH && \
-                             export IMAGE_TAG=$IMAGE_TAG && \
-                             docker compose pull && \
-                             docker compose up -d && \
-                             docker compose ps"
-                    '''
+                            ssh \
+                                -o BatchMode=yes \
+                                -o ConnectTimeout=15 \
+                                -o StrictHostKeyChecking=no \
+                                -i "$SSH_KEY" \
+                                "$SSH_USER@$SERVER_IP" \
+                                "cd '$DEPLOY_PATH' &&
+                                 IMAGE_TAG='$IMAGE_TAG' docker compose pull &&
+                                 IMAGE_TAG='$IMAGE_TAG' docker compose up -d &&
+                                 IMAGE_TAG='$IMAGE_TAG' docker compose ps"
+                        '''
+                    }
                 }
             }
         }
