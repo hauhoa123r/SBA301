@@ -36,6 +36,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: chinese-backend
+    expose:
+      - "8081"
     environment:
 #      driver connect database
       DB_URL: jdbc:mysql://mysql:3306/chinese_online_learning

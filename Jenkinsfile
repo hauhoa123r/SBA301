@@ -1,13 +1,23 @@
 pipeline {
     agent any
 
+    options {
+        skipDefaultCheckout(true)
+    }
+
     environment {
         IMAGE_TAG = "${BUILD_NUMBER}"
-        SERVER_IP = "13.229.59.153"
+        SERVER_IP = "18.143.179.208"
         DEPLOY_PATH = "/home/deploy"
     }
 
     stages {
+        stage('CHECKOUT_SOURCE') {
+            steps {
+                checkout scm
+            }
+        }
+
         stage('CHECK_ENVIRONMENT') {
             steps {
                 sh '''
@@ -84,24 +94,27 @@ pipeline {
                 timeout(time: 5, unit: 'MINUTES') {
                     withCredentials([
                         sshUserPrivateKey(
-                            credentialsId: 'azure-server-ssh',
+                            credentialsId: 'production-server-ssh',
                             keyFileVariable: 'SSH_KEY',
                             usernameVariable: 'SSH_USER'
                         )
                     ]) {
                         sh '''
                             chmod 600 "$SSH_KEY"
+                            install -d -m 700 "$HOME/.ssh"
 
                             ssh \
                                 -o BatchMode=yes \
                                 -o ConnectTimeout=15 \
-                                -o StrictHostKeyChecking=no \
+                                -o StrictHostKeyChecking=accept-new \
                                 -i "$SSH_KEY" \
                                 "$SSH_USER@$SERVER_IP" \
                                 "cd '$DEPLOY_PATH' &&
-                                 IMAGE_TAG='$IMAGE_TAG' docker compose pull &&
-                                 IMAGE_TAG='$IMAGE_TAG' docker compose up -d &&
-                                 IMAGE_TAG='$IMAGE_TAG' docker compose ps"
+                                 test -f docker-compose.yml &&
+                                 test -f .env &&
+                                 IMAGE_TAG='$IMAGE_TAG' docker compose --env-file .env pull &&
+                                 IMAGE_TAG='$IMAGE_TAG' docker compose --env-file .env up -d &&
+                                 IMAGE_TAG='$IMAGE_TAG' docker compose --env-file .env ps"
                         '''
                     }
                 }
@@ -125,7 +138,10 @@ pipeline {
         }
 
         always {
-            sh 'docker logout || true'
+            sh '''
+                docker logout || true
+                rm -f "$WORKSPACE/.env"
+            '''
         }
     }
 }
