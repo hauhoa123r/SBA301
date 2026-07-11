@@ -83,7 +83,7 @@ services:
     container_name: chinese-nginx
 
     ports:
-      - "800:80"
+      - "80:80"
 
     depends_on:
       - backend
