@@ -3,6 +3,8 @@ pipeline {
 
     environment {
         IMAGE_TAG = "${BUILD_NUMBER}"
+        SERVER_IP = "13.229.59.153"
+        DEPLOY_PATH = "/home/deploy"
     }
 
     stages {
@@ -11,8 +13,10 @@ pipeline {
                 sh '''
                     docker --version
                     docker compose version
+
                     echo "BUILD_NUMBER=$BUILD_NUMBER"
                     echo "IMAGE_TAG=$IMAGE_TAG"
+
                     whoami
                     pwd
                 '''
@@ -75,9 +79,35 @@ pipeline {
             }
         }
 
+        stage('CONNECT_SERVER') {
+            steps {
+                withCredentials([
+                    sshUserPrivateKey(
+                        credentialsId: 'azure-server-ssh',
+                        keyFileVariable: 'SSH_KEY',
+                        usernameVariable: 'SSH_USER'
+                    )
+                ]) {
+                    sh '''
+                        chmod 600 "$SSH_KEY"
+
+                        ssh \
+                            -o StrictHostKeyChecking=no \
+                            -i "$SSH_KEY" \
+                            "$SSH_USER@$SERVER_IP" \
+                            "cd $DEPLOY_PATH && \
+                             export IMAGE_TAG=$IMAGE_TAG && \
+                             docker compose pull && \
+                             docker compose up -d && \
+                             docker compose ps"
+                    '''
+                }
+            }
+        }
+
         stage('PIPELINE_FINISH') {
             steps {
-                sh 'echo "PIPELINE FINISHED"'
+                echo "PIPELINE FINISHED"
             }
         }
     }
@@ -88,7 +118,7 @@ pipeline {
         }
 
         success {
-            echo 'BUILD AND PUSH SUCCESSFULLY'
+            echo 'BUILD, PUSH AND DEPLOY SUCCESSFULLY'
         }
 
         always {
