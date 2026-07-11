@@ -1,5 +1,6 @@
 services:
   mysql:
+    image: devhoa/chinese-mysql:${IMAGE_TAG}
     build:
       context: ./database
       dockerfile: Dockerfile
@@ -30,6 +31,7 @@ services:
       retries: 10
 
   backend:
+    image: devhoa/chinese-backend:${IMAGE_TAG}
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -64,6 +66,7 @@ services:
     restart: unless-stopped
 
   nginx:
+    image: devhoa/chinese-nginx:${IMAGE_TAG}
     build:
       context: ./frontend
       dockerfile: Dockerfile
