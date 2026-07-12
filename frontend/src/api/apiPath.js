@@ -18,6 +18,7 @@ export const API_LESSON_DOCUMENTS = `${BASE}/lesson-documents`;
 export const API_LESSON_PROGRESS = `${BASE}/lesson-progress`;
 export const API_LESSON_QA = `${BASE}/lesson-qa`;
 export const API_PAYMENTS = `${BASE}/payments`;
+export const API_LEARNING = `${BASE}/learning`;
 export const API_COUPON = `${BASE}/coupon`;
 export const API_PLANS = `${BASE}/plans`;
 export const API_SUBSCRIPTIONS = `${BASE}/subscriptions`;

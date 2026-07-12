@@ -18,6 +18,7 @@ public final class ApiPath {
     public static final String API_INVOICES = BASE + "/invoices";
     public static final String API_LESSON_DOCUMENTS = BASE + "/lesson-documents";
     public static final String API_LESSON_PROGRESS = BASE + "/lesson-progress";
+    public static final String API_LEARNING = BASE + "/learning";
     public static final String API_LESSON_QA = BASE + "/lesson-qa";
     public static final String API_LESSONS = BASE + "/lessons";
     public static final String API_NOTIFICATIONS = BASE + "/notifications";
