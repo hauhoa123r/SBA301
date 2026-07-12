@@ -2,14 +2,14 @@ import { Link } from "react-router-dom";
 import { BookOpenCheck, CircleDot, Flame, Lock, Route, Trophy } from "lucide-react";
 import ChapterCourseCard from "./ChapterCourseCard";
 
-export default function OverviewPanel({ course, totalActivities, totalLessons, firstLesson }) {
+export default function OverviewPanel({ course, totalActivities = 27, openLessons = 11, firstLesson, completedActivities = 3, earnedCups = 76, totalCups = 195 }) {
     return (
         <>
             <TodayGoalCard course={course} firstLesson={firstLesson} />
             <section className="grid gap-4 md:grid-cols-3">
-                <OverviewStat icon={Route} label="Hoạt động đã hoàn thành" value={`3/${totalActivities}`} />
-                <OverviewStat icon={BookOpenCheck} label="Bài học đang mở" value={totalLessons} green />
-                <OverviewStat icon={Trophy} label="Tổng số cúp" value="76/195" amber />
+                <OverviewStat icon={Route} label="Hoạt động đã hoàn thành" value={`${completedActivities}/${totalActivities}`} />
+                <OverviewStat icon={BookOpenCheck} label="Bài học đang mở" value={openLessons} green />
+                <OverviewStat icon={Trophy} label="Tổng số cúp" value={`${earnedCups}/${totalCups}`} amber />
             </section>
             <section className="rounded-2xl border border-brand-accent/20 bg-brand-panel p-5 shadow-xl shadow-brand-black/10">
                 <div className="mb-4 flex items-center justify-between gap-3">
