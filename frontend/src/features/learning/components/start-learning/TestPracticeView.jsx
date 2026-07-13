@@ -4,18 +4,18 @@ import { ClipboardList } from "lucide-react";
 export default function TestPracticeView({ course, firstLesson }) {
     const tests = course.chapters.map((chapter) => ({
         id: chapter.id,
-        title: `Bài test chương ${chapter.order_index}`,
-        description: `Ôn tập ${chapter.title.toLowerCase()} bằng quiz tổng hợp và bài nghe ngắn.`,
+        title: `Bài kiểm tra chương ${chapter.order_index}`,
+        description: `Ôn tập ${chapter.title.toLowerCase()} bằng bài trắc nghiệm tổng hợp và bài nghe ngắn.`,
         questions: chapter.lessons.reduce((total, lesson) => total + lesson.quiz.questions.length, 0) + 5,
-        status: chapter.order_index <= 2 ? "Đã mở" : "Khóa",
+        status: chapter.order_index <= 2 ? "Đã mở" : "Đã khóa",
     }));
 
     return (
         <section id="test-practice" className="scroll-mt-24 rounded-2xl border border-brand-accent/20 bg-brand-panel p-5 shadow-xl shadow-brand-black/10">
             <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                 <div>
-                    <h2 className="text-xl font-black">Test Practice</h2>
-                    <p className="mt-1 text-sm text-brand-textSecondary">Luyện test theo từng chapter trước khi làm bài tổng kết.</p>
+                    <h2 className="text-xl font-black">Luyện kiểm tra</h2>
+                    <p className="mt-1 text-sm text-brand-textSecondary">Luyện kiểm tra theo từng chương trước khi làm bài tổng kết.</p>
                 </div>
                 <Link to={`/learning/courses/${course.id}/lessons/${firstLesson.id}`} className="w-fit rounded-xl bg-brand-accent px-4 py-2 text-sm font-bold text-brand-white no-underline hover:bg-brand-accentHover">
                     Tiếp tục luyện tập

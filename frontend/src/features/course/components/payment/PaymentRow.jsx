@@ -8,7 +8,7 @@ export default function PaymentRow({ label, value, copyValue, onCopy, highlight 
                 {value}
             </span>
             {copyValue ? (
-                <button type="button" onClick={() => onCopy(copyValue)} className="grid h-11 w-11 place-items-center rounded-full bg-brand-light text-brand-textSecondary transition hover:bg-brand-accent hover:text-brand-white sm:justify-self-end" aria-label={`Copy ${label}`}>
+                <button type="button" onClick={() => onCopy(copyValue)} className="grid h-11 w-11 place-items-center rounded-full bg-brand-light text-brand-textSecondary transition hover:bg-brand-accent hover:text-brand-white sm:justify-self-end" aria-label={`Sao chép ${label}`}>
                     <Copy className="h-5 w-5" />
                 </button>
             ) : (

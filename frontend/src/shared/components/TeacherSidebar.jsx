@@ -58,7 +58,7 @@ export default function TeacherSidebar({ sidebarOpen, onClose }) {
               />
               <span
                 className="text-xl font-bold text-brand-accent tracking-wide"
-                style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
+                style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}
               >
                 Edujar
               </span>

@@ -8,7 +8,7 @@ export default function LearningProfileView({ course, totalLessons, firstLesson 
     return (
         <section id="profile" className="scroll-mt-24 space-y-5">
             <div>
-                <h2 className="text-xl font-black">Learning Profile</h2>
+                <h2 className="text-xl font-black">Hồ sơ học tập</h2>
                 <p className="mt-1 text-sm text-brand-textSecondary">Theo dõi tiến độ và sự cải thiện sau mỗi buổi học.</p>
             </div>
 

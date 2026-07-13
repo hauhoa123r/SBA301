@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 import { NAV_LINKS } from "../services/navigation/navigation.mockup";
 
 export default function MobileMenu({ user, onClose, onLogout }) {
-    const displayName = user?.fullName || user?.name || user?.username || "User";
+    const displayName = user?.fullName || user?.name || user?.username || "Người dùng";
     const email = user?.email;
     const avatarUrl = user?.avatar || user?.avatarUrl || user?.image;
     const avatarInitial = displayName.charAt(0).toUpperCase();
@@ -45,7 +45,7 @@ export default function MobileMenu({ user, onClose, onLogout }) {
                         Cài đặt
                     </NavLink>
                     <NavLink to="/learning" onClick={onClose} className="w-fit rounded-full bg-brand-accent px-4 py-2 text-sm font-medium text-brand-white no-underline">
-                        Start Learning
+                        Bắt đầu học
                     </NavLink>
                     <button type="button" onClick={onLogout} className="flex items-center gap-2 text-left text-sm text-brand-textSecondary">
                         <LogOut className="h-4 w-4" />
@@ -55,10 +55,10 @@ export default function MobileMenu({ user, onClose, onLogout }) {
             ) : (
                 <div className="flex gap-3 pt-2">
                     <NavLink to="/login" onClick={onClose} className="text-sm text-brand-textSecondary border border-brand-accent/30 px-4 py-2 rounded-full no-underline">
-                        Login
+                        Đăng nhập
                     </NavLink>
                     <NavLink to="/register" onClick={onClose} className="text-sm text-brand-white bg-brand-accent px-4 py-2 rounded-full no-underline">
-                        Get Started
+                        Bắt đầu ngay
                     </NavLink>
                 </div>
             )}

@@ -14,6 +14,6 @@ COPY --from=build /backend/target/backend-0.0.1-SNAPSHOT.jar /run/backend-0.0.1-
 RUN adduser -D devhoa && chown -R devhoa:devhoa /run
 USER devhoa
 
-EXPOSE 1234
+EXPOSE 8081
 
 ENTRYPOINT ["java", "-jar", "/run/backend-0.0.1-SNAPSHOT.jar"]

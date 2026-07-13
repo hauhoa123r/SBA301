@@ -5,7 +5,7 @@ export default function PaymentResultPage() {
     const [searchParams] = useSearchParams();
     const success = searchParams.get("success") === "true";
     const invoiceCode = searchParams.get("invoiceCode");
-    const message = searchParams.get("message") || (success ? "Payment successful" : "Payment failed");
+    const message = getResultMessage(searchParams.get("message"), success);
     const Icon = success ? CheckCircle2 : CircleX;
 
     return (
@@ -17,13 +17,20 @@ export default function PaymentResultPage() {
                 <h1 className="mt-6 text-4xl font-black text-brand-white">{message}</h1>
                 {invoiceCode && (
                     <p className="mt-3 text-base font-semibold text-brand-textSecondary">
-                        Invoice code: <span className="font-black text-brand-accentPale">{invoiceCode}</span>
+                        Mã hóa đơn: <span className="font-black text-brand-accentPale">{invoiceCode}</span>
                     </p>
                 )}
                 <Link to="/courses" className="mt-8 inline-flex h-12 items-center justify-center rounded-full bg-brand-accent px-6 font-black text-brand-white transition hover:bg-brand-accentHover">
-                    Continue learning
+                    Tiếp tục học
                 </Link>
             </div>
         </section>
     );
+}
+
+function getResultMessage(message, success) {
+    if (!message) return success ? "Thanh toán thành công" : "Thanh toán thất bại";
+    if (message === "Payment successful") return "Thanh toán thành công";
+    if (message === "Payment failed") return "Thanh toán thất bại";
+    return message;
 }

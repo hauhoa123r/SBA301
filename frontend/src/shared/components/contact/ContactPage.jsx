@@ -3,19 +3,19 @@ import { CONTACT_METHODS, CONTACT_TOPICS } from "../../services/contact/contact.
 
 export default function ContactPage() {
     return (
-        <section className="container mx-auto px-6 py-14 text-brand-textPrimary" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <section className="container mx-auto px-6 py-14 text-brand-textPrimary" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
                 <div className="mb-12 max-w-3xl">
                     <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-brand-accent">
-                        Contact
+                        Liên hệ
                     </p>
                     <h1
                         className="text-4xl font-extrabold leading-tight text-brand-white md:text-5xl"
-                        style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
+                        style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}
                     >
-                        Talk to the Edujar Chinese learning team
+                        Trao đổi với đội ngũ học tiếng Trung Edujar
                     </h1>
                     <p className="mt-4 text-sm leading-6 text-brand-textSecondary md:text-base">
-                        Need help with HSK courses, pronunciation practice, study plans, subscriptions, or payments? Send us a message and our team will get back to you.
+                        Bạn cần hỗ trợ về khóa HSK, luyện phát âm, kế hoạch học, gói đăng ký hoặc thanh toán? Gửi tin nhắn cho chúng tôi, đội ngũ Edujar sẽ phản hồi sớm.
                     </p>
                 </div>
 
@@ -26,7 +26,7 @@ export default function ContactPage() {
                                 <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-brand-accent/20 bg-brand-accent/10 text-brand-accentSoft">
                                     <Icon className="h-5 w-5" />
                                 </div>
-                                <h2 className="text-lg font-bold text-brand-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                                <h2 className="text-lg font-bold text-brand-white" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
                                     {title}
                                 </h2>
                                 <p className="mt-1 font-semibold text-brand-accentSoft">{value}</p>
@@ -41,10 +41,10 @@ export default function ContactPage() {
                                 <MessageCircle className="h-5 w-5" />
                             </div>
                             <div>
-                                <h2 className="text-xl font-bold text-brand-white" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-                                    Send a message
+                                <h2 className="text-xl font-bold text-brand-white" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
+                                    Gửi tin nhắn
                                 </h2>
-                                <p className="text-sm text-brand-textSecondary">We usually respond within one business day.</p>
+                                <p className="text-sm text-brand-textSecondary">Chúng tôi thường phản hồi trong vòng một ngày làm việc.</p>
                             </div>
                         </div>
 
@@ -52,7 +52,7 @@ export default function ContactPage() {
                             <div className="grid gap-5 md:grid-cols-2">
                                 <div>
                                     <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-brand-textSecondary">
-                                        Full Name
+                                        Họ và tên
                                     </label>
                                     <input
                                         type="text"
@@ -62,7 +62,7 @@ export default function ContactPage() {
                                 </div>
                                 <div>
                                     <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-brand-textSecondary">
-                                        Email Address
+                                        Địa chỉ email
                                     </label>
                                     <input
                                         type="email"
@@ -74,7 +74,7 @@ export default function ContactPage() {
 
                             <div>
                                 <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-brand-textSecondary">
-                                    Topic
+                                    Chủ đề
                                 </label>
                                 <select className="w-full rounded-xl border border-brand-accent/20 bg-brand-light px-4 py-3 text-sm text-brand-white outline-none transition focus:border-brand-accent/60">
                                     {CONTACT_TOPICS.map((topic) => (
@@ -85,18 +85,18 @@ export default function ContactPage() {
 
                             <div>
                                 <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-brand-textSecondary">
-                                    Message
+                                    Nội dung
                                 </label>
                                 <textarea
                                     rows="6"
-                                    placeholder="Tell us how we can help..."
+                                    placeholder="Hãy cho chúng tôi biết bạn cần hỗ trợ gì..."
                                     className="w-full resize-none rounded-xl border border-brand-accent/20 bg-brand-light px-4 py-3 text-sm text-brand-white outline-none transition placeholder:text-brand-textSecondary/50 focus:border-brand-accent/60"
                                 />
                             </div>
 
                             <button className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-accent px-5 py-3 text-sm font-semibold text-brand-white shadow-lg shadow-brand-accent/25 transition hover:bg-brand-accentHover md:w-auto">
                                 <Send className="h-4 w-4" />
-                                Send Message
+                                Gửi tin nhắn
                             </button>
                         </form>
                     </section>

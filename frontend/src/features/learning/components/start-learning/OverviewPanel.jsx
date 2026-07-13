@@ -18,7 +18,7 @@ export default function OverviewPanel({ course, totalActivities, totalLessons, f
                         <p className="mt-1 text-sm text-brand-textSecondary">Hoàn thành mục tiêu hôm nay trước khi chuyển sang các mục khác.</p>
                     </div>
                     <Link to="/learning#study-plan" className="rounded-xl border border-brand-accent/30 px-4 py-2 text-sm font-bold text-brand-accentSoft no-underline hover:text-brand-white">
-                        Xem Study Plan
+                        Xem kế hoạch học
                     </Link>
                 </div>
                 <ChapterCourseCard course={course} chapter={course.chapters[0]} />

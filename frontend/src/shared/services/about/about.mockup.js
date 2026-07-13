@@ -1,26 +1,26 @@
 import { Award, BookOpenText, GraduationCap, Mic, Users, BarChart2 } from "lucide-react";
 
 export const ABOUT_HIGHLIGHTS = [
-    { icon: Users, value: "12K+", label: "Chinese learners" },
-    { icon: BookOpenText, value: "6", label: "HSK learning paths" },
-    { icon: GraduationCap, value: "80+", label: "Guided lessons" },
-    { icon: Award, value: "98%", label: "Learner satisfaction" },
+    { icon: Users, value: "12K+", label: "Học viên tiếng Trung" },
+    { icon: BookOpenText, value: "6", label: "Lộ trình học HSK" },
+    { icon: GraduationCap, value: "80+", label: "Bài học có hướng dẫn" },
+    { icon: Award, value: "98%", label: "Mức độ hài lòng" },
 ];
 
 export const ABOUT_VALUES = [
     {
         icon: BookOpenText,
-        title: "Structured HSK roadmap",
-        description: "Lessons are organized by level so learners can build vocabulary, grammar, reading, and listening skills step by step.",
+        title: "Lộ trình HSK có cấu trúc",
+        description: "Bài học được sắp xếp theo từng cấp độ để học viên xây dựng từ vựng, ngữ pháp, kỹ năng đọc và nghe từng bước.",
     },
     {
         icon: Mic,
-        title: "Pronunciation that sticks",
-        description: "Pinyin, tones, and speaking drills help students sound clearer and feel more confident in real conversations.",
+        title: "Phát âm dễ nhớ",
+        description: "Pinyin, thanh điệu và bài luyện nói giúp học viên phát âm rõ hơn và tự tin hơn trong hội thoại thực tế.",
     },
     {
         icon: BarChart2,
-        title: "Progress you can measure",
-        description: "Quizzes, practice results, and learning milestones make it easier to see what to review before moving forward.",
+        title: "Tiến độ đo lường được",
+        description: "Quiz, kết quả luyện tập và các mốc học tập giúp bạn biết cần ôn lại phần nào trước khi học tiếp.",
     },
 ];

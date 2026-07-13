@@ -10,7 +10,7 @@ export default function ProfileProgressItem({ item, firstLesson }) {
                 <h4 className="text-base font-black">{item.title}</h4>
                 <div className="mt-2 flex flex-wrap gap-4 text-sm text-brand-textSecondary">
                     <span>Tổng số cúp đã đạt <span className="font-bold text-status-warningSoft">🏆 {item.cups}</span></span>
-                    <span>Số units đạt 2 cúp trở lên <span className="font-bold text-brand-white">{item.units} Units</span></span>
+                    <span>Số học phần đạt 2 cúp trở lên <span className="font-bold text-brand-white">{item.units} học phần</span></span>
                 </div>
             </div>
             {item.active && (

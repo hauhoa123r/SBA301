@@ -62,7 +62,7 @@ export default function LearnCourseLayout() {
     };
 
     return (
-        <div className="min-h-screen bg-brand-darker text-brand-white" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <div className="min-h-screen bg-brand-darker text-brand-white" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
             <div className="grid min-h-screen lg:grid-cols-[345px_1fr]">
                 <LearnCourseSidebar
                     course={course}

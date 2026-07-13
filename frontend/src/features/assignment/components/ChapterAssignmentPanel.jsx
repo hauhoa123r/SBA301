@@ -15,7 +15,7 @@ export default function ChapterAssignmentPanel({ assignment, value, submitted, o
                     className="resize-none rounded-2xl border border-brand-border bg-brand-panel p-4 text-sm text-brand-white outline-none focus:border-brand-accent"
                 />
                 <div className="rounded-2xl border border-brand-border bg-brand-panel p-4">
-                    <p className="text-sm text-brand-courseMuted">Deadline</p>
+                    <p className="text-sm text-brand-courseMuted">Hạn nộp</p>
                     <p className="mt-1 text-2xl font-extrabold">{assignment.deadline_days} ngày</p>
                     <p className="mt-4 text-sm text-brand-courseMuted">File mẫu</p>
                     <p className="mt-1 truncate text-sm font-bold text-brand-accentSoft">{assignment.attachment_url || "Không có"}</p>

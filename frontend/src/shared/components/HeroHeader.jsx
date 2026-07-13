@@ -42,17 +42,17 @@ export default function HeroHeader() {
                 {user ? (
                     <div className="hidden md:flex items-center gap-3">
                         <NavLink to="/learning" className="bg-brand-accent hover:bg-brand-accentHover text-brand-white px-6 py-2 rounded-full text-sm font-medium no-underline transition-colors shadow-md shadow-brand-accent/25">
-                            Start Learning
+                            Bắt đầu học
                         </NavLink>
                         <UserProfileMenu />
                     </div>
                 ) : (
                     <div className="hidden md:flex items-center gap-3 text-sm font-medium">
                         <NavLink to="/login" className="text-brand-textSecondary hover:text-brand-accent px-4 py-2 border border-brand-accent/30 rounded-full no-underline transition-colors">
-                            Login
+                            Đăng nhập
                         </NavLink>
                         <NavLink to="/register" className="bg-brand-accent hover:bg-brand-accentHover text-brand-white px-6 py-2 rounded-full no-underline transition-colors shadow-md shadow-brand-accent/25">
-                            Get Started
+                            Bắt đầu ngay
                         </NavLink>
                     </div>
                 )}

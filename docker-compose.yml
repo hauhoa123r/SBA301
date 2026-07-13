@@ -1,46 +1,101 @@
 services:
   mysql:
+    image: devhoa/chinese-mysql:${IMAGE_TAG:-latest}
     build:
       context: ./database
       dockerfile: Dockerfile
     container_name: chinese-mysql
+
     environment:
-      MYSQL_ROOT_PASSWORD: 123456
-      MYSQL_DATABASE: chinese_online_learning
-      MYSQL_USER: chinese_app
-      MYSQL_PASSWORD: devhoa
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD is required}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:?MYSQL_DATABASE is required}
+      MYSQL_USER: ${MYSQL_USER:?MYSQL_USER is required}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?MYSQL_PASSWORD is required}
+
     volumes:
       - mysql_data:/var/lib/mysql
+
     networks:
       - chinese-net
+
     restart: unless-stopped
 
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD --silent"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
   backend:
+    image: devhoa/chinese-backend:${IMAGE_TAG:-latest}
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: chinese-backend
+
+    expose:
+      - "${SERVER_PORT:-8081}"
+
     environment:
-      DB_URL: jdbc:mysql://mysql:3306/chinese_online_learning
-      DB_USERNAME: chinese_app
-      DB_PASSWORD: devhoa
-      JWT_SECRET: your_jwt_secret_here
-      SERVER_PORT: 8081
+      DB_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE}
+      DB_USERNAME: ${MYSQL_USER:?MYSQL_USER is required}
+      DB_PASSWORD: ${MYSQL_PASSWORD:?MYSQL_PASSWORD is required}
+
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      SERVER_PORT: ${SERVER_PORT:-8081}
+
+      PAYOS_CLIENT_ID: ${PAYOS_CLIENT_ID:?PAYOS_CLIENT_ID is required}
+      PAYOS_API_KEY: ${PAYOS_API_KEY:?PAYOS_API_KEY is required}
+      PAYOS_CHECKSUM_KEY: ${PAYOS_CHECKSUM_KEY:?PAYOS_CHECKSUM_KEY is required}
+
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL:-}
+      MAIL_PROVIDER: ${MAIL_PROVIDER:-smtp}
+
+      SMTP_HOST: ${SMTP_HOST:?SMTP_HOST is required}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_AUTH: ${SMTP_AUTH:-true}
+      SMTP_STARTTLS_ENABLE: ${SMTP_STARTTLS_ENABLE:-true}
+      SMTP_USERNAME: ${SMTP_USERNAME:?SMTP_USERNAME is required}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:?SMTP_PASSWORD is required}
+
+      FRONTEND_PAYMENT_RESULT_URL: ${FRONTEND_PAYMENT_RESULT_URL:-https://edujar.site/payment/result}
+
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
+
     networks:
       - chinese-net
+
     restart: unless-stopped
 
   nginx:
+    image: devhoa/chinese-nginx:${IMAGE_TAG:-latest}
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: chinese-nginx
+
     ports:
-      - "800:80"
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - backend
     networks:
       - chinese-net
     restart: unless-stopped
+
+volumes:
+  mysql_data:
+
+networks:
+  chinese-net:
+    driver: bridge

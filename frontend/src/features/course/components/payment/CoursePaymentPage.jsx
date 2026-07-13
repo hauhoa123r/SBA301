@@ -22,17 +22,17 @@ export default function CoursePaymentPage({ course, amount, countdownSeconds, on
     const copyAll = () => {
         copyText(
             [
-                `Bank: ${paymentInfo.bankName}`,
-                `Account number: ${paymentInfo.accountNumber}`,
-                `Account name: ${paymentInfo.accountName}`,
-                `Amount: ${formatAmount(amount)}`,
-                `Transfer note: ${paymentInfo.transferContent}`,
+                `Ngân hàng: ${paymentInfo.bankName}`,
+                `Số tài khoản: ${paymentInfo.accountNumber}`,
+                `Tên tài khoản: ${paymentInfo.accountName}`,
+                `Số tiền: ${formatAmount(amount)}`,
+                `Nội dung chuyển khoản: ${paymentInfo.transferContent}`,
             ].join("\n"),
         );
     };
 
     return (
-        <div className="min-h-screen bg-brand-dark text-brand-textPrimary" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <div className="min-h-screen bg-brand-dark text-brand-textPrimary" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
             <div className="fixed inset-0 pointer-events-none">
                 <div className="absolute left-[-10%] top-[-20%] h-[500px] w-[500px] rounded-full bg-brand-accent/20 blur-[120px]" />
                 <div className="absolute bottom-[-18%] right-[-8%] h-[540px] w-[540px] rounded-full bg-brand-infoDeep/30 blur-[120px]" />
@@ -43,12 +43,12 @@ export default function CoursePaymentPage({ course, amount, countdownSeconds, on
                 <div className="mx-auto flex h-20 max-w-[1500px] items-center justify-between px-6">
                     <button type="button" onClick={onBack} className="inline-flex items-center gap-3 text-sm font-black uppercase tracking-wide text-brand-textSecondary transition hover:text-brand-white">
                         <ArrowLeft className="h-5 w-5" />
-                        Back
+                        Quay lại
                     </button>
 
                     <div className="inline-flex items-center gap-3 rounded-full border border-brand-accent/10 bg-brand-light px-5 py-3 text-sm font-bold text-brand-textSecondary shadow-lg shadow-brand-accent/5">
                         <Timer className="h-5 w-5 text-brand-accentSoft" />
-                        <span>Order expires in:</span>
+                        <span>Đơn hàng hết hạn sau:</span>
                         <span className="font-black text-brand-white">{formatCountdown(countdownSeconds)}</span>
                     </div>
 
@@ -63,11 +63,11 @@ export default function CoursePaymentPage({ course, amount, countdownSeconds, on
                     <p className="mx-auto mb-5 grid h-14 w-14 place-items-center rounded-2xl bg-brand-accent text-2xl font-black text-brand-white shadow-lg shadow-brand-accent/30">
                         QR
                     </p>
-                    <h1 className="text-3xl font-black text-brand-white md:text-5xl" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
-                        Scan the QR code to pay
+                    <h1 className="text-3xl font-black text-brand-white md:text-5xl" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
+                        Quét mã QR để thanh toán
                     </h1>
                     <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-brand-textSecondary md:text-lg">
-                        Open your banking app and scan the QR code. Make sure the transfer note is{" "}
+                        Mở ứng dụng ngân hàng và quét mã QR. Hãy đảm bảo nội dung chuyển khoản là{" "}
                         <span className="font-black text-brand-accentPale">{paymentInfo.transferContent}</span>.
                     </p>
                 </section>
@@ -75,26 +75,26 @@ export default function CoursePaymentPage({ course, amount, countdownSeconds, on
                 <section className="mt-10 grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
                     <div className="rounded-3xl border border-brand-accent/10 bg-brand-cardBg p-6 shadow-2xl shadow-brand-accent/10">
                         <div className="rounded-2xl bg-brand-white p-5">
-                            <img src={qrUrl} alt="MB Bank payment QR code" className="mx-auto aspect-square w-full max-w-[330px] object-contain" />
+                            <img src={qrUrl} alt="Mã QR thanh toán MB Bank" className="mx-auto aspect-square w-full max-w-[330px] object-contain" />
                         </div>
                         <a href={qrUrl} download className="mt-5 inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl border border-brand-accent/30 text-base font-black text-brand-accentPale transition hover:bg-brand-accent/10 hover:text-brand-white">
                             <Download className="h-5 w-5" />
-                            Download QR code
+                            Tải mã QR
                         </a>
                     </div>
 
                     <div className="overflow-hidden rounded-3xl border border-brand-accent/10 bg-brand-cardBg shadow-2xl shadow-brand-accent/10">
-                        <PaymentRow label="Course" value={course.title} />
-                        <PaymentRow label="Bank" value={paymentInfo.bankName} />
-                        <PaymentRow label="Account number" value={paymentInfo.accountNumber} copyValue={paymentInfo.accountNumber} onCopy={copyText} />
-                        <PaymentRow label="Account name" value={paymentInfo.accountName} />
-                        <PaymentRow label="Amount" value={formatAmount(amount)} copyValue={String(amount)} onCopy={copyText} />
-                        <PaymentRow label="Transfer note" value={paymentInfo.transferContent} copyValue={paymentInfo.transferContent} onCopy={copyText} highlight />
+                        <PaymentRow label="Khóa học" value={course.title} />
+                        <PaymentRow label="Ngân hàng" value={paymentInfo.bankName} />
+                        <PaymentRow label="Số tài khoản" value={paymentInfo.accountNumber} copyValue={paymentInfo.accountNumber} onCopy={copyText} />
+                        <PaymentRow label="Tên tài khoản" value={paymentInfo.accountName} />
+                        <PaymentRow label="Số tiền" value={formatAmount(amount)} copyValue={String(amount)} onCopy={copyText} />
+                        <PaymentRow label="Nội dung chuyển khoản" value={paymentInfo.transferContent} copyValue={paymentInfo.transferContent} onCopy={copyText} highlight />
 
                         <div className="border-t border-brand-accent/10 p-5">
                             <button type="button" onClick={copyAll} className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-brand-accent text-base font-black text-brand-white shadow-lg shadow-brand-accent/25 transition hover:bg-brand-accentHover">
                                 <Copy className="h-5 w-5" />
-                                Copy all
+                                Sao chép tất cả
                             </button>
                         </div>
                     </div>
@@ -102,7 +102,7 @@ export default function CoursePaymentPage({ course, amount, countdownSeconds, on
 
                 <div className="mx-auto mt-8 flex max-w-3xl items-start gap-3 rounded-2xl border border-brand-infoLight/20 bg-brand-info/10 p-5 text-sm font-semibold leading-6 text-brand-infoSoft">
                     <Info className="mt-0.5 h-5 w-5 shrink-0" />
-                    <p>If your order is not activated automatically after 5 minutes, please contact support and provide the transfer note {paymentInfo.transferContent}.</p>
+                    <p>Nếu đơn hàng chưa được kích hoạt tự động sau 5 phút, vui lòng liên hệ hỗ trợ và cung cấp nội dung chuyển khoản {paymentInfo.transferContent}.</p>
                 </div>
             </main>
 
@@ -110,7 +110,7 @@ export default function CoursePaymentPage({ course, amount, countdownSeconds, on
                 <div className="mx-auto flex max-w-[1500px] flex-col gap-3 px-6 py-5 text-sm font-semibold text-brand-textSecondary md:flex-row md:items-center md:justify-between">
                     <span className="inline-flex items-center gap-2">
                         <LockKeyhole className="h-4 w-4 text-status-success" />
-                        Secure payment by bank transfer
+                        Thanh toán an toàn bằng chuyển khoản ngân hàng
                     </span>
                     <span>MB Bank • {paymentInfo.accountNumber} • {paymentInfo.accountName}</span>
                 </div>

@@ -19,7 +19,7 @@ export default function LessonPanel({ lesson, isCompleted, onComplete, onQuiz })
                             className="inline-flex items-center gap-2 rounded-xl bg-brand-accent px-5 py-3 text-sm font-bold transition hover:bg-brand-accentHover"
                         >
                             {isCompleted ? <CheckCircle2 className="h-4 w-4" /> : <Check className="h-4 w-4" />}
-                            {isCompleted ? "Đã hoàn thành lesson" : "Đánh dấu hoàn thành"}
+                            {isCompleted ? "Đã hoàn thành bài học" : "Đánh dấu hoàn thành"}
                         </button>
                         <button
                             type="button"
@@ -27,7 +27,7 @@ export default function LessonPanel({ lesson, isCompleted, onComplete, onQuiz })
                             className="inline-flex items-center gap-2 rounded-xl border border-brand-scrollbar px-5 py-3 text-sm font-bold text-brand-textSoft transition hover:border-brand-accent hover:text-brand-white"
                         >
                             <ClipboardList className="h-4 w-4" />
-                            Làm quiz bài này
+                            Làm trắc nghiệm bài này
                         </button>
                     </div>
                 </div>

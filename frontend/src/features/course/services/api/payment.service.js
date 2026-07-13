@@ -1,5 +1,5 @@
 import api from "../../../../api/axios";
-import { API_PAYMENTS, PORT } from "../../../../api/apiPath";
+import { API_BASE_URL, API_PAYMENTS } from "../../../../api/apiPath";
 
 const getStoredUserId = () => {
   try {
@@ -12,7 +12,9 @@ const getStoredUserId = () => {
 
 const normalizeUrl = (url) => {
   if (!url) return "";
-  return url.startsWith("/api") ? `${PORT}${url}` : url;
+  return url.startsWith(API_BASE_URL)
+    ? new URL(url, window.location.origin).href
+    : url;
 };
 
 export const createPayment = async ({ courseId, provider, planId, couponCode }) => {

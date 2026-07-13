@@ -27,7 +27,7 @@ export default function ViewCoursesPage() {
                 }
             } catch (error) {
                 if (isMounted) {
-                    setErrorMessage(error.response?.data?.message || "Cannot load courses from server.");
+                    setErrorMessage(error.response?.data?.message || "Không thể tải danh sách khóa học từ máy chủ.");
                 }
             } finally {
                 if (isMounted) {
@@ -77,15 +77,15 @@ export default function ViewCoursesPage() {
     };
 
     return (
-        <section className="container mx-auto px-6 py-12 text-brand-textPrimary" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <section className="container mx-auto px-6 py-12 text-brand-textPrimary" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
                 <CourseSearchSection keyword={keyword} onKeywordChange={setKeyword} onSearch={handleSearch} />
 
                 <div className="mb-5 flex items-center justify-between text-sm text-brand-textSecondary">
                     <span>
-                        Showing {visibleCourses.length} of {filteredCourses.length} courses
+                        Hiển thị {visibleCourses.length} / {filteredCourses.length} khóa học
                     </span>
                     <span>
-                        Page {currentPage} / {totalPages}
+                        Trang {currentPage} / {totalPages}
                     </span>
                 </div>
 

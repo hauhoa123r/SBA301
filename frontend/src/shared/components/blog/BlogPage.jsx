@@ -3,27 +3,27 @@ import { BLOG_POSTS } from "../../services/blog/blog.mockup";
 
 export default function BlogPage() {
     return (
-        <section className="container mx-auto px-6 py-14 text-brand-textPrimary" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <section className="container mx-auto px-6 py-14 text-brand-textPrimary" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
                 <div className="mb-12 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                     <div className="max-w-2xl">
                         <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-brand-accent">
-                            Blog
+                            Bài viết
                         </p>
                         <h1
                             className="text-4xl font-extrabold text-brand-white md:text-5xl"
-                            style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}
+                            style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}
                         >
-                            Chinese learning tips and HSK study guides
+                            Mẹo học tiếng Trung và hướng dẫn ôn HSK
                         </h1>
                         <p className="mt-4 text-sm leading-6 text-brand-textSecondary md:text-base">
-                            Articles for learners building stronger Mandarin vocabulary, pronunciation, grammar, and exam confidence.
+                            Các bài viết giúp học viên củng cố từ vựng, phát âm, ngữ pháp tiếng Trung và tự tin hơn khi luyện thi.
                         </p>
                     </div>
 
                     <div className="relative w-full max-w-md">
                         <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-textSecondary" />
                         <input
-                            placeholder="Search articles..."
+                            placeholder="Tìm kiếm bài viết..."
                             className="h-12 w-full rounded-xl border border-brand-accent/20 bg-brand-light py-3 pl-11 pr-4 text-sm text-brand-white outline-none transition placeholder:text-brand-textSecondary/50 focus:border-brand-accent/60"
                         />
                     </div>
@@ -47,7 +47,7 @@ export default function BlogPage() {
                                 <span className="rounded-lg border border-brand-accent/20 bg-brand-accent/10 px-2.5 py-1 text-xs font-semibold text-brand-accentSoft">
                                     {post.category}
                                 </span>
-                                <h2 className="mt-4 min-h-16 text-xl font-bold leading-8 text-brand-white transition group-hover:text-brand-accentSoft" style={{ fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                                <h2 className="mt-4 min-h-16 text-xl font-bold leading-8 text-brand-white transition group-hover:text-brand-accentSoft" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
                                     {post.title}
                                 </h2>
                                 <p className="mt-3 min-h-18 text-sm leading-6 text-brand-textSecondary">{post.excerpt}</p>
@@ -64,7 +64,7 @@ export default function BlogPage() {
                                 </div>
 
                                 <button className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-brand-accentSoft transition hover:text-brand-white">
-                                    Read article
+                                    Đọc bài viết
                                     <ArrowRight className="h-4 w-4" />
                                 </button>
                             </div>
