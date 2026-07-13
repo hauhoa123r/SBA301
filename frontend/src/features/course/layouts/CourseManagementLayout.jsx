@@ -4,7 +4,7 @@ import useAuth from '../../../app/provider/useAuth';
 import TeacherHeader from '../../../shared/components/TeacherHeader';
 import TeacherSidebar from '../../../shared/components/TeacherSidebar';
 
-export default function TeacherLayout() {
+export default function CourseManagementLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const { user } = useAuth();
 

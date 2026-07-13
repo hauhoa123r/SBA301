@@ -14,6 +14,7 @@ import StudentReviewsPage from '../pages/management/StudentReviewsPage';
 import CreateCoursePage from '../pages/management/CreateCoursePage';
 import EditCoursePage from '../pages/management/EditCoursePage';
 import CurriculumDesignPage from '../pages/management/CurriculumDesignPage';
+
 export const courseRoutes = [
     {
         path: "/",
@@ -52,7 +53,7 @@ export const courseRoutes = [
 export const managementCourseRoutes = [
     {
         path: "/management",
-        element: <CourseManagementLayout />, // Tạm thời chưa bọc ProtectedRoute
+        element: <CourseManagementLayout />,
         children: [
             { index: true, element: <Navigate to="dashboard" replace /> },
             { path: 'dashboard', element: <CourseDashboardPage /> },

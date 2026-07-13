@@ -11,7 +11,7 @@ const formatPrice = (price) => {
 
 const IMAGE_FALLBACK = '/images/image_404.png';
 
-export default function CourseCard({ course, onEdit, onDesignCurriculum }) {
+export default function ManageCourseCard({ course, onEdit, onDesignCurriculum }) {
   return (
     <div className="bg-brand-panel rounded-xl border border-brand-borderSoft overflow-hidden hover:shadow-xl hover:shadow-black/15 hover:border-brand-borderHover transition-all duration-300 group flex flex-col">
       {/* Image Header */}
