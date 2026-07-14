@@ -10,6 +10,7 @@ import com.app.features.auth.service.PasswordResetService;
 import com.app.utils.ApiPath;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,12 +20,14 @@ import java.util.Map;
 @RestController
 @RequestMapping(ApiPath.API_AUTH)
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
     private final AuthService authService;
     private final PasswordResetService passwordResetService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest user){
+        log.info("Login request received for email: {}", user.getEmail());
         LoginResponse loginResponse = authService.IsExistUser(user);
         return ResponseEntity.ok(loginResponse);
     }
