@@ -7,8 +7,12 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.type.SqlTypes;
+
+import java.util.Map;
 
 @Getter
 @Setter
@@ -45,5 +49,7 @@ public class StudentAnswerEntity {
     @Column(name = "is_correct")
     private Boolean isCorrect;
 
-
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "student_response")
+    private Map<String, Object> studentResponse;
 }

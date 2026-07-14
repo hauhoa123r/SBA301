@@ -9,7 +9,7 @@ export default function CourseHero({ course, progress, completedCount, totalActi
                     <div className="flex min-w-0 items-center gap-5">
                         <div className="grid h-[70px] w-[70px] shrink-0 place-items-center rounded-2xl border border-brand-white/10 bg-brand-accentHover text-4xl font-black">汉</div>
                         <div className="min-w-0 flex-1">
-                            <h2 className="truncate text-2xl font-extrabold md:text-3xl">{course.displayTitle}</h2>
+                            <h2 className="truncate text-2xl font-extrabold md:text-3xl">{course.displayTitle || course.title}</h2>
                             <p className="mt-2 text-sm text-brand-heroMuted">
                                 GV: {course.teacherName} · {course.chapters.length} chương · {totalActivities} hoạt động
                             </p>

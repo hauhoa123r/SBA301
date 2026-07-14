@@ -115,7 +115,9 @@ function SessionCard({ session, index }) {
             <h4 className="mt-5 line-clamp-1 text-sm font-bold text-brand-white">{session.lesson.title}</h4>
             <p className="mt-2 text-xs text-brand-textSecondary">Chương {session.chapter.order_index}: {session.chapter.title}</p>
             <span className="mt-4 inline-flex rounded-full border border-brand-accent/20 bg-brand-menu px-3 py-1 text-xs font-semibold text-brand-accentPale">
-                {quizTypeLabels[session.lesson.quiz.type] || session.lesson.quiz.type.replace("_", " ")}
+                {session.lesson.quiz 
+                    ? (quizTypeLabels[session.lesson.quiz.type] || session.lesson.quiz.type.replace("_", " "))
+                    : "Lý thuyết & Thực hành"}
             </span>
         </Link>
     );

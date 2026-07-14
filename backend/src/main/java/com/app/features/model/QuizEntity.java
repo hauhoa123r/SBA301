@@ -27,9 +27,7 @@ public class QuizEntity {
     @Column(nullable = false)
     private String title;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 30)
-    private QuizType type;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lesson_id")

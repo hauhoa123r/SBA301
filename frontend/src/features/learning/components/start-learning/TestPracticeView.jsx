@@ -6,7 +6,7 @@ export default function TestPracticeView({ course, firstLesson }) {
         id: chapter.id,
         title: `Bài kiểm tra chương ${chapter.order_index}`,
         description: `Ôn tập ${chapter.title.toLowerCase()} bằng bài trắc nghiệm tổng hợp và bài nghe ngắn.`,
-        questions: chapter.lessons.reduce((total, lesson) => total + lesson.quiz.questions.length, 0) + 5,
+        questions: chapter.lessons.reduce((total, lesson) => total + (lesson.quiz?.questions?.length || 0), 0) + 5,
         status: chapter.order_index <= 2 ? "Đã mở" : "Đã khóa",
     }));
 

@@ -17,6 +17,7 @@ export const API_LESSON_DOCUMENTS = `${API_BASE_URL}/lesson-documents`;
 export const API_LESSON_PROGRESS = `${API_BASE_URL}/lesson-progress`;
 export const API_LESSON_QA = `${API_BASE_URL}/lesson-qa`;
 export const API_PAYMENTS = `${API_BASE_URL}/payments`;
+export const API_LEARNING = `${API_BASE_URL}/learning`;
 export const API_COUPON = `${API_BASE_URL}/coupon`;
 export const API_PLANS = `${API_BASE_URL}/plans`;
 export const API_SUBSCRIPTIONS = `${API_BASE_URL}/subscriptions`;
@@ -41,6 +42,7 @@ export const apiPath = {
   lessonProgress: API_LESSON_PROGRESS,
   lessonQa: API_LESSON_QA,
   payments: API_PAYMENTS,
+  learning: API_LEARNING,
   coupon: API_COUPON,
   plans: API_PLANS,
   subscriptions: API_SUBSCRIPTIONS,
