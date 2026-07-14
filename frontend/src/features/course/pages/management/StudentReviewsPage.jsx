@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Star, MessageSquare, Filter } from 'lucide-react';
-import teacherService from '../service/teacherService';
+import teacherService from '@/features/course/services/api/courseManagementService';
 
 export default function StudentReviewsPage() {
   const [reviews, setReviews] = useState([]);

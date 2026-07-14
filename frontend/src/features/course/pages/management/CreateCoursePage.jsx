@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import CourseForm from '../components/course-form/CourseForm';
-import teacherService from '../service/teacherService';
+import CourseForm from '@/features/course/components/management/course-form/CourseForm';
+import teacherService from '@/features/course/services/api/courseManagementService';
 
 export default function CreateCoursePage() {
   const navigate = useNavigate();

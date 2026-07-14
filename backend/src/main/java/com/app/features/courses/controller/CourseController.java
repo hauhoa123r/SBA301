@@ -5,6 +5,7 @@ import com.app.features.courses.dto.response.CourseCatalogResponse;
 import com.app.features.courses.dto.response.CourseDetailResponse;
 import com.app.features.courses.service.ICourseService;
 import com.app.utils.ApiPath;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +36,7 @@ public class CourseController {
     }
 
     @PostMapping
-    public ResponseEntity<Long> getCourseByTeacherId(@RequestBody CourseRequest courseRequest) {
+    public ResponseEntity<Long> getCourseByTeacherId(@Valid @RequestBody CourseRequest courseRequest) {
         // Xử lí lấy id ở token sau
         // Tạm thời hard code id
         return ResponseEntity.ok(courseService.createCourse(courseRequest, 4l));

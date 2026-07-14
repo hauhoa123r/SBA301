@@ -4,7 +4,7 @@ import useAuth from '../../../app/provider/useAuth';
 import TeacherHeader from '../../../shared/components/TeacherHeader';
 import TeacherSidebar from '../../../shared/components/TeacherSidebar';
 
-export default function TeacherLayout() {
+export default function CourseManagementLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const { user } = useAuth();
 
@@ -13,7 +13,7 @@ export default function TeacherLayout() {
   const avatarInitial = displayName.charAt(0).toUpperCase();
 
   return (
-    <div className="min-h-screen bg-brand-dark flex">
+    <div className="h-screen bg-brand-dark flex">
       <TeacherSidebar sidebarOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="flex-1 flex flex-col min-h-screen">

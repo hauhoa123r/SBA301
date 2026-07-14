@@ -14,4 +14,6 @@ public interface ICourseService {
     List<CourseDetailResponse> getAllCourseByTeacherId(Long teacherId);
 
     Long createCourse(CourseRequest course, Long teacherId);
+
+
 }

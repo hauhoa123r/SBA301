@@ -1,5 +1,6 @@
 package com.app.features.courses.service.impl;
 
+import com.app.exception.BadRequestException;
 import com.app.exception.ResourceNotFoundException;
 import com.app.features.categories.service.ICategoryService;
 import com.app.features.courses.converter.CourseResponseConverter;
@@ -13,7 +14,7 @@ import com.app.features.model.*;
 import com.app.features.model.enums.CourseStatus;
 import com.app.features.plans.service.IPlanService;
 import com.app.features.tags.service.ITagService;
-import com.app.features.user.repository.IUserRepository;
+import com.app.features.users.repository.IUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,7 +71,9 @@ public class CourseService implements ICourseService {
         UserEntity teacher = userRepository.findById(teacherId).orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + teacherId));
 
         CategoryEntity category = categoryService.findCategoryById(request.getCategoryId());
-
+        if (category == null) {
+            throw new ResourceNotFoundException("Category not found with id: " + request.getCategoryId());
+        }
         CourseEntity course = new  CourseEntity();
         course.setTitle(request.getTitle());
         course.setTeacher(teacher);
@@ -91,13 +94,12 @@ public class CourseService implements ICourseService {
             for(PlanEntity plan : plans) {
                 course.addPlan(plan);
             }
+        } else{
+            throw new BadRequestException("Please choose at least one plan.");
         }
 
         return courseRepository.save(course).getId();
     }
-
-
-
 
     private Map<Long, CourseLessonStats> getLessonStatsByCourseId(List<CourseEntity> courses) {
         List<Long> courseIds = courses.stream().map(CourseEntity::getId).filter(Objects::nonNull).toList();

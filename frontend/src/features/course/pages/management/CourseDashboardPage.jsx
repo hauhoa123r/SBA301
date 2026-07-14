@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { DollarSign, TrendingUp, Users, Award } from 'lucide-react';
-import teacherService from '../service/teacherService';
+import teacherService from '@/features/course/services/api/courseManagementService';
 
-export default function TeacherDashboardPage() {
+export default function CourseDashboardPage() {
   const [stats, setStats] = useState({
     totalRevenue: 0,
     totalStudents: 0,

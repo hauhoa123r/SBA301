@@ -21,11 +21,11 @@ public interface ICourseRepository extends JpaRepository<CourseEntity,Long> {
     @EntityGraph(attributePaths = {"teacher", "category", "plans", "courseEnrollments", "chapterEntities"})
     Optional<CourseEntity> findById(Long id);
 
-    @Query("SELECT c FROM CourseEntity c " +
-            "JOIN FETCH c.category " +
-            "JOIN FETCH c.teacher " +
-            "WHERE c.teacher.id = :teacherId " +
-            "ORDER BY c.createdAt DESC")
+    @Query("select c from CourseEntity c " +
+            "join fetch c.category " +
+            "join fetch c.teacher " +
+            "where c.teacher.id = :teacherId " +
+            "order by c.createdAt DESC")
     List<CourseEntity> findAllByTeacherId(Long teacherId);
 
     @Query("""

@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import authRoutes from "../../features/auth/routes/authRoutes";
-import courseRoutes from "../../features/course/routes/courseRoutes";
+import {courseRoutes, managementCourseRoutes} from "../../features/course/routes/courseRoutes";
 import errorRoutes from "../../shared/routes/errorRoutes";
 import NotFoundPage from "../../shared/pages/NotFoundPage";
 import userRoutes from "../../features/user/routes/UserRouters";
@@ -9,7 +9,6 @@ import managerRoutes from "../../features/manager/routes/managerRoutes";
 import moderatorRoutes from "../../features/moderator/routes/moderatorRoutes";
 import reportRoutes from "../../features/report/routes/reportRoutes";
 import MainLayout from "../../shared/layouts/MainLayout";
-import teacherRoutes from "../../features/teacher/routes/teacherRoutes";
 import transactionRoutes from "../../features/transaction/routes/transactionRoutes";
 
 function renderRoute(route) {
@@ -42,7 +41,7 @@ function AppRoutes() {
         </Route>
 
         {learningRoutes.map((route) => renderRoute(route))}
-        {teacherRoutes.map((route) => renderRoute(route))}
+        {managementCourseRoutes.map((route) => renderRoute(route))}
         {moderatorRoutes.map((route) => renderRoute(route))}
         {reportRoutes.map((route) => renderRoute(route))}
         {transactionRoutes.map((route) => renderRoute(route))}
