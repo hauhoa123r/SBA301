@@ -140,6 +140,31 @@ CREATE TABLE lessons (
     CONSTRAINT fk_lessons_chapter FOREIGN KEY (chapter_id) REFERENCES chapters(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE vocabularies (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    lesson_id BIGINT NOT NULL,
+    hanzi VARCHAR(255) NOT NULL,
+    pinyin VARCHAR(255) NOT NULL,
+    vietnamese_meaning VARCHAR(255) NOT NULL,
+    image_url VARCHAR(500) NULL,
+    audio_url VARCHAR(500) NULL,
+    order_index INT NOT NULL,
+    CONSTRAINT fk_vocabularies_lesson FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE sentence_patterns (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    lesson_id BIGINT NOT NULL,
+    vocabulary_id BIGINT NULL,
+    chinese_text VARCHAR(500) NOT NULL,
+    pinyin_text VARCHAR(500) NOT NULL,
+    vietnamese_meaning VARCHAR(500) NOT NULL,
+    audio_url VARCHAR(500) NULL,
+    order_index INT NOT NULL,
+    CONSTRAINT fk_sentence_patterns_lesson FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE CASCADE,
+    CONSTRAINT fk_sentence_patterns_vocabulary FOREIGN KEY (vocabulary_id) REFERENCES vocabularies(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE lesson_documents (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     lesson_id BIGINT NOT NULL,
@@ -157,7 +182,6 @@ CREATE TABLE lesson_documents (
 CREATE TABLE quizzes (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
-    type ENUM('SINGLE_CHOICE', 'MULTIPLE_CHOICE', 'FILL_IN_BLANK', 'MATCHING', 'LISTENING', 'HSK_MOCK') NOT NULL,
     lesson_id BIGINT NULL,
     chapter_id BIGINT NULL,
     time_limit_minutes INT NOT NULL DEFAULT 0,
@@ -170,10 +194,13 @@ CREATE TABLE quizzes (
 CREATE TABLE questions (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     quiz_id BIGINT NOT NULL,
+    question_type VARCHAR(30) NOT NULL,
     content TEXT NOT NULL,
     audio_url VARCHAR(500) NULL,
     points INT NOT NULL DEFAULT 10,
     order_index INT NOT NULL,
+    meta_data JSON NULL,
+    explanation TEXT NULL,
     CONSTRAINT fk_questions_quiz FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -183,6 +210,7 @@ CREATE TABLE answers (
     content TEXT NOT NULL,
     is_correct BOOLEAN DEFAULT FALSE,
     matching_pair TEXT NULL,
+    order_index INT NOT NULL DEFAULT 0,
     CONSTRAINT fk_answers_question FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -243,6 +271,7 @@ CREATE TABLE student_answers (
     selected_answer_id BIGINT NULL,
     input_text TEXT NULL,
     is_correct BOOLEAN DEFAULT FALSE,
+    student_response JSON NULL,
     CONSTRAINT fk_sa_attempt FOREIGN KEY (attempt_id) REFERENCES quiz_attempts(id) ON DELETE CASCADE,
     CONSTRAINT fk_sa_question FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE,
     CONSTRAINT fk_sa_answer FOREIGN KEY (selected_answer_id) REFERENCES answers(id) ON DELETE SET NULL
@@ -518,28 +547,6 @@ CREATE TABLE referrals (
     CONSTRAINT uk_referred_user UNIQUE (referred_user_id),
     CONSTRAINT fk_referrals_referrer FOREIGN KEY (referrer_id) REFERENCES users(id),
     CONSTRAINT fk_referrals_referred FOREIGN KEY (referred_user_id) REFERENCES users(id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-CREATE TABLE IF NOT EXISTS user_lesson_progress (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id BIGINT NOT NULL,
-    lesson_id BIGINT NOT NULL,
-    current_time_seconds INT NOT NULL DEFAULT 0,
-    is_completed BOOLEAN NOT NULL DEFAULT FALSE,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT uk_user_lesson_progress UNIQUE (user_id, lesson_id),
-    CONSTRAINT fk_ulp_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    CONSTRAINT fk_ulp_lesson FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS user_quiz_attempts (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id BIGINT NOT NULL,
-    quiz_id BIGINT NOT NULL,
-    score INT NOT NULL,
-    is_passed BOOLEAN NOT NULL DEFAULT FALSE,
-    attempt_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_uqa_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    CONSTRAINT fk_uqa_quiz FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 -- ==========================================
 -- 11. INDEXING TỐI ƯU TRUY VẤN

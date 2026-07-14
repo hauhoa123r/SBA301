@@ -1,121 +1,6 @@
 USE chinese_online_learning;
 
--- Compatibility tables for databases created from an older schema snapshot.
--- These match the current JPA entities and the latest chinese_online_learning.sql.
--- Preflight: this seed expects the latest chinese_online_learning.sql schema.
--- If this query reports any missing table, run chinese_online_learning.sql first,
--- then run this seed file again.
-SELECT 'Missing required table. Run chinese_online_learning.sql before this seed.' AS seed_error,
-       required_tables.table_name
-FROM (
-    SELECT 'roles' AS table_name UNION ALL
-    SELECT 'permissions' UNION ALL
-    SELECT 'categories' UNION ALL
-    SELECT 'tags' UNION ALL
-    SELECT 'plans' UNION ALL
-    SELECT 'users' UNION ALL
-    SELECT 'verification_tokens' UNION ALL
-    SELECT 'user_roles' UNION ALL
-    SELECT 'role_permissions' UNION ALL
-    SELECT 'courses' UNION ALL
-    SELECT 'course_plan_access' UNION ALL
-    SELECT 'course_tags' UNION ALL
-    SELECT 'chapters' UNION ALL
-    SELECT 'lessons' UNION ALL
-    SELECT 'lesson_documents' UNION ALL
-    SELECT 'quizzes' UNION ALL
-    SELECT 'questions' UNION ALL
-    SELECT 'answers' UNION ALL
-    SELECT 'assignments' UNION ALL
-    SELECT 'course_enrollments' UNION ALL
-    SELECT 'lesson_progress' UNION ALL
-    SELECT 'quiz_attempts' UNION ALL
-    SELECT 'student_answers' UNION ALL
-    SELECT 'user_chapter_progress' UNION ALL
-    SELECT 'user_lesson_progress' UNION ALL
-    SELECT 'assignment_submissions' UNION ALL
-    SELECT 'certificates' UNION ALL
-    SELECT 'coupons' UNION ALL
-    SELECT 'subscriptions' UNION ALL
-    SELECT 'invoices' UNION ALL
-    SELECT 'payments' UNION ALL
-    SELECT 'refunds' UNION ALL
-    SELECT 'audit_logs' UNION ALL
-    SELECT 'notifications' UNION ALL
-    SELECT 'reports' UNION ALL
-    SELECT 'user_streaks' UNION ALL
-    SELECT 'badges' UNION ALL
-    SELECT 'user_badges' UNION ALL
-    SELECT 'course_reviews' UNION ALL
-    SELECT 'lesson_qa' UNION ALL
-    SELECT 'referrals'
-) required_tables
-LEFT JOIN information_schema.tables existing_tables
-    ON existing_tables.table_schema = DATABASE()
-   AND existing_tables.table_name = required_tables.table_name
-WHERE existing_tables.table_name IS NULL;
-
-SELECT 'Schema preflight finished. If the previous result is empty, required tables are present.' AS seed_info;
-
-SET FOREIGN_KEY_CHECKS = 0;
-
-TRUNCATE TABLE referrals;
-TRUNCATE TABLE lesson_qa;
-TRUNCATE TABLE course_reviews;
-TRUNCATE TABLE user_badges;
-TRUNCATE TABLE badges;
-TRUNCATE TABLE user_streaks;
-TRUNCATE TABLE reports;
-TRUNCATE TABLE notifications;
-TRUNCATE TABLE audit_logs;
-TRUNCATE TABLE refunds;
-TRUNCATE TABLE payments;
-TRUNCATE TABLE invoices;
-TRUNCATE TABLE subscriptions;
-TRUNCATE TABLE coupons;
-TRUNCATE TABLE certificates;
-TRUNCATE TABLE assignment_submissions;
-SET @user_quiz_attempts_exists = (
-    SELECT COUNT(*)
-    FROM information_schema.tables
-    WHERE table_schema = DATABASE()
-      AND table_name = 'user_quiz_attempts'
-);
-SET @sql = IF(
-    @user_quiz_attempts_exists > 0,
-    'TRUNCATE TABLE user_quiz_attempts',
-    'SELECT ''Skipping user_quiz_attempts truncate: table does not exist in this database.'' AS seed_warning'
-);
-PREPARE stmt FROM @sql;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
-TRUNCATE TABLE user_lesson_progress;
-TRUNCATE TABLE user_chapter_progress;
-TRUNCATE TABLE student_answers;
-TRUNCATE TABLE quiz_attempts;
-TRUNCATE TABLE lesson_progress;
-TRUNCATE TABLE course_enrollments;
-TRUNCATE TABLE assignments;
-TRUNCATE TABLE answers;
-TRUNCATE TABLE questions;
-TRUNCATE TABLE quizzes;
-TRUNCATE TABLE lesson_documents;
-TRUNCATE TABLE lessons;
-TRUNCATE TABLE chapters;
-TRUNCATE TABLE course_tags;
-TRUNCATE TABLE course_plan_access;
-TRUNCATE TABLE courses;
-TRUNCATE TABLE verification_tokens;
-TRUNCATE TABLE role_permissions;
-TRUNCATE TABLE user_roles;
-TRUNCATE TABLE users;
-TRUNCATE TABLE plans;
-TRUNCATE TABLE tags;
-TRUNCATE TABLE categories;
-TRUNCATE TABLE permissions;
-TRUNCATE TABLE roles;
-
-SET FOREIGN_KEY_CHECKS = 1;
+SET NAMES utf8mb4;
 
 -- =========================================================
 -- Seed data for Chinese Online Learning
@@ -303,46 +188,46 @@ INSERT INTO lesson_documents (id, lesson_id, title, file_url, created_at) VALUES
 (8, 29, 'Transcript nghe chu de an uong', 'https://cdn.chineselearning.vn/docs/nghe-an-uong.pdf', '2026-03-07 09:00:00');
 
 -- 16. quizzes
-INSERT INTO quizzes (id, title, type, lesson_id, chapter_id, time_limit_minutes, pass_score, created_at) VALUES
-(1, 'Quiz Pinyin co ban', 'SINGLE_CHOICE', 1, NULL, 10, 60, '2026-02-10 10:00:00'),
-(2, 'Quiz chao hoi nhieu dap an', 'MULTIPLE_CHOICE', 2, NULL, 12, 60, '2026-02-10 10:10:00'),
-(3, 'Dien tu vung so dem', 'FILL_IN_BLANK', 6, NULL, 10, 70, '2026-02-12 10:00:00'),
-(4, 'Noi tu HSK 1', 'MATCHING', NULL, 4, 15, 70, '2026-02-12 10:10:00'),
-(5, 'Nghe hieu HSK 2 tranh anh', 'LISTENING', 11, NULL, 20, 70, '2026-02-14 10:00:00'),
-(6, 'De mo phong HSK 1', 'HSK_MOCK', NULL, 4, 35, 60, '2026-02-12 11:00:00'),
-(7, 'Quiz tu vung nha may', 'SINGLE_CHOICE', 13, NULL, 10, 60, '2026-02-16 10:00:00'),
-(8, 'Quiz bao cao su co', 'LISTENING', 15, NULL, 15, 70, '2026-02-16 10:10:00'),
-(9, 'Quiz email thuong mai', 'FILL_IN_BLANK', 18, NULL, 15, 70, '2026-03-01 10:00:00'),
-(10, 'Noi cap thanh dieu Pinyin', 'MATCHING', 23, NULL, 10, 70, '2026-03-03 10:00:00'),
-(11, 'Quiz nghe chu de an uong', 'LISTENING', 29, NULL, 15, 70, '2026-03-07 10:00:00'),
-(12, 'Quiz phan xa dat mon', 'MULTIPLE_CHOICE', 32, NULL, 12, 60, '2026-03-07 10:10:00');
+INSERT INTO quizzes (id, title, lesson_id, chapter_id, time_limit_minutes, pass_score, created_at) VALUES
+(1, 'Quiz Pinyin co ban', 1, NULL, 10, 60, '2026-02-10 10:00:00'),
+(2, 'Quiz chao hoi nhieu dap an', 2, NULL, 12, 60, '2026-02-10 10:10:00'),
+(3, 'Dien tu vung so dem', 6, NULL, 10, 70, '2026-02-12 10:00:00'),
+(4, 'Noi tu HSK 1', NULL, 4, 15, 70, '2026-02-12 10:10:00'),
+(5, 'Nghe hieu HSK 2 tranh anh', 11, NULL, 20, 70, '2026-02-14 10:00:00'),
+(6, 'De mo phong HSK 1', NULL, 4, 35, 60, '2026-02-12 11:00:00'),
+(7, 'Quiz tu vung nha may', 13, NULL, 10, 60, '2026-02-16 10:00:00'),
+(8, 'Quiz bao cao su co', 15, NULL, 15, 70, '2026-02-16 10:10:00'),
+(9, 'Quiz email thuong mai', 18, NULL, 15, 70, '2026-03-01 10:00:00'),
+(10, 'Noi cap thanh dieu Pinyin', 23, NULL, 10, 70, '2026-03-03 10:00:00'),
+(11, 'Quiz nghe chu de an uong', 29, NULL, 15, 70, '2026-03-07 10:00:00'),
+(12, 'Quiz phan xa dat mon', 32, NULL, 12, 60, '2026-03-07 10:10:00');
 
 -- 17. questions
-INSERT INTO questions (id, quiz_id, content, audio_url, points, order_index) VALUES
-(1, 1, 'Chu cai pinyin nao doc gan giong am "ma" voi thanh ngang?', NULL, 10, 1),
-(2, 1, 'Thanh dieu thu ba trong tieng Trung co duong net nao?', NULL, 10, 2),
-(3, 2, 'Nhung cau nao co the dung de chao hoi lich su?', NULL, 10, 1),
-(4, 2, 'Nhung cau nao dung de gioi thieu ten?', NULL, 10, 2),
-(5, 3, 'Dien pinyin cho so 8: ___', NULL, 10, 1),
-(6, 3, 'Dien tieng Trung pinyin cho "hom nay": ___', NULL, 10, 2),
-(7, 4, 'Noi tu tieng Trung voi nghia tieng Viet tuong ung.', NULL, 10, 1),
-(8, 4, 'Noi cum tu hoi dap HSK 1 voi chuc nang giao tiep.', NULL, 10, 2),
-(9, 5, 'Nghe audio va chon noi dung nguoi noi muon mua.', 'https://cdn.chineselearning.vn/audio/hsk2-shopping-001.mp3', 10, 1),
-(10, 5, 'Nghe audio va chon thoi gian hen gap.', 'https://cdn.chineselearning.vn/audio/hsk2-time-002.mp3', 10, 2),
-(11, 6, 'Trong HSK 1, "wo" nghia la gi?', NULL, 10, 1),
-(12, 6, 'Chon cau dung de hoi "ban la ai?"', NULL, 10, 2),
-(13, 7, 'An toan lao dong trong tieng Trung thuong noi la gi?', NULL, 10, 1),
-(14, 7, 'Tu nao lien quan den "may moc"?', NULL, 10, 2),
-(15, 8, 'Nghe audio va chon su co duoc bao cao.', 'https://cdn.chineselearning.vn/audio/factory-incident-001.mp3', 10, 1),
-(16, 8, 'Nghe audio va chon hanh dong can lam tiep theo.', 'https://cdn.chineselearning.vn/audio/factory-action-002.mp3', 10, 2),
-(17, 9, 'Dien tu con thieu trong cau email: Qing ___ huiyi shijian.', NULL, 10, 1),
-(18, 9, 'Dien tu phu hop: Wo xiang ___ yixia baojia.', NULL, 10, 2),
-(19, 10, 'Noi thanh dieu voi ky hieu dung.', NULL, 10, 1),
-(20, 10, 'Noi bien dieu voi vi du dung.', NULL, 10, 2),
-(21, 11, 'Nghe audio va chon mon an duoc goi.', 'https://cdn.chineselearning.vn/audio/food-001.mp3', 10, 1),
-(22, 11, 'Nghe audio va chon do uong duoc nhac den.', 'https://cdn.chineselearning.vn/audio/drink-002.mp3', 10, 2),
-(23, 12, 'Nhung cau nao dung khi goi mon?', NULL, 10, 1),
-(24, 12, 'Nhung cau nao dung de yeu cau thanh toan?', NULL, 10, 2);
+INSERT INTO questions (id, quiz_id, question_type, content, audio_url, points, order_index) VALUES
+(1, 1, 'SINGLE_CHOICE', 'Chu cai pinyin nao doc gan giong am "ma" voi thanh ngang?', NULL, 10, 1),
+(2, 1, 'SINGLE_CHOICE', 'Thanh dieu thu ba trong tieng Trung co duong net nao?', NULL, 10, 2),
+(3, 2, 'MULTIPLE_CHOICE', 'Nhung cau nao co the dung de chao hoi lich su?', NULL, 10, 1),
+(4, 2, 'MULTIPLE_CHOICE', 'Nhung cau nao dung de gioi thieu ten?', NULL, 10, 2),
+(5, 3, 'FILL_IN_BLANK', 'Dien pinyin cho so 8: ___', NULL, 10, 1),
+(6, 3, 'FILL_IN_BLANK', 'Dien tieng Trung pinyin cho "hom nay": ___', NULL, 10, 2),
+(7, 4, 'MATCHING', 'Noi tu tieng Trung voi nghia tieng Viet tuong ung.', NULL, 10, 1),
+(8, 4, 'MATCHING', 'Noi cum tu hoi dap HSK 1 voi chuc nang giao tiep.', NULL, 10, 2),
+(9, 5, 'LISTENING_CHOICE', 'Nghe audio va chon noi dung nguoi noi muon mua.', 'https://cdn.chineselearning.vn/audio/hsk2-shopping-001.mp3', 10, 1),
+(10, 5, 'LISTENING_CHOICE', 'Nghe audio va chon thoi gian hen gap.', 'https://cdn.chineselearning.vn/audio/hsk2-time-002.mp3', 10, 2),
+(11, 6, 'SINGLE_CHOICE', 'Trong HSK 1, "wo" nghia la gi?', NULL, 10, 1),
+(12, 6, 'SINGLE_CHOICE', 'Chon cau dung de hoi "ban la ai?"', NULL, 10, 2),
+(13, 7, 'SINGLE_CHOICE', 'An toan lao dong trong tieng Trung thuong noi la gi?', NULL, 10, 1),
+(14, 7, 'SINGLE_CHOICE', 'Tu nao lien quan den "may moc"?', NULL, 10, 2),
+(15, 8, 'LISTENING_CHOICE', 'Nghe audio va chon su co duoc bao cao.', 'https://cdn.chineselearning.vn/audio/factory-incident-001.mp3', 10, 1),
+(16, 8, 'LISTENING_CHOICE', 'Nghe audio va chon hanh dong can lam tiep theo.', 'https://cdn.chineselearning.vn/audio/factory-action-002.mp3', 10, 2),
+(17, 9, 'FILL_IN_BLANK', 'Dien tu con thieu trong cau email: Qing ___ huiyi shijian.', NULL, 10, 1),
+(18, 9, 'FILL_IN_BLANK', 'Dien tu phu hop: Wo xiang ___ yixia baojia.', NULL, 10, 2),
+(19, 10, 'MATCHING', 'Noi thanh dieu voi ky hieu dung.', NULL, 10, 1),
+(20, 10, 'MATCHING', 'Noi bien dieu voi vi du dung.', NULL, 10, 2),
+(21, 11, 'LISTENING_CHOICE', 'Nghe audio va chon mon an duoc goi.', 'https://cdn.chineselearning.vn/audio/food-001.mp3', 10, 1),
+(22, 11, 'LISTENING_CHOICE', 'Nghe audio va chon do uong duoc nhac den.', 'https://cdn.chineselearning.vn/audio/drink-002.mp3', 10, 2),
+(23, 12, 'MULTIPLE_CHOICE', 'Nhung cau nao dung khi goi mon?', NULL, 10, 1),
+(24, 12, 'MULTIPLE_CHOICE', 'Nhung cau nao dung de yeu cau thanh toan?', NULL, 10, 2);
 
 -- 18. answers
 INSERT INTO answers (id, question_id, content, is_correct, matching_pair) VALUES
@@ -509,28 +394,15 @@ INSERT INTO user_lesson_progress (id, user_id, lesson_id, current_time_seconds, 
 (14, 15, 5, 420, FALSE, '2026-05-16 08:00:00');
 
 -- 26. user_quiz_attempts
-SET @user_quiz_attempts_exists = (
-    SELECT COUNT(*)
-    FROM information_schema.tables
-    WHERE table_schema = DATABASE()
-      AND table_name = 'user_quiz_attempts'
-);
-SET @sql = IF(
-    @user_quiz_attempts_exists > 0,
-    'INSERT INTO user_quiz_attempts (id, user_id, quiz_id, score, is_passed, attempt_date) VALUES
-(1, 7, 1, 90, TRUE, ''2026-03-02 09:08:00''),
-(2, 7, 2, 80, TRUE, ''2026-03-03 09:10:00''),
-(3, 8, 1, 40, FALSE, ''2026-03-05 09:05:00''),
-(4, 9, 3, 100, TRUE, ''2026-03-12 09:07:00''),
-(5, 10, 7, 20, FALSE, ''2026-03-13 09:05:00''),
-(6, 11, 6, 85, TRUE, ''2026-04-02 09:30:00''),
-(7, 11, 11, 75, TRUE, ''2026-05-06 09:12:00''),
-(8, 12, 8, 70, TRUE, ''2026-04-03 09:14:00'')',
-    'SELECT ''Skipping user_quiz_attempts insert: table does not exist in this database.'' AS seed_warning'
-);
-PREPARE stmt FROM @sql;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
+INSERT INTO user_quiz_attempts (id, user_id, quiz_id, score, is_passed, attempt_date) VALUES
+(1, 7, 1, 90, TRUE, '2026-03-02 09:08:00'),
+(2, 7, 2, 80, TRUE, '2026-03-03 09:10:00'),
+(3, 8, 1, 40, FALSE, '2026-03-05 09:05:00'),
+(4, 9, 3, 100, TRUE, '2026-03-12 09:07:00'),
+(5, 10, 7, 20, FALSE, '2026-03-13 09:05:00'),
+(6, 11, 6, 85, TRUE, '2026-04-02 09:30:00'),
+(7, 11, 11, 75, TRUE, '2026-05-06 09:12:00'),
+(8, 12, 8, 70, TRUE, '2026-04-03 09:14:00');
 
 -- 27. assignment_submissions
 INSERT INTO assignment_submissions (id, assignment_id, user_id, submission_text, file_url, status, score, teacher_feedback, submitted_at, graded_at) VALUES
@@ -666,52 +538,428 @@ INSERT INTO referrals (id, referrer_id, referred_user_id, status, reward_granted
 (3, 11, 14, 'REGISTERED', FALSE, '2026-04-10 07:40:00'),
 (4, 8, 15, 'REGISTERED', FALSE, '2026-05-15 07:40:00');
 
-ALTER TABLE roles AUTO_INCREMENT = 5;
-ALTER TABLE permissions AUTO_INCREMENT = 15;
-ALTER TABLE categories AUTO_INCREMENT = 7;
-ALTER TABLE tags AUTO_INCREMENT = 9;
-ALTER TABLE plans AUTO_INCREMENT = 5;
-ALTER TABLE users AUTO_INCREMENT = 16;
-ALTER TABLE verification_tokens AUTO_INCREMENT = 6;
-ALTER TABLE courses AUTO_INCREMENT = 10;
-ALTER TABLE chapters AUTO_INCREMENT = 18;
-ALTER TABLE lessons AUTO_INCREMENT = 35;
-ALTER TABLE lesson_documents AUTO_INCREMENT = 9;
-ALTER TABLE quizzes AUTO_INCREMENT = 13;
-ALTER TABLE questions AUTO_INCREMENT = 25;
-ALTER TABLE answers AUTO_INCREMENT = 63;
-ALTER TABLE assignments AUTO_INCREMENT = 7;
-ALTER TABLE course_enrollments AUTO_INCREMENT = 12;
-ALTER TABLE lesson_progress AUTO_INCREMENT = 15;
-ALTER TABLE quiz_attempts AUTO_INCREMENT = 9;
-ALTER TABLE student_answers AUTO_INCREMENT = 16;
-ALTER TABLE user_chapter_progress AUTO_INCREMENT = 11;
-ALTER TABLE user_lesson_progress AUTO_INCREMENT = 15;
-SET @user_quiz_attempts_exists = (
-    SELECT COUNT(*)
-    FROM information_schema.tables
-    WHERE table_schema = DATABASE()
-      AND table_name = 'user_quiz_attempts'
+-- =========================================================
+-- Latest migration seed: Chapter 3, Lesson 1
+-- =========================================================
+
+-- -------------------------------------------------------------
+-- SEEDING DATA FOR CHAPTER 3, LESSON 1
+-- -------------------------------------------------------------
+
+-- Create Chapter 3 for Course 1 (Tieng Trung giao tiep co ban) if it doesn't exist
+INSERT INTO chapters (course_id, title, order_index)
+SELECT 1, 'Chương 3: Thu thập thông tin khách hàng', 3
+FROM DUAL
+WHERE NOT EXISTS (
+    SELECT 1 FROM chapters WHERE course_id = 1 AND order_index = 3
 );
-SET @sql = IF(
-    @user_quiz_attempts_exists > 0,
-    'ALTER TABLE user_quiz_attempts AUTO_INCREMENT = 9',
-    'SELECT ''Skipping user_quiz_attempts AUTO_INCREMENT: table does not exist in this database.'' AS seed_warning'
+
+-- Store the chapter id
+SET @chapter_3_id = (SELECT id FROM chapters WHERE course_id = 1 AND order_index = 3 LIMIT 1);
+
+-- Create Lesson 1 under Chapter 3 if it doesn't exist
+INSERT INTO lessons (chapter_id, title, video_url, duration_seconds, order_index)
+SELECT @chapter_3_id, 'Lesson 1 - Hỏi thông tin cá nhân của khách hàng', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1783833897/video1_r1i65s.mp4', 180, 1
+FROM DUAL
+WHERE NOT EXISTS (
+    SELECT 1 FROM lessons WHERE chapter_id = @chapter_3_id AND order_index = 1
 );
-PREPARE stmt FROM @sql;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
-ALTER TABLE assignment_submissions AUTO_INCREMENT = 6;
-ALTER TABLE certificates AUTO_INCREMENT = 4;
-ALTER TABLE coupons AUTO_INCREMENT = 4;
-ALTER TABLE subscriptions AUTO_INCREMENT = 8;
-ALTER TABLE invoices AUTO_INCREMENT = 8;
-ALTER TABLE payments AUTO_INCREMENT = 7;
-ALTER TABLE refunds AUTO_INCREMENT = 5;
-ALTER TABLE audit_logs AUTO_INCREMENT = 6;
-ALTER TABLE notifications AUTO_INCREMENT = 6;
-ALTER TABLE reports AUTO_INCREMENT = 5;
-ALTER TABLE badges AUTO_INCREMENT = 5;
-ALTER TABLE course_reviews AUTO_INCREMENT = 6;
-ALTER TABLE lesson_qa AUTO_INCREMENT = 8;
-ALTER TABLE referrals AUTO_INCREMENT = 5;
+
+-- Update the lesson video URL in case it already existed with default placeholder
+UPDATE lessons
+SET video_url = 'https://res.cloudinary.com/rir6b8kp/video/upload/v1783833897/video1_r1i65s.mp4'
+WHERE chapter_id = @chapter_3_id AND order_index = 1;
+
+-- Store the lesson id
+SET @lesson_1_id = (SELECT id FROM lessons WHERE chapter_id = @chapter_3_id AND order_index = 1 LIMIT 1);
+
+-- Seed Vocabularies (Flashcards) for Lesson 1
+-- Delete existing first to make it re-runnable
+DELETE FROM vocabularies WHERE lesson_id = @lesson_1_id;
+
+INSERT INTO vocabularies (lesson_id, hanzi, pinyin, vietnamese_meaning, image_url, audio_url, order_index)
+VALUES
+(@lesson_1_id, '名字', 'míngzi', 'tên', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1783834344/T%C3%AAn_tplc0l.jpg', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1783834384/T%C3%AAn_df9p8x.mp3', 1),
+(@lesson_1_id, '姓', 'xìng', 'họ (họ danh)', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1783834331/H%E1%BB%8D_a47jhh.jpg', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1783834370/H%E1%BB%8D_ljl0zb.mp3', 2),
+(@lesson_1_id, '职务', 'zhíwù', 'chức vụ', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1783834326/Ch%E1%BB%A9c_v%E1%BB%A5_xlpnsn.jpg', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1783834364/Ch%E1%BB%A9c_v%E1%BB%A5_znovly.mp3', 3),
+(@lesson_1_id, '经理', 'jīnglǐ', 'trưởng phòng (kinh doanh) / giám đốc', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1783834634/Tr%C6%B0%E1%BB%9Fng_ph%C3%B2ng_l3blgq.jpg', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1783834381/Tr%C6%B0%E1%BB%9Fng_ph%C3%B2ng_g2ozsb.mp3', 4),
+(@lesson_1_id, '总经理', 'zǒngjīnglǐ', 'Tổng giám đốc', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1783834348/T%E1%BB%95ng_gi%C3%A1m_%C4%91%E1%BB%91c_b5xlff.jpg', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1783834388/T%E1%BB%95ng_gi%C3%A1m_%C4%91%E1%BB%91c_og83fk.mp3', 5),
+(@lesson_1_id, '管理', 'guǎnlǐ', 'quản lý', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1783834630/Qu%E1%BA%A3n_l%C3%BD_ohfvd6.jpg', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1783834377/Qu%E1%BA%A3n_l%C3%BD_geeh2q.mp3', 6),
+(@lesson_1_id, '员工', 'yuángōng', 'nhân viên', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1783834335/Nh%C3%A2n_vi%C3%AAn_gzrd62.jpg', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1783834373/Nh%C3%A2n_vi%C3%AAn_rxb9ie.mp3', 7),
+(@lesson_1_id, '称呼', 'chēnghu', 'xưng hô', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1783834637/X%C6%B0ng_h%C3%B4_fbsnnz.jpg', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1783834391/X%C6%B0ng_h%C3%B4_porl4z.mp3', 8),
+(@lesson_1_id, '公司', 'gōngsī', 'công ty', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1783834329/C%C3%B4ng_ty_ak4dxd.jpg', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1783834367/C%C3%B4ng_ty_lybysg.mp3', 9);
+
+-- Seed Sentence Patterns for Lesson 1
+DELETE FROM sentence_patterns WHERE lesson_id = @lesson_1_id;
+
+-- Get the vocabulary ids for reference
+SET @vocab_name_id = (SELECT id FROM vocabularies WHERE lesson_id = @lesson_1_id AND hanzi = '名字' LIMIT 1);
+SET @vocab_pos_id = (SELECT id FROM vocabularies WHERE lesson_id = @lesson_1_id AND hanzi = '职务' LIMIT 1);
+SET @vocab_resp_id = (SELECT id FROM vocabularies WHERE lesson_id = @lesson_1_id AND hanzi = '称呼' LIMIT 1);
+
+INSERT INTO sentence_patterns (lesson_id, vocabulary_id, chinese_text, pinyin_text, vietnamese_meaning, audio_url, order_index)
+VALUES
+(@lesson_1_id, @vocab_name_id, '您叫什么名字？', 'Nín jiào shénme míngzi?', 'Anh/chị tên là gì?', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1783860596/M%E1%BA%ABu_c%C3%A2u_1_ijulk0.mp3', 1),
+(@lesson_1_id, @vocab_pos_id, '您在公司担任什么职位？', 'Nín zài gōngsī dānrèn shénme zhíwèi?', 'Anh/chị đang giữ vị trí gì ở công ty?', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1783860596/M%E1%BA%ABu_c%C3%A2u_2_yyupnr.mp3', 2),
+(@lesson_1_id, NULL, '您负责哪个部门？', 'Nín fùzé nǎge bùmén?', 'Anh/chị phụ trách bộ phận nào?', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1783860597/M%E1%BA%ABu_c%C3%A2u_3_cmaeg2.mp3', 3),
+(@lesson_1_id, @vocab_resp_id, '我可以称呼您为阮经理吗？', 'Wǒ kěyǐ chēnghu nín wèi Ruǎn jīnglǐ ma?', 'Tôi xin phép được xưng hô với anh/chị là Trưởng phòng Nguyễn được không?', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1783860596/M%E1%BA%ABu_c%C3%A2u_4_ffehvg.mp3', 4);
+
+
+-- Seed Quizzes for Lesson 1
+DELETE FROM quizzes WHERE lesson_id = @lesson_1_id;
+
+INSERT INTO quizzes (title, lesson_id, chapter_id, time_limit_minutes, pass_score)
+VALUES ('Bài trắc nghiệm Lesson 1: Hỏi thông tin cá nhân', @lesson_1_id, @chapter_3_id, 10, 50);
+
+SET @quiz_1_id = LAST_INSERT_ID();
+
+-- Seed Questions for Quiz 1
+DELETE FROM questions WHERE quiz_id = @quiz_1_id;
+
+-- Question 1: Listening Choice (Nghe và chọn - "请问您在贵公司主要负责...")
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, meta_data, explanation)
+VALUES (
+    @quiz_1_id,
+    'LISTENING_CHOICE',
+    'Nghe đoạn âm thanh sau và chọn nghĩa tiếng Việt đúng của câu: "请问您在贵公司...?"',
+    'https://res.cloudinary.com/rir6b8kp/video/upload/v1783834137/C%C3%A2u_h%E1%BB%8Fi_luy%E1%BB%87n_nghe_1_su1rpv.mp3',
+    10,
+    1,
+    NULL,
+    'Ý nghĩa hoàn chỉnh: Xin hỏi ngài chủ yếu phụ trách mảng nghiệp vụ nào tại quý công ty?'
+);
+SET @q1_id = LAST_INSERT_ID();
+
+INSERT INTO answers (question_id, content, is_correct, order_index)
+VALUES
+(@q1_id, 'Xin hỏi anh/chị chủ yếu phụ trách công việc gì ở quý công ty?', TRUE, 1),
+(@q1_id, 'Xin hỏi anh/chị tên là gì?', FALSE, 2),
+(@q1_id, 'Xin hỏi công ty của anh/chị ở đâu?', FALSE, 3);
+
+
+-- Question 2: Listening Choice (Nghe và chọn - "李先生是技术部の...")
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, meta_data, explanation)
+VALUES (
+    @quiz_1_id,
+    'LISTENING_CHOICE',
+    'Nghe đoạn âm thanh sau và chọn nghĩa tiếng Việt đúng của câu: "李先生 là bộ phận kỹ thuật của...?" (thực chất: "李先生是技术部的...")',
+    'https://res.cloudinary.com/rir6b8kp/video/upload/v1783834140/C%C3%A2u_h%E1%BB%8Fi_luy%E1%BB%87n_nghe_2_spqogk.mp3',
+    10,
+    2,
+    NULL,
+    'Ý nghĩa hoàn chỉnh: Ông Lý là Quản lý của bộ phận kỹ thuật, anh ấy chịu trách nhiệm bảo trì hệ thống.'
+);
+SET @q2_id = LAST_INSERT_ID();
+
+INSERT INTO answers (question_id, content, is_correct, order_index)
+VALUES
+(@q2_id, 'Ông Lý là trưởng phòng của bộ phận kỹ thuật.', TRUE, 1),
+(@q2_id, 'Ông Lý là nhân viên bộ phận kinh doanh.', FALSE, 2),
+(@q2_id, 'Ông Lý là tổng giám đốc công ty.', FALSE, 3);
+
+
+-- Question 3: Listening Choice (Nghe và chọn - "阮先生，请问 tôi nên xưng hô như thế nào...?")
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, meta_data, explanation)
+VALUES (
+    @quiz_1_id,
+    'LISTENING_CHOICE',
+    'Nghe đoạn âm thanh sau và chọn nghĩa tiếng Việt đúng của câu: "阮先生，请问 tôi nên xưng hô như thế nào...?"',
+    'https://res.cloudinary.com/rir6b8kp/video/upload/v1783834143/C%C3%A2u_h%E1%BB%8Fi_luy%E1%BB%87n_nghe_3_tqyapk.mp3',
+    10,
+    3,
+    NULL,
+    'Ý nghĩa hoàn chỉnh: Thưa ông Nguyễn, xin hỏi tôi nên xưng hô với ông như thế nào?'
+);
+SET @q3_id = LAST_INSERT_ID();
+
+INSERT INTO answers (question_id, content, is_correct, order_index)
+VALUES
+(@q3_id, 'Thưa ông Nguyễn, xin hỏi tôi nên xưng hô với ông như thế nào?', TRUE, 1),
+(@q3_id, 'Thưa ông Nguyễn, xin hỏi ông bao nhiêu tuổi?', FALSE, 2),
+(@q3_id, 'Thưa ông Nguyễn, xin hỏi ông sống ở đâu?', FALSE, 3);
+
+
+-- Question 4: Listening Dialogue Ordering (Sắp xếp hội thoại giao tiếp công sở)
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, meta_data, explanation)
+VALUES (
+    @quiz_1_id,
+    'LISTENING_CHOICE',
+    'Nghe đoạn hội thoại sau và sắp xếp các câu theo thứ tự',
+    'https://res.cloudinary.com/rir6b8kp/video/upload/v1784005358/C%C3%A2u_h%E1%BB%8Fi_luy%E1%BB%87n_nghe_4_d7ice0.mp3',
+    10,
+    4,
+    NULL,
+    'Cuộc hội thoại bắt đầu bằng C, khi một người chủ động chào hỏi và xác nhận chức vụ của đối phương. Tiếp theo, A trả lời bằng cách giới thiệu tên, chức vụ và đưa danh thiếp. Sau khi nhận được thông tin, B đáp lại bằng lời chào lịch sự và tự giới thiệu bản thân cũng như công ty của mình. Dựa trên thông tin đó, D tiếp tục cuộc trò chuyện bằng cách hỏi về lĩnh vực kinh doanh của công ty. Cuối cùng, E trả lời trực tiếp câu hỏi ở câu D, giới thiệu rằng công ty chủ yếu phát triển phần mềm doanh nghiệp. Thứ tự này phù hợp với trình tự giao tiếp trong một buổi gặp gỡ và trao đổi danh thiếp trong môi trường công việc.'
+);
+SET @q4_id = LAST_INSERT_ID();
+
+INSERT INTO answers (question_id, content, is_correct, order_index)
+VALUES
+(@q4_id, 'A → C → B → D → E', FALSE, 1),
+(@q4_id, 'A → B → C → D → E', FALSE, 2),
+(@q4_id, 'C → A → D → B → E', FALSE, 3),
+(@q4_id, 'C → A → B → D → E', TRUE, 4);
+
+
+-- Question 5 (Group 1 - Substitution MCQ 1):
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, meta_data, explanation)
+VALUES (
+    @quiz_1_id,
+    'MULTIPLE_CHOICE',
+    'Đối tác giao tiếp là người đại diện pháp luật cao nhất của công ty (Tổng giám đốc). Chọn từ thích hợp để hoàn thiện câu xã giao: "请问，我可以直接称呼您为张_____吗？"',
+    NULL,
+    10,
+    5,
+    NULL,
+    '"总经理" (Tổng giám đốc) là danh xưng phù hợp nhất để xưng hô với người đứng đầu điều hành doanh nghiệp, thể hiện sự kính trọng đúng mực trong lễ nghi thương mại.'
+);
+SET @q5_id = LAST_INSERT_ID();
+
+INSERT INTO answers (question_id, content, is_correct, order_index)
+VALUES
+(@q5_id, '职员 (zhíyuán)', FALSE, 1),
+(@q5_id, '姓名 (xìngmíng)', FALSE, 2),
+(@q5_id, '总经理 (zǒngjīnglǐ)', TRUE, 3),
+(@q5_id, '负责 (fùzé)', FALSE, 4);
+
+
+-- Question 6 (Group 1 - Substitution MCQ 2):
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, meta_data, explanation)
+VALUES (
+    @quiz_1_id,
+    'MULTIPLE_CHOICE',
+    'Khách hàng cho biết họ phụ trách mảng tuyển dụng và quản lý nhân sự. Chọn bộ phận thích hợp hoàn thành câu: "请问，您是_____ của nhà máy?" (thực chất: "请问，您是_____的经理吗？")',
+    NULL,
+    10,
+    6,
+    NULL,
+    '"人力资源部" (Phòng Nhân sự) là bộ phận chịu trách nhiệm tuyển dụng và quản lý nguồn nhân lực.'
+);
+SET @q6_id = LAST_INSERT_ID();
+
+INSERT INTO answers (question_id, content, is_correct, order_index)
+VALUES
+(@q6_id, '人力资源部 (rénlì zīyuán bù)', TRUE, 1),
+(@q6_id, '软件部 (ruǎnjiàn bù)', FALSE, 2),
+(@q6_id, '职务部 (zhíwù bù)', FALSE, 3),
+(@q6_id, '名字部 (míngzǐ bù)', FALSE, 4);
+
+
+-- Question 7 (Group 1 - Substitution MCQ 3):
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, meta_data, explanation)
+VALUES (
+    @quiz_1_id,
+    'MULTIPLE_CHOICE',
+    'Chọn động từ biểu thị việc nắm giữ một vai trò hoặc vị trí công vụ chính thức: "请问nắm giữ gì chức vụ?" (thực chất: "请问您在贵公司_____什么职务？")',
+    NULL,
+    10,
+    7,
+    NULL,
+    'Cấu trúc kết hợp chuẩn mực trong tiếng Trung hành chính là "担任...职务" (đảm nhiệm chức vụ...).'
+);
+SET @q7_id = LAST_INSERT_ID();
+
+INSERT INTO answers (question_id, content, is_correct, order_index)
+VALUES
+(@q7_id, '称呼 (chēnghu)', FALSE, 1),
+(@q7_id, '负责 (fùzé)', FALSE, 2),
+(@q7_id, '担任 (dānrèn)', TRUE, 3),
+(@q7_id, '名字 (míngzi)', FALSE, 4);
+
+
+-- Question 8 (Group 1 - Substitution MCQ 4):
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, meta_data, explanation)
+VALUES (
+    @quiz_1_id,
+    'MULTIPLE_CHOICE',
+    'Khách hàng là một nữ nhân viên trẻ tuổi chưa lập gia đình. Chọn danh xưng lịch thiệp phù hợp nhất hoàn thành câu: "请问，这位 là phòng mua sắm bộ phận Trần_____。" (thực chất: "请问，这位sắp là采购部の陈_____。")',
+    NULL,
+    10,
+    8,
+    NULL,
+    '"小姐" (Tiểu thư/Cô) là danh xưng trang nhã truyền thống dành cho phụ nữ trẻ tuổi trong giao tiếp công sở.'
+);
+SET @q8_id = LAST_INSERT_ID();
+
+INSERT INTO answers (question_id, content, is_correct, order_index)
+VALUES
+(@q8_id, '先生 (xiānshēng)', FALSE, 1),
+(@q8_id, '小姐 (xiǎojiě)', TRUE, 2),
+(@q8_id, '职务 (zhíwù)', FALSE, 3),
+(@q8_id, '负责 (fùzé)', FALSE, 4);
+
+
+-- Question 9 (Group 1 - Substitution MCQ 5):
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, meta_data, explanation)
+VALUES (
+    @quiz_1_id,
+    'MULTIPLE_CHOICE',
+    'Đối tác giới thiệu họ làm việc cho một cơ sở sản xuất quy mô lớn (Nhà máy). Chọn đơn vị phù hợp hoàn thành câu: "请问，您 là nhà máy này_____ người quản lý?" (thực chất: "请问，您是这家_____的管理者吗？")',
+    NULL,
+    10,
+    9,
+    NULL,
+    '"工厂" (Nhà máy/Xưởng) là loại hình đơn vị sản xuất trực tiếp vật chất, tương ứng với vị trí Giám đốc nhà máy "厂长" (chǎngzhǎng).'
+);
+SET @q9_id = LAST_INSERT_ID();
+
+INSERT INTO answers (question_id, content, is_correct, order_index)
+VALUES
+(@q9_id, '称呼 (chēnghu)', FALSE, 1),
+(@q9_id, '工厂 (gōngchǎng)', TRUE, 2),
+(@q9_id, '名字 (míngzi)', FALSE, 3),
+(@q9_id, '职务 (zhíwù)', FALSE, 4);
+
+
+-- Question 10 (Group 1 - Substitution MCQ 6):
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, meta_data, explanation)
+VALUES (
+    @quiz_1_id,
+    'MULTIPLE_CHOICE',
+    'Doanh nghiệp đối tác hoạt động trong ngành dịch vụ Logistics/Vận tải. Chọn danh từ thích hợp thay thế hoàn thành câu: "Chúng tôi công ty chủ yếu phụ trách_____ nghiệp vụ。" (thực chất: "我们公司主要负责_____业务。")',
+    NULL,
+    10,
+    10,
+    NULL,
+    '"物流" (Logistics/Vận tải) là mảng dịch vụ lưu thông hàng hóa phổ biến trong chuỗi cung ứng thương mại.'
+);
+SET @q10_id = LAST_INSERT_ID();
+
+INSERT INTO answers (question_id, content, is_correct, order_index)
+VALUES
+(@q10_id, '物流 (wùliú)', TRUE, 1),
+(@q10_id, '职务 (zhíwù)', FALSE, 2),
+(@q10_id, '称呼 (chēnghu)', FALSE, 3),
+(@q10_id, '名字 (míngzi)', FALSE, 4);
+
+
+-- Question 11 (Group 2 - Semantic & Phonetic MCQ 1):
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, meta_data, explanation)
+VALUES (
+    @quiz_1_id,
+    'MULTIPLE_CHOICE',
+    'Cho từ 职务 với phiên âm tương ứng là (zhíwù). Nghĩa tiếng Việt chuẩn xác nhất của từ này trong văn cảnh thương mại là gì?',
+    NULL,
+    10,
+    11,
+    NULL,
+    '"职务" biểu thị vị trí công tác chính thức của một cá nhân trong tổ chức doanh nghiệp.'
+);
+SET @q11_id = LAST_INSERT_ID();
+
+INSERT INTO answers (question_id, content, is_correct, order_index)
+VALUES
+(@q11_id, 'Tên riêng dùng để gọi đối tác', FALSE, 1),
+(@q11_id, 'Chức vụ, vị trí công tác được phân công', TRUE, 2),
+(@q11_id, 'Tên gọi đầy đủ của một doanh nghiệp', FALSE, 3),
+(@q11_id, 'Trách nhiệm bồi thường hợp đồng', FALSE, 4);
+
+
+-- Question 12 (Group 2 - Semantic & Phonetic MCQ 2):
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, meta_data, explanation)
+VALUES (
+    @quiz_1_id,
+    'MULTIPLE_CHOICE',
+    'Từ chỉ chức danh quản lý cao nhất doanh nghiệp 总经理 có phiên âm Pinyin chính xác là gì?',
+    NULL,
+    10,
+    12,
+    NULL,
+    'Phiên âm chuẩn theo hệ thống Bính âm quốc tế của chữ "总经理" là zǒng jīng lǐ.'
+);
+SET @q12_id = LAST_INSERT_ID();
+
+INSERT INTO answers (question_id, content, is_correct, order_index)
+VALUES
+(@q12_id, 'zhōng jīng lǐ', FALSE, 1),
+(@q12_id, 'zōng jìn nǐ', FALSE, 2),
+(@q12_id, 'zǒng jīng lǐ', TRUE, 3),
+(@q12_id, 'zòng jǐng lǐ', FALSE, 4);
+
+
+-- Question 13 (Group 2 - Semantic & Phonetic MCQ 3):
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, meta_data, explanation)
+VALUES (
+    @quiz_1_id,
+    'MULTIPLE_CHOICE',
+    'Trong câu "您目前负责哪个项目？", từ 负责 (fùzé) mang ý nghĩa nào dưới đây?',
+    NULL,
+    10,
+    13,
+    NULL,
+    '"负责" (fùzé) là một động từ biểu thị hành vi chịu trách nhiệm chính trước một dự án hoặc bộ phận.'
+);
+SET @q13_id = LAST_INSERT_ID();
+
+INSERT INTO answers (question_id, content, is_correct, order_index)
+VALUES
+(@q13_id, 'Tìm kiếm thông tin khách hàng mới', FALSE, 1),
+(@q13_id, 'Đảm nhiệm, chịu trách nhiệm phụ trách mảng công việc', TRUE, 2),
+(@q13_id, 'Ký kết biên bản nghiệm thu dự án', FALSE, 3),
+(@q13_id, 'Đánh giá hiệu quả làm việc của nhân viên', FALSE, 4);
+
+
+-- Question 14 (Group 2 - Semantic & Phonetic MCQ 4):
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, meta_data, explanation)
+VALUES (
+    @quiz_1_id,
+    'MULTIPLE_CHOICE',
+    'Từ chỉ hành vi xưng hô trong giao tiếp 称呼 có phiên âm Pinyin đúng là gì?',
+    NULL,
+    10,
+    14,
+    NULL,
+    'Từ "称呼" có âm đọc chuẩn xác là chēnghu (với âm thứ hai đọc thanh nhẹ).'
+);
+SET @q14_id = LAST_INSERT_ID();
+
+INSERT INTO answers (question_id, content, is_correct, order_index)
+VALUES
+(@q14_id, 'chènghū', FALSE, 1),
+(@q14_id, 'chēnghu', TRUE, 2),
+(@q14_id, 'chēnhú', FALSE, 3),
+(@q14_id, 'shēnghǔ', FALSE, 4);
+
+
+-- Question 15 (Group 2 - Semantic & Phonetic MCQ 5):
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, meta_data, explanation)
+VALUES (
+    @quiz_1_id,
+    'MULTIPLE_CHOICE',
+    'Cho hai từ 经理 (jīnglǐ) và 主管 (zhǔguǎn). Nhận định nào dưới đây phản ánh đúng sự khác biệt về vai trò quản lý của hai vị trí này?',
+    NULL,
+    10,
+    15,
+    NULL,
+    'Trong cơ cấu doanh nghiệp Á Đông, "经理" biểu thị cấp quản lý bộ phận có quyền tự chủ lớn hơn so với "主管" - vị trí giám sát trực tiếp các đầu mục công việc nhỏ.'
+);
+SET @q15_id = LAST_INSERT_ID();
+
+INSERT INTO answers (question_id, content, is_correct, order_index)
+VALUES
+(@q15_id, '经理 là nhân viên thực thi trực tiếp, còn 主管 là người đứng đầu toàn bộ tập đoàn.', FALSE, 1),
+(@q15_id, '经理 (Trưởng phòng/Giám đốc) có thẩm quyền ký kết quyết định lớn hơn, còn 主管 (Quản lý/Giám sát) thường điều hành hoạt động của một nhóm công việc cụ thể.', TRUE, 2),
+(@q15_id, 'Hai từ này hoàn toàn đồng nghĩa và có thể thay thế cho nhau trong mọi văn cảnh hành chính.', FALSE, 3),
+(@q15_id, '主管 là chức danh chỉ dùng cho người nước ngoài, còn 经理 chỉ dùng cho nhân sự bản xứ.', FALSE, 4);
+
+
+-- Question 16 (Group 2 - Semantic & Phonetic MCQ 6):
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, meta_data, explanation)
+VALUES (
+    @quiz_1_id,
+    'MULTIPLE_CHOICE',
+    'Từ 软件 với phiên âm tương ứng là (ruǎnjiàn) mang ý nghĩa nào dưới đây?',
+    NULL,
+    10,
+    16,
+    NULL,
+    '"软件" (ruǎnjiàn) là thuật ngữ chuyên ngành công nghệ thông tin chỉ phần mềm máy tính hoặc phần mềm ứng dụng, phân biệt với phần cứng "硬件" (yìnjiàn).'
+);
+SET @q16_id = LAST_INSERT_ID();
+
+INSERT INTO answers (question_id, content, is_correct, order_index)
+VALUES
+(@q16_id, 'Thiết bị phần cứng máy tính', FALSE, 1),
+(@q16_id, 'Phần mềm công nghệ thông tin', TRUE, 2),
+(@q16_id, 'Tài liệu hợp đồng bản cứng', FALSE, 3),
+(@q16_id, 'Hệ thống mạng nội bộ công ty', FALSE, 4);
