@@ -18,15 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class LearningController {
 
+    private static final Long DEFAULT_USER_ID = 7L;
+
     private final ILearningService learningService;
 
     @GetMapping("/stats")
-    public ResponseEntity<LearningStatsResponse> getStats(
-            @RequestHeader(value = "X-User-Id", required = false) Long userId,
-            @RequestParam(required = false) Long courseId
-    ) {
-        // Safe fallback to first user (ID 7) in seed database if no header is present
-        Long finalUserId = userId != null ? userId : 7L;
+    public ResponseEntity<LearningStatsResponse> getStats(@RequestHeader(value = "X-User-Id", required = false) Long userId, @RequestParam(required = false) Long courseId) {
+        Long finalUserId = userId != null ? userId : DEFAULT_USER_ID;
         return ResponseEntity.ok(learningService.getLearningStats(finalUserId, courseId));
     }
 
