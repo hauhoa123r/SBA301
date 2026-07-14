@@ -14,7 +14,7 @@ import com.app.features.model.*;
 import com.app.features.model.enums.CourseStatus;
 import com.app.features.plans.service.IPlanService;
 import com.app.features.tags.service.ITagService;
-import com.app.features.user.repository.IUserRepository;
+import com.app.features.users.repository.IUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

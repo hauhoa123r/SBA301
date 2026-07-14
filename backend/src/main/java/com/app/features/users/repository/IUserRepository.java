@@ -1,4 +1,4 @@
-package com.app.features.user.repository;
+package com.app.features.users.repository;
 
 import com.app.features.model.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
