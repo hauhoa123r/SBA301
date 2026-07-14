@@ -1,7 +1,7 @@
 package com.app.features.learning.service;
 
-import com.app.features.learning.dto.CourseLearningDetailResponse;
-import com.app.features.learning.dto.LearningStatsResponse;
+import com.app.features.learning.dto.response.CourseLearningDetailResponse;
+import com.app.features.learning.dto.response.LearningStatsResponse;
 
 public interface ILearningService {
     LearningStatsResponse getLearningStats(Long userId, Long courseId);

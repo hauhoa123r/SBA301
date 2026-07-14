@@ -1,7 +1,7 @@
 package com.app.features.learning.controller;
 
-import com.app.features.learning.dto.CourseLearningDetailResponse;
-import com.app.features.learning.dto.LearningStatsResponse;
+import com.app.features.learning.dto.response.CourseLearningDetailResponse;
+import com.app.features.learning.dto.response.LearningStatsResponse;
 import com.app.features.learning.service.ILearningService;
 import com.app.utils.ApiPath;
 import lombok.RequiredArgsConstructor;
