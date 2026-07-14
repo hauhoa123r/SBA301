@@ -26,10 +26,10 @@ public class AuthServiceImpl implements AuthService {
                     return new InvalidLoginException("Email not exist");
                 });
         if (!userEntity.getPasswordHash().equals(user.getPassword())) {
-            log.warn("Login failed because password is invailid, email={}", user.getEmail());
+            log.warn("Login failed: invalid password, email={}", user.getEmail());
             throw new InvalidLoginException("Wrong password");
         }
-        log.info("Login successful, email={}", user.getEmail());
+        log.info("Login successful, userId={}", userEntity.getId());
         LoginResponse loginResponse = loginConverter.loginConverter(userEntity);
         return loginResponse;
     }
