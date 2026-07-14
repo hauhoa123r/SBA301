@@ -17,7 +17,7 @@ import com.app.features.model.CourseEnrollmentEntity;
 import com.app.features.model.QuizAttemptEntity;
 import com.app.features.model.QuizEntity;
 import com.app.features.model.UserEntity;
-import com.app.features.user.repository.IUserRepository;
+import com.app.features.users.repository.IUserRepository;
 import com.app.features.courses.repository.ICourseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
