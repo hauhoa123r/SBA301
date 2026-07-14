@@ -19,7 +19,7 @@ public class AuthServiceImpl implements AuthService {
     private final LoginConverter loginConverter;
 
     @Override
-    public LoginResponse IsExistUser(LoginRequest user) {
+    public LoginResponse login(LoginRequest user) {
         UserEntity userEntity = userRepositoryImpl.findByEmail(user.getEmail())
                 .orElseThrow(() -> {
                     log.warn("Login failed because email does not exist, email={}", user.getEmail());

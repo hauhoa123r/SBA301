@@ -27,8 +27,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest user){
-        log.info("Login request received for email: {}", user.getEmail());
-        LoginResponse loginResponse = authService.IsExistUser(user);
+        log.info("Login request received, email={}", user.getEmail());
+        LoginResponse loginResponse = authService.login(user);
         return ResponseEntity.ok(loginResponse);
     }
 

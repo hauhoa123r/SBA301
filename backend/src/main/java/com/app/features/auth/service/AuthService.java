@@ -4,5 +4,5 @@ import com.app.features.auth.dto.request.LoginRequest;
 import com.app.features.auth.dto.response.LoginResponse;
 
 public interface AuthService {
-    public LoginResponse IsExistUser(LoginRequest user);
+    public LoginResponse login(LoginRequest user);
 }
