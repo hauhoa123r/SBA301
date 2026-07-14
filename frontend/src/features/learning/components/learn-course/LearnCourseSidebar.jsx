@@ -54,7 +54,7 @@ export default function LearnCourseSidebar({
                             >
                                 <StatusDot active={isActiveChapter} done={stats.done === stats.total} />
                                 <span className="min-w-0 flex-1 truncate text-sm font-bold">
-                                    Chương {chapter.order_index}: {chapter.title}
+                                    Chương {chapter.orderIndex || chapter.order_index}: {chapter.title}
                                 </span>
                                 <span className="text-xs font-bold text-brand-learningMuted">{stats.done}/{stats.total}</span>
                                 <ChevronRight className="h-4 w-4 text-brand-learningMuted" />
@@ -68,29 +68,33 @@ export default function LearnCourseSidebar({
                                                 active={mode === "lesson" && activeLesson.id === lesson.id}
                                                 done={completedLessons.has(lesson.id)}
                                                 icon={CirclePlay}
-                                                label={`Bài ${lesson.order_index}: ${lesson.title}`}
-                                                sub={formatDuration(lesson.duration_seconds)}
+                                                label={`Bài ${lesson.orderIndex || lesson.order_index}: ${lesson.title}`}
+                                                sub={formatDuration(lesson.durationSeconds || lesson.duration_seconds)}
                                                 onClick={() => onLessonSelect(lesson.id)}
                                             />
-                                            <SidebarItem
-                                                active={mode === "quiz" && activeQuiz?.id === lesson.quiz.id}
-                                                done={passedQuizzes.has(lesson.quiz.id)}
-                                                icon={ClipboardList}
-                                                label={lesson.quiz.title}
-                                                sub={`${lesson.quiz.time_limit_minutes} phút`}
-                                                onClick={() => onQuizSelect(lesson.quiz.id)}
-                                            />
+                                            {lesson.quiz && (
+                                                <SidebarItem
+                                                    active={mode === "quiz" && activeQuiz?.id === lesson.quiz.id}
+                                                    done={passedQuizzes.has(lesson.quiz.id)}
+                                                    icon={ClipboardList}
+                                                    label={lesson.quiz.title}
+                                                    sub={`${lesson.quiz.time_limit_minutes || lesson.quiz.timeLimitMinutes || 5} phút`}
+                                                    onClick={() => onQuizSelect(lesson.quiz.id)}
+                                                />
+                                            )}
                                         </div>
                                     ))}
-                                    <SidebarItem
-                                        active={mode === "assignment" && activeAssignment?.id === chapter.assignment.id}
-                                        done={submittedAssignments.has(chapter.assignment.id)}
-                                        icon={Award}
-                                        label={chapter.assignment.title}
-                                        sub={chapterStats[chapter.id].done >= chapter.lessons.length * 2 ? "Sẵn sàng" : "Hoàn thành bài học trước"}
-                                        highlight
-                                        onClick={() => onAssignmentSelect(chapter.id)}
-                                    />
+                                    {chapter.assignment && (
+                                        <SidebarItem
+                                            active={mode === "assignment" && activeAssignment?.id === chapter.assignment.id}
+                                            done={submittedAssignments.has(chapter.assignment.id)}
+                                            icon={Award}
+                                            label={chapter.assignment.title}
+                                            sub={chapterStats[chapter.id]?.done >= chapter.lessons.length * 2 ? "Sẵn sàng" : "Hoàn thành bài học trước"}
+                                            highlight
+                                            onClick={() => onAssignmentSelect(chapter.id)}
+                                        />
+                                    )}
                                 </div>
                             )}
                         </div>

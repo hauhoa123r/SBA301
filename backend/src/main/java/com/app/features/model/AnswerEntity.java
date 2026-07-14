@@ -27,4 +27,8 @@ public class AnswerEntity {
     @Lob
     @Column(name = "matching_pair")
     private String matchingPair;
+
+    @Builder.Default
+    @Column(name = "order_index", nullable = false)
+    private Integer orderIndex = 0;
 }

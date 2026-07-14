@@ -20,6 +20,7 @@ export default function LearnCoursePage() {
         course,
         handleAssignmentSubmit,
         handleQuizSubmit,
+        handleQuizRetake,
         mode,
         progress,
         quizResults,
@@ -47,7 +48,7 @@ export default function LearnCoursePage() {
                     lesson={activeLesson}
                     isCompleted={completedLessons.has(activeLesson.id)}
                     onComplete={() => setCompletedLessons((prev) => new Set(prev).add(activeLesson.id))}
-                    onQuiz={() => goQuiz(activeLesson.quiz.id)}
+                    onQuiz={() => activeLesson.quiz && goQuiz(activeLesson.quiz.id)}
                 />
             )}
 
@@ -58,6 +59,7 @@ export default function LearnCoursePage() {
                     result={quizResults[activeQuiz.id]}
                     onAnswer={(questionId, answerId) => setAnswers((prev) => ({ ...prev, [questionId]: answerId }))}
                     onSubmit={handleQuizSubmit}
+                    onRetake={() => handleQuizRetake(activeQuiz.id)}
                     onBackLesson={() => goLesson(activeQuiz.lesson.id)}
                 />
             )}

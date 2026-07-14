@@ -1,7 +1,10 @@
 package com.app.features.learning.service.impl;
 
+import com.app.exception.ResourceNotFoundException;
 import com.app.features.learning.converter.LearningCourseConverter;
+import com.app.features.learning.converter.LearningDetailResponseConverter;
 import com.app.features.learning.converter.LearningStatsResponseConverter;
+import com.app.features.learning.dto.CourseLearningDetailResponse;
 import com.app.features.learning.dto.LearningCourseDTO;
 import com.app.features.learning.dto.LearningStatsResponse;
 import com.app.features.learning.repository.ICourseEnrollmentRepository;
@@ -39,6 +42,14 @@ public class LearningServiceImpl implements ILearningService {
     
     private final LearningCourseConverter learningCourseConverter;
     private final LearningStatsResponseConverter learningStatsResponseConverter;
+    private final LearningDetailResponseConverter learningDetailResponseConverter;
+
+    @Override
+    public CourseLearningDetailResponse getCourseLearningDetails(Long courseId) {
+        CourseEntity course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + courseId));
+        return learningDetailResponseConverter.toCourseLearningDetailResponse(course);
+    }
 
     @Override
     public LearningStatsResponse getLearningStats(Long userId, Long courseId) {
