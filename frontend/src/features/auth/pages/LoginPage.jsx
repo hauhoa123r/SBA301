@@ -90,7 +90,7 @@ const LoginPage = () => {
                                     className="text-3xl font-extrabold text-brand-white mb-2"
                                     style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}
                                 >
-                                    Chào mừng trở lại
+                                    Chào mừng trở lại SE1947JV
                                 </h2>
                                 <p className="text-brand-textSecondary text-sm">
                                     Nhập thông tin tài khoản để tiếp tục
