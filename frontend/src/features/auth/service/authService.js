@@ -6,6 +6,11 @@ export const login = async (data) => {
   return response.data;
 };
 
+export const exchangeOAuthCode = async (code) => {
+  const response = await api.post(`${API_AUTH}/oauth/exchange`, { code });
+  return response.data;
+};
+
 export const register = async (data) => {
   const response = await api.post(`${API_AUTH}/register`, data);
   return response.data;
