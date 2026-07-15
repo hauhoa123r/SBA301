@@ -10,6 +10,7 @@ export default function TeacherSidebar({ sidebarOpen, onClose }) {
   const handleLogout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
     setUser(null);
     navigate('/login', { replace: true });
   };

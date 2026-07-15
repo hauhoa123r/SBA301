@@ -19,11 +19,13 @@ import com.app.features.payments.repository.PaymentRepository;
 import com.app.features.payments.repository.PaymentUserRepository;
 import com.app.features.payments.service.PaymentCreationService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PaymentCreationServiceImpl implements PaymentCreationService {
     private final PaymentGatewayFactory paymentGatewayFactory;
     private final InvoiceRepository invoiceRepository;
@@ -37,11 +39,18 @@ public class PaymentCreationServiceImpl implements PaymentCreationService {
     @Override
     @Transactional
     public PaymentCreateResponse createPayment(PaymentCreateRequest request, Long userId) {
+        log.info("Payment creation requested, userId={}, courseId={}, provider={}", userId, request.courseId(), request.provider());
         CourseEntity course = courseRepository.findById(request.courseId())
-                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + request.courseId()));
+                .orElseThrow(() -> {
+                    log.warn("Payment creation failed because course was not found, courseId={}", request.courseId());
+                    return new ResourceNotFoundException("Course not found with id: " + request.courseId());
+                });
         PlanEntity plan = paymentPlanConverter.resolvePurchasablePlan(course, request.planId());
         UserEntity user = paymentUserRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+                .orElseThrow(() -> {
+                    log.warn("Payment creation failed because user was not found, userId={}", userId);
+                    return new ResourceNotFoundException("User not found with id: " + userId);
+                });
 
         InvoiceEntity invoice = invoiceConverter.toPendingInvoice(user, plan);
         invoiceConverter.applyCoupon(invoice, request.couponCode());
@@ -51,9 +60,20 @@ public class PaymentCreationServiceImpl implements PaymentCreationService {
         PaymentGateway gateway = paymentGatewayFactory.getGateway(request.provider());
         PaymentCreateResponse gatewayResponse = gateway.createPayment(request, invoice, invoiceCode);
 
-        PaymentEntity payment = paymentConverter.toCreatedPayment(invoice, request.provider(), invoiceCode, course, plan);
+        String transactionId = gatewayResponse.orderCode() == null || gatewayResponse.orderCode().isBlank()
+                ? invoiceCode
+                : gatewayResponse.orderCode();
+        PaymentEntity payment = paymentConverter.toCreatedPayment(
+                invoice,
+                request.provider(),
+                transactionId,
+                invoiceCode,
+                course,
+                plan
+        );
         paymentRepository.save(payment);
 
+        log.info("Payment created successfully, paymentId={}, invoiceId={}, userId={}, provider={}", payment.getId(), invoice.getId(), userId, request.provider());
         return gatewayResponse;
     }
 }

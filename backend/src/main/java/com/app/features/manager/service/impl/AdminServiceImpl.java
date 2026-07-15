@@ -20,6 +20,7 @@ import com.app.features.model.RolePermissionIdEntity;
 import com.app.features.model.UserEntity;
 import com.app.features.model.enums.UserStatus;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AdminServiceImpl implements AdminService {
 
     private final AdminUserRepository adminUserRepository;
@@ -47,6 +49,7 @@ public class AdminServiceImpl implements AdminService {
             try {
                 userStatus = UserStatus.valueOf(status.toUpperCase());
             } catch (IllegalArgumentException ignored) {
+                log.warn("Invalid user status filter ignored, status={}", status);
                 // Invalid status string, treat as no filter
             }
         }
@@ -58,25 +61,32 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public UserAdminResponse getUserById(Long id) {
         UserEntity user = adminUserRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+                .orElseThrow(() -> {
+                    log.warn("Admin user lookup failed, userId={}", id);
+                    return new RuntimeException("User not found with id: " + id);
+                });
         return toUserAdminResponse(user);
     }
 
     @Override
     @Transactional
     public UserAdminResponse updateUser(Long id, UserUpdateRequest request) {
+        log.info("Admin user update requested, userId={}", id);
         UserEntity user = adminUserRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
 
         // Check email uniqueness if changed
         if (!user.getEmail().equalsIgnoreCase(request.getEmail())
                 && adminUserRepository.existsByEmail(request.getEmail())) {
+            log.warn("Admin user update rejected because email is already used, userId={}", id);
             throw new RuntimeException("Email already in use: " + request.getEmail());
         }
 
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
-        return toUserAdminResponse(adminUserRepository.save(user));
+        UserAdminResponse response = toUserAdminResponse(adminUserRepository.save(user));
+        log.info("Admin user updated successfully, userId={}", id);
+        return response;
     }
 
     @Override
@@ -91,10 +101,13 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @Transactional
     public void deleteUser(Long id) {
+        log.info("Admin user deletion requested, userId={}", id);
         if (!adminUserRepository.existsById(id)) {
+            log.warn("Admin user deletion failed because user was not found, userId={}", id);
             throw new RuntimeException("User not found with id: " + id);
         }
         adminUserRepository.deleteById(id);
+        log.info("Admin user deleted successfully, userId={}", id);
     }
 
     @Override
@@ -139,7 +152,9 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @Transactional
     public RoleResponse createRole(RoleRequest request) {
+        log.info("Role creation requested, roleName={}", request.getName());
         if (roleRepository.existsByName(request.getName())) {
+            log.warn("Role creation rejected because name already exists, roleName={}", request.getName());
             throw new RuntimeException("Role name already exists: " + request.getName());
         }
 
@@ -151,7 +166,9 @@ public class AdminServiceImpl implements AdminService {
         // Assign permissions
         assignPermissionsToRole(role, request.getPermissionIds());
 
-        return toRoleResponse(roleRepository.findById(role.getId()).orElseThrow());
+        RoleResponse response = toRoleResponse(roleRepository.findById(role.getId()).orElseThrow());
+        log.info("Role created successfully, roleId={}", role.getId());
+        return response;
     }
 
     @Override
@@ -179,11 +196,14 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @Transactional
     public void deleteRole(Long id) {
+        log.info("Role deletion requested, roleId={}", id);
         if (!roleRepository.existsById(id)) {
+            log.warn("Role deletion failed because role was not found, roleId={}", id);
             throw new RuntimeException("Role not found with id: " + id);
         }
         rolePermissionRepository.deleteAllByRoleId(id);
         roleRepository.deleteById(id);
+        log.info("Role deleted successfully, roleId={}", id);
     }
 
     // ===== PERMISSION MANAGEMENT =====
@@ -251,7 +271,8 @@ public class AdminServiceImpl implements AdminService {
                             .name(rp.getPermission().getName())
                             .build())
                     .collect(Collectors.toList());
-        } catch (Exception ignored) {
+        } catch (Exception exception) {
+            log.error("Role permissions could not be loaded, roleId={}", role.getId(), exception);
             // Safe fallback
         }
 

@@ -17,6 +17,7 @@ export default function UserProfileMenu({ variant = "pill" }) {
     const handleLogout = () => {
         localStorage.removeItem("user");
         localStorage.removeItem("token");
+        localStorage.removeItem("refreshToken");
         setUser(null);
         setOpen(false);
         navigate("/login");

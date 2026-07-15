@@ -1,15 +1,6 @@
 import api from "../../../../api/axios";
 import { API_BASE_URL, API_PAYMENTS } from "../../../../api/apiPath";
 
-const getStoredUserId = () => {
-  try {
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
-    return user?.id;
-  } catch {
-    return null;
-  }
-};
-
 const normalizeUrl = (url) => {
   if (!url) return "";
   return url.startsWith(API_BASE_URL)
@@ -18,14 +9,12 @@ const normalizeUrl = (url) => {
 };
 
 export const createPayment = async ({ courseId, provider, planId, couponCode }) => {
-  const userId = getStoredUserId();
-  const response = await api.post(
-    `${API_PAYMENTS}/create`,
-    { courseId, provider, planId, couponCode },
-    {
-      headers: userId ? { "X-User-Id": userId } : undefined,
-    },
-  );
+  const response = await api.post(`${API_PAYMENTS}/create`, {
+    courseId,
+    provider,
+    planId,
+    couponCode,
+  });
 
   const data = response.data;
   const paymentUrl = normalizeUrl(data.paymentUrl || data.checkoutUrl);

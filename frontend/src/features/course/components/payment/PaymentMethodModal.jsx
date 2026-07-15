@@ -39,6 +39,13 @@ export default function PaymentMethodModal({ course, open, couponCode, finalPric
     };
 
     const handleCreatePayment = async () => {
+        const hasSession = localStorage.getItem("token") || localStorage.getItem("refreshToken");
+        if (!hasSession) {
+            const returnTo = `${window.location.pathname}${window.location.search}`;
+            navigate(`/login?returnTo=${encodeURIComponent(returnTo)}`);
+            return;
+        }
+
         setIsSubmitting(true);
         setError("");
         setPayment(null);

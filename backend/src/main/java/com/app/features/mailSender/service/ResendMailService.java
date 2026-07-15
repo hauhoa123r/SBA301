@@ -79,11 +79,12 @@ public class ResendMailService implements MailService {
                     .body(emailRequest)
                     .retrieve()
                     .toBodilessEntity();
+            log.info("Email sent successfully via Resend, recipient={}", to);
         } catch (RestClientResponseException e) {
-            log.warn("Resend rejected email, recipient={}, status={}", to, e.getStatusCode());
+            log.error("Resend rejected email, recipient={}, status={}", to, e.getStatusCode(), e);
             throw new RuntimeException("Can not send email, please try again.", e);
         } catch (RestClientException e) {
-            log.warn("Resend email request failed, recipient={}", to);
+            log.error("Resend email request failed, recipient={}", to, e);
             throw new RuntimeException("Can not send email, please try again.", e);
         }
     }

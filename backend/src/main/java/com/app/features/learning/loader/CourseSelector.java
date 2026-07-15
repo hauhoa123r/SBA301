@@ -6,28 +6,34 @@ import com.app.features.learning.repository.ICourseEnrollmentRepository;
 import com.app.features.model.CourseEnrollmentEntity;
 import com.app.features.model.CourseEntity;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class CourseSelector {
 
     private final ICourseRepository courseRepository;
     private final ICourseEnrollmentRepository courseEnrollmentRepository;
 
     public CourseSelectionResult select(Long userId, Long requestedCourseId) {
+        log.debug("Selecting learning course, userId={}, requestedCourseId={}", userId, requestedCourseId);
         List<CourseEnrollmentEntity> enrollments = courseEnrollmentRepository.findByUser_Id(userId);
         List<CourseEntity> availableCourses = loadAvailableCourses(enrollments);
         CourseEntity selectedCourse = findRequestedCourse(requestedCourseId);
 
         if (selectedCourse == null) {
+            log.debug("Requested course unavailable; selecting fallback, userId={}, requestedCourseId={}", userId, requestedCourseId);
             selectedCourse = findFallbackCourse(enrollments, availableCourses);
         }
         if (selectedCourse == null) {
+            log.warn("No course available for learning statistics, userId={}", userId);
             throw new IllegalArgumentException("No courses available to calculate statistics.");
         }
+        log.debug("Learning course selected, userId={}, selectedCourseId={}, availableCourseCount={}", userId, selectedCourse.getId(), availableCourses.size());
         return new CourseSelectionResult(selectedCourse, availableCourses);
     }
 

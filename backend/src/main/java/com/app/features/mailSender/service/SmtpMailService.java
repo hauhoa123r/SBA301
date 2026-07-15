@@ -64,10 +64,12 @@ public class SmtpMailService implements MailService {
             helper.setText(html, true);
 
             javaMailSender.send(mimeMessage);
+            log.info("Email sent successfully via SMTP, recipient={}", to);
         } catch (MessagingException | MailException e) {
-            log.warn("SMTP email request failed, recipient={}", to);
+            log.error("Failed to send email via SMTP, recipient={}", to, e);
             throw new RuntimeException("Can not send email, please try again.", e);
         } catch (UnsupportedEncodingException e) {
+            log.error("Invalid SMTP sender display name, recipient={}", to, e);
             throw new RuntimeException("Invalid sender display name.", e);
         }
     }

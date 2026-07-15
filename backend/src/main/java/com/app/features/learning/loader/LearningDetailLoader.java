@@ -12,6 +12,7 @@ import com.app.features.model.QuizEntity;
 import com.app.features.model.SentencePatternEntity;
 import com.app.features.model.VocabularyEntity;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashMap;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class LearningDetailLoader {
 
     private final ICourseRepository courseRepository;
@@ -29,16 +31,22 @@ public class LearningDetailLoader {
     private final ISentencePatternRepository sentencePatternRepository;
 
     public LearningDetailData load(Long courseId) {
-        CourseEntity course = courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + courseId));
+        log.debug("Loading learning detail data, courseId={}", courseId);
+        CourseEntity course = courseRepository.findById(courseId).orElseThrow(() -> {
+            log.warn("Learning detail course not found, courseId={}", courseId);
+            return new ResourceNotFoundException("Course not found with ID: " + courseId);
+        });
         List<Long> lessonIds = getLessonIds(course);
         initializeCourseContent(course);
 
         if (lessonIds.isEmpty()) {
+            log.warn("Learning course has no lessons, courseId={}", courseId);
             return new LearningDetailData(course, Map.of(), Map.of());
         }
 
         List<VocabularyEntity> vocabularies = vocabularyRepository.findByLessonIds(lessonIds);
         List<SentencePatternEntity> sentencePatterns = sentencePatternRepository.findByLessonIds(lessonIds);
+        log.debug("Learning detail data loaded, courseId={}, lessonCount={}, vocabularyCount={}, sentencePatternCount={}", courseId, lessonIds.size(), vocabularies.size(), sentencePatterns.size());
         return new LearningDetailData(course, groupByLesson(vocabularies, vocabulary -> vocabulary.getLesson().getId()), groupByLesson(sentencePatterns, pattern -> pattern.getLesson().getId()));
     }
 

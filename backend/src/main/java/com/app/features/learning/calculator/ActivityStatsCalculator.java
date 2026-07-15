@@ -3,8 +3,10 @@ package com.app.features.learning.calculator;
 import com.app.features.learning.dto.record.ActivityStats;
 import com.app.features.learning.dto.record.LearningStatsData;
 import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class ActivityStatsCalculator {
 
     private static final int DEFAULT_TOTAL_ACTIVITIES = 10;
@@ -20,6 +22,7 @@ public class ActivityStatsCalculator {
         long completedAssignments = data.assignmentSubmissionCount();
         int completedActivities = (int) (completedLessons + completedQuizzes + completedAssignments);
 
+        log.debug("Activity statistics calculated, completedActivities={}, totalActivities={}, openLessons={}", completedActivities, totalActivities, openLessons);
         return new ActivityStats(completedActivities, applyTotalFallback(totalActivities), openLessons);
     }
 

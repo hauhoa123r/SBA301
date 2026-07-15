@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaFacebookF, FaGoogle } from "react-icons/fa";
 import { Eye, EyeOff, Zap } from "lucide-react";
 import {login} from "../service/authService";
@@ -12,6 +12,7 @@ const LoginPage = () => {
     const [errors, setErrors] = useState({ email: "", password: "" });
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
     const { setUser } = useAuth();
     const loginWithGoogle = () => {
         window.location.assign("/api/oauth2/authorization/google");
@@ -62,13 +63,23 @@ const LoginPage = () => {
             });
             const loggedInUser = response?.user || response?.data?.user || response?.data || response;
             const token = response?.token || response?.data?.token || response?.accessToken || response?.data?.accessToken;
+            const refreshToken = response?.refreshToken || response?.data?.refreshToken;
 
             localStorage.setItem("user", JSON.stringify(loggedInUser));
             if (token) {
                 localStorage.setItem("token", token);
             }
+            if (refreshToken) {
+                localStorage.setItem("refreshToken", refreshToken);
+            } else {
+                localStorage.removeItem("refreshToken");
+            }
             setUser(loggedInUser);
-            navigate("/");
+            const requestedPath = new URLSearchParams(location.search).get("returnTo");
+            const returnTo = requestedPath?.startsWith("/") && !requestedPath.startsWith("//")
+                ? requestedPath
+                : "/";
+            navigate(returnTo, { replace: true });
         } catch (err) {
             showApiErrorToast(err, "Đăng nhập thất bại. Vui lòng kiểm tra email hoặc mật khẩu.");
         }
@@ -96,7 +107,7 @@ const LoginPage = () => {
                                     className="text-3xl font-extrabold text-brand-white mb-2"
                                     style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}
                                 >
-                                    Chào mừng trở lại SE1947JV
+                                    Chào mừng trở lại
                                 </h2>
                                 <p className="text-brand-textSecondary text-sm">
                                     Nhập thông tin tài khoản để tiếp tục

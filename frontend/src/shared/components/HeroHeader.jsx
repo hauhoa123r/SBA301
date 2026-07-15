@@ -15,6 +15,7 @@ export default function HeroHeader() {
     const handleLogout = () => {
         localStorage.removeItem("user");
         localStorage.removeItem("token");
+        localStorage.removeItem("refreshToken");
         setUser(null);
         setOpenMobile(false);
         navigate("/login");

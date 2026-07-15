@@ -21,10 +21,11 @@ public class PaymentConverter {
         this.modelMapper = modelMapper;
     }
 
-    public PaymentEntity toCreatedPayment(InvoiceEntity invoice, PaymentProvider provider, String invoiceCode, CourseEntity course, PlanEntity plan) {
+    public PaymentEntity toCreatedPayment(InvoiceEntity invoice, PaymentProvider provider, String transactionId,
+                                          String invoiceCode, CourseEntity course, PlanEntity plan) {
         PaymentEntity source = new PaymentEntity();
         source.setProvider(provider);
-        source.setTransactionId(invoiceCode);
+        source.setTransactionId(transactionId);
         source.setAmount(invoice.getAmount());
         source.setStatus(PaymentStatus.CREATED);
         source.setRawResponse(new HashMap<>(Map.of(

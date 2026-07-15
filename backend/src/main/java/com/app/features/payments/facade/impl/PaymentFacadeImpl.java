@@ -19,8 +19,6 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class PaymentFacadeImpl implements PaymentFacade {
-    private static final long DEMO_USER_ID = 1L;
-
     private final PaymentService paymentService;
 
     @Value("${app.frontend.payment-result-url:http://localhost:5173/payment/result}")
@@ -28,8 +26,7 @@ public class PaymentFacadeImpl implements PaymentFacade {
 
     @Override
     public PaymentCreateResponse createPayment(PaymentCreateRequest request, Long userId) {
-        Long resolvedUserId = userId == null ? DEMO_USER_ID : userId;
-        return paymentService.createPayment(request, resolvedUserId);
+        return paymentService.createPayment(request, userId);
     }
 
     @Override
@@ -54,7 +51,10 @@ public class PaymentFacadeImpl implements PaymentFacade {
         Map<String, String> params = new LinkedHashMap<>();
         Object data = body.get("data");
         if (data instanceof Map<?, ?> dataMap) {
-            dataMap.forEach((key, value) -> params.put(String.valueOf(key), String.valueOf(value)));
+            dataMap.forEach((key, value) -> params.put(
+                    String.valueOf(key),
+                    value == null || "null".equals(value) || "undefined".equals(value) ? "" : String.valueOf(value)
+            ));
         }
         if (body.get("signature") != null) {
             params.put("signature", String.valueOf(body.get("signature")));

@@ -8,6 +8,7 @@ import com.app.features.users.repository.ProfileUserRepository;
 import com.app.features.users.service.UserProfileService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -16,25 +17,33 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserProfileServiceImpl implements UserProfileService {
     private final ProfileUserRepository profileUserRepository;
 
     @Override
     public UserProfileResponse getProfile(Long id) {
+        log.info("Loading user profile, userId={}", id);
         return toResponse(findUser(id));
     }
 
     @Override
     @Transactional
     public UserProfileResponse updateProfile(Long id, UpdateUserProfileRequest request) {
+        log.info("User profile update requested, userId={}", id);
         UserEntity user = findUser(id);
         user.setFullName(request.getFullName().trim());
-        return toResponse(profileUserRepository.save(user));
+        UserProfileResponse response = toResponse(profileUserRepository.save(user));
+        log.info("User profile updated successfully, userId={}", id);
+        return response;
     }
 
     private UserEntity findUser(Long id) {
         return profileUserRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
+                .orElseThrow(() -> {
+                    log.warn("User profile not found, userId={}", id);
+                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.");
+                });
     }
 
     private UserProfileResponse toResponse(UserEntity user) {
@@ -53,8 +62,10 @@ public class UserProfileServiceImpl implements UserProfileService {
     @Override
     @Transactional
     public String changePassword(ChangePasswordRequest request) {
+        log.info("User password change requested");
         String validationMessage = validateChangePassword(request);
         if (validationMessage != null) {
+            log.warn("User password change rejected by request validation");
             return validationMessage;
         }
 
@@ -64,16 +75,19 @@ public class UserProfileServiceImpl implements UserProfileService {
 
         Optional<UserEntity> userOptional = profileUserRepository.findByEmail(email);
         if (userOptional.isEmpty()) {
+            log.warn("User password change requested for unknown email, email={}", email);
             return "Email does not exist.";
         }
 
         UserEntity user = userOptional.get();
         if (!user.getPasswordHash().equals(currentPassword)) {
+            log.warn("User password change rejected due to invalid current password, userId={}", user.getId());
             return "Current password is incorrect.";
         }
 
         user.setPasswordHash(newPassword);
         profileUserRepository.save(user);
+        log.info("User password changed successfully, userId={}", user.getId());
         return null;
     }
 

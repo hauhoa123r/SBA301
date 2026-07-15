@@ -6,10 +6,12 @@ import com.app.features.payments.dto.PaymentCreateRequest;
 import com.app.features.payments.dto.PaymentCreateResponse;
 import com.app.features.payments.dto.PaymentVerifyResponse;
 import com.app.features.payments.gateway.PaymentGateway;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -17,6 +19,7 @@ import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -28,8 +31,10 @@ import static com.app.utils.StringUtils.shorten;
 import static com.app.utils.StringUtils.stringValue;
 
 @Component
+@Slf4j
 public class PayOSAdapter implements PaymentGateway {
     private static final String HMAC_SHA256 = "HmacSHA256";
+    private static final long ORDER_CODE_SUFFIX_BASE = 100_000L;
 
     private final RestClient restClient;
 
@@ -62,7 +67,7 @@ public class PayOSAdapter implements PaymentGateway {
             throw new IllegalStateException("Missing payOS configuration. Please set PAYOS_CLIENT_ID, PAYOS_API_KEY, and PAYOS_CHECKSUM_KEY.");
         }
 
-        long orderCode = invoice.getId();
+        long orderCode = buildOrderCode(Instant.now().getEpochSecond(), invoice.getId());
         long amount = invoice.getAmount().setScale(0, RoundingMode.HALF_UP).longValueExact();
         String description = shorten(invoiceCode, 25);
         String returnUrl = paymentResultUrl + "?success=true&invoiceCode=" + invoiceCode + "&message=payOS%20success";
@@ -84,10 +89,16 @@ public class PayOSAdapter implements PaymentGateway {
                         "price", amount
                 )
         });
-        Map<String, Object> response = restClient.post().uri(createPaymentUrl)
-                .header("x-client-id", resolvedClientId)
-                .header("x-api-key", resolvedApiKey).body(requestBody)
-                .retrieve().body(new ParameterizedTypeReference<>() {});
+        Map<String, Object> response;
+        try {
+            response = restClient.post().uri(createPaymentUrl)
+                    .header("x-client-id", resolvedClientId)
+                    .header("x-api-key", resolvedApiKey).body(requestBody)
+                    .retrieve().body(new ParameterizedTypeReference<>() {});
+        } catch (RestClientException exception) {
+            log.error("payOS payment request failed, invoiceId={}, orderCode={}", invoice.getId(), orderCode, exception);
+            throw new IllegalStateException("Unable to create payOS payment link.", exception);
+        }
         Map<String, Object> data = extractData(response);
         String checkoutUrl = stringValue(data.get("checkoutUrl"));
         String qrCode = stringValue(data.get("qrCode"));
@@ -107,28 +118,56 @@ public class PayOSAdapter implements PaymentGateway {
     @Override
     public PaymentVerifyResponse verifyCallback(Map<String, String> params) {
         String signature = params.get("signature");
+        String transactionId = params.get("orderCode");
         Map<String, Object> signedData = params.entrySet().stream()
                 .filter(entry -> !"signature".equals(entry.getKey()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (left, right) -> right, TreeMap::new));
 
-        boolean valid = !isBlank(signature) && Objects.equals(signature, sign(signedData, resolveConfig(checksumKey, "PAYOS_CHECKSUM_KEY", "CHECKSUM_KEY")));
-        boolean success = valid && "PAID".equalsIgnoreCase(params.get("status"));
-        String invoiceCode = "INV-" + params.get("orderCode");
+        boolean valid = !isBlank(transactionId)
+                && !isBlank(signature)
+                && Objects.equals(signature, sign(signedData, resolveConfig(checksumKey, "PAYOS_CHECKSUM_KEY", "CHECKSUM_KEY")));
+        boolean success = valid && "00".equals(params.get("code"));
+        String gatewayTransactionId = params.get("reference");
+        if (isBlank(gatewayTransactionId)) {
+            gatewayTransactionId = params.get("paymentLinkId");
+        }
 
-        return new PaymentVerifyResponse(valid, success, invoiceCode, params.get("paymentLinkId"), success ? "payOS success" : "payOS failed");
+        return new PaymentVerifyResponse(valid, success, transactionId, gatewayTransactionId, success ? "payOS success" : "payOS failed");
     }
 
     @Override
     public PaymentProvider provider() {
         return PaymentProvider.PAYOS;
     }
+
+    static long buildOrderCode(long epochSecond, long invoiceId) {
+        return Math.addExact(
+                Math.multiplyExact(epochSecond, ORDER_CODE_SUFFIX_BASE),
+                Math.floorMod(invoiceId, ORDER_CODE_SUFFIX_BASE)
+        );
+    }
+
     @SuppressWarnings("unchecked")
-    private Map<String, Object> extractData(Map<String, Object> response) {
-        if (response == null || !(response.get("data") instanceof Map<?, ?> data)) {
-            throw new IllegalStateException("Invalid response from payOS.");
+    Map<String, Object> extractData(Map<String, Object> response) {
+        if (response == null) {
+            throw new IllegalStateException("payOS returned an empty response.");
+        }
+
+        String code = safeResponseValue(response.get("code"), "UNKNOWN");
+        String description = safeResponseValue(response.get("desc"), "No description");
+        if (!"00".equals(code) || !(response.get("data") instanceof Map<?, ?> data)) {
+            throw new IllegalStateException(
+                    "payOS rejected payment request, code=" + code + ", description=" + description
+            );
         }
         return (Map<String, Object>) data;
     }
+
+    private String safeResponseValue(Object value, String fallback) {
+        String text = stringValue(value).replace('\r', ' ').replace('\n', ' ').trim();
+        return isBlank(text) ? fallback : shorten(text, 200);
+    }
+
     private String sign(Map<String, Object> data, String key) {
         try {
             String rawData = new TreeMap<>(data).entrySet().stream()
@@ -146,6 +185,7 @@ public class PayOSAdapter implements PaymentGateway {
             throw new IllegalStateException("Unable to sign payOS payload.", ex);
         }
     }
+
     private String resolveConfig(String configuredValue, String... envNames) {
         if (!isBlank(configuredValue)) {
             return configuredValue;

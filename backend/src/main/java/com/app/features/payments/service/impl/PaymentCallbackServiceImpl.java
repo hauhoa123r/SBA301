@@ -16,6 +16,7 @@ import com.app.features.payments.repository.PaymentRepository;
 import com.app.features.payments.service.PaymentCallbackService;
 import com.app.features.payments.service.PaymentSubscriptionService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PaymentCallbackServiceImpl implements PaymentCallbackService {
     private final PaymentGatewayFactory paymentGatewayFactory;
     private final InvoiceRepository invoiceRepository;
@@ -34,18 +36,25 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
     @Override
     @Transactional
     public PaymentVerifyResponse handleCallback(PaymentProvider provider, Map<String, String> params) {
+        log.info("Payment callback received, provider={}", provider);
         PaymentGateway gateway = paymentGatewayFactory.getGateway(provider);
         PaymentVerifyResponse verifyResponse = gateway.verifyCallback(params);
 
         if (!verifyResponse.valid()) {
+            log.warn("Payment callback rejected due to invalid signature, provider={}", provider);
             throw new IllegalArgumentException("Invalid payment signature");
         }
 
-        PaymentEntity payment = paymentRepository.findFirstByTransactionIdOrderByIdDesc(verifyResponse.invoiceCode())
-                .orElseThrow(() -> new ResourceNotFoundException("Payment not found for invoice: " + verifyResponse.invoiceCode()));
+        PaymentEntity payment = paymentRepository
+                .findFirstByProviderAndTransactionIdOrderByIdDesc(provider, verifyResponse.invoiceCode())
+                .orElseThrow(() -> {
+                    log.warn("Payment callback has no matching payment, provider={}, transactionId={}", provider, verifyResponse.invoiceCode());
+                    return new ResourceNotFoundException("Payment not found for transaction: " + verifyResponse.invoiceCode());
+                });
         InvoiceEntity invoice = payment.getInvoice();
 
         if (invoice.getStatus() == InvoiceStatus.PAID) {
+            log.info("Payment callback ignored because invoice is already paid, paymentId={}, invoiceId={}", payment.getId(), invoice.getId());
             return verifyResponse;
         }
 
@@ -59,6 +68,7 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
         }
         invoiceRepository.save(invoice);
 
+        log.info("Payment callback processed successfully, paymentId={}, invoiceId={}, provider={}, success={}", payment.getId(), invoice.getId(), provider, verifyResponse.success());
         return verifyResponse;
     }
 
