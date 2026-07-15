@@ -1,65 +1,56 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Check, CheckCircle2, ClipboardList, FileText, Play, BookOpen, MessageCircle } from "lucide-react";
 import FlashcardsPanel from "./FlashcardsPanel";
 import SentencePatternsPanel from "./SentencePatternsPanel";
 
 export default function LessonPanel({ lesson, isCompleted, onComplete, onQuiz }) {
     const [activeTab, setActiveTab] = useState("video");
+    const tabs = [
+        { id: "video", label: "Video bài học", icon: Play },
+        { id: "vocabulary", label: "Từ vựng (Flashcards)", icon: BookOpen },
+        { id: "sentence", label: "Mẫu câu thực hành", icon: MessageCircle },
+    ];
 
     return (
         <section className="grid gap-5 xl:grid-cols-[1fr_330px]">
             <div className="overflow-hidden rounded-2xl border border-brand-border bg-brand-surface">
                 {/* Tabs Selector Bar */}
-                <div className="flex border-b border-brand-border bg-brand-panel p-2 gap-2">
-                    <button
-                        onClick={() => setActiveTab("video")}
-                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
-                            activeTab === "video"
-                                ? "bg-brand-accent text-brand-white shadow"
-                                : "text-brand-textSoft hover:bg-brand-quizPanel hover:text-brand-white"
-                        }`}
-                    >
-                        <Play className="h-4 w-4" />
-                        Video Bài Học
-                    </button>
-                    <button
-                        onClick={() => setActiveTab("vocabulary")}
-                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
-                            activeTab === "vocabulary"
-                                ? "bg-brand-accent text-brand-white shadow"
-                                : "text-brand-textSoft hover:bg-brand-quizPanel hover:text-brand-white"
-                        }`}
-                    >
-                        <BookOpen className="h-4 w-4" />
-                        Từ Vựng (Flashcards)
-                    </button>
-                    <button
-                        onClick={() => setActiveTab("sentence")}
-                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
-                            activeTab === "sentence"
-                                ? "bg-brand-accent text-brand-white shadow"
-                                : "text-brand-textSoft hover:bg-brand-quizPanel hover:text-brand-white"
-                        }`}
-                    >
-                        <MessageCircle className="h-4 w-4" />
-                        Mẫu Câu Thực Hành
-                    </button>
+                <div role="tablist" aria-label="Nội dung bài học" className="flex flex-wrap gap-2 border-b border-brand-border bg-brand-panel p-2">
+                    {tabs.map(({ id, label, icon: Icon }) => (
+                        <button
+                            key={id}
+                            id={`lesson-tab-${id}`}
+                            type="button"
+                            role="tab"
+                            aria-selected={activeTab === id}
+                            aria-controls={`lesson-panel-${id}`}
+                            onClick={() => setActiveTab(id)}
+                            className={`inline-flex min-w-0 items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm font-bold transition sm:px-4 ${
+                                activeTab === id
+                                    ? "bg-brand-accent text-brand-white shadow"
+                                    : "text-brand-textSoft hover:bg-brand-quizPanel hover:text-brand-white"
+                            }`}
+                        >
+                            <Icon className="h-4 w-4 shrink-0" />
+                            <span>{label}</span>
+                        </button>
+                    ))}
                 </div>
 
                 {/* Tab Content Display */}
                 <div className="p-1">
                     {activeTab === "video" && (
-                        <div className="overflow-hidden">
-                            <video controls poster={lesson.chapter?.thumbnailUrl} src={lesson.videoUrl} className="aspect-video w-full bg-brand-black object-cover" />
+                        <div id="lesson-panel-video" role="tabpanel" aria-labelledby="lesson-tab-video" className="overflow-hidden">
+                            <video controls poster={lesson.chapter?.thumbnailUrl} src={lesson.videoUrl} className="aspect-video w-full bg-brand-black object-cover" aria-label={`Video bài học ${lesson.title}`} />
                         </div>
                     )}
                     {activeTab === "vocabulary" && (
-                        <div className="p-4">
+                        <div id="lesson-panel-vocabulary" role="tabpanel" aria-labelledby="lesson-tab-vocabulary" className="p-3 sm:p-4">
                             <FlashcardsPanel vocabularies={lesson.vocabularies} />
                         </div>
                     )}
                     {activeTab === "sentence" && (
-                        <div className="p-4">
+                        <div id="lesson-panel-sentence" role="tabpanel" aria-labelledby="lesson-tab-sentence" className="p-3 sm:p-4">
                             <SentencePatternsPanel sentencePatterns={lesson.sentencePatterns} />
                         </div>
                     )}

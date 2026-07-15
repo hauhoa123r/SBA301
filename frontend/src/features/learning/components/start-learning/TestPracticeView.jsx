@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { ClipboardList } from "lucide-react";
+import AnimatedCard from "../../../../shared/components/animation/AnimatedCard";
+import UserStagger from "../../../../shared/components/animation/UserStagger";
 
 export default function TestPracticeView({ course, firstLesson }) {
     const tests = course.chapters.map((chapter) => ({
@@ -22,9 +24,9 @@ export default function TestPracticeView({ course, firstLesson }) {
                 </Link>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <UserStagger className="grid gap-4 md:grid-cols-2 xl:grid-cols-3" itemClassName="h-full" distance={20} step={65}>
                 {tests.map((test) => (
-                    <div key={test.id} className="rounded-2xl border border-brand-accent/15 bg-brand-light p-5">
+                    <AnimatedCard key={test.id} className="h-full rounded-2xl border border-brand-accent/15 bg-brand-light p-5">
                         <div className="mb-4 flex items-start justify-between gap-3">
                             <div className="grid h-11 w-11 place-items-center rounded-xl bg-brand-menu text-brand-accentSoft">
                                 <ClipboardList className="h-5 w-5" />
@@ -39,9 +41,9 @@ export default function TestPracticeView({ course, firstLesson }) {
                             <span className="text-brand-textMutedLight">{test.questions} câu hỏi</span>
                             <span className="text-status-warningSoft">🏆 {test.id % 4 + 2}/6</span>
                         </div>
-                    </div>
+                    </AnimatedCard>
                 ))}
-            </div>
+            </UserStagger>
         </section>
     );
 }

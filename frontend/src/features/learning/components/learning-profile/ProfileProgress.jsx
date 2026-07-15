@@ -1,6 +1,7 @@
 import { BookOpenCheck, ClipboardList, Clock3, Trophy } from "lucide-react";
 import ProfileProgressItem from "./ProfileProgressItem";
 import ProfileStat from "./ProfileStat";
+import UserStagger from "../../../../shared/components/animation/UserStagger";
 
 export default function ProfileProgress({ course, firstLesson, totalLessons }) {
     const progressItems = [
@@ -23,19 +24,19 @@ export default function ProfileProgress({ course, firstLesson, totalLessons }) {
                     </div>
                 </div>
 
-                <div className="space-y-4">
+                <UserStagger className="space-y-4" distance={18} step={60}>
                     {progressItems.map((item) => (
                         <ProfileProgressItem key={item.level} item={item} firstLesson={firstLesson} />
                     ))}
-                </div>
+                </UserStagger>
             </div>
 
-            <div className="grid gap-4">
+            <UserStagger className="grid gap-4" itemClassName="h-full" distance={18} step={55}>
                 <ProfileStat icon={Clock3} label="Tổng thời lượng" value="36 giờ" color="text-brand-accentSoft" />
                 <ProfileStat icon={Trophy} label="Tổng số cúp đã đạt" value="132" color="text-status-warningSoft" />
                 <ProfileStat icon={ClipboardList} label="Tổng số bài test" value="10" color="text-status-danger" />
                 <ProfileStat icon={BookOpenCheck} label="Tổng số bài học" value={totalLessons + 23} color="text-status-success" />
-            </div>
+            </UserStagger>
         </div>
     );
 }

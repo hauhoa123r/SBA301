@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { Send, Volume2, Mic, Square, Play, Sparkles, CheckCircle, AlertCircle } from "lucide-react";
+import usePrefersReducedMotion from "../../../shared/hooks/usePrefersReducedMotion";
 
 export default function LessonQuizPanel({ quiz, answers, result, onAnswer, onSubmit, onRetake, onBackLesson }) {
     const [recordingId, setRecordingId] = useState(null);
@@ -8,6 +9,7 @@ export default function LessonQuizPanel({ quiz, answers, result, onAnswer, onSub
     const [isAnalyzing, setIsAnalyzing] = useState({}); // { questionId: boolean }
     const [activeAudioUrl, setActiveAudioUrl] = useState(null); // currently playing question audio
     const [isReviewMode, setIsReviewMode] = useState(false);
+    const prefersReducedMotion = usePrefersReducedMotion();
 
     const mediaRecorderRef = useRef(null);
     const audioChunksRef = useRef([]);
@@ -16,15 +18,19 @@ export default function LessonQuizPanel({ quiz, answers, result, onAnswer, onSub
     const allAnswered = quiz.questions.every((question) => answers[question.id]);
 
     const scrollToTop = () => {
+        const behavior = prefersReducedMotion ? "auto" : "smooth";
+
         if (quizRef.current) {
-            quizRef.current.scrollIntoView({ behavior: "smooth" });
+            quizRef.current.scrollIntoView({ behavior, block: "start" });
         } else {
-            window.scrollTo({ top: 0, behavior: "smooth" });
+            window.scrollTo({ top: 0, behavior });
         }
     };
 
     React.useEffect(() => {
         if (!result) {
+            // Reset the local review UI whenever the parent clears the result.
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setIsReviewMode(false);
         }
     }, [result]);
@@ -131,13 +137,11 @@ export default function LessonQuizPanel({ quiz, answers, result, onAnswer, onSub
             <div className="space-y-5">
                 {quiz.questions.map((question, index) => {
                     const isSpeaking = question.questionType === "SPEAKING";
-                    const isListening = question.questionType === "LISTENING_CHOICE";
-                    const isRecorded = !!recordedAudios[question.id] || answers[question.id]?.toString().startsWith("recorded");
 
                     return (
                         <div key={question.id} className="rounded-2xl border border-brand-border bg-brand-panel p-5 transition-all">
                             <div className="flex flex-wrap items-start justify-between gap-3">
-                                <h3 className="font-bold text-brand-white flex items-start gap-2 max-w-[70%]">
+                                <h3 className="flex max-w-full items-start gap-2 font-bold text-brand-white sm:max-w-[70%]">
                                     <span className="text-brand-accentSoft shrink-0">Câu {index + 1}:</span>
                                     <span className="whitespace-pre-line leading-relaxed">{question.content}</span>
                                 </h3>
@@ -266,14 +270,14 @@ export default function LessonQuizPanel({ quiz, answers, result, onAnswer, onSub
                                     {/* Status Display and AI Pronunciation Feedback */}
                                     <div className="text-sm">
                                         {recordingId === question.id && (
-                                            <p className="flex items-center gap-2 text-status-warningSoft font-semibold">
-                                                <span className="flex h-2.5 w-2.5 rounded-full bg-status-warningStrong animate-ping" />
+                                            <p role="status" className="flex items-center gap-2 text-status-warningSoft font-semibold">
+                                                <span aria-hidden="true" className="flex h-2.5 w-2.5 rounded-full bg-status-warningStrong animate-ping" />
                                                 Đang ghi âm giọng nói của bạn... Hãy nói to, rõ ràng!
                                             </p>
                                         )}
 
                                         {isAnalyzing[question.id] && (
-                                            <p className="flex items-center gap-2 text-brand-accentSoft font-semibold animate-pulse">
+                                            <p role="status" className="flex items-center gap-2 text-brand-accentSoft font-semibold animate-pulse">
                                                 <Sparkles className="h-4 w-4" />
                                                 AI đang chấm điểm và phân tích phát âm của bạn...
                                             </p>

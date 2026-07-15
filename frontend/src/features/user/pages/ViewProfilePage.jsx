@@ -9,6 +9,7 @@ import ChangePassword from "../components/profile/ChangePassword";
 import OrderHistory from "../components/profile/OrderHistory";
 import Profile from "../components/profile/Profile";
 import Sidebar from "../components/profile/Sidebar.jsx";
+import UserReveal from "../../../shared/components/animation/UserReveal";
 
 const tabTitles = {
     profile: "Hồ sơ cá nhân",
@@ -132,50 +133,54 @@ export default function ViewProfilePage() {
     const formatDate = (val) => val ? new Date(val).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" }) : "Chưa có";
 
     return (
-        <div className="grid grid-cols-1 px-5 py-10 font-sans text-brand-textPrimary xl:grid-cols-12 xl:px-0">
-            <div className="flex w-full flex-col gap-6 lg:flex-row xl:col-span-10 xl:col-start-2">
-                <Sidebar activeTab={activeTab} onTabChange={handleTabChange} />
+        <div className="user-ui-scope mx-auto w-full max-w-7xl px-4 py-8 font-sans text-brand-textPrimary sm:px-6 lg:py-12">
+            <div className="grid w-full gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+                <UserReveal className="lg:sticky lg:top-28 lg:self-start" distance={20}>
+                    <Sidebar activeTab={activeTab} onTabChange={handleTabChange} />
+                </UserReveal>
 
-                <section className="min-w-0 flex-1 rounded-lg border border-brand-accent/10 bg-brand-cardBg shadow-xl">
+                <UserReveal as="section" className="min-w-0 overflow-hidden rounded-2xl border border-brand-accent/10 bg-brand-cardBg shadow-xl shadow-brand-black/20" delay={80} distance={20}>
                     <div className="border-b border-brand-accent/10 px-6 py-4">
                         <h1 className="text-xl font-bold text-brand-white">{tabTitles[activeTab]}</h1>
                     </div>
 
                     <div className="p-6 md:p-8">
                         {errorMsg && (
-                            <div className="mb-5 flex gap-3 rounded-lg border border-brand-danger/30 bg-brand-danger/10 p-4 text-sm text-brand-textSecondary">
+                            <div role="alert" aria-live="polite" className="mb-5 flex gap-3 rounded-xl border border-brand-danger/30 bg-brand-danger/10 p-4 text-sm text-brand-textSecondary">
                                 <AlertCircle className="h-5 w-5 shrink-0 text-brand-danger" />
                                 <span>{errorMsg}</span>
                             </div>
                         )}
 
-                        {activeTab === "profile" && (
-                            <Profile
-                                profile={profile}
-                                isLoading={isLoading}
-                                isSaving={isSaving}
-                                userId={userId}
-                                onInputChange={handleInputChange}
-                                onSaveProfile={handleSaveProfile}
-                                formatDate={formatDate}
-                            />
-                        )}
+                        <UserReveal key={activeTab} id={`${activeTab}-panel`} distance={12} duration={450}>
+                            {activeTab === "profile" && (
+                                <Profile
+                                    profile={profile}
+                                    isLoading={isLoading}
+                                    isSaving={isSaving}
+                                    userId={userId}
+                                    onInputChange={handleInputChange}
+                                    onSaveProfile={handleSaveProfile}
+                                    formatDate={formatDate}
+                                />
+                            )}
 
-                        {activeTab === "password" && (
-                            <ChangePassword
-                                passwordForm={passwordForm}
-                                showPasswords={showPasswords}
-                                setShowPasswords={setShowPasswords}
-                                isSaving={isSaving}
-                                onInputChange={handleInputChange}
-                                onChangePassword={handleChangePassword}
-                            />
-                        )}
+                            {activeTab === "password" && (
+                                <ChangePassword
+                                    passwordForm={passwordForm}
+                                    showPasswords={showPasswords}
+                                    setShowPasswords={setShowPasswords}
+                                    isSaving={isSaving}
+                                    onInputChange={handleInputChange}
+                                    onChangePassword={handleChangePassword}
+                                />
+                            )}
 
-                        {activeTab === "orders" && <OrderHistory />}
-                        {activeTab === "activation" && <ActivationCode />}
+                            {activeTab === "orders" && <OrderHistory />}
+                            {activeTab === "activation" && <ActivationCode />}
+                        </UserReveal>
                     </div>
-                </section>
+                </UserReveal>
             </div>
         </div>
     );

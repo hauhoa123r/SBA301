@@ -24,7 +24,9 @@ export default function HeroHeader() {
     return (
         <header className="sticky top-0 z-50 border-b border-brand-accent/10 bg-brand-dark/80 backdrop-blur-xl">
             <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-                <HeroLogo />
+                <NavLink to="/" aria-label="Về trang chủ" className="no-underline">
+                    <HeroLogo />
+                </NavLink>
                 <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
                     {NAV_LINKS.map((item) => (
                         <NavLink

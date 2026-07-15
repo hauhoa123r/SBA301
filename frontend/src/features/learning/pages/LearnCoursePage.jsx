@@ -4,6 +4,7 @@ import LessonQuizPanel from "../../quiz/components/LessonQuizPanel";
 import ChapterList from "../components/learn-course/ChapterList";
 import CourseHero from "../components/learn-course/CourseHero";
 import LessonPanel from "../components/learn-course/LessonPanel";
+import UserReveal from "../../../shared/components/animation/UserReveal";
 
 export default function LearnCoursePage() {
     const {
@@ -35,51 +36,61 @@ export default function LearnCoursePage() {
 
     return (
         <>
-            <CourseHero
-                course={course}
-                progress={progress}
-                completedCount={completedCount}
-                totalActivities={totalActivities}
-                completedChapters={completedChapters.length}
-            />
+            <UserReveal distance={20}>
+                <CourseHero
+                    course={course}
+                    progress={progress}
+                    completedCount={completedCount}
+                    totalActivities={totalActivities}
+                    completedChapters={completedChapters.length}
+                />
+            </UserReveal>
 
             {mode === "lesson" && (
-                <LessonPanel
-                    lesson={activeLesson}
-                    isCompleted={completedLessons.has(activeLesson.id)}
-                    onComplete={() => setCompletedLessons((prev) => new Set(prev).add(activeLesson.id))}
-                    onQuiz={() => activeLesson.quiz && goQuiz(activeLesson.quiz.id)}
-                />
+                <UserReveal key={activeLesson.id} distance={22}>
+                    <LessonPanel
+                        lesson={activeLesson}
+                        isCompleted={completedLessons.has(activeLesson.id)}
+                        onComplete={() => setCompletedLessons((prev) => new Set(prev).add(activeLesson.id))}
+                        onQuiz={() => activeLesson.quiz && goQuiz(activeLesson.quiz.id)}
+                    />
+                </UserReveal>
             )}
 
             {mode === "quiz" && (
-                <LessonQuizPanel
-                    quiz={activeQuiz}
-                    answers={answers}
-                    result={quizResults[activeQuiz.id]}
-                    onAnswer={(questionId, answerId) => setAnswers((prev) => ({ ...prev, [questionId]: answerId }))}
-                    onSubmit={handleQuizSubmit}
-                    onRetake={() => handleQuizRetake(activeQuiz.id)}
-                    onBackLesson={() => goLesson(activeQuiz.lesson.id)}
-                />
+                <UserReveal key={activeQuiz.id} distance={22}>
+                    <LessonQuizPanel
+                        quiz={activeQuiz}
+                        answers={answers}
+                        result={quizResults[activeQuiz.id]}
+                        onAnswer={(questionId, answerId) => setAnswers((prev) => ({ ...prev, [questionId]: answerId }))}
+                        onSubmit={handleQuizSubmit}
+                        onRetake={() => handleQuizRetake(activeQuiz.id)}
+                        onBackLesson={() => goLesson(activeQuiz.lesson.id)}
+                    />
+                </UserReveal>
             )}
 
             {mode === "assignment" && (
-                <ChapterAssignmentPanel
-                    assignment={activeAssignment}
-                    value={assignmentText}
-                    submitted={submittedAssignments.has(activeAssignment.id)}
-                    onChange={setAssignmentText}
-                    onSubmit={handleAssignmentSubmit}
-                />
+                <UserReveal key={activeAssignment.id} distance={22}>
+                    <ChapterAssignmentPanel
+                        assignment={activeAssignment}
+                        value={assignmentText}
+                        submitted={submittedAssignments.has(activeAssignment.id)}
+                        onChange={setAssignmentText}
+                        onSubmit={handleAssignmentSubmit}
+                    />
+                </UserReveal>
             )}
 
-            <ChapterList
-                course={course}
-                activeChapter={activeChapter}
-                chapterStats={chapterStats}
-                onLessonSelect={goLesson}
-            />
+            <UserReveal delay={70} distance={22}>
+                <ChapterList
+                    course={course}
+                    activeChapter={activeChapter}
+                    chapterStats={chapterStats}
+                    onLessonSelect={goLesson}
+                />
+            </UserReveal>
         </>
     );
 }

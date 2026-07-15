@@ -1,4 +1,4 @@
-import { Award, Check, ChevronRight, CirclePlay, ClipboardList, Clock3 } from "lucide-react";
+import { Award, Check, ChevronRight, CirclePlay, ClipboardList, Clock3, X } from "lucide-react";
 import ProgressBar from "./ProgressBar";
 
 const formatDuration = (seconds) => `${Math.max(1, Math.round(seconds / 60))} phút`;
@@ -20,16 +20,57 @@ export default function LearnCourseSidebar({
     onLessonSelect,
     onQuizSelect,
     onAssignmentSelect,
+    open = false,
+    onClose,
 }) {
+    const selectLesson = (lessonId) => {
+        onLessonSelect(lessonId);
+        onClose?.();
+    };
+
+    const selectQuiz = (quizId) => {
+        onQuizSelect(quizId);
+        onClose?.();
+    };
+
+    const selectAssignment = (chapterId) => {
+        onAssignmentSelect(chapterId);
+        onClose?.();
+    };
+
     return (
-        <aside className="learning-course-sidebar border-r border-brand-border bg-brand-panel lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto">
-            <div className="flex items-center gap-3 border-b border-brand-border p-5">
-                <div className="grid h-11 w-11 place-items-center rounded-2xl bg-brand-accent text-2xl font-black">汉</div>
-                <div className="min-w-0">
-                    <h1 className="truncate text-base font-extrabold">{course.displayTitle}</h1>
-                    <p className="truncate text-sm text-brand-courseMuted">{course.teacherName}</p>
+        <>
+            {open && (
+                <button
+                    type="button"
+                    className="fixed inset-x-0 bottom-0 top-[68px] z-30 bg-brand-black/60 backdrop-blur-[2px] lg:hidden"
+                    onClick={onClose}
+                    aria-label="Đóng nội dung khóa học"
+                />
+            )}
+
+            <aside
+                id="learn-course-navigation"
+                aria-label="Nội dung khóa học"
+                className={`learning-course-sidebar fixed bottom-0 left-0 top-[68px] z-40 w-[min(22rem,calc(100vw-2.5rem))] overflow-y-auto border-r border-brand-border bg-brand-panel shadow-2xl shadow-brand-black/30 transition-[transform,visibility] duration-300 ${
+                    open ? "visible translate-x-0" : "invisible -translate-x-full"
+                } lg:visible lg:sticky lg:top-0 lg:z-auto lg:h-screen lg:w-auto lg:translate-x-0 lg:overflow-y-auto lg:shadow-none`}
+            >
+                <div className="flex items-center gap-3 border-b border-brand-border p-5">
+                    <div className="grid h-11 w-11 place-items-center rounded-2xl bg-brand-accent text-2xl font-black">汉</div>
+                    <div className="min-w-0 flex-1">
+                        <h1 className="truncate text-base font-extrabold">{course.displayTitle}</h1>
+                        <p className="truncate text-sm text-brand-courseMuted">{course.teacherName}</p>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-brand-border text-brand-courseMuted transition hover:border-brand-accent/60 hover:text-brand-white lg:hidden"
+                        aria-label="Đóng nội dung khóa học"
+                    >
+                        <X className="h-5 w-5" />
+                    </button>
                 </div>
-            </div>
 
             <div className="m-4 rounded-2xl border border-brand-sidebarActive bg-brand-sidebarItem p-4">
                 <div className="mb-3 flex items-center justify-between text-sm font-bold">
@@ -49,7 +90,7 @@ export default function LearnCourseSidebar({
                         <div key={chapter.id} className="border-t border-brand-border pt-3 first:border-t-0">
                             <button
                                 type="button"
-                                onClick={() => onLessonSelect(chapter.lessons[0].id)}
+                                onClick={() => selectLesson(chapter.lessons[0].id)}
                                 className="flex w-full items-center gap-3 rounded-xl px-2 py-3 text-left transition hover:bg-brand-cardBg"
                             >
                                 <StatusDot active={isActiveChapter} done={stats.done === stats.total} />
@@ -70,7 +111,7 @@ export default function LearnCourseSidebar({
                                                 icon={CirclePlay}
                                                 label={`Bài ${lesson.orderIndex || lesson.order_index}: ${lesson.title}`}
                                                 sub={formatDuration(lesson.durationSeconds || lesson.duration_seconds)}
-                                                onClick={() => onLessonSelect(lesson.id)}
+                                                onClick={() => selectLesson(lesson.id)}
                                             />
                                             {lesson.quiz && (
                                                 <SidebarItem
@@ -79,7 +120,7 @@ export default function LearnCourseSidebar({
                                                     icon={ClipboardList}
                                                     label={lesson.quiz.title}
                                                     sub={`${lesson.quiz.time_limit_minutes || lesson.quiz.timeLimitMinutes || 5} phút`}
-                                                    onClick={() => onQuizSelect(lesson.quiz.id)}
+                                                    onClick={() => selectQuiz(lesson.quiz.id)}
                                                 />
                                             )}
                                         </div>
@@ -92,7 +133,7 @@ export default function LearnCourseSidebar({
                                             label={chapter.assignment.title}
                                             sub={chapterStats[chapter.id]?.done >= chapter.lessons.length * 2 ? "Sẵn sàng" : "Hoàn thành bài học trước"}
                                             highlight
-                                            onClick={() => onAssignmentSelect(chapter.id)}
+                                            onClick={() => selectAssignment(chapter.id)}
                                         />
                                     )}
                                 </div>
@@ -100,8 +141,9 @@ export default function LearnCourseSidebar({
                         </div>
                     );
                 })}
-            </nav>
-        </aside>
+                </nav>
+            </aside>
+        </>
     );
 }
 

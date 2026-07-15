@@ -22,19 +22,22 @@ export default function ChangePassword({ passwordForm, showPasswords, setShowPas
                             value={passwordForm[field.name]}
                             onChange={(e) => onInputChange(e, "password")}
                             className={`${baseInputClass} pr-12`}
+                            autoComplete={field.name === "currentPassword" ? "current-password" : "new-password"}
                             required
                         />
                         <button
                             type="button"
                             onClick={() => setShowPasswords((prev) => ({ ...prev, [field.typeKey]: !prev[field.typeKey] }))}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-textSecondary"
+                            className="absolute right-3 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-lg text-brand-textSecondary transition hover:bg-brand-accent/10 hover:text-brand-white"
+                            aria-label={showPasswords[field.typeKey] ? `Ẩn ${field.label.toLowerCase()}` : `Hiện ${field.label.toLowerCase()}`}
+                            aria-pressed={showPasswords[field.typeKey]}
                         >
                             {showPasswords[field.typeKey] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                         </button>
                     </div>
                 </label>
             ))}
-            <button type="submit" disabled={isSaving} className="mt-2 inline-flex w-fit items-center gap-2 rounded-lg bg-brand-accent px-5 py-2.5 text-sm font-bold text-brand-white hover:bg-brand-accentHover disabled:opacity-50">
+            <button type="submit" disabled={isSaving} className="mt-2 inline-flex w-fit items-center gap-2 rounded-xl bg-brand-accent px-5 py-3 text-sm font-bold text-brand-white shadow-lg shadow-brand-accent/20 transition hover:bg-brand-accentHover disabled:cursor-not-allowed disabled:opacity-50">
                 {isSaving ? <RefreshCw className="h-4 w-4 animate-spin" /> : <LockKeyhole className="h-4 w-4" />}
                 {isSaving ? "Đang cập nhật..." : "Cập nhật mật khẩu"}
             </button>

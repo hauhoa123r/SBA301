@@ -1,5 +1,6 @@
 import { Search, SlidersHorizontal } from "lucide-react";
 import ChapterCourseCard from "./ChapterCourseCard";
+import UserStagger from "../../../../shared/components/animation/UserStagger";
 
 const courseFilters = ["Tất cả chương", "Đã mở", "Đang học", "Đã hoàn thành"];
 
@@ -47,11 +48,11 @@ export default function MyCoursesView({ course }) {
                 <span className="text-sm text-status-warningSoft">🏆 92/243</span>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
+            <UserStagger className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5" itemClassName="h-full" distance={20} step={60}>
                 {course.chapters.map((chapter) => (
                     <ChapterCourseCard key={chapter.id} course={course} chapter={chapter} />
                 ))}
-            </div>
+            </UserStagger>
         </section>
     );
 }

@@ -1,10 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import HeroFooter from "../components/HeroFooter";
 import HeroHeader from "../components/HeroHeader";
 
 export default function MainLayout() {
     const location = useLocation();
+    const isAdminRoute = location.pathname === "/admin" || location.pathname.startsWith("/admin/");
+
+    useEffect(() => {
+        if (!isAdminRoute) {
+            window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+        }
+    }, [isAdminRoute, location.pathname]);
 
     return <MainLayoutChrome key={location.pathname} />;
 }

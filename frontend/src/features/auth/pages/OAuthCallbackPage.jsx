@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../../../app/provider/useAuth";
 import { exchangeOAuthCode } from "../service/authService";
+import UserReveal from "@/shared/components/animation/UserReveal";
 
 const exchanges = new Map();
 
@@ -49,8 +50,8 @@ export default function OAuthCallbackPage() {
   }, [callback, navigate, setUser]);
 
   return (
-    <main className="flex min-h-[60vh] items-center justify-center p-6 text-brand-textPrimary">
-      <div className="max-w-md rounded-2xl bg-brand-cardBg p-8 text-center shadow-xl">
+    <main className="user-ui-scope flex min-h-[60vh] items-center justify-center p-6 text-brand-textPrimary">
+      <UserReveal className="w-full max-w-md rounded-2xl border border-brand-accent/15 bg-brand-cardBg p-8 text-center shadow-xl" distance={20} aria-live="polite">
         {error ? (
           <>
             <h1 className="mb-3 text-xl font-bold">Không thể đăng nhập</h1>
@@ -65,7 +66,7 @@ export default function OAuthCallbackPage() {
             <p>Đang hoàn tất đăng nhập…</p>
           </>
         )}
-      </div>
+      </UserReveal>
     </main>
   );
 }

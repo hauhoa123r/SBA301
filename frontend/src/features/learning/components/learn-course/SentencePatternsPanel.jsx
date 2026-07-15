@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Volume2, VolumeX, Sparkles, MessageCircle } from "lucide-react";
+import { useState } from "react";
+import { Volume2, Sparkles, MessageCircle } from "lucide-react";
 
 export default function SentencePatternsPanel({ sentencePatterns = [] }) {
     const [playingId, setPlayingId] = useState(null);
@@ -75,6 +75,7 @@ export default function SentencePatternsPanel({ sentencePatterns = [] }) {
 
                             {/* Action Button */}
                             <button
+                                type="button"
                                 onClick={() => playAudio(pattern)}
                                 className={`p-3 rounded-xl border transition-all shrink-0 ${
                                     isPlaying
@@ -82,6 +83,7 @@ export default function SentencePatternsPanel({ sentencePatterns = [] }) {
                                         : "bg-brand-quizPanel border-brand-border hover:bg-brand-accent/20 hover:border-brand-accent text-brand-accentSoft"
                                 }`}
                                 title="Nghe phát âm"
+                                aria-label={`Nghe phát âm mẫu câu ${index + 1}`}
                             >
                                 {isPlaying ? (
                                     <div className="flex items-center gap-1">

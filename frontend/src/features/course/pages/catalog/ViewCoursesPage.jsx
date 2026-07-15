@@ -3,8 +3,9 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import CourseList from "../../components/catalog/CourseList";
 import CourseSearchSection from "../../components/catalog/CourseSearchSection";
 import { getCourses } from "../../services/api/courseService";
+import UserReveal from "../../../../shared/components/animation/UserReveal";
 
-const COURSES_PER_PAGE = 6;
+const COURSES_PER_PAGE = 8;
 
 export default function ViewCoursesPage() {
     const [keyword, setKeyword] = useState("");
@@ -77,41 +78,43 @@ export default function ViewCoursesPage() {
     };
 
     return (
-        <section className="container mx-auto px-6 py-12 text-brand-textPrimary" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
+        <section className="user-ui-scope container mx-auto px-4 py-10 text-brand-textPrimary sm:px-6 sm:py-12" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
                 <CourseSearchSection keyword={keyword} onKeywordChange={setKeyword} onSearch={handleSearch} />
 
-                <div className="mb-5 flex items-center justify-between text-sm text-brand-textSecondary">
+                <UserReveal as="div" className="mb-5 flex flex-col gap-1 text-sm text-brand-textSecondary sm:flex-row sm:items-center sm:justify-between" distance={14} duration={480}>
                     <span>
                         Hiển thị {visibleCourses.length} / {filteredCourses.length} khóa học
                     </span>
                     <span>
                         Trang {currentPage} / {totalPages}
                     </span>
-                </div>
+                </UserReveal>
 
                 {errorMessage ? (
-                    <div className="rounded-2xl border border-status-danger/20 bg-status-danger/10 p-6 text-sm font-semibold text-status-danger">
+                    <div role="alert" className="rounded-2xl border border-status-danger/20 bg-status-danger/10 p-6 text-sm font-semibold text-status-danger">
                         {errorMessage}
                     </div>
                 ) : (
                     <CourseList courses={visibleCourses} isLoading={isLoading} />
                 )}
 
-                <div className="mt-10 flex items-center justify-center gap-3">
-                    <button type="button" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1} className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-brand-accent/20 text-brand-textSecondary transition hover:border-brand-accent/60 hover:text-brand-white disabled:cursor-not-allowed disabled:opacity-40">
-                        <ChevronLeft className="h-4 w-4" />
-                    </button>
-
-                    {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
-                        <button key={page} type="button" onClick={() => goToPage(page)} className={`h-10 w-10 rounded-xl text-sm font-semibold transition ${page === currentPage ? "bg-brand-accent text-brand-white" : "border border-brand-accent/20 text-brand-textSecondary hover:border-brand-accent/60 hover:text-brand-white"}`}>
-                            {page}
+                <UserReveal as="nav" aria-label="Phân trang khóa học" className="mt-10 overflow-x-auto pb-1" distance={14} duration={480}>
+                    <div className="mx-auto flex w-max min-w-full items-center justify-center gap-2 sm:gap-3">
+                        <button type="button" aria-label="Trang trước" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1} className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-brand-accent/20 text-brand-textSecondary transition hover:border-brand-accent/60 hover:text-brand-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accentSoft disabled:cursor-not-allowed disabled:opacity-40">
+                            <ChevronLeft className="h-4 w-4" aria-hidden="true" />
                         </button>
-                    ))}
 
-                    <button type="button" onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages} className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-brand-accent/20 text-brand-textSecondary transition hover:border-brand-accent/60 hover:text-brand-white disabled:cursor-not-allowed disabled:opacity-40">
-                        <ChevronRight className="h-4 w-4" />
-                    </button>
-                </div>
+                        {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
+                            <button key={page} type="button" aria-label={`Đến trang ${page}`} aria-current={page === currentPage ? "page" : undefined} onClick={() => goToPage(page)} className={`h-10 w-10 shrink-0 rounded-xl text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accentSoft ${page === currentPage ? "bg-brand-accent text-brand-white" : "border border-brand-accent/20 text-brand-textSecondary hover:border-brand-accent/60 hover:text-brand-white"}`}>
+                                {page}
+                            </button>
+                        ))}
+
+                        <button type="button" aria-label="Trang sau" onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages} className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-brand-accent/20 text-brand-textSecondary transition hover:border-brand-accent/60 hover:text-brand-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accentSoft disabled:cursor-not-allowed disabled:opacity-40">
+                            <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                        </button>
+                    </div>
+                </UserReveal>
         </section>
     );
 }

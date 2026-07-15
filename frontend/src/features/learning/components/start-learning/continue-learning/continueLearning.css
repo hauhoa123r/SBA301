@@ -1,0 +1,106 @@
+.continue-learning-card-shell {
+    isolation: isolate;
+    position: relative;
+    background-image:
+        radial-gradient(circle at 0 0, color-mix(in srgb, var(--color-brand-accent) 18%, transparent), transparent 34%),
+        linear-gradient(135deg, var(--color-brand-panel), var(--color-brand-panelAlt));
+}
+
+.continue-learning-card-shell::before {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    background: linear-gradient(115deg, color-mix(in srgb, var(--color-brand-white) 5%, transparent), transparent 38%);
+    content: "";
+    pointer-events: none;
+}
+
+.continue-learning-thumbnail::after {
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(135deg, color-mix(in srgb, var(--color-brand-accent) 12%, transparent), transparent 55%);
+    content: "";
+    pointer-events: none;
+}
+
+.continue-learning-progress-fill {
+    width: var(--continue-learning-progress, 0%);
+    transform: scaleX(0);
+    transform-origin: left center;
+    background-image: linear-gradient(90deg, var(--color-brand-accent), var(--color-brand-accentBright));
+    box-shadow: 0 0 16px color-mix(in srgb, var(--color-brand-accentBright) 55%, transparent);
+    animation: continue-learning-progress-enter 760ms cubic-bezier(0.22, 1, 0.36, 1) 120ms forwards;
+    will-change: transform;
+}
+
+.continue-learning-cta {
+    isolation: isolate;
+    position: relative;
+}
+
+.continue-learning-cta::before {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 0;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-brand-white) 35%, transparent);
+    content: "";
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0);
+    transition: opacity 260ms ease, transform 420ms ease;
+}
+
+.continue-learning-cta:hover::before,
+.continue-learning-cta:focus-visible::before {
+    opacity: 0.28;
+    transform: translate(-50%, -50%) scale(10);
+}
+
+.continue-learning-skeleton-bar {
+    position: relative;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--color-brand-textSecondary) 13%, var(--color-brand-light));
+}
+
+.continue-learning-skeleton-bar::after {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--color-brand-white) 12%, transparent), transparent);
+    content: "";
+    transform: translateX(-100%);
+    animation: continue-learning-skeleton-shimmer 1.35s ease-in-out infinite;
+}
+
+@keyframes continue-learning-progress-enter {
+    to {
+        transform: scaleX(1);
+    }
+}
+
+@keyframes continue-learning-skeleton-shimmer {
+    to {
+        transform: translateX(100%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .continue-learning-progress-fill {
+        transform: scaleX(1);
+        animation: none;
+        will-change: auto;
+    }
+
+    .continue-learning-skeleton-bar::after {
+        animation: none;
+        opacity: 0;
+    }
+
+    .continue-learning-cta::before {
+        display: none;
+        transition: none;
+    }
+}

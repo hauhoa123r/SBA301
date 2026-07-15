@@ -16,7 +16,7 @@ export const CONTACT_METHODS = [
     {
         icon: MapPin,
         title: "Văn phòng",
-        value: "Thành phố Hồ Chí Minh, Việt Nam",
+        value: "Hòa Lạc, Hà Nội",
         description: "Được xây dựng cho người Việt học tiếng Trung tự tin hơn mỗi ngày.",
     },
 ];

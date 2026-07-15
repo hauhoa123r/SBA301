@@ -17,6 +17,7 @@ export default function LearnCourseLayout() {
     const navigate = useNavigate();
     const [course, setCourse] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const [completedLessons, setCompletedLessons] = useState(() => new Set([1001, 1002]));
     const [passedQuizzes, setPassedQuizzes] = useState(() => new Set([5001]));
@@ -27,6 +28,8 @@ export default function LearnCourseLayout() {
 
     useEffect(() => {
         let isMounted = true;
+        // Keep the existing loading transition while the selected course changes.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setLoading(true);
         getCourseLearningDetails(courseId)
             .then((data) => {
@@ -53,6 +56,17 @@ export default function LearnCourseLayout() {
             isMounted = false;
         };
     }, [courseId]);
+
+    useEffect(() => {
+        if (!sidebarOpen) return undefined;
+
+        const handleKeyDown = (event) => {
+            if (event.key === "Escape") setSidebarOpen(false);
+        };
+
+        document.addEventListener("keydown", handleKeyDown);
+        return () => document.removeEventListener("keydown", handleKeyDown);
+    }, [sidebarOpen]);
 
     if (loading) {
         return (
@@ -131,8 +145,8 @@ export default function LearnCourseLayout() {
     };
 
     return (
-        <div className="min-h-screen bg-brand-darker text-brand-white" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
-            <div className="grid min-h-screen lg:grid-cols-[345px_1fr]">
+        <div className="user-ui-scope min-h-screen bg-brand-darker text-brand-white" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
+            <div className="min-h-screen lg:grid lg:grid-cols-[345px_1fr]">
                 <LearnCourseSidebar
                     course={course}
                     activeChapter={activeChapter}
@@ -150,10 +164,15 @@ export default function LearnCourseLayout() {
                     onLessonSelect={goLesson}
                     onQuizSelect={goQuiz}
                     onAssignmentSelect={goAssignment}
+                    open={sidebarOpen}
+                    onClose={() => setSidebarOpen(false)}
                 />
 
                 <main className="min-w-0">
-                    <LearnCourseHeader />
+                    <LearnCourseHeader
+                        sidebarOpen={sidebarOpen}
+                        onSidebarToggle={() => setSidebarOpen((current) => !current)}
+                    />
 
                     <div className="mx-auto max-w-6xl px-5 py-7 md:px-8">
                         <Outlet

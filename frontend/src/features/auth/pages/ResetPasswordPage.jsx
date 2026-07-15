@@ -4,6 +4,7 @@ import {ArrowLeft, Eye, EyeOff, LockKeyhole, RefreshCw, ShieldCheck} from "lucid
 import {validateResetPassword, validateResetPasswordToken} from "../shared/utils/validator.js";
 import {resetPassword} from "../service/authService.js";
 import {getApiErrorMessage, showErrorToast, showSuccessToast} from "../../../shared/utils/toast";
+import UserReveal from "@/shared/components/animation/UserReveal";
 
 const baseInputClass =
     "w-full bg-brand-light border border-brand-accent/20 focus:border-brand-accent/60 text-brand-textPrimary placeholder-brand-textSecondary/50 rounded-xl px-4 py-3 text-sm outline-none transition-colors";
@@ -72,7 +73,7 @@ export default function ResetPasswordPage() {
     };
 
     return (
-        <div className="relative overflow-hidden text-brand-textPrimary" style={{fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif"}}>
+        <div className="user-ui-scope relative overflow-hidden text-brand-textPrimary" style={{fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif"}}>
             <div className="fixed inset-0 pointer-events-none">
                 <div
                     className="absolute top-[-20%] left-[-10%] w-125 h-125 rounded-full bg-brand-accent/15 blur-[120px]"/>
@@ -87,9 +88,9 @@ export default function ResetPasswordPage() {
                 />
             </div>
 
-            <section className="relative z-10 flex min-h-[calc(100vh-160px)] items-center justify-center p-6">
-                <div
-                    className="w-full max-w-5xl overflow-hidden rounded-3xl border border-brand-accent/15 shadow-2xl shadow-brand-accent/10 grid md:grid-cols-[0.9fr_1.1fr]">
+            <section className="relative z-10 flex min-h-[calc(100vh-160px)] items-center justify-center p-4 sm:p-6">
+                <UserReveal
+                    className="grid w-full max-w-5xl overflow-hidden rounded-3xl border border-brand-accent/15 shadow-2xl shadow-brand-accent/10 md:grid-cols-[0.9fr_1.1fr]" distance={20}>
                     <section
                         className="relative hidden overflow-hidden bg-brand-dark p-10 md:flex md:flex-col md:justify-between">
                         <div
@@ -157,15 +158,16 @@ export default function ResetPasswordPage() {
 
                         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
                             {formError ? (
-                                <p className="rounded-xl border border-social-google/30 bg-social-google/10 px-4 py-3 text-sm font-semibold text-social-google">
+                                <p role="alert" className="rounded-xl border border-social-google/30 bg-social-google/10 px-4 py-3 text-sm font-semibold text-social-google">
                                     {formError}
                                 </p>
                             ) : null}
                             <div className="relative">
-                                <label className={fieldLabelClass}>Mật khẩu mới</label>
+                                <label htmlFor="reset-new-password" className={fieldLabelClass}>Mật khẩu mới</label>
                                 <div className="relative">
                                     <input
                                         name="new_password"
+                                        id="reset-new-password"
                                         required
                                         value={formData.new_password}
                                         onChange={handleChange}
@@ -186,10 +188,11 @@ export default function ResetPasswordPage() {
                             </div>
 
                             <div className="relative">
-                                <label className={fieldLabelClass}>Xác nhận mật khẩu mới</label>
+                                <label htmlFor="reset-confirm-password" className={fieldLabelClass}>Xác nhận mật khẩu mới</label>
                                 <div className="relative">
                                     <input
                                         name="confirm_password"
+                                        id="reset-confirm-password"
                                         required
                                         value={formData.confirm_password}
                                         onChange={handleChange}
@@ -216,7 +219,7 @@ export default function ResetPasswordPage() {
                             </button>
                         </form>
                     </section>
-                </div>
+                </UserReveal>
             </section>
         </div>
     );
