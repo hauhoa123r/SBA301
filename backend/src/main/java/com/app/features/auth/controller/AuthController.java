@@ -5,6 +5,7 @@ import com.app.features.auth.dto.request.ResetPasswordRequest;
 import com.app.features.auth.dto.request.LoginRequest;
 import com.app.features.auth.dto.request.RegisterRequest;
 import com.app.features.auth.dto.response.LoginResponse;
+import com.app.features.auth.dto.response.TokenResponse;
 import com.app.features.auth.service.UserService;
 import com.app.features.auth.service.PasswordService;
 import com.app.utils.ApiPath;
@@ -28,7 +29,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest user){
         log.info("Login request received, email={}", user.getEmail());
-        LoginResponse loginResponse = userService.login(user);
+        TokenResponse loginResponse = userService.login(user);
         return ResponseEntity.ok(loginResponse);
     }
 
