@@ -13,6 +13,12 @@ const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
     const { setUser } = useAuth();
+    const loginWithGoogle = () => {
+        window.location.assign("/api/oauth2/authorization/google");
+    };
+    const loginWithFacebook = () => {
+        window.location.assign("/api/oauth2/authorization/facebook");
+    };
 
 
     const handleChange = (e) => {
@@ -100,6 +106,7 @@ const LoginPage = () => {
                             <div className="grid gap-3 sm:grid-cols-2">
                                 <button
                                     type="button"
+                                    onClick={loginWithGoogle}
                                     className="inline-flex items-center justify-center gap-2 rounded-xl border border-brand-accent/20 bg-brand-light px-4 py-3 text-sm font-semibold text-brand-white transition hover:border-brand-accent/50 hover:bg-brand-accent/10"
                                 >
                                     <FaGoogle className="h-4 w-4 text-social-google" />
@@ -107,6 +114,7 @@ const LoginPage = () => {
                                 </button>
                                 <button
                                     type="button"
+                                    onClick={loginWithFacebook}
                                     className="inline-flex items-center justify-center gap-2 rounded-xl border border-brand-accent/20 bg-brand-light px-4 py-3 text-sm font-semibold text-brand-white transition hover:border-brand-accent/50 hover:bg-brand-accent/10"
                                 >
                                     <FaFacebookF className="h-4 w-4 text-social-facebook" />

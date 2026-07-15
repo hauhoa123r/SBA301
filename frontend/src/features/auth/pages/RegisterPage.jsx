@@ -16,6 +16,12 @@ const fieldLabelClass = "block text-xs font-semibold text-brand-textSecondary up
 
 export default function RegisterPage() {
     const navigate = useNavigate();
+    const registerWithGoogle = () => {
+        window.location.assign("/api/oauth2/authorization/google");
+    };
+    const registerWithFacebook = () => {
+        window.location.assign("/api/oauth2/authorization/facebook");
+    };
     const [formData, setFormData] = useState({
         fullName: "",
         email: "",
@@ -121,11 +127,11 @@ export default function RegisterPage() {
                             </div>
 
                             <div className="grid gap-3 sm:grid-cols-2">
-                                <button type="button" className={socialButtonClass}>
+                                <button type="button" onClick={registerWithGoogle} className={socialButtonClass}>
                                     <FaGoogle className="h-4 w-4 text-social-google" />
                                     Google
                                 </button>
-                                <button type="button" className={socialButtonClass}>
+                                <button type="button" onClick={registerWithFacebook} className={socialButtonClass}>
                                     <FaFacebookF className="h-4 w-4 text-social-facebook" />
                                     Facebook
                                 </button>

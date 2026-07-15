@@ -24,6 +24,9 @@ public class UserEntity {
     @Column(name = "full_name", nullable = false)
     private String fullName;
 
+    @Column(name = "avatar_url", length = 2048)
+    private String avatarUrl;
+
     @Column(nullable = false, unique = true)
     private String email;
 
