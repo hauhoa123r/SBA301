@@ -1,6 +1,6 @@
 package com.app.features.auth.controller;
 
-import com.app.features.auth.dto.request.ForgotPasswordRequest;
+import com.app.features.auth.dto.request.EmailRequest;
 import com.app.features.auth.dto.request.ResetPasswordRequest;
 import com.app.features.auth.dto.request.LoginRequest;
 import com.app.features.auth.dto.request.RegisterRequest;
@@ -26,7 +26,7 @@ public class AuthController {
     private final PasswordService passwordService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest user){
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest user) {
         log.info("Login request received, email={}", user.getEmail());
         LoginResponse loginResponse = userService.login(user);
         return ResponseEntity.ok(loginResponse);
@@ -40,16 +40,9 @@ public class AuthController {
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<Map<String, String>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
-        try {
-            passwordService.processForgotPassword(request.getEmail());
-            return ResponseEntity.ok(Map.of("message", "Đã gửi mã đặt lại mật khẩu đến email của bạn."));
-        } catch (IllegalArgumentException ex) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
-        } catch (RuntimeException ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("message", "Không thể gửi email, vui lòng thử lại sau."));
-        }
+    public ResponseEntity<Map<String, String>> forgotPassword(@Valid @RequestBody EmailRequest request) {
+        passwordService.processForgotPassword(request.getEmail());
+        return ResponseEntity.ok(Map.of("message", "Đã gửi mã đặt lại mật khẩu đến email của bạn."));
     }
 
     @PatchMapping("/reset-password")

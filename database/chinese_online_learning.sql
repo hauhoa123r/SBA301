@@ -62,7 +62,7 @@ CREATE TABLE users (
 
 CREATE TABLE verification_tokens (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    token VARCHAR(255) NOT NULL UNIQUE,
+    token VARCHAR(255) NOT NULL,
     token_type VARCHAR(50) NOT NULL,
     user_id BIGINT NOT NULL,
     expiry_date TIMESTAMP NOT NULL,

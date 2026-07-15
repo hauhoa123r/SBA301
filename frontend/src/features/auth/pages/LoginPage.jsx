@@ -1,16 +1,20 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaFacebookF, FaGoogle } from "react-icons/fa";
-import { Eye, EyeOff, Zap } from "lucide-react";
-import {login} from "../service/authService";
+import { Eye, EyeOff, MailCheck, Zap } from "lucide-react";
+import { login, resendVerificationEmail } from "../service/authService";
 import useAuth from "../../../app/provider/useAuth";
-import { showApiErrorToast } from "@/shared/utils/toast.js";
+import { getApiErrorMessage, showApiErrorToast, showSuccessToast } from "@/shared/utils/toast.js";
 import { validInput } from "@/shared/utils/inputHandler.js";
 
 const LoginPage = () => {
-    const [formData, setFormData] = useState({ email: "", password: "" });
+    const location = useLocation();
+    const pendingVerificationEmail = location.state?.pendingVerificationEmail || "";
+    const [formData, setFormData] = useState({ email: pendingVerificationEmail, password: "" });
     const [errors, setErrors] = useState({ email: "", password: "" });
     const [showPassword, setShowPassword] = useState(false);
+    const [canResendVerification, setCanResendVerification] = useState(Boolean(pendingVerificationEmail));
+    const [isResendingVerification, setIsResendingVerification] = useState(false);
     const navigate = useNavigate();
     const { setUser } = useAuth();
 
@@ -21,6 +25,9 @@ const LoginPage = () => {
             ...prev,
             [name]: value,
         }));
+        if (name === "email") {
+            setCanResendVerification(false);
+        }
         if (errors[name]) {
             setErrors((prev) => ({
                 ...prev,
@@ -64,7 +71,29 @@ const LoginPage = () => {
             setUser(loggedInUser);
             navigate("/");
         } catch (err) {
+            const message = getApiErrorMessage(err, "Đăng nhập thất bại. Vui lòng kiểm tra email hoặc mật khẩu.");
+            setCanResendVerification(message.toLowerCase().includes("kích hoạt"));
             showApiErrorToast(err, "Đăng nhập thất bại. Vui lòng kiểm tra email hoặc mật khẩu.");
+        }
+    };
+
+    const handleResendVerification = async () => {
+        const email = formData.email.trim();
+        const emailError = validInput("email", email);
+
+        if (emailError) {
+            setErrors((prev) => ({ ...prev, email: emailError }));
+            return;
+        }
+
+        setIsResendingVerification(true);
+        try {
+            const response = await resendVerificationEmail({ email });
+            showSuccessToast(response?.message || "Đã gửi lại email xác thực.");
+        } catch (err) {
+            showApiErrorToast(err, "Không thể gửi lại email xác thực. Vui lòng thử lại sau.");
+        } finally {
+            setIsResendingVerification(false);
         }
     };
 
@@ -174,6 +203,22 @@ const LoginPage = () => {
                                         Quên mật khẩu?
                                     </Link>
                                 </div>
+                                {canResendVerification ? (
+                                    <div className="mb-6 rounded-xl border border-brand-accent/20 bg-brand-light px-4 py-3">
+                                        <p className="mb-3 text-sm font-semibold text-brand-textPrimary">
+                                            Tài khoản chưa được kích hoạt.
+                                        </p>
+                                        <button
+                                            type="button"
+                                            onClick={handleResendVerification}
+                                            disabled={isResendingVerification}
+                                            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-brand-accent/30 bg-brand-accent/10 px-4 py-2.5 text-sm font-semibold text-brand-accentSoft transition hover:bg-brand-accent/20 disabled:cursor-not-allowed disabled:opacity-70"
+                                        >
+                                            <MailCheck className="h-4 w-4" />
+                                            {isResendingVerification ? "Đang gửi lại" : "Gửi lại email xác thực"}
+                                        </button>
+                                    </div>
+                                ) : null}
 
                                 <button
                                     type="submit"

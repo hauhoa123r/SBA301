@@ -2,7 +2,7 @@ package com.app.features.auth.service.impl;
 
 import com.app.features.auth.dto.ResetPasswordDto;
 import com.app.features.auth.dto.request.ResetPasswordRequest;
-import com.app.features.auth.repository.PasswordChangeRepository;
+import com.app.features.auth.repository.UserRepository;
 import com.app.features.auth.service.PasswordService;
 import com.app.features.auth.service.VerificationTokenService;
 import com.app.features.mailSender.service.MailService;
@@ -19,7 +19,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PasswordServiceImpl implements PasswordService {
     private final MailService mailService;
-    private final PasswordChangeRepository passwordChangeRepository;
+    private final UserRepository userRepository;
     private final VerificationTokenService verificationTokenService;
     private final SecureRandom secureRandom = new SecureRandom();
 
@@ -31,7 +31,7 @@ public class PasswordServiceImpl implements PasswordService {
             throw new IllegalArgumentException("Vui lòng nhập email.");
         }
 
-        UserEntity user = passwordChangeRepository.findByEmail(normalizedEmail)
+        UserEntity user = userRepository.findByEmail(normalizedEmail)
                 .orElseThrow(() -> new IllegalArgumentException("Email không tồn tại."));
 
         String token = String.format("%06d", secureRandom.nextInt(1_000_000));
@@ -58,7 +58,7 @@ public class PasswordServiceImpl implements PasswordService {
         }
 
         user.setPasswordHash(resetPassword.newPassword());
-        passwordChangeRepository.save(user);
+        userRepository.save(user);
         verificationTokenService.markUsed(resetToken);
     }
 

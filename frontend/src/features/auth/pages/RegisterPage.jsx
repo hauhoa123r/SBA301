@@ -80,7 +80,10 @@ export default function RegisterPage() {
                 password: formData.password,
             });
             showSuccessToast("Tạo tài khoản thành công. Vui lòng kích hoạt tài khoản qua mail.");
-            navigate("/login", { replace: true });
+            navigate("/login", {
+                replace: true,
+                state: { pendingVerificationEmail: formData.email.trim() },
+            });
         } catch (error) {
             showApiErrorToast(error, "Có lỗi khi thực hiện đăng ký, vui lòng thử lại sau.");
         }

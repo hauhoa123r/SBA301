@@ -26,6 +26,11 @@ export const verifyEmail = async (data) => {
   return response.data;
 };
 
+export const resendVerificationEmail = async (data) => {
+  const response = await api.post(`${API_AUTH}/resend-verification-email`, data);
+  return response.data;
+};
+
 export const resetPassword = async (data) => {
   const response = await api.patch(`${API_AUTH}/reset-password`, data);
   return response.data;

@@ -39,6 +39,10 @@ public class UserServiceImpl implements UserService {
             log.warn("Login failed: invalid password, email={}", user.getEmail());
             throw new InvalidLoginException("Mật khẩu không đúng");
         }
+        if (userEntity.getStatus() != UserStatus.ACTIVE) {
+            log.warn("Login failed: user is not active, email={}, status={}", user.getEmail(), userEntity.getStatus());
+            throw new InvalidLoginException("Tài khoản chưa được kích hoạt, hãy kiểm tra lại mail");
+        }
         log.info("Login successful, userId={}", userEntity.getId());
         return loginConverter.loginConverter(userEntity);
     }

@@ -1,5 +1,6 @@
 package com.app.features.auth.controller;
 
+import com.app.features.auth.dto.request.EmailRequest;
 import com.app.features.auth.dto.request.VerifyEmailRequest;
 import com.app.features.auth.dto.request.VerifyResetTokenRequest;
 import com.app.features.auth.service.EmailVerificationService;
@@ -39,11 +40,15 @@ public class TokenController {
 
     @PostMapping("/verify-email")
     public ResponseEntity<Map<String, String>> verifyEmail(@Valid @RequestBody VerifyEmailRequest request) {
-        boolean isValid = emailVerificationService.verifyEmail(request.getEmail(), request.getToken());
-        if (!isValid) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(Map.of("message", "Liên kết xác thực không hợp lệ hoặc đã hết hạn."));
-        }
+        emailVerificationService.verifyEmail(request.getEmail(), request.getToken());
         return ResponseEntity.ok(Map.of("message", "Xác thực email thành công. Bạn có thể đóng tab này."));
+    }
+
+    @PostMapping("/resend-verification-email")
+    public ResponseEntity<Map<String, String>> resendVerificationEmail(
+            @Valid @RequestBody EmailRequest request
+    ) {
+        emailVerificationService.resendVerificationEmail(request.getEmail());
+        return ResponseEntity.ok(Map.of("message", "Đã gửi lại email xác thực."));
     }
 }
