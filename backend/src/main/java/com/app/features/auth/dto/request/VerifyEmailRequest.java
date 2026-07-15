@@ -7,8 +7,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ForgotPasswordRequest {
+public class VerifyEmailRequest {
     @NotBlank(message = "Vui lòng nhập email.")
     @Email(message = "Vui lòng nhập địa chỉ email hợp lệ.")
     private String email;
+
+    @NotBlank(message = "Vui lòng nhập mã xác thực.")
+    private String token;
 }

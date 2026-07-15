@@ -2,6 +2,7 @@ import ForgotPasswordPage from "../pages/ForgotPasswordPage";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import ResetPasswordPage from "../pages/ResetPasswordPage.jsx";
+import VerifyEmailPage from "../pages/VerifyEmailPage.jsx";
 
 const authRoutes = [
     {
@@ -19,6 +20,10 @@ const authRoutes = [
     {
         path: "/reset-password",
         element: <ResetPasswordPage />
+    },
+    {
+        path: "/verify-email",
+        element: <VerifyEmailPage />
     }
 ];
 

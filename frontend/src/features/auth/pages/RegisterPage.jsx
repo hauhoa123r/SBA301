@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaFacebookF, FaGoogle } from "react-icons/fa";
 import { Lock, Mail, User, UserPlus, Zap } from "lucide-react";
-import { toast } from "react-toastify";
-import { validInput } from "../../../shared/utils/inputHandler";
+import { validInput } from "@/shared/utils/inputHandler.js";
+import { showApiErrorToast, showSuccessToast } from "@/shared/utils/toast.js";
+import { register } from "../service/authService.js";
 
 const baseInputClass =
     "w-full bg-brand-light border border-brand-accent/20 focus:border-brand-accent/60 text-brand-textPrimary placeholder-brand-textSecondary/50 rounded-xl px-4 py-3 text-sm outline-none transition-colors";
@@ -58,7 +59,7 @@ export default function RegisterPage() {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         const nextErrors = {
@@ -72,16 +73,24 @@ export default function RegisterPage() {
         if (Object.values(nextErrors).some(Boolean)) {
             return;
         }
-
-        toast.success("Tạo tài khoản thành công. Vui lòng đăng nhập.");
-        navigate("/login", { replace: true });
+        try {
+            await register({
+                fullName: formData.fullName.trim(),
+                email: formData.email.trim(),
+                password: formData.password,
+            });
+            showSuccessToast("Tạo tài khoản thành công. Vui lòng kích hoạt tài khoản qua mail.");
+            navigate("/login", { replace: true });
+        } catch (error) {
+            showApiErrorToast(error, "Có lỗi khi thực hiện đăng ký, vui lòng thử lại sau.");
+        }
     };
 
     return (
         <div className="relative overflow-hidden text-brand-textPrimary" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
             <div className="fixed inset-0 pointer-events-none">
-                <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-brand-accent/15 blur-[120px]" />
-                <div className="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] rounded-full bg-brand-accentDeep/20 blur-[100px]" />
+                <div className="absolute top-[-20%] left-[-10%] w-125 h-125 rounded-full bg-brand-accent/15 blur-[120px]" />
+                <div className="absolute bottom-[-10%] right-[-5%] w-100 h-100 rounded-full bg-brand-accentDeep/20 blur-[100px]" />
                 <div
                     className="absolute inset-0 opacity-[0.03]"
                     style={{
@@ -93,7 +102,7 @@ export default function RegisterPage() {
 
             <section className="relative z-10 flex min-h-[calc(100vh-160px)] items-center justify-center p-6">
                 <div className="w-full max-w-5xl overflow-hidden rounded-3xl border border-brand-accent/15 shadow-2xl shadow-brand-accent/10 grid md:grid-cols-2">
-                    <div className="bg-brand-cardBg flex flex-col justify-between p-10 min-h-[580px]">
+                    <div className="bg-brand-cardBg flex flex-col justify-between p-10 min-h-145">
                         <div>
                             <div className="mb-8">
                                 <div className="inline-flex items-center gap-2 bg-brand-accent/15 border border-brand-accent/25 text-brand-accentSoft text-xs font-semibold px-3 py-1.5 rounded-full mb-6 tracking-wider uppercase">
@@ -203,9 +212,9 @@ export default function RegisterPage() {
                         </div>
                     </div>
                     <div className="relative flex flex-col justify-between p-10 text-brand-white overflow-hidden bg-brand-dark">
-                        <div className="absolute inset-0 bg-gradient-to-br from-brand-accentDeep/60 via-brand-dark to-brand-dark" />
-                        <div className="absolute top-[-60px] right-[-60px] w-[280px] h-[280px] rounded-full bg-brand-accent/20 blur-[80px]" />
-                        <div className="absolute bottom-[-40px] left-[-40px] w-[200px] h-[200px] rounded-full bg-brand-accentDeep/30 blur-[60px]" />
+                        <div className="absolute inset-0 bg-linear-to-br from-brand-accentDeep/60 via-brand-dark to-brand-dark" />
+                        <div className="absolute -top-15 -right-15 w-70 h-70 rounded-full bg-brand-accent/20 blur-[80px]" />
+                        <div className="absolute -bottom-10 -left-10 w-50 h-50 rounded-full bg-brand-accentDeep/30 blur-[60px]" />
                         <div
                             className="absolute inset-0 opacity-[0.05]"
                             style={{

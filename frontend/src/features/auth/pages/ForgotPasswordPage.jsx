@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, KeyRound, Mail, RefreshCw, ShieldCheck } from "lucide-react";
-import { toast } from "react-toastify";
 import { forgotPassword, verifyToken } from "../service/authService.js";
 import { validateEmail, validateToken } from "../shared/utils/validator.js";
+import { showApiErrorToast, showSuccessToast } from "../../../shared/utils/toast";
 
 const baseInputClass =
     "w-full bg-brand-light border border-brand-accent/20 focus:border-brand-accent/60 text-brand-textPrimary placeholder-brand-textSecondary/50 rounded-xl px-4 py-3 text-sm outline-none transition-colors";
@@ -37,11 +37,11 @@ export default function ForgotPasswordPage() {
         try {
             setLoading(true);
             const response = await forgotPassword({ email });
-            toast.success(response?.message || "Đã gửi mã đặt lại mật khẩu.");
+            showSuccessToast(response?.message || "Đã gửi mã đặt lại mật khẩu.");
             setFormData((prev) => ({ ...prev, email }));
             setShowTokenModal(true);
         } catch (error) {
-            toast.error(getErrorMessage(error, "Không thể gửi mã đặt lại mật khẩu."));
+            showApiErrorToast(error, "Không thể gửi mã đặt lại mật khẩu.");
         } finally {
             setLoading(false);
         }
@@ -59,13 +59,13 @@ export default function ForgotPasswordPage() {
         try {
             setLoading(true);
             const response = await verifyToken({ email, token });
-            toast.success(response?.message || "Mã xác minh hợp lệ.");
+            showSuccessToast(response?.message || "Mã xác minh hợp lệ.");
             navigate('/reset-password', {
                 replace: true,
                 state: { email, token }
             });
         } catch (error) {
-            toast.error(getErrorMessage(error, "Không thể xác minh mã."));
+            showApiErrorToast(error, "Không thể xác minh mã.");
         } finally {
             setLoading(false);
         }
@@ -195,10 +195,3 @@ function TokenStep({ token, error, loading, onChange, onSubmit, onBack }) {
     );
 }
 
-function getErrorMessage(error, fallback) {
-    const data = error?.response?.data;
-    if (data?.message && data?.data && typeof data.data === "object") {
-        return Object.values(data.data)[0] || data.message;
-    }
-    return data?.message || error?.message || fallback;
-}

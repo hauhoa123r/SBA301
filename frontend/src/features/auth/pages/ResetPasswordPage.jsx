@@ -1,9 +1,9 @@
 import {useEffect, useState} from "react";
 import {useLocation, useNavigate} from "react-router-dom";
 import {ArrowLeft, Eye, EyeOff, LockKeyhole, RefreshCw, ShieldCheck} from "lucide-react";
-import {toast} from "react-toastify";
 import {validateResetPassword, validateResetPasswordToken} from "../shared/utils/validator.js";
 import {resetPassword} from "../service/authService.js";
+import {getApiErrorMessage, showErrorToast, showSuccessToast} from "../../../shared/utils/toast";
 
 const baseInputClass =
     "w-full bg-brand-light border border-brand-accent/20 focus:border-brand-accent/60 text-brand-textPrimary placeholder-brand-textSecondary/50 rounded-xl px-4 py-3 text-sm outline-none transition-colors";
@@ -28,7 +28,7 @@ export default function ResetPasswordPage() {
 
     useEffect(() => {
         if (validateResetPasswordToken(email, token)) {
-            toast.error("Phiên đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.");
+            showErrorToast("Phiên đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.");
             navigate("/forgot-password", {replace: true});
         }
     }, [email, token, navigate]);
@@ -61,10 +61,10 @@ export default function ResetPasswordPage() {
         try {
             setLoading(true);
             const response = await resetPassword(payload);
-            toast.success(response?.message || "Đặt lại mật khẩu thành công. Vui lòng đăng nhập lại.");
+            showSuccessToast(response?.message || "Đặt lại mật khẩu thành công. Vui lòng đăng nhập lại.");
             navigate("/login", {replace: true});
         } catch (error) {
-            const message = error?.response?.data?.message || error?.message || "Không thể đặt lại mật khẩu, vui lòng thử lại.";
+            const message = getApiErrorMessage(error, "Không thể đặt lại mật khẩu, vui lòng thử lại.");
             setFormError(message);
         } finally {
             setLoading(false);

@@ -1,8 +1,10 @@
 package com.app.features.mailSender.service;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.mail.MailException;
@@ -14,33 +16,59 @@ import java.io.UnsupportedEncodingException;
 
 @Service
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "mail.provider", havingValue = "smtp")
+@Slf4j
+@ConditionalOnProperty(name = "mail.provider", havingValue = "smtp", matchIfMissing = true)
 public class SmtpMailService implements MailService {
     private final JavaMailSender javaMailSender;
     private final MailTemplateService mailTemplateService;
 
-    @Value("${spring.mail.username:}")
-    private String username;
+    @Value("${mail.from.email:${spring.mail.username:}}")
+    private String fromEmail;
+
+    @Value("${mail.from.name:Chinese Online Learning}")
+    private String fromName;
+
+    @PostConstruct
+    public void init() {
+        if (fromEmail == null || fromEmail.isBlank()) {
+            throw new IllegalStateException("Missing required configuration: mail.from.email or spring.mail.username");
+        }
+    }
 
     @Override
     public void sendResetTokenEmail(String userEmail, String token) {
+        sendEmail(
+                userEmail,
+                mailTemplateService.resetPasswordSubject(),
+                mailTemplateService.resetPasswordHtml(token)
+        );
+    }
+
+    @Override
+    public void sendVerifyEmail(String userEmail, String verificationURL) {
+        sendEmail(
+                userEmail,
+                mailTemplateService.verifyAccountSubject(),
+                mailTemplateService.verifyAccountHtml(verificationURL)
+        );
+    }
+
+    private void sendEmail(String to, String subject, String html) {
         try {
-            MimeMessage message = javaMailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
-            String senderEmail = username;
-            if (senderEmail != null && !senderEmail.isBlank()) {
-                helper.setFrom(senderEmail, "sonnh");
-            }
-            helper.setTo(userEmail);
-            helper.setSubject(mailTemplateService.resetPasswordSubject());
-            helper.setText(mailTemplateService.resetPasswordHtml(token), true);
+            helper.setFrom(fromEmail, fromName);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(html, true);
 
-            javaMailSender.send(message);
+            javaMailSender.send(mimeMessage);
         } catch (MessagingException | MailException e) {
+            log.warn("SMTP email request failed, recipient={}", to);
             throw new RuntimeException("Can not send email, please try again.", e);
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Invalid sender display name.", e);
         }
     }
 }

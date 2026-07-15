@@ -52,7 +52,7 @@ CREATE TABLE users (
     full_name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-    status ENUM('ACTIVE', 'LOCKED', 'DELETED') DEFAULT 'ACTIVE',
+    status ENUM('ACTIVE', 'LOCKED', 'DELETED', 'INACTIVE', 'PENDING', 'SUSPENDED', 'BANNED', 'DISABLE') DEFAULT 'ACTIVE',
     total_learning_points INT DEFAULT 0, -- NEW: Điểm tích lũy cho Leaderboard
     referral_code VARCHAR(50) UNIQUE NULL, -- NEW: Mã giới thiệu Affiliate
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

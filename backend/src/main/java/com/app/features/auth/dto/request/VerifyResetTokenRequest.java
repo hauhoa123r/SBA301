@@ -9,11 +9,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class VerifyResetTokenRequest {
-    @NotBlank(message = "Email is required.")
-    @Email(message = "Please enter a valid email address.")
+    @NotBlank(message = "Vui lòng nhập email.")
+    @Email(message = "Vui lòng nhập địa chỉ email hợp lệ.")
     private String email;
 
-    @NotBlank(message = "Token is required.")
-    @Pattern(regexp = "\\d{6}", message = "Token must be 6 digits.")
+    @NotBlank(message = "Vui lòng nhập mã xác minh.")
+    @Pattern(regexp = "\\d{6}", message = "Mã xác minh phải gồm 6 chữ số.")
     private String token;
 }

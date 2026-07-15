@@ -2,9 +2,11 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaFacebookF, FaGoogle } from "react-icons/fa";
 import { Eye, EyeOff, Zap } from "lucide-react";
-import { toast } from "react-toastify";
 import {login} from "../service/authService";
 import useAuth from "../../../app/provider/useAuth";
+import { showApiErrorToast } from "@/shared/utils/toast.js";
+import { validInput } from "@/shared/utils/inputHandler.js";
+
 const LoginPage = () => {
     const [formData, setFormData] = useState({ email: "", password: "" });
     const [errors, setErrors] = useState({ email: "", password: "" });
@@ -12,19 +14,6 @@ const LoginPage = () => {
     const navigate = useNavigate();
     const { setUser } = useAuth();
 
-    const validInput = (name, value) => {
-        if (!value.trim()) {
-            return name === "email" ? "Vui lòng nhập email." : "Vui lòng nhập mật khẩu.";
-        }
-
-        if (name === "email" && !/\S+@\S+\.\S+/.test(value))
-            return "Vui lòng nhập địa chỉ email hợp lệ.";
-
-        if (name === "password" && value.length < 6)
-            return "Mật khẩu phải có ít nhất 6 ký tự.";
-
-        return "";
-    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -50,17 +39,21 @@ const LoginPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const emailError = validInput("email", formData.email);
-        const passwordError = validInput("password", formData.password);
-        if (emailError || passwordError) {
-            setErrors({
-                email: emailError,
-                password: passwordError,
-            });
+        const nextErrors = {
+            email: validInput("email", formData.email),
+            password: validInput("password", formData.password),
+        };
+
+        setErrors(nextErrors);
+
+        if (Object.values(nextErrors).some(Boolean)) {
             return;
         }
         try {
-            const response = await login(formData);
+            const response = await login({
+                email: formData.email.trim(),
+                password: formData.password,
+            });
             const loggedInUser = response?.user || response?.data?.user || response?.data || response;
             const token = response?.token || response?.data?.token || response?.accessToken || response?.data?.accessToken;
 
@@ -71,17 +64,15 @@ const LoginPage = () => {
             setUser(loggedInUser);
             navigate("/");
         } catch (err) {
-            const errMsg = getLoginErrorMessage(err);
-            toast.error(errMsg);
-            console.error(errMsg);
+            showApiErrorToast(err, "Đăng nhập thất bại. Vui lòng kiểm tra email hoặc mật khẩu.");
         }
     };
 
     return (
         <div className="relative overflow-hidden text-brand-textPrimary" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
             <div className="fixed inset-0 pointer-events-none">
-                <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-brand-accent/15 blur-[120px]" />
-                <div className="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] rounded-full bg-brand-accentDeep/20 blur-[100px]" />
+                <div className="absolute top-[-20%] left-[-10%] w-125 h-125 rounded-full bg-brand-accent/15 blur-[120px]" />
+                <div className="absolute bottom-[-10%] right-[-5%] w-100 h-100 rounded-full bg-brand-accentDeep/20 blur-[100px]" />
                 <div
                     className="absolute inset-0 opacity-[0.03]"
                     style={{
@@ -92,7 +83,7 @@ const LoginPage = () => {
             </div>
             <section className="relative z-10 flex min-h-[calc(100vh-160px)] items-center justify-center p-6">
                 <div className="w-full max-w-5xl overflow-hidden rounded-3xl border border-brand-accent/15 shadow-2xl shadow-brand-accent/10 grid md:grid-cols-2">
-                    <div className="bg-brand-cardBg flex flex-col justify-between p-10 min-h-[580px]">
+                    <div className="bg-brand-cardBg flex flex-col justify-between p-10 min-h-145">
                         <div>
                             <div className="mb-8">
                                 <h2
@@ -204,9 +195,9 @@ const LoginPage = () => {
                         </div>
                     </div>
                     <div className="relative flex flex-col justify-between p-10 text-brand-white overflow-hidden bg-brand-dark">
-                        <div className="absolute inset-0 bg-gradient-to-br from-brand-accentDeep/60 via-brand-dark to-brand-dark" />
-                        <div className="absolute top-[-60px] right-[-60px] w-[280px] h-[280px] rounded-full bg-brand-accent/20 blur-[80px]" />
-                        <div className="absolute bottom-[-40px] left-[-40px] w-[200px] h-[200px] rounded-full bg-brand-accentDeep/30 blur-[60px]" />
+                        <div className="absolute inset-0 bg-linear-to-br from-brand-accentDeep/60 via-brand-dark to-brand-dark" />
+                        <div className="absolute -top-15 -right-15 w-70 h-70 rounded-full bg-brand-accent/20 blur-[80px]" />
+                        <div className="absolute -bottom-10 -left-10 w-50 h-50 rounded-full bg-brand-accentDeep/30 blur-[60px]" />
                         <div
                             className="absolute inset-0 opacity-[0.05]"
                             style={{
@@ -225,7 +216,7 @@ const LoginPage = () => {
                                 style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}
                             >
                                 Chào mừng đến với<br />
-                                <span className="text-brand-transparent bg-clip-text bg-gradient-to-r from-brand-accentSoft to-brand-accent">
+                                <span className="text-brand-transparent bg-clip-text bg-linear-to-r from-brand-accentSoft to-brand-accent">
                                     Edujar
                                 </span>
                             </h1>
@@ -260,16 +251,5 @@ const LoginPage = () => {
         </div>
     );
 };
-
-function getLoginErrorMessage(error) {
-    const data = error?.response?.data;
-
-    if (typeof data === "string") return data;
-    if (data?.message && data?.data && typeof data.data === "object") {
-        return Object.values(data.data)[0] || data.message;
-    }
-
-    return data?.message || data?.error || "Đăng nhập thất bại. Vui lòng kiểm tra email hoặc mật khẩu.";
-}
 
 export default LoginPage;

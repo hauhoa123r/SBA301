@@ -1,4 +1,4 @@
-import { ERROR_MESSAGES } from '../../../../shared/utils/messages';
+import { ERROR_MESSAGES } from '@/shared/utils/messages.js';
 
 export const validateEmail = (email) => {
     const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;

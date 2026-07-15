@@ -11,21 +11,21 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ResetPasswordRequest {
-    @NotBlank(message = "Email is required.")
-    @Email(message = "Please enter a valid email address.")
+    @NotBlank(message = "Vui lòng nhập email.")
+    @Email(message = "Vui lòng nhập địa chỉ email hợp lệ.")
     private String email;
 
-    @NotBlank(message = "Token is required.")
-    @Pattern(regexp = "\\d{6}", message = "Token must be 6 digits.")
+    @NotBlank(message = "Vui lòng nhập mã xác minh.")
+    @Pattern(regexp = "\\d{6}", message = "Mã xác minh phải gồm 6 chữ số.")
     private String token;
 
-    @NotBlank(message = "New password is required.")
-    @Size(min = 8, message = "Password must be at least 8 characters long.")
-    @Pattern(regexp = ".*[A-Z].*", message = "Password must contain at least one uppercase letter.")
+    @NotBlank(message = "Vui lòng nhập mật khẩu mới.")
+    @Size(min = 8, message = "Mật khẩu phải có ít nhất 8 ký tự.")
+    @Pattern(regexp = ".*[A-Z].*", message = "Mật khẩu phải có ít nhất một chữ cái viết hoa.")
     @JsonProperty("new_password")
     private String newPassword;
 
-    @NotBlank(message = "Confirm password is required.")
+    @NotBlank(message = "Vui lòng xác nhận mật khẩu mới.")
     @JsonProperty("confirm_password")
     private String confirmPassword;
 }
