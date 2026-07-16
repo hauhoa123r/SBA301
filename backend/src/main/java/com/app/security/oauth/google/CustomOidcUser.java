@@ -1,6 +1,7 @@
-package com.app.security;
+package com.app.security.oauth.google;
 
 import com.app.features.model.UserEntity;
+import com.app.security.oauth.CustomOAuth2User;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;

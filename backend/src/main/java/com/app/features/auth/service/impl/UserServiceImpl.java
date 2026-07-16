@@ -6,7 +6,7 @@ import com.app.features.auth.dto.request.RegisterRequest;
 import com.app.features.auth.dto.response.LoginResponse;
 import com.app.features.auth.dto.response.AuthUserResponse;
 import com.app.features.auth.dto.response.TokenResponse;
-import com.app.security.JwtService;
+import com.app.security.jwt.JwtService;
 import com.app.features.auth.exception.InvalidLoginException;
 import com.app.features.auth.exception.RegisterException;
 import com.app.features.auth.repository.UserRepository;

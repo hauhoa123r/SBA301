@@ -1,4 +1,4 @@
-package com.app.security;
+package com.app.security.oauth.google;
 
 import com.app.features.model.UserEntity;
 import com.app.features.oauth.OAuth2UserInfoMapper;

@@ -6,7 +6,7 @@ import com.app.features.payments.dto.PaymentCreateRequest;
 import com.app.features.payments.dto.PaymentCreateResponse;
 import com.app.features.payments.dto.PaymentVerifyResponse;
 import com.app.features.payments.facade.PaymentFacade;
-import com.app.security.CustomOAuth2User;
+import com.app.security.oauth.CustomOAuth2User;
 import com.app.utils.ApiPath;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

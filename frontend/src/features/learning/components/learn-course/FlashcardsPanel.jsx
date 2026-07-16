@@ -1,10 +1,49 @@
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Volume2, RotateCw, Sparkles } from "lucide-react";
 import UserImage from "../../../../shared/components/animation/UserImage";
 
 export default function FlashcardsPanel({ vocabularies = [] }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isFlipped, setIsFlipped] = useState(false);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const isPlayingRef = useRef(false);
+    const audioRef = useRef(null);
+    const utteranceRef = useRef(null);
+
+    const stopAudio = useCallback(() => {
+        if (audioRef.current) {
+            audioRef.current.onended = null;
+            audioRef.current.onerror = null;
+            audioRef.current.pause();
+            audioRef.current = null;
+        }
+
+        if (utteranceRef.current) {
+            utteranceRef.current.onend = null;
+            utteranceRef.current.onerror = null;
+            window.speechSynthesis.cancel();
+            utteranceRef.current = null;
+        }
+
+        isPlayingRef.current = false;
+        setIsPlaying(false);
+    }, []);
+
+    useEffect(() => {
+        return () => {
+            if (audioRef.current) {
+                audioRef.current.onended = null;
+                audioRef.current.onerror = null;
+                audioRef.current.pause();
+            }
+
+            if (utteranceRef.current) {
+                utteranceRef.current.onend = null;
+                utteranceRef.current.onerror = null;
+                window.speechSynthesis.cancel();
+            }
+        };
+    }, []);
 
     if (!vocabularies || vocabularies.length === 0) {
         return (
@@ -19,11 +58,13 @@ export default function FlashcardsPanel({ vocabularies = [] }) {
     const currentVocab = vocabularies[currentIndex];
 
     const handlePrev = () => {
+        stopAudio();
         setIsFlipped(false);
         setCurrentIndex((prev) => (prev > 0 ? prev - 1 : vocabularies.length - 1));
     };
 
     const handleNext = () => {
+        stopAudio();
         setIsFlipped(false);
         setCurrentIndex((prev) => (prev < vocabularies.length - 1 ? prev + 1 : 0));
     };
@@ -39,13 +80,39 @@ export default function FlashcardsPanel({ vocabularies = [] }) {
 
     const playAudio = (e) => {
         e.stopPropagation();
+
+        if (isPlayingRef.current) {
+            stopAudio();
+            return;
+        }
+
+        isPlayingRef.current = true;
+        setIsPlaying(true);
+
         if (currentVocab.audioUrl) {
             const audio = new Audio(currentVocab.audioUrl);
-            audio.play().catch((err) => console.log("Audio play failed:", err));
+            audioRef.current = audio;
+            audio.onended = () => {
+                if (audioRef.current === audio) stopAudio();
+            };
+            audio.onerror = () => {
+                if (audioRef.current === audio) stopAudio();
+            };
+            audio.play().catch((err) => {
+                console.log("Audio play failed:", err);
+                if (audioRef.current === audio) stopAudio();
+            });
         } else {
             // Text-to-speech fallback or web speech API
             const utterance = new SpeechSynthesisUtterance(currentVocab.hanzi);
             utterance.lang = "zh-CN";
+            utteranceRef.current = utterance;
+            utterance.onend = () => {
+                if (utteranceRef.current === utterance) stopAudio();
+            };
+            utterance.onerror = () => {
+                if (utteranceRef.current === utterance) stopAudio();
+            };
             window.speechSynthesis.speak(utterance);
         }
     };
@@ -82,8 +149,8 @@ export default function FlashcardsPanel({ vocabularies = [] }) {
                                 type="button"
                                 onClick={playAudio}
                                 className="p-3 rounded-full bg-brand-quizPanel border border-brand-border hover:bg-brand-accent/20 hover:border-brand-accent text-brand-accentSoft transition-all"
-                                title="Nghe phát âm"
-                                aria-label={`Nghe phát âm ${currentVocab.hanzi}`}
+                                title={isPlaying ? "Dừng phát âm" : "Nghe phát âm"}
+                                aria-label={`${isPlaying ? "Dừng" : "Nghe"} phát âm ${currentVocab.hanzi}`}
                             >
                                 <Volume2 className="h-5 w-5" />
                             </button>
@@ -110,7 +177,8 @@ export default function FlashcardsPanel({ vocabularies = [] }) {
                                 type="button"
                                 onClick={playAudio}
                                 className="p-2 rounded-full bg-brand-quizPanel border border-brand-border hover:bg-brand-accent/20 text-brand-accentSoft transition-all"
-                                aria-label={`Nghe phát âm ${currentVocab.hanzi}`}
+                                title={isPlaying ? "Dừng phát âm" : "Nghe phát âm"}
+                                aria-label={`${isPlaying ? "Dừng" : "Nghe"} phát âm ${currentVocab.hanzi}`}
                             >
                                 <Volume2 className="h-4 w-4" />
                             </button>

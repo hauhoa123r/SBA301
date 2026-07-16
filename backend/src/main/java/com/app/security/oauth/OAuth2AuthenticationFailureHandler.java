@@ -1,4 +1,4 @@
-package com.app.security;
+package com.app.security.oauth;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

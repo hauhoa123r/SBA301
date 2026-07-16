@@ -1,8 +1,46 @@
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Volume2, Sparkles, MessageCircle } from "lucide-react";
 
 export default function SentencePatternsPanel({ sentencePatterns = [] }) {
     const [playingId, setPlayingId] = useState(null);
+    const activePatternIdRef = useRef(null);
+    const audioRef = useRef(null);
+    const utteranceRef = useRef(null);
+
+    const stopAudio = useCallback(() => {
+        if (audioRef.current) {
+            audioRef.current.onended = null;
+            audioRef.current.onerror = null;
+            audioRef.current.pause();
+            audioRef.current = null;
+        }
+
+        if (utteranceRef.current) {
+            utteranceRef.current.onend = null;
+            utteranceRef.current.onerror = null;
+            window.speechSynthesis.cancel();
+            utteranceRef.current = null;
+        }
+
+        activePatternIdRef.current = null;
+        setPlayingId(null);
+    }, []);
+
+    useEffect(() => {
+        return () => {
+            if (audioRef.current) {
+                audioRef.current.onended = null;
+                audioRef.current.onerror = null;
+                audioRef.current.pause();
+            }
+
+            if (utteranceRef.current) {
+                utteranceRef.current.onend = null;
+                utteranceRef.current.onerror = null;
+                window.speechSynthesis.cancel();
+            }
+        };
+    }, []);
 
     if (!sentencePatterns || sentencePatterns.length === 0) {
         return (
@@ -15,23 +53,39 @@ export default function SentencePatternsPanel({ sentencePatterns = [] }) {
     }
 
     const playAudio = (pattern) => {
+        const isCurrentPatternPlaying = activePatternIdRef.current === pattern.id;
+        stopAudio();
+
+        if (isCurrentPatternPlaying) return;
+
+        activePatternIdRef.current = pattern.id;
+        setPlayingId(pattern.id);
+
         if (pattern.audioUrl) {
-            setPlayingId(pattern.id);
             const audio = new Audio(pattern.audioUrl);
+            audioRef.current = audio;
+            audio.onended = () => {
+                if (audioRef.current === audio) stopAudio();
+            };
+            audio.onerror = () => {
+                if (audioRef.current === audio) stopAudio();
+            };
             audio.play()
-                .then(() => {
-                    audio.onended = () => setPlayingId(null);
-                })
                 .catch((err) => {
                     console.log("Audio play failed:", err);
-                    setPlayingId(null);
+                    if (audioRef.current === audio) stopAudio();
                 });
         } else {
             // Speech fallback
-            setPlayingId(pattern.id);
             const utterance = new SpeechSynthesisUtterance(pattern.chineseText);
             utterance.lang = "zh-CN";
-            utterance.onend = () => setPlayingId(null);
+            utteranceRef.current = utterance;
+            utterance.onend = () => {
+                if (utteranceRef.current === utterance) stopAudio();
+            };
+            utterance.onerror = () => {
+                if (utteranceRef.current === utterance) stopAudio();
+            };
             window.speechSynthesis.speak(utterance);
         }
     };
@@ -82,8 +136,8 @@ export default function SentencePatternsPanel({ sentencePatterns = [] }) {
                                         ? "bg-brand-accent text-brand-white border-brand-accent"
                                         : "bg-brand-quizPanel border-brand-border hover:bg-brand-accent/20 hover:border-brand-accent text-brand-accentSoft"
                                 }`}
-                                title="Nghe phát âm"
-                                aria-label={`Nghe phát âm mẫu câu ${index + 1}`}
+                                title={isPlaying ? "Dừng phát âm" : "Nghe phát âm"}
+                                aria-label={`${isPlaying ? "Dừng" : "Nghe"} phát âm mẫu câu ${index + 1}`}
                             >
                                 {isPlaying ? (
                                     <div className="flex items-center gap-1">

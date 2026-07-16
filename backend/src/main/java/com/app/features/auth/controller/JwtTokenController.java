@@ -5,7 +5,7 @@ import com.app.features.auth.dto.response.TokenResponse;
 import com.app.features.auth.repository.UserRepository;
 import com.app.features.model.UserEntity;
 import com.app.features.model.enums.UserStatus;
-import com.app.security.JwtService;
+import com.app.security.jwt.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import jakarta.validation.Valid;

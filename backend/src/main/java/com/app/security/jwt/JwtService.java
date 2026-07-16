@@ -1,4 +1,4 @@
-package com.app.security;
+package com.app.security.jwt;
 
 import com.app.features.model.UserEntity;
 import io.jsonwebtoken.Claims;

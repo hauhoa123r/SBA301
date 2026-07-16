@@ -1,5 +1,10 @@
 package com.app.security;
 
+import com.app.security.jwt.JwtAuthenticationFilter;
+import com.app.security.oauth.OAuth2AuthenticationFailureHandler;
+import com.app.security.oauth.OAuth2AuthenticationSuccessHandler;
+import com.app.security.oauth.facebook.CustomOAuth2UserService;
+import com.app.security.oauth.google.CustomOidcUserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -47,7 +52,6 @@ public class SecurityConfig {
                             response.setCharacterEncoding("UTF-8");
                             response.getWriter().write("{\"status\":401,\"message\":\"Authentication required\"}");
                         }))
-                // OAuth authorization state uses a short-lived HttpSession; API authentication remains JWT-based.
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
