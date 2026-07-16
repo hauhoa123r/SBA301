@@ -68,7 +68,7 @@ INSERT INTO users (id, full_name, email, password_hash, status, total_learning_p
 (5, 'Hoang Duc Huy', 'teacher.huy@chineselearning.vn', '$2a$10$gkT/LMKGX1C.qF7WtYYUPO1QLh.APSzK2TRRpKygBWbk6ku5IRvu6', 'ACTIVE', 760, 'REFTEA005', '2026-01-06 10:30:00', '2026-06-21 10:30:00'),
 (6, 'Dang Ngoc Mai', 'teacher.mai@chineselearning.vn', '$2a$10$gkT/LMKGX1C.qF7WtYYUPO1QLh.APSzK2TRRpKygBWbk6ku5IRvu6', 'DELETED', 450, 'REFTEA006', '2026-01-07 11:00:00', '2026-06-10 11:00:00'),
 (7, 'Bui Khanh Linh', 'linh.bui@example.com', '$2a$10$gkT/LMKGX1C.qF7WtYYUPO1QLh.APSzK2TRRpKygBWbk6ku5IRvu6', 'ACTIVE', 1450, 'REFSTU007', '2026-02-01 08:00:00', '2026-06-27 08:00:00'),
-(8, 'Vo Thanh Nam', 'nam.vo@example.com', '$2a$10$gkT/LMKGX1C.qF7WtYYUPO1QLh.APSzK2TRRpKygBWbk6ku5IRvu6', 'ACTIVE', 980, 'REFSTU008', '2026-02-02 08:10:00', '2026-06-26 08:10:00'),
+(8, 'Vo Thanh Nam', 'nam.vo@example.com', 'Namvo123', 'ACTIVE', 980, 'REFSTU008', '2026-02-02 08:10:00', '2026-06-26 08:10:00'),
 (9, 'Do My Duyen', 'duyen.do@example.com', '$2a$10$gkT/LMKGX1C.qF7WtYYUPO1QLh.APSzK2TRRpKygBWbk6ku5IRvu6', 'ACTIVE', 640, 'REFSTU009', '2026-02-03 08:20:00', '2026-06-26 08:20:00'),
 (10, 'Mai Quoc Bao', 'bao.mai@example.com', '$2a$10$gkT/LMKGX1C.qF7WtYYUPO1QLh.APSzK2TRRpKygBWbk6ku5IRvu6', 'LOCKED', 310, 'REFSTU010', '2026-02-04 08:30:00', '2026-06-15 08:30:00'),
 (11, 'Phan Tuong Vy', 'vy.phan@example.com', '$2a$10$gkT/LMKGX1C.qF7WtYYUPO1QLh.APSzK2TRRpKygBWbk6ku5IRvu6', 'ACTIVE', 1200, 'REFSTU011', '2026-02-05 08:40:00', '2026-06-28 08:40:00'),
@@ -190,8 +190,6 @@ INSERT INTO lesson_documents (id, lesson_id, title, file_url, created_at) VALUES
 
 -- 16. quizzes
 INSERT INTO quizzes (id, title, lesson_id, chapter_id, time_limit_minutes, pass_score, created_at) VALUES
-(1, 'Quiz Pinyin co ban', 1, NULL, 10, 60, '2026-02-10 10:00:00'),
-(2, 'Quiz chao hoi nhieu dap an', 2, NULL, 12, 60, '2026-02-10 10:10:00'),
 (3, 'Dien tu vung so dem', 6, NULL, 10, 70, '2026-02-12 10:00:00'),
 (4, 'Noi tu HSK 1', NULL, 4, 15, 70, '2026-02-12 10:10:00'),
 (5, 'Nghe hieu HSK 2 tranh anh', 11, NULL, 20, 70, '2026-02-14 10:00:00'),
@@ -205,10 +203,6 @@ INSERT INTO quizzes (id, title, lesson_id, chapter_id, time_limit_minutes, pass_
 
 -- 17. questions
 INSERT INTO questions (id, quiz_id, question_type, content, audio_url, points, order_index) VALUES
-(1, 1, 'SINGLE_CHOICE', 'Chu cai pinyin nao doc gan giong am "ma" voi thanh ngang?', NULL, 10, 1),
-(2, 1, 'SINGLE_CHOICE', 'Thanh dieu thu ba trong tieng Trung co duong net nao?', NULL, 10, 2),
-(3, 2, 'MULTIPLE_CHOICE', 'Nhung cau nao co the dung de chao hoi lich su?', NULL, 10, 1),
-(4, 2, 'MULTIPLE_CHOICE', 'Nhung cau nao dung de gioi thieu ten?', NULL, 10, 2),
 (5, 3, 'FILL_IN_BLANK', 'Dien pinyin cho so 8: ___', NULL, 10, 1),
 (6, 3, 'FILL_IN_BLANK', 'Dien tieng Trung pinyin cho "hom nay": ___', NULL, 10, 2),
 (7, 4, 'MATCHING', 'Noi tu tieng Trung voi nghia tieng Viet tuong ung.', NULL, 10, 1),
@@ -232,18 +226,6 @@ INSERT INTO questions (id, quiz_id, question_type, content, audio_url, points, o
 
 -- 18. answers
 INSERT INTO answers (id, question_id, content, is_correct, matching_pair) VALUES
-(1, 1, 'ma1', TRUE, NULL),
-(2, 1, 'ma3', FALSE, NULL),
-(3, 1, 'mai4', FALSE, NULL),
-(4, 2, 'Giong dau hoi roi di len', TRUE, NULL),
-(5, 2, 'Doc ngang va deu', FALSE, NULL),
-(6, 2, 'Doc ngan va dut khoat', FALSE, NULL),
-(7, 3, 'Nin hao', TRUE, NULL),
-(8, 3, 'Ni hao', TRUE, NULL),
-(9, 3, 'Wo yao yi bei kafei', FALSE, NULL),
-(10, 4, 'Wo jiao Linh', TRUE, NULL),
-(11, 4, 'Wo shi Yuenan ren', TRUE, NULL),
-(12, 4, 'Xianzai ji dian?', FALSE, NULL),
 (13, 5, 'ba', TRUE, NULL),
 (14, 5, 'jiu', FALSE, NULL),
 (15, 6, 'jintian', TRUE, NULL),
@@ -337,9 +319,6 @@ INSERT INTO lesson_progress (id, user_id, lesson_id, watch_seconds, is_completed
 
 -- 22. quiz_attempts
 INSERT INTO quiz_attempts (id, user_id, quiz_id, score, is_passed, started_at, submitted_at, status) VALUES
-(1, 7, 1, 90, TRUE, '2026-03-02 09:00:00', '2026-03-02 09:08:00', 'SUBMITTED'),
-(2, 7, 2, 80, TRUE, '2026-03-03 09:00:00', '2026-03-03 09:10:00', 'SUBMITTED'),
-(3, 8, 1, 40, FALSE, '2026-03-05 09:00:00', NULL, 'DOING'),
 (4, 9, 3, 100, TRUE, '2026-03-12 09:00:00', '2026-03-12 09:07:00', 'SUBMITTED'),
 (5, 10, 7, 20, FALSE, '2026-03-13 09:00:00', '2026-03-13 09:05:00', 'CHEATING_SUSPECTED'),
 (6, 11, 6, 85, TRUE, '2026-04-02 09:00:00', '2026-04-02 09:30:00', 'SUBMITTED'),
@@ -348,11 +327,6 @@ INSERT INTO quiz_attempts (id, user_id, quiz_id, score, is_passed, started_at, s
 
 -- 23. student_answers
 INSERT INTO student_answers (id, attempt_id, question_id, selected_answer_id, input_text, is_correct) VALUES
-(1, 1, 1, 1, NULL, TRUE),
-(2, 1, 2, 4, NULL, TRUE),
-(3, 2, 3, 7, NULL, TRUE),
-(4, 2, 4, 10, NULL, TRUE),
-(5, 3, 1, 2, NULL, FALSE),
 (6, 4, 5, NULL, 'ba', TRUE),
 (7, 4, 6, NULL, 'jintian', TRUE),
 (8, 5, 13, 36, NULL, FALSE),
@@ -396,9 +370,6 @@ INSERT INTO user_lesson_progress (id, user_id, lesson_id, current_time_seconds, 
 
 -- 26. user_quiz_attempts
 INSERT INTO user_quiz_attempts (id, user_id, quiz_id, score, is_passed, attempt_date) VALUES
-(1, 7, 1, 90, TRUE, '2026-03-02 09:08:00'),
-(2, 7, 2, 80, TRUE, '2026-03-03 09:10:00'),
-(3, 8, 1, 40, FALSE, '2026-03-05 09:05:00'),
 (4, 9, 3, 100, TRUE, '2026-03-12 09:07:00'),
 (5, 10, 7, 20, FALSE, '2026-03-13 09:05:00'),
 (6, 11, 6, 85, TRUE, '2026-04-02 09:30:00'),
