@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
+import AnimatedCard from "../../../../shared/components/animation/AnimatedCard";
 
 export default function ProfileProgressItem({ item, firstLesson }) {
     return (
-        <div className={`flex flex-col gap-4 rounded-2xl border p-4 md:flex-row md:items-center ${item.active ? "border-brand-accent/70 bg-brand-light" : "border-brand-accent/15 bg-brand-panel"}`}>
+        <AnimatedCard className={`flex flex-col gap-4 rounded-2xl border p-4 md:flex-row md:items-center ${item.active ? "border-brand-accent/70 bg-brand-light" : "border-brand-accent/15 bg-brand-panel"}`}>
             <div className="grid h-16 w-16 shrink-0 place-items-center rounded-2xl bg-brand-borderSoft text-lg font-black text-brand-accentSoft">
                 {item.level}
             </div>
@@ -18,6 +19,6 @@ export default function ProfileProgressItem({ item, firstLesson }) {
                     Tiếp tục
                 </Link>
             )}
-        </div>
+        </AnimatedCard>
     );
 }

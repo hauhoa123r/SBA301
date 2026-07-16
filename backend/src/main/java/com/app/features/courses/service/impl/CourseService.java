@@ -16,6 +16,7 @@ import com.app.features.plans.service.IPlanService;
 import com.app.features.tags.service.ITagService;
 import com.app.features.users.repository.IUserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CourseService implements ICourseService {
     private final ICourseRepository courseRepository;
     private final CourseResponseConverter courseResponseConverter;
@@ -37,19 +39,29 @@ public class CourseService implements ICourseService {
     @Override
     @Transactional(readOnly = true)
     public List<CourseCatalogResponse> getAllCourses() {
+        log.info("Loading course catalog");
         List<CourseEntity> courses = courseRepository.findAll();
+        if (courses.isEmpty()) {
+            log.warn("Course catalog is empty");
+        }
         Map<Long, CourseLessonStats> lessonStatsByCourseId = getLessonStatsByCourseId(courses);
 
-        return courses.stream()
+        List<CourseCatalogResponse> responses = courses.stream()
                 .map(course ->
                         courseResponseConverter.toCourseCatalogResponse(course, lessonStatsByCourseId.get(course.getId())
                 )).toList();
+        log.info("Course catalog loaded successfully, courseCount={}", responses.size());
+        return responses;
     }
 
     @Override
     @Transactional(readOnly = true)
     public CourseDetailResponse getCourseById(Long id) {
-        CourseEntity course = courseRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + id));
+        log.info("Loading course detail, courseId={}", id);
+        CourseEntity course = courseRepository.findById(id).orElseThrow(() -> {
+            log.warn("Course not found, courseId={}", id);
+            return new ResourceNotFoundException("Course not found with id: " + id);
+        });
         Map<Long, CourseLessonStats> lessonStatsByCourseId = getLessonStatsByCourseId(List.of(course));
         return courseResponseConverter.toCourseDetailResponse(course, lessonStatsByCourseId.get(course.getId())
         );
@@ -58,7 +70,11 @@ public class CourseService implements ICourseService {
     @Override
     @Transactional(readOnly = true)
     public List<CourseDetailResponse> getAllCourseByTeacherId(Long teacherId) {
+        log.info("Loading courses by teacher, teacherId={}", teacherId);
         List<CourseEntity> courseEntities = courseRepository.findAllByTeacherId(teacherId);
+        if (courseEntities.isEmpty()) {
+            log.warn("No courses found for teacher, teacherId={}", teacherId);
+        }
         return courseEntities.stream().map(courseEntity -> {
             CourseLessonStats stats = courseRepository.getLessonStatsByCourseId(courseEntity.getId());
             return courseResponseConverter.toCourseDetailResponse(courseEntity, stats);
@@ -68,10 +84,15 @@ public class CourseService implements ICourseService {
     @Override
     @Transactional
     public Long createCourse(CourseRequest request, Long teacherId) {
-        UserEntity teacher = userRepository.findById(teacherId).orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + teacherId));
+        log.info("Course creation requested, teacherId={}, categoryId={}", teacherId, request.getCategoryId());
+        UserEntity teacher = userRepository.findById(teacherId).orElseThrow(() -> {
+            log.warn("Course creation failed because teacher was not found, teacherId={}", teacherId);
+            return new ResourceNotFoundException("User not found with id: " + teacherId);
+        });
 
         CategoryEntity category = categoryService.findCategoryById(request.getCategoryId());
         if (category == null) {
+            log.warn("Course creation failed because category was not found, categoryId={}", request.getCategoryId());
             throw new ResourceNotFoundException("Category not found with id: " + request.getCategoryId());
         }
         CourseEntity course = new  CourseEntity();
@@ -95,10 +116,13 @@ public class CourseService implements ICourseService {
                 course.addPlan(plan);
             }
         } else{
+            log.warn("Course creation rejected because no plan was selected, teacherId={}", teacherId);
             throw new BadRequestException("Please choose at least one plan.");
         }
 
-        return courseRepository.save(course).getId();
+        Long courseId = courseRepository.save(course).getId();
+        log.info("Course created successfully, courseId={}, createdBy={}", courseId, teacherId);
+        return courseId;
     }
 
     private Map<Long, CourseLessonStats> getLessonStatsByCourseId(List<CourseEntity> courses) {

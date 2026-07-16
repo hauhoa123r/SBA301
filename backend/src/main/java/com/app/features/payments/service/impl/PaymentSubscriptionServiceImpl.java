@@ -12,6 +12,7 @@ import com.app.features.payments.repository.PaymentPlanRepository;
 import com.app.features.payments.repository.SubscriptionRepository;
 import com.app.features.payments.service.PaymentSubscriptionService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -20,6 +21,7 @@ import static com.app.utils.NumberUtils.toLong;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PaymentSubscriptionServiceImpl implements PaymentSubscriptionService {
     private final PaymentPlanRepository paymentPlanRepository;
     private final SubscriptionRepository subscriptionRepository;
@@ -30,18 +32,24 @@ public class PaymentSubscriptionServiceImpl implements PaymentSubscriptionServic
     public void activateFromPaidInvoice(InvoiceEntity invoice, PaymentEntity payment) {
         Long planId = resolvePlanId(payment);
         if (planId == null) {
+            log.warn("Subscription activation skipped because payment has no plan, paymentId={}, invoiceId={}", payment.getId(), invoice.getId());
             return;
         }
 
         PlanEntity plan = paymentPlanRepository.findById(planId)
-                .orElseThrow(() -> new ResourceNotFoundException("Plan not found with id: " + planId));
+                .orElseThrow(() -> {
+                    log.warn("Subscription activation failed because plan was not found, planId={}, invoiceId={}", planId, invoice.getId());
+                    return new ResourceNotFoundException("Plan not found with id: " + planId);
+                });
         if (subscriptionRepository.existsByUserAndPlanAndStatus(invoice.getUser(), plan, SubscriptionStatus.ACTIVE)) {
+            log.info("Subscription activation skipped because active subscription exists, userId={}, planId={}", invoice.getUser().getId(), planId);
             return;
         }
 
         SubscriptionEntity subscription = subscriptionConverter.toActiveSubscription(invoice.getUser(), plan, LocalDate.now());
         subscriptionRepository.save(subscription);
         invoiceConverter.attachSubscription(invoice, subscription);
+        log.info("Subscription activated successfully, subscriptionId={}, userId={}, planId={}", subscription.getId(), invoice.getUser().getId(), planId);
     }
 
     private Long resolvePlanId(PaymentEntity payment) {

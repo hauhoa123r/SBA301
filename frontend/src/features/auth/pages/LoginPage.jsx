@@ -1,17 +1,19 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaFacebookF, FaGoogle } from "react-icons/fa";
 import { Eye, EyeOff, Zap } from "lucide-react";
 import {login} from "../service/authService";
 import useAuth from "../../../app/provider/useAuth";
 import { showApiErrorToast } from "@/shared/utils/toast.js";
 import { validInput } from "@/shared/utils/inputHandler.js";
+import UserReveal from "@/shared/components/animation/UserReveal";
 
 const LoginPage = () => {
     const [formData, setFormData] = useState({ email: "", password: "" });
     const [errors, setErrors] = useState({ email: "", password: "" });
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
     const { setUser } = useAuth();
     const loginWithGoogle = () => {
         window.location.assign("/api/oauth2/authorization/google");
@@ -62,20 +64,30 @@ const LoginPage = () => {
             });
             const loggedInUser = response?.user || response?.data?.user || response?.data || response;
             const token = response?.token || response?.data?.token || response?.accessToken || response?.data?.accessToken;
+            const refreshToken = response?.refreshToken || response?.data?.refreshToken;
 
             localStorage.setItem("user", JSON.stringify(loggedInUser));
             if (token) {
                 localStorage.setItem("token", token);
             }
+            if (refreshToken) {
+                localStorage.setItem("refreshToken", refreshToken);
+            } else {
+                localStorage.removeItem("refreshToken");
+            }
             setUser(loggedInUser);
-            navigate("/");
+            const requestedPath = new URLSearchParams(location.search).get("returnTo");
+            const returnTo = requestedPath?.startsWith("/") && !requestedPath.startsWith("//")
+                ? requestedPath
+                : "/";
+            navigate(returnTo, { replace: true });
         } catch (err) {
             showApiErrorToast(err, "Đăng nhập thất bại. Vui lòng kiểm tra email hoặc mật khẩu.");
         }
     };
 
     return (
-        <div className="relative overflow-hidden text-brand-textPrimary" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
+        <div className="user-ui-scope relative overflow-hidden text-brand-textPrimary" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
             <div className="fixed inset-0 pointer-events-none">
                 <div className="absolute top-[-20%] left-[-10%] w-125 h-125 rounded-full bg-brand-accent/15 blur-[120px]" />
                 <div className="absolute bottom-[-10%] right-[-5%] w-100 h-100 rounded-full bg-brand-accentDeep/20 blur-[100px]" />
@@ -87,16 +99,16 @@ const LoginPage = () => {
                     }}
                 />
             </div>
-            <section className="relative z-10 flex min-h-[calc(100vh-160px)] items-center justify-center p-6">
-                <div className="w-full max-w-5xl overflow-hidden rounded-3xl border border-brand-accent/15 shadow-2xl shadow-brand-accent/10 grid md:grid-cols-2">
-                    <div className="bg-brand-cardBg flex flex-col justify-between p-10 min-h-145">
+            <section className="relative z-10 flex min-h-[calc(100vh-160px)] items-center justify-center p-4 sm:p-6">
+                <UserReveal className="grid w-full max-w-5xl overflow-hidden rounded-3xl border border-brand-accent/15 shadow-2xl shadow-brand-accent/10 md:grid-cols-2" distance={20}>
+                    <div className="flex flex-col justify-between bg-brand-cardBg p-6 sm:p-8 md:min-h-145 md:p-10">
                         <div>
                             <div className="mb-8">
                                 <h2
                                     className="text-3xl font-extrabold text-brand-white mb-2"
                                     style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}
                                 >
-                                    Chào mừng trở lại SE1947JV
+                                    Chào mừng trở lại
                                 </h2>
                                 <p className="text-brand-textSecondary text-sm">
                                     Nhập thông tin tài khoản để tiếp tục
@@ -132,46 +144,53 @@ const LoginPage = () => {
 
                             <form onSubmit={handleSubmit} noValidate>
                                 <div className="mb-6">
-                                    <label className="block text-xs font-semibold text-brand-textSecondary uppercase tracking-wider mb-2">
+                                    <label htmlFor="login-email" className="block text-xs font-semibold text-brand-textSecondary uppercase tracking-wider mb-2">
                                         Địa chỉ email
                                     </label>
                                     <input
                                         type="text"
+                                        id="login-email"
                                         name="email"
                                         placeholder="you@example.com"
                                         value={formData.email}
                                         onChange={handleChange}
                                         onBlur={handleBlur}
+                                        aria-invalid={Boolean(errors.email)}
+                                        aria-describedby={errors.email ? "login-email-error" : undefined}
                                         className="w-full bg-brand-light border border-brand-accent/20 focus:border-brand-accent/60 text-brand-textPrimary placeholder-brand-textSecondary/50 rounded-xl px-4 py-3 text-sm outline-none transition-colors"
                                     />
                                     {errors.email && (
-                                        <p className="mt-1.5 text-xs font-semibold text-social-google">{errors.email}</p>
+                                        <p id="login-email-error" role="alert" className="mt-1.5 text-xs font-semibold text-social-google">{errors.email}</p>
                                     )}
                                 </div>
                                 <div className="mb-4">
-                                    <label className="block text-xs font-semibold text-brand-textSecondary uppercase tracking-wider mb-2">
+                                    <label htmlFor="login-password" className="block text-xs font-semibold text-brand-textSecondary uppercase tracking-wider mb-2">
                                         Mật khẩu
                                     </label>
                                     <div className="relative">
                                         <input
                                             type={showPassword ? "text" : "password"}
+                                            id="login-password"
                                             name="password"
                                             placeholder="••••••••"
                                             value={formData.password}
                                             onChange={handleChange}
                                             onBlur={handleBlur}
+                                            aria-invalid={Boolean(errors.password)}
+                                            aria-describedby={errors.password ? "login-password-error" : undefined}
                                             className="w-full bg-brand-light border border-brand-accent/20 focus:border-brand-accent/60 text-brand-textPrimary placeholder-brand-textSecondary/50 rounded-xl px-4 py-3 pr-11 text-sm outline-none transition-colors"
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowPassword(!showPassword)}
+                                            aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
                                             className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-textSecondary hover:text-brand-accentSoft transition-colors"
                                         >
                                             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                         </button>
                                     </div>
                                     {errors.password && (
-                                        <p className="mt-1.5 text-xs font-semibold text-social-google">{errors.password}</p>
+                                        <p id="login-password-error" role="alert" className="mt-1.5 text-xs font-semibold text-social-google">{errors.password}</p>
                                     )}
                                 </div>
                                 <div className="mb-8 text-right">
@@ -202,7 +221,7 @@ const LoginPage = () => {
                             </Link>
                         </div>
                     </div>
-                    <div className="relative flex flex-col justify-between p-10 text-brand-white overflow-hidden bg-brand-dark">
+                    <div className="relative hidden flex-col justify-between overflow-hidden bg-brand-dark p-10 text-brand-white md:flex">
                         <div className="absolute inset-0 bg-linear-to-br from-brand-accentDeep/60 via-brand-dark to-brand-dark" />
                         <div className="absolute -top-15 -right-15 w-70 h-70 rounded-full bg-brand-accent/20 blur-[80px]" />
                         <div className="absolute -bottom-10 -left-10 w-50 h-50 rounded-full bg-brand-accentDeep/30 blur-[60px]" />
@@ -254,7 +273,7 @@ const LoginPage = () => {
                             ))}
                         </div>
                     </div>
-                </div>
+                </UserReveal>
             </section>
         </div>
     );

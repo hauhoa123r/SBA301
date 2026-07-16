@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, KeyRound, Mail, RefreshCw, ShieldCheck } from "lucide-react";
 import { forgotPassword, verifyToken } from "../service/authService.js";
+import UserReveal from "@/shared/components/animation/UserReveal";
 import { validateEmail, validateToken } from "../shared/utils/validator.js";
 import { showApiErrorToast, showSuccessToast } from "../../../shared/utils/toast";
 
@@ -72,13 +73,13 @@ export default function ForgotPasswordPage() {
     };
 
     return (
-        <div className="relative overflow-hidden text-brand-textPrimary" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
+        <div className="user-ui-scope relative overflow-hidden text-brand-textPrimary" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
             <div className="fixed inset-0 pointer-events-none">
                 <div className="absolute top-[-20%] left-[-10%] w-125 h-125 rounded-full bg-brand-accent/15 blur-[120px]" />
             </div>
 
-            <section className="relative z-10 flex min-h-[calc(100vh-160px)] items-center justify-center p-6">
-                <div className="grid w-full max-w-5xl overflow-hidden rounded-3xl border border-brand-accent/15 grid-cols-1 md:grid-cols-[0.9fr_1.1fr]">
+            <section className="relative z-10 flex min-h-[calc(100vh-160px)] items-center justify-center p-4 sm:p-6">
+                <UserReveal className="grid w-full max-w-5xl grid-cols-1 overflow-hidden rounded-3xl border border-brand-accent/15 shadow-2xl shadow-brand-accent/10 md:grid-cols-[0.9fr_1.1fr]" distance={20}>
                     <section className="relative hidden overflow-hidden bg-brand-dark p-10 md:flex md:flex-col md:justify-between">
                         <div className="relative z-10 my-10 flex justify-center">
                             <img
@@ -128,7 +129,7 @@ export default function ForgotPasswordPage() {
                             />
                         )}
                     </section>
-                </div>
+                </UserReveal>
             </section>
         </div>
     );
@@ -137,20 +138,23 @@ function EmailStep({ email, error, loading, onChange, onSubmit }) {
     return (
         <form onSubmit={onSubmit} className="space-y-6">
             <div>
-                <label className={fieldLabelClass}>Địa chỉ email</label>
+                <label htmlFor="forgot-email" className={fieldLabelClass}>Địa chỉ email</label>
                 <div className="relative">
                     <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-textSecondary" />
                     <input
                         type="email"
+                        id="forgot-email"
                         name="email"
                         value={email}
                         onChange={onChange}
                         placeholder="you@example.com"
                         autoComplete="email"
                         className={`${baseInputClass} pl-11`}
+                        aria-invalid={Boolean(error)}
+                        aria-describedby={error ? "forgot-email-error" : undefined}
                     />
                 </div>
-                {error && <p className="mt-1.5 text-xs font-semibold text-social-google">{error}</p>}
+                {error && <p id="forgot-email-error" role="alert" className="mt-1.5 text-xs font-semibold text-social-google">{error}</p>}
             </div>
 
             <button type="submit" disabled={loading} className={baseButtonClass}>
@@ -165,11 +169,12 @@ function TokenStep({ token, error, loading, onChange, onSubmit, onBack }) {
     return (
         <form onSubmit={onSubmit} className="space-y-6">
             <div>
-                <label className={fieldLabelClass}>Mã bảo mật</label>
+                <label htmlFor="forgot-token" className={fieldLabelClass}>Mã bảo mật</label>
                 <div className="relative">
                     <KeyRound className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-textSecondary" />
                     <input
                         type="text"
+                        id="forgot-token"
                         name="token"
                         value={token}
                         onChange={onChange}
@@ -178,9 +183,11 @@ function TokenStep({ token, error, loading, onChange, onSubmit, onBack }) {
                         inputMode="numeric"
                         maxLength={6}
                         className={`${baseInputClass} pl-11`}
+                        aria-invalid={Boolean(error)}
+                        aria-describedby={error ? "forgot-token-error" : undefined}
                     />
                 </div>
-                {error && <p className="mt-1.5 text-xs font-semibold text-social-google">{error}</p>}
+                {error && <p id="forgot-token-error" role="alert" className="mt-1.5 text-xs font-semibold text-social-google">{error}</p>}
             </div>
 
             <button type="submit" disabled={loading} className={baseButtonClass}>

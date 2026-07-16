@@ -32,6 +32,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
 
     @Override
     public void sendVerificationEmail(UserEntity user) {
+        log.info("Verification email requested, userId={}", user.getId());
         VerificationTokenEntity verificationToken = verificationTokenService.createToken(
                 user,
                 TOKEN_TYPE_EMAIL_VERIFY,
@@ -41,15 +42,21 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
                 user.getEmail(),
                 buildVerificationUrl(user.getEmail(), verificationToken.getToken())
         );
+        log.info("Verification email sent successfully, userId={}", user.getId());
     }
 
     @Override
     @Transactional
     public boolean verifyEmail(String email, String token) {
-        return verificationTokenService
+        log.info("Email verification requested, email={}", email);
+        boolean verified = verificationTokenService
                 .findValidToken(token, TOKEN_TYPE_EMAIL_VERIFY, email)
                 .map(this::activateUser)
                 .orElse(false);
+        if (!verified) {
+            log.warn("Email verification failed due to invalid or expired verification token, email={}", email);
+        }
+        return verified;
     }
 
     private boolean activateUser(VerificationTokenEntity verificationToken) {

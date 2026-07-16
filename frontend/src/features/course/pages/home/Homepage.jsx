@@ -6,12 +6,12 @@ import CTASection from "../../components/home/CTASection";
 
 export default function Homepage() {
     return (
-        <>
+        <div className="user-ui-scope overflow-x-clip">
             <HeroSection />
             <StatsBar />
             <FeaturesSection />
             <TestimonialsSection />
             <CTASection />
-        </>
+        </div>
     );
 }

@@ -1,13 +1,49 @@
-import React, { useState, useEffect } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Volume2, RotateCw, Sparkles } from "lucide-react";
+import UserImage from "../../../../shared/components/animation/UserImage";
 
 export default function FlashcardsPanel({ vocabularies = [] }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isFlipped, setIsFlipped] = useState(false);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const isPlayingRef = useRef(false);
+    const audioRef = useRef(null);
+    const utteranceRef = useRef(null);
+
+    const stopAudio = useCallback(() => {
+        if (audioRef.current) {
+            audioRef.current.onended = null;
+            audioRef.current.onerror = null;
+            audioRef.current.pause();
+            audioRef.current = null;
+        }
+
+        if (utteranceRef.current) {
+            utteranceRef.current.onend = null;
+            utteranceRef.current.onerror = null;
+            window.speechSynthesis.cancel();
+            utteranceRef.current = null;
+        }
+
+        isPlayingRef.current = false;
+        setIsPlaying(false);
+    }, []);
 
     useEffect(() => {
-        setIsFlipped(false);
-    }, [currentIndex]);
+        return () => {
+            if (audioRef.current) {
+                audioRef.current.onended = null;
+                audioRef.current.onerror = null;
+                audioRef.current.pause();
+            }
+
+            if (utteranceRef.current) {
+                utteranceRef.current.onend = null;
+                utteranceRef.current.onerror = null;
+                window.speechSynthesis.cancel();
+            }
+        };
+    }, []);
 
     if (!vocabularies || vocabularies.length === 0) {
         return (
@@ -22,22 +58,61 @@ export default function FlashcardsPanel({ vocabularies = [] }) {
     const currentVocab = vocabularies[currentIndex];
 
     const handlePrev = () => {
+        stopAudio();
+        setIsFlipped(false);
         setCurrentIndex((prev) => (prev > 0 ? prev - 1 : vocabularies.length - 1));
     };
 
     const handleNext = () => {
+        stopAudio();
+        setIsFlipped(false);
         setCurrentIndex((prev) => (prev < vocabularies.length - 1 ? prev + 1 : 0));
+    };
+
+    const handleCardKeyDown = (event) => {
+        if (event.target !== event.currentTarget) return;
+
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            setIsFlipped((current) => !current);
+        }
     };
 
     const playAudio = (e) => {
         e.stopPropagation();
+
+        if (isPlayingRef.current) {
+            stopAudio();
+            return;
+        }
+
+        isPlayingRef.current = true;
+        setIsPlaying(true);
+
         if (currentVocab.audioUrl) {
             const audio = new Audio(currentVocab.audioUrl);
-            audio.play().catch((err) => console.log("Audio play failed:", err));
+            audioRef.current = audio;
+            audio.onended = () => {
+                if (audioRef.current === audio) stopAudio();
+            };
+            audio.onerror = () => {
+                if (audioRef.current === audio) stopAudio();
+            };
+            audio.play().catch((err) => {
+                console.log("Audio play failed:", err);
+                if (audioRef.current === audio) stopAudio();
+            });
         } else {
             // Text-to-speech fallback or web speech API
             const utterance = new SpeechSynthesisUtterance(currentVocab.hanzi);
             utterance.lang = "zh-CN";
+            utteranceRef.current = utterance;
+            utterance.onend = () => {
+                if (utteranceRef.current === utterance) stopAudio();
+            };
+            utterance.onerror = () => {
+                if (utteranceRef.current === utterance) stopAudio();
+            };
             window.speechSynthesis.speak(utterance);
         }
     };
@@ -55,7 +130,12 @@ export default function FlashcardsPanel({ vocabularies = [] }) {
             {/* 3D Flip Card Container */}
             <div
                 className="relative w-full max-w-md h-80 cursor-pointer [perspective:1000px] group mb-8"
-                onClick={() => setIsFlipped(!isFlipped)}
+                onClick={() => setIsFlipped((current) => !current)}
+                onKeyDown={handleCardKeyDown}
+                role="button"
+                tabIndex={0}
+                aria-pressed={isFlipped}
+                aria-label={isFlipped ? `Mặt nghĩa của từ ${currentVocab.hanzi}. Nhấn để xem chữ Hán.` : `Từ ${currentVocab.hanzi}. Nhấn để xem nghĩa tiếng Việt.`}
             >
                 <div
                     className={`relative w-full h-full duration-500 [transform-style:preserve-3d] ${
@@ -66,9 +146,11 @@ export default function FlashcardsPanel({ vocabularies = [] }) {
                     <div className="absolute inset-0 w-full h-full rounded-2xl border border-brand-border bg-gradient-to-br from-brand-panel via-brand-surface to-brand-panel p-8 flex flex-col items-center justify-between [backface-visibility:hidden] shadow-lg">
                         <div className="w-full flex justify-end">
                             <button
+                                type="button"
                                 onClick={playAudio}
                                 className="p-3 rounded-full bg-brand-quizPanel border border-brand-border hover:bg-brand-accent/20 hover:border-brand-accent text-brand-accentSoft transition-all"
-                                title="Nghe phát âm"
+                                title={isPlaying ? "Dừng phát âm" : "Nghe phát âm"}
+                                aria-label={`${isPlaying ? "Dừng" : "Nghe"} phát âm ${currentVocab.hanzi}`}
                             >
                                 <Volume2 className="h-5 w-5" />
                             </button>
@@ -92,8 +174,11 @@ export default function FlashcardsPanel({ vocabularies = [] }) {
                         <div className="w-full flex items-center justify-between text-xs text-brand-courseMuted">
                             <span className="font-semibold">{currentVocab.hanzi} - {currentVocab.pinyin}</span>
                             <button
+                                type="button"
                                 onClick={playAudio}
                                 className="p-2 rounded-full bg-brand-quizPanel border border-brand-border hover:bg-brand-accent/20 text-brand-accentSoft transition-all"
+                                title={isPlaying ? "Dừng phát âm" : "Nghe phát âm"}
+                                aria-label={`${isPlaying ? "Dừng" : "Nghe"} phát âm ${currentVocab.hanzi}`}
                             >
                                 <Volume2 className="h-4 w-4" />
                             </button>
@@ -101,7 +186,7 @@ export default function FlashcardsPanel({ vocabularies = [] }) {
 
                         <div className="flex flex-col items-center justify-center flex-grow gap-4 w-full">
                             {currentVocab.imageUrl ? (
-                                <img
+                                <UserImage
                                     src={currentVocab.imageUrl}
                                     alt={currentVocab.hanzi}
                                     className="h-28 w-28 object-cover rounded-xl border border-brand-border shadow-sm bg-brand-panel"
@@ -127,9 +212,11 @@ export default function FlashcardsPanel({ vocabularies = [] }) {
             {/* Deck Navigation Controls */}
             <div className="flex items-center gap-6">
                 <button
+                    type="button"
                     onClick={handlePrev}
                     className="p-3 rounded-xl border border-brand-border bg-brand-panel hover:bg-brand-accent/20 text-brand-textSoft hover:text-brand-white hover:border-brand-accent transition-all"
                     title="Từ trước"
+                    aria-label="Xem từ vựng trước"
                 >
                     <ChevronLeft className="h-5 w-5" />
                 </button>
@@ -137,9 +224,11 @@ export default function FlashcardsPanel({ vocabularies = [] }) {
                     {currentIndex + 1} / {vocabularies.length}
                 </div>
                 <button
+                    type="button"
                     onClick={handleNext}
                     className="p-3 rounded-xl border border-brand-border bg-brand-panel hover:bg-brand-accent/20 text-brand-textSoft hover:text-brand-white hover:border-brand-accent transition-all"
                     title="Từ tiếp theo"
+                    aria-label="Xem từ vựng tiếp theo"
                 >
                     <ChevronRight className="h-5 w-5" />
                 </button>

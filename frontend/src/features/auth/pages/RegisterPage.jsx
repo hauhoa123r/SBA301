@@ -5,6 +5,7 @@ import { Lock, Mail, User, UserPlus, Zap } from "lucide-react";
 import { validInput } from "@/shared/utils/inputHandler.js";
 import { showApiErrorToast, showSuccessToast } from "@/shared/utils/toast.js";
 import { register } from "../service/authService.js";
+import UserReveal from "@/shared/components/animation/UserReveal";
 
 const baseInputClass =
     "w-full bg-brand-light border border-brand-accent/20 focus:border-brand-accent/60 text-brand-textPrimary placeholder-brand-textSecondary/50 rounded-xl px-4 py-3 text-sm outline-none transition-colors";
@@ -93,7 +94,7 @@ export default function RegisterPage() {
     };
 
     return (
-        <div className="relative overflow-hidden text-brand-textPrimary" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
+        <div className="user-ui-scope relative overflow-hidden text-brand-textPrimary" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
             <div className="fixed inset-0 pointer-events-none">
                 <div className="absolute top-[-20%] left-[-10%] w-125 h-125 rounded-full bg-brand-accent/15 blur-[120px]" />
                 <div className="absolute bottom-[-10%] right-[-5%] w-100 h-100 rounded-full bg-brand-accentDeep/20 blur-[100px]" />
@@ -106,9 +107,9 @@ export default function RegisterPage() {
                 />
             </div>
 
-            <section className="relative z-10 flex min-h-[calc(100vh-160px)] items-center justify-center p-6">
-                <div className="w-full max-w-5xl overflow-hidden rounded-3xl border border-brand-accent/15 shadow-2xl shadow-brand-accent/10 grid md:grid-cols-2">
-                    <div className="bg-brand-cardBg flex flex-col justify-between p-10 min-h-145">
+            <section className="relative z-10 flex min-h-[calc(100vh-160px)] items-center justify-center p-4 sm:p-6">
+                <UserReveal className="grid w-full max-w-5xl overflow-hidden rounded-3xl border border-brand-accent/15 shadow-2xl shadow-brand-accent/10 md:grid-cols-2" distance={20}>
+                    <div className="flex flex-col justify-between bg-brand-cardBg p-6 sm:p-8 md:min-h-145 md:p-10">
                         <div>
                             <div className="mb-8">
                                 <div className="inline-flex items-center gap-2 bg-brand-accent/15 border border-brand-accent/25 text-brand-accentSoft text-xs font-semibold px-3 py-1.5 rounded-full mb-6 tracking-wider uppercase">
@@ -147,59 +148,68 @@ export default function RegisterPage() {
 
                             <form onSubmit={handleSubmit} noValidate>
                                 <div className="mb-5">
-                                    <label className={fieldLabelClass}>Họ và tên</label>
+                                    <label htmlFor="register-full-name" className={fieldLabelClass}>Họ và tên</label>
                                     <div className="relative">
                                         <User className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-textSecondary" />
                                         <input
                                             type="text"
+                                            id="register-full-name"
                                             name="fullName"
                                             placeholder="Nguyễn Văn A"
                                             value={formData.fullName}
                                             onChange={handleChange}
                                             onBlur={handleBlur}
+                                            aria-invalid={Boolean(errors.fullName)}
+                                            aria-describedby={errors.fullName ? "register-full-name-error" : undefined}
                                             className={`${baseInputClass} pl-11`}
                                         />
                                     </div>
                                     {errors.fullName ? (
-                                        <p className="mt-1.5 text-xs font-semibold text-social-google">{errors.fullName}</p>
+                                        <p id="register-full-name-error" role="alert" className="mt-1.5 text-xs font-semibold text-social-google">{errors.fullName}</p>
                                     ) : null}
                                 </div>
 
                                 <div className="mb-5">
-                                    <label className={fieldLabelClass}>Địa chỉ email</label>
+                                    <label htmlFor="register-email" className={fieldLabelClass}>Địa chỉ email</label>
                                     <div className="relative">
                                         <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-textSecondary" />
                                         <input
                                             type="email"
+                                            id="register-email"
                                             name="email"
                                             placeholder="you@example.com"
                                             value={formData.email}
                                             onChange={handleChange}
                                             onBlur={handleBlur}
+                                            aria-invalid={Boolean(errors.email)}
+                                            aria-describedby={errors.email ? "register-email-error" : undefined}
                                             className={`${baseInputClass} pl-11`}
                                         />
                                     </div>
                                     {errors.email ? (
-                                        <p className="mt-1.5 text-xs font-semibold text-social-google">{errors.email}</p>
+                                        <p id="register-email-error" role="alert" className="mt-1.5 text-xs font-semibold text-social-google">{errors.email}</p>
                                     ) : null}
                                 </div>
 
                                 <div className="mb-4">
-                                    <label className={fieldLabelClass}>Mật khẩu</label>
+                                    <label htmlFor="register-password" className={fieldLabelClass}>Mật khẩu</label>
                                     <div className="relative">
                                         <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-textSecondary" />
                                         <input
                                             type="password"
+                                            id="register-password"
                                             name="password"
                                             placeholder="Ít nhất 8 ký tự, có 1 chữ hoa"
                                             value={formData.password}
                                             onChange={handleChange}
                                             onBlur={handleBlur}
+                                            aria-invalid={Boolean(errors.password)}
+                                            aria-describedby={errors.password ? "register-password-error" : undefined}
                                             className={`${baseInputClass} pl-11`}
                                         />
                                     </div>
                                     {errors.password ? (
-                                        <p className="mt-1.5 text-xs font-semibold text-social-google">{errors.password}</p>
+                                        <p id="register-password-error" role="alert" className="mt-1.5 text-xs font-semibold text-social-google">{errors.password}</p>
                                     ) : null}
                                 </div>
 
@@ -217,7 +227,7 @@ export default function RegisterPage() {
                             </p>
                         </div>
                     </div>
-                    <div className="relative flex flex-col justify-between p-10 text-brand-white overflow-hidden bg-brand-dark">
+                    <div className="relative hidden flex-col justify-between overflow-hidden bg-brand-dark p-10 text-brand-white md:flex">
                         <div className="absolute inset-0 bg-linear-to-br from-brand-accentDeep/60 via-brand-dark to-brand-dark" />
                         <div className="absolute -top-15 -right-15 w-70 h-70 rounded-full bg-brand-accent/20 blur-[80px]" />
                         <div className="absolute -bottom-10 -left-10 w-50 h-50 rounded-full bg-brand-accentDeep/30 blur-[60px]" />
@@ -271,7 +281,7 @@ export default function RegisterPage() {
                             ))}
                         </div>
                     </div>
-                </div>
+                </UserReveal>
             </section>
         </div>
     );

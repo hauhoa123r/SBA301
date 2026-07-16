@@ -4,8 +4,10 @@ import com.app.features.learning.dto.record.CupStats;
 import com.app.features.learning.dto.record.LearningStatsData;
 import com.app.features.model.UserEntity;
 import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class CupStatsCalculator {
 
     private static final int DEFAULT_TOTAL_CUPS = 195;
@@ -16,8 +18,10 @@ public class CupStatsCalculator {
         int earnedCups = data.highestPassedQuizScores().stream().mapToInt(Integer::intValue).sum();
 
         if (totalCups == 0) {
+            log.debug("Using fallback cup statistics, userId={}", user.getId());
             return fallbackStats(user.getTotalLearningPoints());
         }
+        log.debug("Cup statistics calculated, userId={}, earnedCups={}, totalCups={}", user.getId(), earnedCups, totalCups);
         return new CupStats(earnedCups, totalCups);
     }
 

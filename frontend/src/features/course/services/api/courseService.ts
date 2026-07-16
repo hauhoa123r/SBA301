@@ -5,6 +5,11 @@ import type { CourseDetailResponse } from "../../dto/response/CourseDetailRespon
 
 export const getCourses = async (): Promise<CourseCatalogResponse[]> => {
   const response = await api.get<CourseCatalogResponse[]>(API_COURSES);
+
+  if (!Array.isArray(response.data)) {
+    throw new TypeError("Invalid course catalog response: expected an array");
+  }
+
   return response.data;
 };
 

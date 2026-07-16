@@ -8,7 +8,7 @@ export default function Profile({ profile, isLoading, isSaving, userId, onInputC
     return (
         <form onSubmit={onSaveProfile}>
             <div className="mb-8 flex flex-col gap-5 md:flex-row md:items-center">
-                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-brand-light text-2xl font-bold text-brand-accentSoft">
+                <div aria-hidden="true" className="flex h-20 w-20 items-center justify-center rounded-full bg-brand-light text-2xl font-bold text-brand-accentSoft ring-4 ring-brand-accent/10">
                     {profile.fullName?.charAt(0).toUpperCase() || "?"}
                 </div>
                 <div>
@@ -34,7 +34,7 @@ export default function Profile({ profile, isLoading, isSaving, userId, onInputC
                     <div className="grid gap-5 md:grid-cols-2">
                         <label className="block">
                             <span className={fieldLabelClass}>Họ và tên <span className="text-brand-danger">*</span></span>
-                            <input type="text" name="fullName" value={profile.fullName} onChange={(e) => onInputChange(e, "profile")} className={baseInputClass} required />
+                            <input type="text" name="fullName" value={profile.fullName} onChange={(e) => onInputChange(e, "profile")} className={baseInputClass} autoComplete="name" required />
                         </label>
                         <label className="block">
                             <span className={fieldLabelClass}>Email <Info className="h-4 w-4" /></span>
@@ -58,7 +58,7 @@ export default function Profile({ profile, isLoading, isSaving, userId, onInputC
                         </label>
                     </div>
                     <div className="mt-6 flex justify-end">
-                        <button type="submit" disabled={isSaving || !userId} className="inline-flex h-10 items-center gap-2 rounded-lg bg-brand-accent px-5 text-sm font-bold text-brand-white hover:bg-brand-accentHover disabled:opacity-50">
+                        <button type="submit" disabled={isSaving || !userId} className="inline-flex h-11 items-center gap-2 rounded-xl bg-brand-accent px-5 text-sm font-bold text-brand-white shadow-lg shadow-brand-accent/20 transition hover:bg-brand-accentHover disabled:cursor-not-allowed disabled:opacity-50">
                             {isSaving ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                             {isSaving ? "Đang lưu..." : "Lưu thay đổi"}
                         </button>

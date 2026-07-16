@@ -5,7 +5,11 @@ export function AuthProvider({ children }) {
 
     const [user, setStoredUser] = useState(() => {
         const savedUser = localStorage.getItem("user");
-        if (!savedUser) return null;
+        const hasSession = localStorage.getItem("token") || localStorage.getItem("refreshToken");
+        if (!savedUser || !hasSession) {
+            localStorage.removeItem("user");
+            return null;
+        }
 
         try {
             return JSON.parse(savedUser);

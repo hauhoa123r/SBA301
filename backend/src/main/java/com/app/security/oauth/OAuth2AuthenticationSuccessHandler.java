@@ -1,4 +1,4 @@
-package com.app.security;
+package com.app.security.oauth;
 
 import com.app.features.oauth.OAuthAuthorizationCodeService;
 import jakarta.servlet.ServletException;

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { CircleX, LoaderCircle, ShieldCheck, X } from "lucide-react";
+import { CircleX, LoaderCircle, ShieldCheck } from "lucide-react";
 import { verifyEmail } from "../service/authService.js";
+import UserReveal from "@/shared/components/animation/UserReveal";
 
 const resultConfig = {
     loading: {
@@ -34,6 +35,8 @@ export default function VerifyEmailPage() {
         const token = searchParams.get("token")?.trim() || "";
 
         if (!email || !token) {
+            // Preserve the immediate invalid-link state from the existing auth flow.
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setStatus("error");
             setMessage("Thiếu thông tin xác thực trong liên kết.");
             return;
@@ -66,9 +69,9 @@ export default function VerifyEmailPage() {
     const current = resultConfig[status];
 
     return (
-        <div className="relative min-h-[calc(100vh-160px)] overflow-hidden text-brand-textPrimary" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
+        <div className="user-ui-scope relative min-h-[calc(100vh-160px)] overflow-hidden text-brand-textPrimary" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
             <section className="relative z-10 flex min-h-[calc(100vh-160px)] items-center justify-center px-6 py-12">
-                <div className="w-full max-w-xl rounded-3xl border border-brand-accent/15 bg-brand-cardBg p-8 text-center shadow-2xl shadow-brand-accent/10 md:p-10">
+                <UserReveal className="w-full max-w-xl rounded-3xl border border-brand-accent/15 bg-brand-cardBg p-8 text-center shadow-2xl shadow-brand-accent/10 md:p-10" distance={20} aria-live="polite">
 
                     <div className={`mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border ${current.iconClass}`}>
                         {current.icon}
@@ -85,7 +88,7 @@ export default function VerifyEmailPage() {
                             {message}
                         </p>
                     ) : null}
-                </div>
+                </UserReveal>
             </section>
         </div>
     );

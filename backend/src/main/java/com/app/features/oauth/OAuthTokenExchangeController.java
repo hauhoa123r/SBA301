@@ -3,7 +3,7 @@ package com.app.features.oauth;
 import com.app.features.auth.dto.response.AuthUserResponse;
 import com.app.features.auth.dto.response.TokenResponse;
 import com.app.features.model.UserEntity;
-import com.app.security.JwtService;
+import com.app.security.jwt.JwtService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
