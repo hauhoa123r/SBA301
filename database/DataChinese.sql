@@ -99,7 +99,7 @@ INSERT INTO verification_tokens (id, token, token_type, user_id, expiry_date, is
 
 -- 10. courses
 INSERT INTO courses (id, teacher_id, category_id, title, description, thumbnail_url, status, created_at, updated_at) VALUES
-(1, 4, 1, 'Tieng Trung giao tiep co ban', 'Hoc chao hoi, gioi thieu ban than, hoi duong va cac mau cau hang ngay.', 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80', 'PUBLISHED', '2026-02-10 08:00:00', '2026-06-10 08:00:00'),
+(1, 4, 1, 'Tiếng Trung giao tiếp cho Nhân viên Sales (Cơ bản)', 'Hoc chao hoi, gioi thieu ban than, hoi duong va cac mau cau hang ngay.', 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80', 'PUBLISHED', '2026-02-10 08:00:00', '2026-06-10 08:00:00'),
 (2, 4, 2, 'HSK 1 tu con so 0', 'Lo trinh HSK 1 voi 150 tu vung, ngu phap nen tang va de luyen tap.', 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1200&q=80', 'PUBLISHED', '2026-02-12 08:00:00', '2026-06-11 08:00:00'),
 (3, 5, 2, 'HSK 2 cap toc', 'On tap tu vung HSK 2, nghe hieu va doc hieu theo cau truc de thi.', 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80', 'PUBLISHED', '2026-02-14 08:00:00', '2026-06-12 08:00:00'),
 (4, 5, 4, 'Tieng Trung cho cong nhan nha may', 'Tu vung an toan lao dong, ca kip, may moc va trao doi voi quan ly Trung Quoc.', 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1200&q=80', 'PUBLISHED', '2026-02-16 08:00:00', '2026-06-13 08:00:00'),
@@ -121,9 +121,9 @@ INSERT INTO course_tags (course_id, tag_id) VALUES
 
 -- 13. chapters
 INSERT INTO chapters (id, course_id, title, order_index) VALUES
-(1, 1, 'Nen tang phat am va chao hoi', 1),
-(2, 1, 'Hoi thoai doi song hang ngay', 2),
-(3, 2, 'HSK 1: Pinyin va tu vung dau tien', 1),
+(1, 1, 'Làm quen với môi trường làm việc', 1),
+(2, 1, 'Giới thiệu bản thân với khách hàng', 2),
+(3, 1, 'Thu thập thông tin khách hàng', 3),
 (4, 2, 'HSK 1: Mau cau co ban', 2),
 (5, 3, 'HSK 2: Mo rong tu vung', 1),
 (6, 3, 'HSK 2: Luyen de nghe doc', 2),
@@ -141,11 +141,12 @@ INSERT INTO chapters (id, course_id, title, order_index) VALUES
 
 -- 14. lessons
 INSERT INTO lessons (id, chapter_id, title, video_url, duration_seconds, order_index) VALUES
-(1, 1, 'Lam quen bang phien am Pinyin', 'https://cdn.chineselearning.vn/videos/lesson-001.mp4', 720, 1),
-(2, 1, 'Chao hoi va gioi thieu ten', 'https://cdn.chineselearning.vn/videos/lesson-002.mp4', 840, 2),
-(3, 2, 'Hoi tham suc khoe va nghe nghiep', 'https://cdn.chineselearning.vn/videos/lesson-003.mp4', 900, 1),
-(4, 2, 'Hoi duong va di taxi', 'https://cdn.chineselearning.vn/videos/lesson-004.mp4', 960, 2),
-(5, 3, '150 tu vung HSK 1 dau tien', 'https://cdn.chineselearning.vn/videos/lesson-005.mp4', 780, 1),
+(1, 1, 'Gặp lễ tân', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784137456/B%E1%BB%91i_c%E1%BA%A3nh_H%C3%B4m_nay_l%C3%A0_ng%C3%A0y_%C4%91%E1%BA%A7u_qqe6xj.mp4', 720, 1),
+(2, 1, 'Gặp trưởng nhóm', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784174625/phi%C3%AAn_%C3%A2m_ti%E1%BA%BFng_vi%E1%BB%87t_n%E1%BB%AFa_gvmbku.mp4', 840, 2),
+(35, 1, 'Gặp đồng nghiệp', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784174679/ti%C3%AAng_trung_pinyin_v%E1%BB%9Bi_phi_eexi8e.mp4', 900, 3),
+(3, 2, 'Giới thiệu tên, vị trí, công việc', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051322/c%C3%A1i_ph%E1%BA%A7n_phi%C3%AAn_%C3%A2m_ti%E1%BA%BFng_vi%E1%BB%87t_b_mgsgze.mp4', 900, 1),
+(4, 2, 'Giới thiệu công ty', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784136039/B%E1%BB%91i_c%E1%BA%A3nh_Sau_khi_gi%E1%BB%9Bi_thi%E1%BB%87u_b_rknava.mp4', 960, 2),
+(5, 3, 'Hỏi thông tin cá nhân của khách hàng', 'https://cdn.chineselearning.vn/videos/lesson-005.mp4', 780, 1),
 (6, 3, 'So dem, ngay thang va thoi gian', 'https://cdn.chineselearning.vn/videos/lesson-006.mp4', 810, 2),
 (7, 4, 'Cau hoi voi ma, shei, shenme', 'https://cdn.chineselearning.vn/videos/lesson-007.mp4', 840, 1),
 (8, 4, 'Doc doan van HSK 1 ngan', 'https://cdn.chineselearning.vn/videos/lesson-008.mp4', 880, 2),
@@ -963,3 +964,898 @@ VALUES
 (@q16_id, 'Phần mềm công nghệ thông tin', TRUE, 2),
 (@q16_id, 'Tài liệu hợp đồng bản cứng', FALSE, 3),
 (@q16_id, 'Hệ thống mạng nội bộ công ty', FALSE, 4);
+
+
+-- ========================================================
+-- CHAPTER 2 LESSON 1 ADDITIONS (Lesson ID 3)
+-- ========================================================
+
+-- Vocabularies
+INSERT INTO vocabularies (lesson_id, hanzi, pinyin, vietnamese_meaning, image_url, audio_url, order_index) VALUES
+(3, '客户', 'kèhù', 'Khách hàng', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784051099/kh%C3%A1ch_h%C3%A0ng_gowqmh.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051155/Kh%C3%A1ch_h%C3%A0ng_g9ljtd.mp3', 1),
+(3, '您好', 'nín hǎo', 'Xin chào (lịch sự)', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784051100/l%E1%BB%8Bch_s%E1%BB%B1_l6xogl.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051161/Xin_ch%C3%A0o_l%E1%BB%8Bch_s%E1%BB%B1_bt7upl.mp3', 2),
+(3, '请问', 'qǐngwèn', 'Xin hỏi', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784051103/xin_h%E1%BB%8Fi_fhqpwg.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051160/Xin_h%E1%BB%8Fi_qawxno.mp3', 3),
+(3, '叫', 'jiào', 'Tên là, gọi là', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784051099/h%E1%BB%8Fi_t%C3%AAn_h428yk.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051158/T%C3%AAn_l%C3%A0_g%E1%BB%8Di_l%C3%A0_uzhvay.mp3', 4),
+(3, '什么', 'shénme', 'Gì', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784051099/g%C3%AC_lixmnt.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051154/g%C3%AC_ehgjn5.mp3', 5),
+(3, '名字', 'míngzi', 'Tên', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784051102/t%C3%AAn_dvvvnj.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051159/t%C3%AAn_gunwh9.mp3', 6),
+(3, '我叫', 'wǒ jiào', 'Tôi tên là', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784051102/t%C3%B4i_l%C3%A0_vvvkqx.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051159/t%C3%AAn_t%C3%B4i_l%C3%A0_f9eufp.mp3', 7),
+(3, '担任', 'dānrèn', 'Đảm nhiệm, giữ chức vụ', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784051103/%C4%91%E1%BA%A3m_nhi%E1%BB%87m_al97le.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051161/%C4%90%E1%BA%A3m_nhi%E1%BB%87m_gi%E1%BB%AF_ch%E1%BB%A9c_v%E1%BB%A5_jibfdb.mp3', 8),
+(3, '职位', 'zhíwèi', 'Chức vụ', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784051099/ch%E1%BB%A9c_v%E1%BB%A5_ibepsn.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051154/Ch%E1%BB%A9c_v%E1%BB%A5_ar9e8h.mp3', 9),
+(3, '我是', 'wǒ shì', 'Tôi là', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784051102/t%C3%B4i_l%C3%A0_vvvkqx.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051159/t%C3%B4i_l%C3%A0_vyu8cy.mp3', 10),
+(3, '销售经理', 'xiāoshòu jīnglǐ', 'Quản lý kinh doanh', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784051101/qu%E1%BA%A3n_l%C3%BD_kinh_doanh_itqmlv.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051157/Qu%E1%BA%A3n_l%C3%BD_kinh_doanh_m5b47r.mp3', 11),
+(3, '负责', 'fùzé', 'Phụ trách', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784051101/ph%E1%BB%A5_tr%C3%A1ch_wrxoge.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051156/ph%E1%BB%A5_tr%C3%A1ch_d0ndjs.mp3', 12),
+(3, '客户服务', 'kèhù fúwù', 'Chăm sóc khách hàng', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784051098/ch%C4%83m_s%C3%B3c_kh%C3%A1ch_h%C3%A0ng_bsidex.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051153/Ch%C4%83m_s%C3%B3c_kh%C3%A1ch_h%C3%A0ng_c6u48q.mp3', 13),
+(3, '很高兴', 'hěn gāoxìng', 'Rất vui', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784051101/r%E1%BA%A5t_vui_ofzobr.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051157/R%E1%BA%A5t_vui_spfh7w.mp3', 14),
+(3, '认识', 'rènshi', 'Làm quen, gặp gỡ', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784051100/l%C3%A0m_quen_engije.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051155/L%C3%A0m_quen_g%E1%BA%B7p_g%E1%BB%A1_iizv7b.mp3', 15);
+
+-- Sentence Patterns
+INSERT INTO sentence_patterns (lesson_id, chinese_text, pinyin_text, vietnamese_meaning, audio_url, order_index) VALUES
+(3, '您好！我叫王明。', 'Nín hǎo! Wǒ jiào Wáng Míng.', 'Xin chào! Tôi tên là Vương Minh.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051196/MC1-1_iib2zz.mp3', 1),
+(3, '您好！我叫王明，是负责这次项目的新员工。', 'Nín hǎo! Wǒ jiào Wáng Míng, shì fùzé zhè cì xiàngmù de xīn yuángōng.', 'Xin chào! Tôi tên là Vương Minh, là nhân viên mới đảm nhiệm dự án lần này.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051196/MC1-2_xprizj.mp3', 2),
+(3, '我是销售经理，负责客户服务。', 'Wǒ shì xiāoshòu jīnglǐ, fùzé kèhù fúwù.', 'Tôi là quản lý kinh doanh, phụ trách chăm sóc khách hàng.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051196/MC2-1_vtop2a.mp3', 3),
+(3, '他在公司担任销售经理，主要负责客户服务。', 'Tā zài gōngsī dānrèn xiāoshòu jīnglǐ, zhǔyào fùzé kèhù fúwù.', 'Anh ấy đảm nhiệm chức vụ quản lý kinh doanh tại công ty, chịu trách nhiệm chính về mảng chăm sóc khách hàng.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051197/MC2-2_vvy4no.mp3', 4);
+
+-- Quiz
+INSERT INTO quizzes (title, lesson_id, time_limit_minutes, pass_score) VALUES
+('Trắc nghiệm Chapter 2 Lesson 1', 3, 15, 50);
+SET @c2_l1_quiz_id = LAST_INSERT_ID();
+
+-- Quiz Questions & Answers
+
+-- Question 1
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c2_l1_quiz_id, 'SINGLE_CHOICE', '您好！我________兰。', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051268/ph%C3%A2n_%C4%91o%E1%BA%A1n_1_p0tbei.mp3', 10, 1, 'Động từ ''叫'' (gọi là/tên là) dùng để tự giới thiệu tên riêng một cách tự nhiên và lịch sự trong giao tiếp thương mại.');
+SET @q1_c2l1_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q1_c2l1_id, 'A. 叫 (jiào)', TRUE, 1),
+(@q1_c2l1_id, 'B. 是 (shì)', FALSE, 2),
+(@q1_c2l1_id, 'C. 负责 (fùzé)', FALSE, 3),
+(@q1_c2l1_id, 'D. 认识 (rènshi)', FALSE, 4);
+
+-- Question 2
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c2_l1_quiz_id, 'SINGLE_CHOICE', '我是AB公司的________。', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051270/ph%C3%A2n_%C4%91o%E1%BA%A1n_2_mui4sr.mp3', 10, 2, 'Từ khóa ''销售员'' (nhân viên kinh doanh/sales) bổ nghĩa cho thuộc sở hữu của công ty AB biểu thị chính xác vai trò chức vụ.');
+SET @q2_c2l1_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q2_c2l1_id, 'A. 客户 (kèhù)', FALSE, 1),
+(@q2_c2l1_id, 'B. 销售员 (xiāoshòuyuán)', TRUE, 2),
+(@q2_c2l1_id, 'C. 主管 (zhǔguǎn)', FALSE, 3),
+(@q2_c2l1_id, 'D. 经理 (jīnglǐ)', FALSE, 4);
+
+-- Question 3
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c2_l1_quiz_id, 'SINGLE_CHOICE', '很高兴________nhi/tỉ/tù (chữ dịch/pinyin: 你)。', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051270/ph%C3%A2n_%C4%91o%E1%BA%A1n_3_l1rdcf.mp3', 10, 3, 'Cụm bổ ngữ liên kết ''很高兴见到你'' (Rất vui được gặp bạn) là khẩu ngữ xã giao bắt buộc để mở đầu mối quan hệ hợp tác.');
+SET @q3_c2l1_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q3_c2l1_id, 'A. 见到 (jiàndào)', TRUE, 1),
+(@q3_c2l1_id, 'B. 谢谢 (xièxie)', FALSE, 2),
+(@q3_c2l1_id, 'C. 担任 (dānrèn)', FALSE, 3),
+(@q3_c2l1_id, 'D. 负责 (fùzé)', FALSE, 4);
+
+-- Question 4
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c2_l1_quiz_id, 'SINGLE_CHOICE', '我________客户咨询和支持。', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051271/ph%C3%A2n_%C4%91o%E1%BA%A1n_4_nswbxz.mp3', 10, 4, 'Động từ ''负责'' (phụ trách/chịu trách nhiệm về) đi liền trước danh từ chỉ mảng công việc để giới thiệu nghĩa vụ chuyên môn của mình.');
+SET @q4_c2l1_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q4_c2l1_id, 'A. 叫 (jiào)', FALSE, 1),
+(@q4_c2l1_id, 'B. 担任 (dānrèn)', FALSE, 2),
+(@q4_c2l1_id, 'C. 负责 (fùzé)', TRUE, 3),
+(@q4_c2l1_id, 'D. 很高兴 (hěn gāoxìng)', FALSE, 4);
+
+-- Question 5
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c2_l1_quiz_id, 'SINGLE_CHOICE', '我负责________咨询 và hỗ trợ (chữ dịch: 咨询和支持)。', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051272/ph%C3%A2n_%C4%91o%E1%BA%A1n_5_y0yvsy.mp3', 10, 5, 'Danh từ ''客户'' (khách hàng) kết hợp với cụm ''咨询 và hỗ trợ'' tạo thành thuật ngữ ngành dịch vụ thương mại ''tư vấn và hỗ trợ khách hàng''.');
+SET @q5_c2l1_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q5_c2l1_id, 'A. 公司 (gōngsī)', FALSE, 1),
+(@q5_c2l1_id, 'B. 职位 (zhíwèi)', FALSE, 2),
+(@q5_c2l1_id, 'C. 销售 (xiāoshòu)', FALSE, 3),
+(@q5_c2l1_id, 'D. 客户 (kèhù)', TRUE, 4);
+
+-- Question 6
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c2_l1_quiz_id, 'SINGLE_CHOICE', 'Từ “来自” có ý nghĩa là gì trong câu giới thiệu nguồn gốc doanh nghiệp hoặc quê hương?', NULL, 10, 6, '“来自” (láizì) mang nghĩa là ''đến từ'', dùng để giới thiệu xuất xứ công ty (Ví dụ: 我来自AB公司 - Tôi đến từ công ty AB).');
+SET @q6_c2l1_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q6_c2l1_id, 'A. Đến từ', TRUE, 1),
+(@q6_c2l1_id, 'B. Làm việc', FALSE, 2),
+(@q6_c2l1_id, 'C. Đi đến', FALSE, 3),
+(@q6_c2l1_id, 'D. Hợp tác', FALSE, 4);
+
+-- Question 7
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c2_l1_quiz_id, 'SINGLE_CHOICE', 'Xác định phiên âm Pinyin chuẩn xác viết liền theo quy tắc ngữ pháp của thuật ngữ công nghệ “人工智能” (Trí tuệ nhân tạo):', NULL, 10, 7, '“人工智能” phát âm chuẩn là ''Réngōng zhìnéng'' (Nhân công trí năng), tuân thủ viết liền các từ tố cấu thành thuật ngữ chuyên ngành.');
+SET @q7_c2l1_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q7_c2l1_id, 'A. Réngōng zhìnéng', TRUE, 1),
+(@q7_c2l1_id, 'B. Réngōng zhīnén', FALSE, 2),
+(@q7_c2l1_id, 'C. Rén gōng zhìnéng', FALSE, 3),
+(@q7_c2l1_id, 'D. Rèngōng zhǐnéng', FALSE, 4);
+
+-- Question 8
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c2_l1_quiz_id, 'SINGLE_CHOICE', 'Động từ thương mại “提供” có nghĩa tiếng Việt chuẩn xác là gì?', NULL, 10, 8, '“提供” (tígōng) nghĩa là ''cung cấp/bàn giao'', ví dụ cung cấp giải pháp dịch vụ hoặc cung ứng hàng hóa cho đối tác.');
+SET @q8_c2l1_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q8_c2l1_id, 'A. Cung cấp', TRUE, 1),
+(@q8_c2l1_id, 'B. Giới thiệu', FALSE, 2),
+(@q8_c2l1_id, 'C. Hợp tác', FALSE, 3),
+(@q8_c2l1_id, 'D. Đảm nhiệm', FALSE, 4);
+
+-- Question 9
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c2_l1_quiz_id, 'SINGLE_CHOICE', 'Xác định nghĩa tiếng Việt chuẩn xác của tổ hợp danh từ sản phẩm dịch vụ số “学习平台”:', NULL, 10, 9, '“学习平台” ghép từ ''学习'' (học tập) và ''平台'' (nền tảng/platform), chỉ hệ thống công nghệ giáo dục, học tập trực tuyến.');
+SET @q9_c2l1_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q9_c2l1_id, 'A. Nhà máy sản xuất', FALSE, 1),
+(@q9_c2l1_id, 'B. Nền tảng học tập', TRUE, 2),
+(@q9_c2l1_id, 'C. Văn phòng làm việc', FALSE, 3),
+(@q9_c2l1_id, 'D. Nhịp độ công việc', FALSE, 4);
+
+-- Question 10
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c2_l1_quiz_id, 'SINGLE_CHOICE', 'Tìm nghĩa tiếng Việt chuẩn xác nhất của danh từ chỉ chức vụ “销售经理” trong phòng kinh doanh doanh nghiệp:', NULL, 10, 10, '“销售经理” (xiāoshòu jīnglǐ) chỉ người chịu trách nhiệm quản lý đội ngũ kinh doanh và chỉ tiêu doanh số tại một bộ phận.');
+SET @q10_c2l1_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q10_c2l1_id, 'A. Giám đốc điều hành', FALSE, 1),
+(@q10_c2l1_id, 'B. Nhân viên kỹ thuật', FALSE, 2),
+(@q10_c2l1_id, 'C. Quản lý kinh doanh / Trưởng phòng kinh doanh', TRUE, 3),
+(@q10_c2l1_id, 'D. Lễ tân tòa nhà', FALSE, 4);
+
+
+-- ========================================================
+-- CHAPTER 2 LESSON 2 ADDITIONS (Lesson ID 4)
+-- ========================================================
+
+-- Vocabularies
+INSERT INTO vocabularies (lesson_id, hanzi, pinyin, vietnamese_meaning, image_url, audio_url, order_index) VALUES
+(4, '公司', 'gōngsī', 'Công ty', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784051396/c%C3%B4ng_ty_wcvgn7.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051519/C%C3%B4ng_ty_ly90zg.mp3', 1),
+(4, '企业', 'qǐyè', 'Doanh nghiệp', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784051397/doanh_nghi%E1%BB%87p_bdzxpn.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051520/Doanh_nghi%E1%BB%87p_cckk4t.mp3', 2),
+(4, '产品', 'chǎnpǐn', 'Sản phẩm', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784051403/s%E1%BA%A3n_ph%E1%BA%A9m_g1rus4.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051526/S%E1%BA%A3n_ph%E1%BA%A9m_kiojtq.mp3', 3),
+(4, '服务', 'fúwù', 'Dịch vụ', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784051400/d%E1%BB%8Bch_v%E1%BB%A5_fyg89z.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051521/D%E1%BB%8Bch_v%E1%BB%A5_yosxg8.mp3', 4),
+(4, '解决方案', 'jiějué fāng\'àn', 'Giải pháp', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784051400/gi%E1%BA%A3i_ph%C3%A1p_vwp125.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051522/Gi%E1%BA%A3i_ph%C3%A1p_h2fkla.mp3', 5),
+(4, '提供', 'tígōng', 'Cung cấp', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784051396/cung_c%E1%BA%A5p_dkm6q1.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051518/Cung_c%E1%BA%A5p_hf4c93.mp3', 6),
+(4, '领域', 'lǐngyù', 'Lĩnh vực', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784051402/l%C4%A9nh_v%E1%BB%B1c_trtmf8.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051525/L%C4%A9nh_v%E1%BB%B1c_ausqmk.mp3', 7),
+(4, '活动', 'huódòng', 'Hoạt động', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784051401/ho%E1%BA%A1t_%C4%91%E1%BB%99ng_vxvvyq.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051524/Ho%E1%BA%A1t_%C4%91%E1%BB%99ng_olvlvb.mp3', 8);
+
+-- Sentence Patterns
+INSERT INTO sentence_patterns (lesson_id, chinese_text, pinyin_text, vietnamese_meaning, audio_url, order_index) VALUES
+(4, '我来自AB公司。', 'Wǒ láizì AB gōngsī.', 'Tôi đến từ Công ty AB.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051585/MC1-1_w5lr6c.mp3', 1),
+(4, '我们公司专门为企业提供软件解决方案。', 'Wǒmen gōngsī zhuānmén wèi qǐyè tígōng ruǎnjiàn jiějué fāng\'àn.', 'Công ty chúng tôi chuyên cung cấp giải pháp phần mềm cho doanh nghiệp.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051587/MC2-1_z40g5p.mp3', 2),
+(4, '我们公司专门提供软件。', 'Wǒmen gōngsī zhuānmén tígōng ruǎnjiàn.', 'Công ty chúng tôi chuyên cung cấp phần mềm.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051587/MC2-2_vbwuxy.mp3', 3),
+(4, '我们提供人工智能学习 platform。', 'Wǒmen tígōng réngōng zhìnéng xuéxí píngtái.', 'Chúng tôi cung cấp nền tảng học tập trí tuệ nhân tạo.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051589/MC3-1_aqogd3.mp3', 4);
+
+-- Quiz
+INSERT INTO quizzes (title, lesson_id, time_limit_minutes, pass_score) VALUES
+('Trắc nghiệm Chapter 2 Lesson 2', 4, 15, 50);
+SET @c2_l2_quiz_id = LAST_INSERT_ID();
+
+-- Quiz Questions & Answers
+
+-- Question 1
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c2_l2_quiz_id, 'SINGLE_CHOICE', '我________AB公司。', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051655/ph%C3%A2n_%C4%91o%E1%BA%A1n_1_o7xuw1.mp3', 10, 1, '“来自” có nghĩa là “đến từ”. Cấu trúc 我来自 + tên công ty/địa điểm được dùng để giới thiệu nơi mình đến từ hoặc đơn vị mình thuộc về. Câu hoàn chỉnh là 我来自AB公司。, nghĩa là “Tôi đến từ Công ty AB.”');
+SET @q1_c2l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q1_c2l2_id, 'A. 来自 (láizì)', TRUE, 1),
+(@q1_c2l2_id, 'B. 提供 (tígōng)', FALSE, 2),
+(@q1_c2l2_id, 'C. 活动 (huódòng)', FALSE, 3),
+(@q1_c2l2_id, 'D. 负责 (fùzé)', FALSE, 4);
+
+-- Question 2
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c2_l2_quiz_id, 'SINGLE_CHOICE', '贵公司在什么________活动？', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051657/ph%C3%A2n_%C4%91o%E1%BA%A1n_2_yf77ye.mp3', 10, 2, '“领域” có nghĩa là “lĩnh vực”. Cụm 在什么领域 activity nghĩa là “hoạt động trong lĩnh vực nào”. Câu hoàn chỉnh 贵公司在什么领域活动？ có nghĩa là “Quý công ty hoạt động trong lĩnh vực nào?”');
+SET @q2_c2l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q2_c2l2_id, 'A. 产品 (chǎnpǐn)', FALSE, 1),
+(@q2_c2l2_id, 'B. 服务 (fúwù)', FALSE, 2),
+(@q2_c2l2_id, 'C. 领域 (lǐngyù)', TRUE, 3),
+(@q2_c2l2_id, 'D. 企业 (qǐyè)', FALSE, 4);
+
+-- Question 3
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c2_l2_quiz_id, 'SINGLE_CHOICE', 'Chúng tôi công ty________vì xí nghiệp cung cấp phần mềm giải quyết phương án。', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051658/ph%C3%A2n_%C4%91o%E1%BA%A1n_3_q3urrj.mp3', 10, 3, '“专门” có nghĩa là “chuyên, chuyên về”. Từ này được dùng để nhấn mạnh rằng công ty tập trung cung cấp một sản phẩm hoặc dịch vụ cụ thể. Câu hoàn chỉnh là 我们公司专门为企业提供软件解决方案。, nghĩa là “Công ty chúng tôi chuyên cung cấp giải pháp phần mềm cho doanh nghiệp.”');
+SET @q3_c2l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q3_c2l2_id, 'A. 很高兴 (hěn gāoxìng)', FALSE, 1),
+(@q3_c2l2_id, 'B. 专门 (zhuānmén)', TRUE, 2),
+(@q3_c2l2_id, 'C. 谢谢 (xièxie)', FALSE, 3),
+(@q3_c2l2_id, 'D. 叫 (jiào)', FALSE, 4);
+
+-- Question 4
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c2_l2_quiz_id, 'SINGLE_CHOICE', 'Chúng tôi công ty chuyên môn vì xí nghiệp________phần mềm giải quyết phương án。', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051660/ph%C3%A2n_%C4%91o%E1%BA%A1n_4_uzelll.mp3', 10, 4, '“提供” có nghĩa là “cung cấp”. Cấu trúc 为 + đối tượng + 提供 + sản phẩm/dịch vụ nghĩa là “cung cấp sản phẩm hoặc dịch vụ cho một đối tượng”. Câu hoàn chỉnh là 我们公司专门为企业提供软件解决方案。');
+SET @q4_c2l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q4_c2l2_id, 'A. 提供 (tígōng)', TRUE, 1),
+(@q4_c2l2_id, 'B. 活动 (huódòng)', FALSE, 2),
+(@q4_c2l2_id, 'C. 来自 (láizì)', FALSE, 3),
+(@q4_c2l2_id, 'D. 名字 (míngzi)', FALSE, 4);
+
+-- Question 5
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c2_l2_quiz_id, 'SINGLE_CHOICE', '我们公司专门为企业提供软件________。', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051661/ph%C3%A2n_%C4%91o%E1%BA%A1n_5_vre4e0.mp3', 10, 5, '“解决方案” có nghĩa là “giải pháp”. Cụm 软件解决方案 nghĩa là “giải pháp phần mềm”, là một cụm từ tự nhiên và thường dùng trong môi trường doanh nghiệp. Câu hoàn chỉnh là 我们公司专门为企业提供软件解决方案。');
+SET @q5_c2l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q5_c2l2_id, 'A. 客户服务 (kèhù fúwù)', FALSE, 1),
+(@q5_c2l2_id, 'B. 销售经理 (xiāoshòu jīnglǐ)', FALSE, 2),
+(@q5_c2l2_id, 'C. 解决方案 (jiějué fāng\'àn)', TRUE, 3),
+(@q5_c2l2_id, 'D. 学习平台 (xuéxí píngtái)', FALSE, 4);
+
+-- Question 6
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c2_l2_quiz_id, 'SINGLE_CHOICE', 'Chọn động từ thích hợp để điền vào lời giới thiệu xuất xứ doanh nghiệp của nhân viên kinh doanh với đối tác:\n“我_______AB公司。”', NULL, 10, 6, 'Động từ ''来自'' mang nghĩa là ''đến từ'', dùng để giới thiệu nguồn gốc công ty nơi mình đang công tác một cách lịch sự.');
+SET @q6_c2l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q6_c2l2_id, 'A. 来自 (láizì)', TRUE, 1),
+(@q6_c2l2_id, 'B. 提供 (tígōng)', FALSE, 2),
+(@q6_c2l2_id, 'C. 活动 (huódòng)', FALSE, 3),
+(@q6_c2l2_id, 'D. 负责 (fùzé)', FALSE, 4);
+
+-- Question 7
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c2_l2_quiz_id, 'SINGLE_CHOICE', 'Hoàn thành câu hỏi xã giao của khách hàng khi muốn tìm hiểu về lĩnh vực kinh doanh của doanh nghiệp đối tác:\n“贵公司在什么_______活动？”', NULL, 10, 7, 'Danh từ ''领域'' kết hợp với động từ ''活动'' tạo thành cấu trúc ''hoạt động trong lĩnh vực gì'', thường dùng trong giao tiếp thương mại.');
+SET @q7_c2l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q7_c2l2_id, 'A. 产品 (chǎnpǐn)', FALSE, 1),
+(@q7_c2l2_id, 'B. 服务 (fúwù)', FALSE, 2),
+(@q7_c2l2_id, 'C. 领域 (lǐngyù)', TRUE, 3),
+(@q7_c2l2_id, 'D. 企业 (qǐyè)', FALSE, 4);
+
+-- Question 8
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c2_l2_quiz_id, 'SINGLE_CHOICE', 'Chọn phó từ thích hợp thể hiện tính chuyên môn hóa, tập trung sâu vào một mảng sản phẩm/giải pháp của công ty:\n“Chúng tôi công ty_______vì xí nghiệp cung cấp phần mềm giải quyết phương án。”', NULL, 10, 8, 'Phó từ ''专门'' mang nghĩa là ''chuyên/chuyên môn về'', đứng trước động từ để nhấn mạnh năng lực cốt lõi của doanh nghiệp.');
+SET @q8_c2l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q8_c2l2_id, 'A. 很高兴 (hěn gāoxìng)', FALSE, 1),
+(@q8_c2l2_id, 'B. 专门 (zhuānmén)', TRUE, 2),
+(@q8_c2l2_id, 'C. 谢谢 (xièxie)', FALSE, 3),
+(@q8_c2l2_id, 'D. 叫 (jiào)', FALSE, 4);
+
+-- Question 9
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c2_l2_quiz_id, 'SINGLE_CHOICE', 'Điền động từ thương mại mang nghĩa cung ứng giải pháp/dịch vụ cho các khách hàng doanh nghiệp:\n“Chúng tôi công ty chuyên môn vì xí nghiệp_______phần mềm giải quyết phương án。”', NULL, 10, 9, 'Động từ ''提供'' nghĩa là ''cung cấp'', đi kèm với đối tượng nhận (企业) và sản phẩm bàn giao (解决方案).');
+SET @q9_c2l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q9_c2l2_id, 'A. 提供 (tígōng)', TRUE, 1),
+(@q9_c2l2_id, 'B. 活动 (huódòng)', FALSE, 2),
+(@q9_c2l2_id, 'C. 来自 (láizì)', FALSE, 3),
+(@q9_c2l2_id, 'D. 名字 (míngzi)', FALSE, 4);
+
+-- Question 10
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c2_l2_quiz_id, 'SINGLE_CHOICE', 'Chọn cụm danh từ thích hợp điền vào vị trí khuyết để hoàn thành câu giới thiệu sản phẩm cốt lõi của công ty công nghệ:\n“我们公司专门 cung cấp phần mềm_______。”', NULL, 10, 10, 'Thuật ngữ ''解决方案'' (giải pháp) kết hợp với ''软件'' tạo thành cụm từ hoàn chỉnh ''giải pháp phần mềm'' chuẩn ngữ cảnh bài học.');
+SET @q10_c2l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q10_c2l2_id, 'A. 客户服务 (kèhù fúwù)', FALSE, 1),
+(@q10_c2l2_id, 'B. 销售经理 (xiāoshòu jīnglǐ)', FALSE, 2),
+(@q10_c2l2_id, 'C. 解决方案 (jiějué fāng\'àn)', TRUE, 3),
+(@q10_c2l2_id, 'D. 学习平台 (xuéxí píngtái)', FALSE, 4);
+
+-- Question 11
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c2_l2_quiz_id, 'SINGLE_CHOICE', 'Xác định phiên âm Pinyin chuẩn xác của thuật ngữ “解决方案” (Giải pháp):', NULL, 10, 11, '“解决方案” có phiên âm chính xác là ''jiějué fāng''àn''. Lưu ý có dấu cách âm ('') trước âm ''àn'' để tách rõ hai âm tiết của từ ''方案''.');
+SET @q11_c2l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q11_c2l2_id, 'A. jiějué fāng\'àn', TRUE, 1),
+(@q11_c2l2_id, 'B. jiějué fāngàn', FALSE, 2),
+(@q11_c2l2_id, 'C. jiéjué fāng\'ān', FALSE, 3),
+(@q11_c2l2_id, 'D. jiějuè fāng\'ān', FALSE, 4);
+
+-- Question 12
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c2_l2_quiz_id, 'SINGLE_CHOICE', 'Tìm từ viết bằng chữ Hán chuẩn xác ứng với ý nghĩa “Doanh nghiệp” thường dùng trong các hợp đồng hoặc văn bản thương mại:', NULL, 10, 12, 'Chữ Hán ''企业'' (phiên âm: qǐyè) mang nghĩa là doanh nghiệp, xí nghiệp, phân biệt với ''公司'' (gōngsī) là công ty.');
+SET @q12_c2l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q12_c2l2_id, 'A. 公司', FALSE, 1),
+(@q12_c2l2_id, 'B. 企业', TRUE, 2),
+(@q12_c2l2_id, 'C. 领域', FALSE, 3),
+(@q12_c2l2_id, 'D. 产品', FALSE, 4);
+
+-- Question 13
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c2_l2_quiz_id, 'SINGLE_CHOICE', 'Cho câu thoại: “这是我们公司的主要产品。” Hãy xác định ý nghĩa của từ “产品” trong ngữ cảnh này:', NULL, 10, 13, 'Danh từ ''产品'' (chǎnpǐn) nghĩa là sản phẩm (hàng hóa hữu hình hoặc vô hình do doanh nghiệp sản xuất và cung ứng ra thị trường).');
+SET @q13_c2l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q13_c2l2_id, 'A. Dịch vụ chăm sóc', FALSE, 1),
+(@q13_c2l2_id, 'B. Sản phẩm', TRUE, 2),
+(@q13_c2l2_id, 'C. Lĩnh vực hoạt động', FALSE, 3),
+(@q13_c2l2_id, 'D. Nền tảng công nghệ', FALSE, 4);
+
+-- Question 14
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c2_l2_quiz_id, 'SINGLE_CHOICE', 'Xác định ý nghĩa tiếng Việt chuẩn xác của động từ “活动” trong câu hỏi thương mại “贵公司 zài cái gì 领域活动？”:', NULL, 10, 14, '“活动” (huódòng) nghĩa là hoạt động. Trong ngữ cảnh công sở, nó chỉ các hành vi vận hành kinh doanh, sản xuất của một tổ chức.');
+SET @q14_c2l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q14_c2l2_id, 'A. Hoạt động', TRUE, 1),
+(@q14_c2l2_id, 'B. Cung cấp', FALSE, 2),
+(@q14_c2l2_id, 'C. Thành lập', FALSE, 3),
+(@q14_c2l2_id, 'D. Hợp tác', FALSE, 4);
+
+-- Question 15
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c2_l2_quiz_id, 'SINGLE_CHOICE', 'Xác định phiên âm Pinyin chính xác của danh từ “领域” (Lĩnh vực):', NULL, 10, 15, '“领域” có phiên âm chuẩn xác là ''lǐngyù'' (thanh 3 kết hợp thanh 4), mang nghĩa là lĩnh vực (phạm vi hoạt động kinh doanh).');
+SET @q15_c2l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q15_c2l2_id, 'A. lǐngyù', TRUE, 1),
+(@q15_c2l2_id, 'B. língyù', FALSE, 2),
+(@q15_c2l2_id, 'C. lǐngyú', FALSE, 3),
+(@q15_c2l2_id, 'D. lǐngjù', FALSE, 4);
+
+
+-- ========================================================
+-- CHAPTER 1 LESSON 1 ADDITIONS (Lesson ID 1)
+-- ========================================================
+
+-- Vocabularies
+INSERT INTO vocabularies (lesson_id, hanzi, pinyin, vietnamese_meaning, image_url, audio_url, order_index) VALUES
+(1, '您好', 'nínhǎo', 'Xin chào (lịch sự)', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784039450/Xin_ch%C3%A0o_mdebpt.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784039585/xin_ch%C3%A0o_qmyanm.mp3', 1),
+(1, '欢迎', 'huānyíng', 'Chào mừng, đón chào', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784039412/Ch%C3%A0o_m%E1%BB%ABng_evt8oe.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784039546/Ch%C3%A0o_m%E1%BB%ABng_%C4%91%C3%B3n_ch%C3%A0o_tf7alw.mp3', 2),
+(1, '加入', 'jiārù', 'Gia nhập, tham gia', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784039412/gia_nh%E1%BA%ADp_echwaw.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784039553/Gia_nh%E1%BA%ADp_rnrye1.mp3', 3),
+(1, '今天', 'jīntiān', 'Hôm nay', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784039418/h%C3%B4m_nay_kohs4v.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784039561/H%C3%B4m_nay_ggnrjk.mp3', 4),
+(1, '是', 'shì', 'Là', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784039421/l%C3%A0_ivngrw.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784039563/L%C3%A0_iw2etn.mp3', 5),
+(1, '我', 'wǒ', 'Tôi', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784039441/t%C3%B4i_xa9mva.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784039578/T%C3%B4i_kookxy.mp3', 6),
+(1, '第一天', 'dì yī tiān', 'Ngày đầu tiên', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784039428/ng%C3%A0y_%C4%91%E1%BA%A7u_ti%C3%AAn_atv1z1.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784039569/Ng%C3%A0y_%C4%91%E1%BA%A7u_ti%C3%AAn_bgf5qu.mp3', 7),
+(1, '上班', 'shàngbān', 'Đi làm', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784039452/%C4%90i_l%C3%A0m_gmklb2.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784039588/%C4%90i_l%C3%A0m_o4jty1.mp3', 8),
+(1, '很', 'hěn', 'Rất', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784039435/r%E1%BA%A5t_nl9zce.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784039571/R%E1%BA%A5t_qrnuud.mp3', 9),
+(1, '高兴', 'gāoxìng', 'Vui, vui mừng', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784039449/vui_ahqbqf.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784039581/Vui_haxu0n.mp3', 10),
+(1, '见到', 'jiàndào', 'Gặp, nhìn thấy', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784039415/g%E1%BA%B7p_xrt6ha.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784039557/G%E1%BA%B7p_b3txm2.mp3', 11),
+(1, '您', 'nín', 'Ngài/Bạn/Ông/Bà (lịch sự)', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784039425/l%E1%BB%8Bch_s%E1%BB%B1_zp7ete.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784039545/B%E1%BA%A1n_Ng%C3%A0i_%C3%B4ng_b%C3%A0_reytcc.mp3', 12),
+(1, '我也', 'wǒ yě', 'Tôi cũng...', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784039438/t%C3%B4i_c%C5%A9ng_i6dbxi.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784039574/T%C3%B4i_c%C5%A9ng..._qekogz.mp3', 13);
+
+-- Sentence Patterns
+INSERT INTO sentence_patterns (lesson_id, chinese_text, pinyin_text, vietnamese_meaning, audio_url, order_index) VALUES
+(1, '你好，我叫A。今天是我第一天来上班。', 'Nǐ hǎo, wǒ jiào A. Jīntiān shì wǒ dì yī tiān lái shàngbān.', 'Xin chào tôi tên là A. Hôm nay là ngày đầu tiên tôi đi làm.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784046978/MC1-1_wgnwii.mp3', 1),
+(1, '您好，我叫明。今天是我第一天来上班，请多关照。', 'Nín hǎo, wǒ jiào Míng. Jīntiān shì wǒ dì yī tiān lái shàngbān, qǐng duō guānzhào.', 'Xin chào ạ, tôi tên là Minh. Hôm nay là ngày đầu tiên tôi đi làm, mong được giúp đỡ.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784046978/MC1-2_a7fh7v.mp3', 2),
+(1, '我也很高兴见到你。', 'Wǒ yě hěn gāoxìng jiàndào nǐ.', 'Tôi cũng rất vui được gặp bạn.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784046978/MC2-1_z2aiwy.mp3', 3),
+(1, '认识您，我也很高兴。', 'Rènshi nín, wǒ yě hěn gāoxìng.', 'Được làm quen với bạn, tôi cũng rất vui.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784046978/MC2-2_hnbhbd.mp3', 4);
+
+-- Quiz
+INSERT INTO quizzes (title, lesson_id, time_limit_minutes, pass_score) VALUES
+('Trắc nghiệm Chapter 1 Lesson 1', 1, 15, 50);
+SET @c1_l1_quiz_id = LAST_INSERT_ID();
+
+-- Quiz Questions & Answers
+
+-- Question 1
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l1_quiz_id, 'SINGLE_CHOICE', '________！________来到ABC公司。', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784041474/ph%C3%A2n_%C4%91o%E1%BA%A1n_1_hpghnx.mp3', 10, 1, '“您好” là cách chào lịch sự trong tiếng Trung, còn “欢迎” có nghĩa là “chào mừng”. Câu hoàn chỉnh 您好！欢迎来到ABC公司。 có nghĩa là “Xin chào! Chào mừng bạn đến với Công ty ABC.” Đây là lời chào đón phổ biến dành cho nhân viên hoặc khách mới.');
+SET @q1_c1l1_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q1_c1l1_id, 'A. 高兴 (gāoxìng) / 加入 (jiārù)', FALSE, 1),
+(@q1_c1l1_id, 'B. 您好 (nínhǎo) / 欢迎 (huānyíng)', TRUE, 2),
+(@q1_c1l1_id, 'C. 上班 (shàngbān) / 公司 (gōngsī)', FALSE, 3),
+(@q1_c1l1_id, 'D. 见到 (jiàndào) / 今天 (jīntiān)', FALSE, 4);
+
+-- Question 2
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l1_quiz_id, 'SINGLE_CHOICE', '您好！________叫A。________是我第一天上班。', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784041477/ph%C3%A2n_%C4%91o%E1%BA%A1n_2_fasqeq.mp3', 10, 2, '“我叫A” là mẫu câu giới thiệu tên, nghĩa là “Tôi tên là A”. “今天是我第一天上班” nghĩa là “Hôm nay là ngày đầu tiên tôi đi làm”. Hai từ “我” và “今天” giúp câu hoàn chỉnh, đúng ngữ pháp và đúng ngữ cảnh.');
+SET @q2_c1l1_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q2_c1l1_id, 'A. 您 (nín) / 欢迎 (huānyíng)', FALSE, 1),
+(@q2_c1l1_id, 'B. 我也 (wǒ yě) / 公司 (gōngsī)', FALSE, 2),
+(@q2_c1l1_id, 'C. 我 (wǒ) / 今天 (jīntiān)', TRUE, 3),
+(@q2_c1l1_id, 'D. 是 (shì) / 第一天 (dì yī tiān)', FALSE, 4);
+
+-- Question 3
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l1_quiz_id, 'SINGLE_CHOICE', '今天________我________。', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784041481/ph%C3%A2n_%C4%91o%E1%BA%A1n_3_mqernb.mp3', 10, 3, 'Cấu trúc 今天是我第一天上班。 là cách diễn đạt tự nhiên khi giới thiệu ngày đầu tiên đi làm. “是” đóng vai trò động từ liên kết, còn “第一天上班” nghĩa là “ngày đầu tiên đi làm”.');
+SET @q3_c1l1_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q3_c1l1_id, 'A. 是 (shì) / 第一天上班 (dì yī tiān shàngbān)', TRUE, 1),
+(@q3_c1l1_id, 'B. 很 (hěn) / 高兴见到 (gāoxìng jiàndào)', FALSE, 2),
+(@q3_c1l1_id, 'C. 欢迎 (huānyíng) / 加入公司 (jiārù gōngsī)', FALSE, 3),
+(@q3_c1l1_id, 'D. 见 (jiàn) / 核心客户 (héxīn kèhù)', FALSE, 4);
+
+-- Question 4
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l1_quiz_id, 'SINGLE_CHOICE', '________您。', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784041484/ph%C3%A2n_%C4%91o%E1%BA%A1n_4_tr03a6.mp3', 10, 4, 'Cụm 很高兴见到您 là cách chào hỏi lịch sự, có nghĩa là “Rất vui được gặp bạn/ngài”. Đây là mẫu câu giao tiếp phổ biến trong môi trường công sở và khi gặp đối tác hoặc người lớn tuổi. Các đáp án còn lại không tạo thành câu hoàn chỉnh hoặc không phù hợp với ngữ cảnh.');
+SET @q4_c1l1_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q4_c1l1_id, 'A. 欢迎加入 (huānyíng jiārù)', FALSE, 1),
+(@q4_c1l1_id, 'B. 也很高兴 (yě hěn gāoxìng)', FALSE, 2),
+(@q4_c1l1_id, 'C. 很高兴见到 (hěn gāoxìng jiàndào)', TRUE, 3),
+(@q4_c1l1_id, 'D. 谢谢老板 (xièxie lǎobǎn)', FALSE, 4);
+
+-- Question 5
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l1_quiz_id, 'SINGLE_CHOICE', 'Khi một nhân sự mới bước vào văn phòng lần đầu tiên, họ sẽ dùng mẫu câu nào để tự giới thiệu về bản thân?\n“您好！_______， hôm nay là ngày đầu tiên tôi đi làm.”', NULL, 10, 5, 'Trong bối cảnh ngày đầu nhận việc, từ \"新员工\" (nhân viên mới) là danh xưng chuẩn xác nhất để giới thiệu với đồng nghiệp và lễ tân.');
+SET @q5_c1l1_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q5_c1l1_id, 'A. 我是老板 (Wǒ  shì lǎobǎn)', FALSE, 1),
+(@q5_c1l1_id, 'B. 我是新员工 (Wǒ shì xīn yuángōng)', TRUE, 2),
+(@q5_c1l1_id, 'C. 我是前台 (Wǒ shì qiántái)', FALSE, 3),
+(@q5_c1l1_id, 'D. 我是学生 (Wǒ shì xuéshēng)', FALSE, 4);
+
+-- Question 6
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l1_quiz_id, 'SINGLE_CHOICE', 'Hoàn thành câu chào mừng của nhân viên lễ tân khi tiếp đón một nhân sự mới đến nhận việc tại văn phòng:\n“您好！欢迎_______ABC公司。”', NULL, 10, 6, 'Cấu trúc \"欢迎来到 + Địa điểm\" (Chào mừng đến với...) là mẫu câu cố định dùng để thể hiện sự hiếu khách khi ai đó vừa đặt chân tới một địa điểm cụ thể như công ty.');
+SET @q6_c1l1_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q6_c1l1_id, 'A. 加入 (jiārù)', FALSE, 1),
+(@q6_c1l1_id, 'B. 上班 (shàngbān)', FALSE, 2),
+(@q6_c1l1_id, 'C. 来到 (láidào)', TRUE, 3),
+(@q6_c1l1_id, 'D. 见到 (jiàndào)', FALSE, 4);
+
+-- Question 7
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l1_quiz_id, 'SINGLE_CHOICE', 'Hoàn thành câu nói diễn tả trạng thái thời gian và hành động trong ngày đầu tiên đến cơ quan:\n“_______是我第一天上班，请大家多多指教。”', NULL, 10, 7, 'Trạng từ chỉ thời gian \"今天\" (hôm nay) đi liền với vế \"第一天上班\" (ngày đầu tiên đi làm) để nhấn mạnh sự kiện đang diễn ra trong thời điểm hiện tại.');
+SET @q7_c1l1_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q7_c1l1_id, 'A. 昨天 (zuótiān)', FALSE, 1),
+(@q7_c1l1_id, 'B. 明天 (míngtiān)', FALSE, 2),
+(@q7_c1l1_id, 'C. 今天 (jīntiān)', TRUE, 3),
+(@q7_c1l1_id, 'D. 今年 (jīnnián)', FALSE, 4);
+
+-- Question 8
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l1_quiz_id, 'SINGLE_CHOICE', 'Lựa chọn động từ thích hợp để hoàn thiện câu chào mừng của quản lý khi chính thức nhận một thành viên mới vào đội ngũ:\n“欢迎你_______ ABC公司, hy vọng tương lai chúng ta cùng nhau cố gắng.”', NULL, 10, 8, 'Động từ \"加入\" (gia nhập/tham gia) kết hợp với danh từ chỉ tổ chức như \"公司\" (công ty) thể hiện hành động một cá nhân chính thức trở thành một phần của tập thể.');
+SET @q8_c1l1_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q8_c1l1_id, 'A. 见到 (jiàndào)', FALSE, 1),
+(@q8_c1l1_id, 'B. 加入 (jiārù)', TRUE, 2),
+(@q8_c1l1_id, 'C. 上班 (shàngbān)', FALSE, 3),
+(@q8_c1l1_id, 'D. 您好 (nínhǎo)', FALSE, 4);
+
+-- Question 9
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l1_quiz_id, 'SINGLE_CHOICE', 'Điền từ thích hợp để hoàn thành câu thể hiện sự lịch thiệp, vui mừng khi lần đầu gặp mặt đối tác hoặc đồng nghiệp:\n“您好！我叫A。很高兴_______您。”', NULL, 10, 9, 'Cụm từ \"很高兴见到您\" (Rất vui được gặp ngài/bạn) là câu giao tiếp lịch sự chuẩn mực được dùng ngay tại thời điểm hai bên trực tiếp gặp mặt nhau.');
+SET @q9_c1l1_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q9_c1l1_id, 'A. 欢迎 (huānyíng)', FALSE, 1),
+(@q9_c1l1_id, 'B. 上班 (shàngbān)', FALSE, 2),
+(@q9_c1l1_id, 'C. 见到 (jiàndào)', TRUE, 3),
+(@q9_c1l1_id, 'D. 公司 (gōngsī)', FALSE, 4);
+
+-- Question 10
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l1_quiz_id, 'SINGLE_CHOICE', 'Để đáp lại lời chào \"很高兴见到...\" từ đối phương, bạn sẽ sử dụng cụm từ nào dưới đây để biểu thị sự đồng thuận về mặt cảm xúc?\n“A: 很高兴见到您！ - B: _______很高兴见到 bạn！”', NULL, 10, 10, 'Cụm \"我也\" (tôi cũng...) được thêm vào trước tính từ/vị ngữ để biểu thị người nói cũng có cùng một trạng thái cảm xúc hoặc hành động tương tự như người đối thoại.');
+SET @q10_c1l1_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q10_c1l1_id, 'A. 我 (wǒ)', FALSE, 1),
+(@q10_c1l1_id, 'B. 我也 (wǒ yě)', TRUE, 2),
+(@q10_c1l1_id, 'C. 您 (nín)', FALSE, 3),
+(@q10_c1l1_id, 'D. 很 (hěn)', FALSE, 4);
+
+-- Question 11
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l1_quiz_id, 'SINGLE_CHOICE', 'Phiên âm Pinyin chính xác của danh từ “公司” (Công ty) là gì?', NULL, 10, 11, '“公司” có phiên âm chuẩn là gōngsī (thanh 1 và thanh 1), thanh mẫu ''s'' cần phát âm nhẹ, không uốn lưỡi, tránh nhầm lẫn với ''sh'' hoặc ''x''.');
+SET @q11_c1l1_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q11_c1l1_id, 'A. gōngxī', FALSE, 1),
+(@q11_c1l1_id, 'B. gōngsī', TRUE, 2),
+(@q11_c1l1_id, 'C. gòngshī', FALSE, 3),
+(@q11_c1l1_id, 'D. kōngsī', FALSE, 4);
+
+-- Question 12
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l1_quiz_id, 'SINGLE_CHOICE', 'Từ “上班” có ý nghĩa hành động và phiên âm chuẩn xác nào dưới đây?', NULL, 10, 12, '“上班” (shàngbān) là động từ ly hợp chỉ hành động đến nơi làm việc để thực hiện nghĩa vụ lao động theo giờ quy định.');
+SET @q12_c1l1_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q12_c1l1_id, 'A. xiàbān | Tan làm', FALSE, 1),
+(@q12_c1l1_id, 'B. shàngbān | Đi làm, vào ca làm việc', TRUE, 2),
+(@q12_c1l1_id, 'C. shàngwǎng | Lên mạng', FALSE, 3),
+(@q12_c1l1_id, 'D. chūchāi | Đi công tác', FALSE, 4);
+
+-- Question 13
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l1_quiz_id, 'SINGLE_CHOICE', 'Cho chữ Hán “高兴”, hãy xác định phiên âm và nghĩa tiếng Việt đúng của từ này:', NULL, 10, 13, '“高兴” phát âm là gāoxìng (thanh 1 và thanh 4), dùng làm tính từ chỉ trạng thái tâm lý phấn chấn, vui mừng của con người.');
+SET @q13_c1l1_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q13_c1l1_id, 'A. gāoxìng | Vui vẻ, mừng rỡ', TRUE, 1),
+(@q13_c1l1_id, 'B. gǎoxìng | Đau khổ', FALSE, 2),
+(@q13_c1l1_id, 'C. gāoxīn | Lương cao', FALSE, 3),
+(@q13_c1l1_id, 'D. kāixīn | Mở lòng', FALSE, 4);
+
+-- Question 14
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l1_quiz_id, 'SINGLE_CHOICE', 'Tìm đại từ nhân xưng ngôi thứ hai dạng tôn kính, lịch sự viết bằng chữ Hán ứng với phiên âm “nín”:', NULL, 10, 14, 'Đại từ “您” (nín) có cấu trúc gồm chữ ''nǐ'' ở trên và bộ ''Tâm'' (心 - trái tim) ở dưới, dùng để xưng hô một cách kính trọng với cấp trên, người lớn tuổi hoặc khách hàng.');
+SET @q14_c1l1_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q14_c1l1_id, 'A. 你', FALSE, 1),
+(@q14_c1l1_id, 'B. 你们', FALSE, 2),
+(@q14_c1l1_id, 'C. 您', TRUE, 3),
+(@q14_c1l1_id, 'D. 那', FALSE, 4);
+
+-- Question 15
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l1_quiz_id, 'SINGLE_CHOICE', 'Xác định nghĩa tiếng Việt và phiên âm của từ “欢迎”:', NULL, 10, 15, '“欢迎” (huānyíng) là động từ thể hiện thái độ vui vẻ, nhiệt tình đón nhận sự xuất hiện của một ai đó hoặc một điều gì đó.');
+SET @q15_c1l1_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q15_c1l1_id, 'A. huānyíng | Chào mừng, hoan nghênh đón tiếp', TRUE, 1),
+(@q15_c1l1_id, 'B. huānyǐng | Tiết mục văn nghệ', FALSE, 2),
+(@q15_c1l1_id, 'C. huànyíng | Ảo ảnh', FALSE, 3),
+(@q15_c1l1_id, 'D. fǎnyìng | Phản ứng', FALSE, 4);
+
+-- Question 16
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l1_quiz_id, 'SINGLE_CHOICE', 'Cụm từ “第一天” (dì yī tiān) mang ý nghĩa biểu thị trật tự thời gian nào dưới đây?', NULL, 10, 16, 'Từ “第” (dì) là dấu hiệu hình thành số thứ tự, kết hợp với “一天” (một ngày) tạo thành cụm từ chỉ vị trí mốc thời gian đầu tiên trong một chuỗi sự kiện.');
+SET @q16_c1l1_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q16_c1l1_id, 'A. Ngày cuối cùng', FALSE, 1),
+(@q16_c1l1_id, 'B. Ngày làm việc', FALSE, 2),
+(@q16_c1l1_id, 'C. Ngày đầu tiên', TRUE, 3),
+(@q16_c1l1_id, 'D. Tuần đầu tiên', FALSE, 4);
+
+-- Chapter 1 Lesson 2
+-- Vocabularies
+INSERT INTO vocabularies (lesson_id, hanzi, pinyin, vietnamese_meaning, image_url, audio_url, order_index) VALUES
+(2, '部门主管', 'bùmén zhǔguǎn', 'Trưởng bộ phận', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784174580/tr%C6%B0%E1%BB%9Fng_b%E1%BB%99_ph%E1%BA%ADn_eh5obx.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784042726/Tr%C6%B0%E1%BB%9Fng_b%E1%BB%99_ph%E1%BA%ADn_f2gvfs.mp3', 1),
+(2, '新来的员工', 'xīn lái de yuángōng', 'Nhân viên mới', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784174577/nh%C3%A2n_vi%C3%AAn_m%E1%BB%9Bi_zfpnff.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784042724/Nh%C3%A2n_vi%C3%AAn_m%E1%BB%9Bi_dbdlww.mp3', 2),
+(2, '欢迎', 'huānyíng', 'Chào mừng', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784174563/ch%C3%A0o_m%E1%BB%ABng_ftyiik.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784042703/Ch%C3%A0o_m%E1%BB%ABng_nijgnk.mp3', 3),
+(2, '加入', 'jiārù', 'Gia nhập', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784174567/gia_nh%E1%BA%ADp_am8ol9.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784042705/Gia_nh%E1%BA%ADp_gllyog.mp3', 4),
+(2, '我们', 'wǒmen', 'Chúng tôi', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784174563/ch%C3%BAng_t%C3%B4i_msuvuo.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784042703/Ch%C3%BAng_t%C3%B4i_d8hc7o.mp3', 5),
+(2, '团队', 'tuánduì', 'Đội nhóm', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784174582/%C4%91%E1%BB%99i_nh%C3%B3m_ct4qoe.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784042727/%C4%90%E1%BB%99i_nh%C3%B3m_ne9xxi.mp3', 6),
+(2, '请坐', 'qǐng zuò', 'Mời ngồi', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784174575/m%E1%BB%9Di_ng%E1%BB%93i_mqdwld.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784042722/M%E1%BB%9Di_ng%E1%BB%93i_rjt72y.mp3', 7),
+(2, '谢谢', 'xièxie', 'Cảm ơn', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784174564/c%E1%BA%A3m_%C6%A1n_dwlpup.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784042704/C%E1%BA%A3m_%C6%A1n_jt5hdu.mp3', 8),
+(2, '第一次', 'dì yī cì', 'Lần đầu tiên', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784174575/l%E1%BA%A7n_%C4%91%E1%BA%A7u_ti%C3%AAn_anprhi.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784042722/L%E1%BA%A7n_%C4%91%E1%BA%A7u_ti%C3%AAn_ghyo2j.mp3', 9),
+(2, '工业园区', 'gōngyè yuánqū', 'Khu công nghiệp', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784174570/khu_c%C3%B4ng_nghi%E1%BB%87p_hxhrfv.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784042707/Khu_c%C3%B4ng_nghi%E1%BB%87p_v5ey4f.mp3', 10),
+(2, '工作', 'gōngzuò', 'Làm việc', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784174573/l%C3%A0m_vi%E1%BB%87c_fxrfig.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784042721/L%C3%A0m_vi%E1%BB%87c_f3l8ny.mp3', 11),
+(2, '希望', 'xīwàng', 'Hy vọng', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784174568/hi_v%E1%BB%8Dng_exnarp.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784042705/Hy_v%E1%BB%8Dng_xpzowu.mp3', 12),
+(2, '指导', 'zhǐdǎo', 'Hướng dẫn, chỉ bảo', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784174569/h%C6%B0%E1%BB%9Bng_d%E1%BA%ABn_ig1r1z.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784042706/H%C6%B0%E1%BB%9Bng_d%E1%BA%ABn_ch%E1%BB%89_b%E1%BA%A3o_pjeanu.mp3', 13),
+(2, '没关系', 'méiguānxi', 'Không sao', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784174572/kh%C3%B4ng_sao_zcqqd5.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784042708/Kh%C3%B4ng_sao_tjhcs2.mp3', 14),
+(2, '开始', 'kāishǐ', 'Bắt đầu', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784174563/b%E1%BA%AFt_%C4%91%E1%BA%A7u_hurtmq.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784175867/b%E1%BA%AFt_%C4%91%E1%BA%A7u_x0z7ip.mp3', 15),
+(2, '工厂', 'gōngchǎng', 'Nhà máy', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784174575/nh%C3%A0_m%C3%A1y_adeupa.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784042723/Nh%C3%A0_m%C3%A1y_uulfl7.mp3', 16),
+(2, '流程', 'liúchéng', 'Quy trình', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784174579/quy_tr%C3%ACnh_yqt7m5.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784042725/Quy_tr%C3%ACnh_xzjlwu.mp3', 17),
+(2, '安全规章', 'ānquán guīzhāng', 'Nội quy an toàn', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784174578/n%E1%BB%99i_quy_an_to%C3%A0n_imohin.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784042724/N%E1%BB%99i_quy_an_to%C3%A0n_zevury.mp3', 18),
+(2, '困难', 'kùnnán', 'Khó khăn', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784174571/kh%C3%B3_kh%C4%83n_iweers.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784042707/Kh%C3%B3_kh%C4%83n_yacqro.mp3', 19),
+(2, '尽管', 'jǐnguǎn', 'Cứ, cứ việc', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784174566/c%E1%BB%A9_vi%E1%BB%87c_vdkrcw.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784042704/C%E1%BB%A9_c%E1%BB%A9_vi%E1%BB%87c_asqjgo.mp3', 20),
+(2, '努力', 'nǔlì', 'Cố gắng', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784174565/c%E1%BB%91_g%E1%BA%AFng_g0ynfe.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784042704/C%E1%BB%91_g%E1%BA%AFng_fotrc5.mp3', 21),
+(2, '争取', 'zhēngqǔ', 'Phấn đấu', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784174579/ph%E1%BA%A5n_%C4%91%E1%BA%A5u_qi6c9k.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784042724/Ph%E1%BA%A5n_%C4%91%E1%BA%A5u_oxmowt.mp3', 22),
+(2, '做好', 'zuò hǎo', 'Làm tốt', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784174572/l%C3%A0m_t%E1%BB%91t_nzrbkp.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784042721/L%C3%A0m_t%E1%BB%91t_vgifiz.mp3', 23),
+(2, '介绍', 'jièshào', 'Giới thiệu', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784174567/gi%E1%BB%9Bi_thi%E1%BB%87u_nscikm.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784042705/Gi%E1%BB%9Bi_thi%E1%BB%87u_xajnwd.mp3', 24),
+(2, '同事', 'tóngshì', 'Đồng nghiệp', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784174581/%C4%91%E1%BB%93ng_nghi%E1%BB%87p_bhu46v.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784042726/%C4%90%E1%BB%93ng_nghi%E1%BB%87p_f34qxf.mp3', 25);
+
+-- Sentence Patterns
+INSERT INTO sentence_patterns (lesson_id, chinese_text, pinyin_text, vietnamese_meaning, audio_url, order_index) VALUES
+(2, '经理，您好！我是今天来报到的新员工。', 'Jīnglǐ, nín hǎo! Wǒ shì jīntiān lái bàodào de xīn yuángōng.', 'Chào Trưởng phòng ạ! Tôi là nhân viên mới đến nhận việc hôm nay.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047055/MC1-1_y0szwc.mp3', 1),
+(2, '主管，您好！我是今天来报到的新员工，这是 me_c1l2_id_2第一次在工厂工作。', 'Zhǔguǎn, nín hǎo! Wǒ shì jīntiān lái bàodào de xīn yuángōng, zhè shì wǒ dì yī cì zài gōngchǎng gōngzuò.', 'Chào Trưởng bộ phận, tôi là nhân viên mới đến ngày hôm nay, đây là lần đầu tôi công tác xưởng.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047055/MC1-2_bkbsy9.mp3', 2),
+(2, '欢迎加入我们的团队。请坐，没关系，慢慢熟悉。', 'Huānyíng jiārù wǒmen de tuánduì. Qǐng zuò, méi guānxi, mànmàn shúxī.', 'Chào mừng cậu gia nhập đội ngũ của chúng ta. Mời ngồi, không sao đâu, cứ từ từ làm quen.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047056/MC2-1_vx0csd.mp3', 3),
+(2, '欢迎加入我们的团队，现在我带你去认识一下车间的同事。', 'Huānyíng jiārù wǒmen de tuánduì, xiànzài wǒ dài nǐ qù rènshi yíxià chējiān de tóngshì.', 'Chào mừng cậu gia nhập đội ngũ chúng ta, bây giờ tôi dẫn cậu đi làm quen đồng nghiệp trong phân xưởng.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047057/MC2-2_ckgs9b.mp3', 4);
+
+-- Quiz
+INSERT INTO quizzes (title, lesson_id, time_limit_minutes, pass_score) VALUES
+('Trắc nghiệm Chapter 1 Lesson 2', 2, 15, 50);
+SET @c1_l2_quiz_id = LAST_INSERT_ID();
+
+-- Question 1
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l2_quiz_id, 'SINGLE_CHOICE', '欢迎加入我们________。请坐。', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784042789/ph%C3%A2n_%C4%91o%E1%BA%A1n_1_ejzcow.mp3', 10, 1, '“团队” có nghĩa là “đội ngũ, nhóm”. Câu 欢迎加入我们团队。请坐。 có nghĩa là “Chào mừng bạn gia nhập đội ngũ của chúng tôi. Mời ngồi.” Đây là cách chào đón nhân viên mới rất phổ biến trong môi trường làm việc.');
+SET @q1_c1l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q1_c1l2_id, 'A. 公司 (gōngsī)', FALSE, 1),
+(@q1_c1l2_id, 'B. 团队 (tuánduì)', TRUE, 2),
+(@q1_c1l2_id, 'C. 工厂 (gōngchǎng)', FALSE, 3),
+(@q1_c1l2_id, 'D. 同事 (tóngshì)', FALSE, 4);
+
+-- Question 2
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l2_quiz_id, 'SINGLE_CHOICE', '如果有什么________，尽管问我。', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784042789/Ph%C3%A2n_%C4%91o%E1%BA%A1n_2_ptoiou.mp3', 10, 2, '“困难” có nghĩa là “khó khăn”. Cấu trúc Nếu có khó khăn gì thì cứ hỏi tôi. có nghĩa là “Nếu có khó khăn gì thì cứ hỏi tôi.”');
+SET @q2_c1l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q2_c1l2_id, 'A. 工作 (gōngzuò)', FALSE, 1),
+(@q2_c1l2_id, 'B. 流程 (liúchéng)', FALSE, 2),
+(@q2_c1l2_id, 'C. 困难 (kùnnán)', TRUE, 3),
+(@q2_c1l2_id, 'D. 规章 (guīzhāng)', FALSE, 4);
+
+-- Question 3
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l2_quiz_id, 'SINGLE_CHOICE', '您好，________！我是今天新来的员工。', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784042790/ph%C3%A2n_%C4%91o%E1%BA%A1n_3_xoyfhi.mp3', 10, 3, '“部门主管” nghĩa là “trưởng bộ phận”. Đây là cách xưng hô phù hợp khi nhân viên mới chào và báo cáo với người quản lý trực tiếp. Câu hoàn chỉnh có nghĩa là: “Chào Trưởng bộ phận! Tôi là nhân viên mới đến hôm nay.”');
+SET @q3_c1l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q3_c1l2_id, 'A. 同事 (tóngshì)', FALSE, 1),
+(@q3_c1l2_id, 'B. 老板 (lǎobǎn)', FALSE, 2),
+(@q3_c1l2_id, 'C. 部门主管 (bùmén zhǔguǎn)', TRUE, 3),
+(@q3_c1l2_id, 'D. 前台 (qiántái)', FALSE, 4);
+
+-- Question 4
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l2_quiz_id, 'SINGLE_CHOICE', '慢慢熟悉一下工厂的________和安全规章。', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784042791/ph%C3%A2n_%C4%91o%E1%BA%A1n_4_uxfzl8.mp3', 10, 4, '“流程” có nghĩa là “quy trình”. Cụm 流程和安全规章 nghĩa là “quy trình và nội quy an toàn”. Câu hoàn chỉnh 慢慢熟悉一下工厂的流程和安全规章。 có nghĩa là “Hãy từ từ làm quen với quy trình và các quy định an toàn của nhà máy.”');
+SET @q4_c1l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q4_c1l2_id, 'A. 困难 (kùnnán)', FALSE, 1),
+(@q4_c1l2_id, 'B. 流程 (liúchéng)', TRUE, 2),
+(@q4_c1l2_id, 'C. 团队 (tuánduì)', FALSE, 3),
+(@q4_c1l2_id, 'D. 工作 (gōngzuò)', FALSE, 4);
+
+-- Question 5
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l2_quiz_id, 'SINGLE_CHOICE', '我会努力工作，争取________。', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784042791/ph%C3%A2n_%C4%91o%E1%BA%A1n_5_jiov1x.mp3', 10, 5, '“做好” có nghĩa là “làm tốt”. Cấu trúc 争取做好 diễn tả quyết tâm cố gắng hoàn thành công việc thật tốt. Câu 我会努力工作，争取做好。 có nghĩa là “Tôi sẽ cố gắng làm việc và nỗ lực hoàn thành công việc thật tốt.”');
+SET @q5_c1l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q5_c1l2_id, 'A. 做好 (zuò hǎo)', TRUE, 1),
+(@q5_c1l2_id, 'B. 开始 (kāishǐ)', FALSE, 2),
+(@q5_c1l2_id, 'C. 介绍 (jièshào)', FALSE, 3),
+(@q5_c1l2_id, 'D. 欢迎 (huānyíng)', FALSE, 4);
+
+-- Question 6
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l2_quiz_id, 'SINGLE_CHOICE', 'Chọn từ thích hợp để điền vào lời chào của Trưởng bộ phận khi chào đón nhân viên mới gia nhập tập thể:\n“欢迎_______我们团队。请坐。”', NULL, 10, 6, 'Trong bối cảnh tiếp đón nhân sự mới, động từ ''加入'' (gia nhập/tham gia) kết hợp với cụm ''我们团队'' (đội ngũ của chúng ta) tạo thành cấu trúc chào mừng chuyên nghiệp tại doanh nghiệp.');
+SET @q6_c1l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q6_c1l2_id, 'A. 开始 (kāishǐ)', FALSE, 1),
+(@q6_c1l2_id, 'B. 加入 (jiārù)', TRUE, 2),
+(@q6_c1l2_id, 'C. 介绍 (jièshào)', FALSE, 3),
+(@q6_c1l2_id, 'D. 努力 (nǔlì)', FALSE, 4);
+
+-- Question 7
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l2_quiz_id, 'SINGLE_CHOICE', 'Nhân viên mới muốn bày tỏ mong muốn nhận được sự chỉ bảo, dẫn dắt từ quản lý và đồng nghiệp sẽ dùng từ nào?\n“这是我第一次在工业园区工作，希望主管和大家可以_______我。”', NULL, 10, 7, 'Động từ ''指导'' (hướng dẫn, chỉ bảo) được dùng chuẩn xác nhất khi cấp dưới hoặc người mới thể hiện thái độ cầu thị, muốn được cấp trên định hướng công việc.');
+SET @q7_c1l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q7_c1l2_id, 'A. 流程 (liúchéng)', FALSE, 1),
+(@q7_c1l2_id, 'B. 困难 (kùnnán)', FALSE, 2),
+(@q7_c1l2_id, 'C. 指导 (zhǐdǎo)', TRUE, 3),
+(@q7_c1l2_id, 'D. 谢谢 (xièxie)', FALSE, 4);
+
+-- Question 8
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l2_quiz_id, 'SINGLE_CHOICE', 'Khi Trưởng bộ phận muốn động viên nhân viên mới cứ bình tĩnh, từ từ làm quen với môi trường, họ sẽ dùng mẫu câu nào?\n“没关系，谁都有开始的时候。慢慢熟悉车间的流程就可以了。”', NULL, 10, 8, 'Phó từ ''慢慢'' (từ từ, dần dần) đặt trước động từ ''熟悉'' (làm quen, thuần thục) nhằm diễn tả tiến độ làm quen một cách tuần tự, không vội vã, phù hợp với tâm lý động viên nhân viên mới.');
+SET @q8_c1l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q8_c1l2_id, 'A. 尽管 (jǐnguǎn)', FALSE, 1),
+(@q8_c1l2_id, 'B. 努力 (nǔlì)', FALSE, 2),
+(@q8_c1l2_id, 'C. 慢慢 (mànman)', TRUE, 3),
+(@q8_c1l2_id, 'D. 争取 (zhēngqǔ)', FALSE, 4);
+
+-- Question 9
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l2_quiz_id, 'SINGLE_CHOICE', 'Nhân viên bày tỏ sự quyết tâm thực hiện tốt nhiệm vụ được phân công sẽ dùng từ khuyết nào dưới đây?\n“好的，部门主管。我会努力工作，争取_______。”', NULL, 10, 9, 'Bổ ngữ kết quả ''做好'' (làm tốt) đi liền sau động từ hành động và từ biểu thị mục tiêu phấn đấu ''争取'' (tranh thủ/phấn đấu) thể hiện mục đích hoàn thành xuất sắc công việc.');
+SET @q9_c1l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q9_c1l2_id, 'A. 做好 (zuò hǎo)', TRUE, 1),
+(@q9_c1l2_id, 'B. 介绍 (jièshào)', FALSE, 2),
+(@q9_c1l2_id, 'C. 欢迎 (huānyíng)', FALSE, 3),
+(@q9_c1l2_id, 'D. 开始 (kāishǐ)', FALSE, 4);
+
+-- Question 10
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l2_quiz_id, 'SINGLE_CHOICE', 'Hoàn thành câu thoại của nhân viên mới khi giới thiệu bản thân trước người quản lý phòng ban lần đầu gặp mặt:\n“您好，部门主管！我是今天_______的员工。”', NULL, 10, 10, 'Cụm định ngữ ''新来'' (mới đến) bổ nghĩa cho danh từ ''员工'' (nhân viên) chỉ rõ danh tính, vị trí của nhân sự vừa mới bước chân vào tổ chức cơ quan.');
+SET @q10_c1l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q10_c1l2_id, 'A. 同事 (tóngshì)', FALSE, 1),
+(@q10_c1l2_id, 'B. 工厂 (gōngchǎng)', FALSE, 2),
+(@q10_c1l2_id, 'C. 新来 (xīn lái)', TRUE, 3),
+(@q10_c1l2_id, 'D. 困难 (kùnnán)', FALSE, 4);
+
+-- Question 11
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l2_quiz_id, 'SINGLE_CHOICE', 'Từ khóa “部门主管” có ý nghĩa hành chính và chức vụ nào dưới đây?', NULL, 10, 11, '“部门主管” (bùmén zhǔguǎn) được cấu thành từ ''部门'' (bộ phận/phòng ban) và ''主管'' (người quản lý/trưởng), chỉ người đứng đầu điều hành một bộ phận.');
+SET @q11_c1l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q11_c1l2_id, 'A. Nhân viên mới', FALSE, 1),
+(@q11_c1l2_id, 'B. Trưởng bộ phận / Quản lý phòng ban', TRUE, 2),
+(@q11_c1l2_id, 'C. Đồng nghiệp', FALSE, 3),
+(@q11_c1l2_id, 'D. Công nhân xưởng sản xuất', FALSE, 4);
+
+-- Question 12
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l2_quiz_id, 'SINGLE_CHOICE', 'Xác định phiên âm Pinyin chính xác của từ “请坐” (Mời ngồi):', NULL, 10, 12, '“请坐” có phiên âm chuẩn xác là ''qǐng zuò'' (thanh 3 và thanh 4), là câu khẩu lệnh lịch sự dùng để mời khách hoặc nhân viên ngồi xuống trao đổi.');
+SET @q12_c1l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q12_c1l2_id, 'A. qǐng shū', FALSE, 1),
+(@q12_c1l2_id, 'B. qǐng jìn', FALSE, 2),
+(@q12_c1l2_id, 'C. qǐng zuò', TRUE, 3),
+(@q12_c1l2_id, 'D. qǐng lái', FALSE, 4);
+
+-- Question 13
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l2_quiz_id, 'SINGLE_CHOICE', 'Cho chữ Hán “困难”, hãy xác định ý nghĩa và phiên âm chuẩn xác của từ này trong ngữ cảnh làm việc:', NULL, 10, 13, '“困难” phát âm là ''kùnnán'', đóng vai trò là danh từ hoặc tính từ thể hiện các vấn đề nan giải, trở ngại gặp phải trong quá trình thực hiện nhiệm vụ.');
+SET @q13_c1l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q13_c1l2_id, 'A. kùnnán | Khó khăn, trở ngại', TRUE, 1),
+(@q13_c1l2_id, 'B. kùnlán | Thuận lợi', FALSE, 2),
+(@q13_c1l2_id, 'C. gōngzuò | Công việc', FALSE, 3),
+(@q13_c1l2_id, 'D. liúchéng | Quy trình', FALSE, 4);
+
+-- Question 14
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l2_quiz_id, 'SINGLE_CHOICE', 'Xác định nghĩa tiếng Việt chuẩn xác nhất của tổ hợp danh từ “安全规章” dùng trong nhà xưởng sản xuất:', NULL, 10, 14, '“安全规章” (ānquán guīzhāng) kết hợp từ ''安全'' (an toàn) và ''规章'' (quy chương/quy định), là thuật ngữ bắt buộc công nhân phải học thuộc để bảo vệ an toàn lao động.');
+SET @q14_c1l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q14_c1l2_id, 'A. Quy trình sản xuất', FALSE, 1),
+(@q14_c1l2_id, 'B. Nội quy an toàn / Quy định an toàn', TRUE, 2),
+(@q14_c1l2_id, 'C. Khu công nghiệp', FALSE, 3),
+(@q14_c1l2_id, 'D. Đội nhóm làm việc', FALSE, 4);
+
+-- Question 15
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l2_quiz_id, 'SINGLE_CHOICE', 'Tìm từ viết bằng chữ Hán chuẩn xác ứng với phiên âm “jièshào” mang nghĩa giới thiệu nhân sự, đồng nghiệp:', NULL, 10, 15, 'Chữ Hán ''介绍'' có phiên âm chuẩn xác là ''jièshào'' (hai thanh 4 dứt khoát), dùng làm động từ trong câu giới thiệu, làm quen thành viên mới trong công ty.');
+SET @q15_c1l2_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q15_c1l2_id, 'A. 流程', FALSE, 1),
+(@q15_c1l2_id, 'B. 尽管', FALSE, 2),
+(@q15_c1l2_id, 'C. 努力', FALSE, 3),
+(@q15_c1l2_id, 'D. 介绍', TRUE, 4);
+
+-- Chapter 1 Lesson 3
+-- Vocabularies
+INSERT INTO vocabularies (lesson_id, hanzi, pinyin, vietnamese_meaning, image_url, audio_url, order_index) VALUES
+(35, '大家好', 'dàjiā hǎo', 'Xin chào mọi người', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784047248/xin_ch%C3%A0o_m%E1%BB%8Di_ng%C6%B0%E1%BB%9Di_dwidto.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047363/Xin_ch%C3%A0o_m%E1%BB%8Di_ng%C6%B0%E1%BB%9Di_vpblcu.mp3', 1),
+(35, '今天', 'jīntiān', 'Hôm nay', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784047234/h%C3%B4m_nay_quippl.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047348/H%C3%B4m_nay_g3hrtb.mp3', 2),
+(35, '刚', 'gāng', 'Vừa mới', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784047247/v%E1%BB%ABa_m%E1%BB%9Bi_suaugp.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047362/V%E1%BB%ABa_m%E1%BB%9Bi_hmflfd.mp3', 3),
+(35, '上班', 'shàngbān', 'Đi làm', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784047249/%C4%9i_l%C3%A0m_lwt0el.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047364/%C4%91i_l%C3%A0m_zipuqr.mp3', 4),
+(35, '很高兴', 'hěn gāoxìng', 'Rất vui', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784047244/r%E1%BA%A5t_vui_lcbt2u.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047358/R%E1%BA%A5t_vui_y6m5hv.mp3', 5),
+(35, '认识', 'rènshi', 'Làm quen, quen biết', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784047238/l%C3%A0m_quen_y1zm5q.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047352/L%C3%A0m_quen_quen_bi%E1%BA%BFt_twytod.mp3', 6),
+(35, '大家', 'dàjiā', 'Mọi người', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784047239/m%E1%BB%8Di_ng%C6%B0%E1%BB%9Di_a7pyk0.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047353/M%E1%BB%8Di_ng%C6%B0%E1%BB%9Di_j0nmog.mp3', 7),
+(35, '欢迎', 'huānyíng', 'Chào mừng', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784047230/ch%C3%A0o_m%E1%BB%ABng_k7i1sh.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047343/Ch%C3%A0o_m%E1%BB%ABng_vkzmad.mp3', 8),
+(35, '我叫', 'wǒ jiào', 'Tôi tên là', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784047246/t%C3%B4i_t%C3%AAn_l%C3%A0_imuj1t.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047361/T%C3%B4i_t%C3%AAn_l%C3%A0_e37kwp.mp3', 9),
+(35, '旁边', 'pángbiān', 'Bên cạnh', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784047228/b%C3%AAn_c%E1%BA%A1nh_utrvbt.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047341/B%C3%AAn_c%E1%BA%A1nh_sv3iq3.mp3', 10),
+(35, '希望', 'xīwàng', 'Hy vọng', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784047233/hi_v%E1%BB%8Dng_g1oes8.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047347/Hy_v%E1%BB%8Dng_a2qmw6.mp3', 11),
+(35, '以后', 'yǐhòu', 'Sau này', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784047245/sau_n%C3%A0y_k9buhm.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047359/Sau_n%C3%A0y_jtx5cb.mp3', 12),
+(35, '多多指导', 'duōduō zhǐdǎo', 'Chỉ bảo nhiều hơn', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784047231/ch%E1%BB%89_b%E1%BA%A3o_nhi%E1%BB%81u_h%C6%A1n_brjn01.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047345/Ch%E1%BB%89_b%E1%BA%A3o_nhi%E1%BB%81u_h%C6%A1n_zs2tzp.mp3', 13),
+(35, '不懂', 'bù dǒng', 'Không hiểu', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784047235/kh%C3%B4ng_hi%E1%BB%83u_uetpvk.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047349/Kh%C3%B4ng_hi%E1%BB%83u_pk6lc0.mp3', 14),
+(35, '麻烦', 'máfan', 'Phiên, làm phiền', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784047237/l%C3%A0m_phi%E1%BB%81n_hrblet.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047356/Phi%C3%AAn_l%C3%A0m_phi%E1%BB%81n_asb1ir.mp3', 15),
+(35, '没问题', 'méi wèntí', 'Không vấn đề', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784047236/kh%C3%B4ng_v%E1%BA%A5n_%C4%91%E1%BB%81_w5xm0w.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047351/Kh%C3%B4ng_v%E1%BA%A5n_%C4%91%E1%BB%81_ugmgsj.mp3', 16),
+(35, '工作节奏', 'gōngzuò jiézòu', 'Nhịp độ công việc', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784047240/nh%E1%BB%8Bp_%C4%91%E1%BB%99_c%C3%B4ng_vi%E1%BB%87c_b2rwhy.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047354/Nh%E1%BB%8Bp_%C4%91%E1%BB%99_c%C3%B4ng_vi%E1%BB%87c_fcoy3f.mp3', 17),
+(35, '很快', 'hěn kuài', 'Rất nhanh', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784047243/r%E1%BA%A5t_nhanh_faljwz.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047357/R%E1%BA%A5t_nhanh_zvxbkv.mp3', 18),
+(35, '熟悉', 'shúxī', 'Quen thuộc', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784047241/quen_thu%E1%BB%99c_iygcmv.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047356/Quen_thu%E1%BB%99c_w6jmmf.mp3', 19),
+(35, '正常', 'zhèngcháng', 'Bình thường', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784047229/b%C3%ACnh_th%C6%B0%E1%BB%9Dng_vktfek.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047342/B%C3%ACnh_th%C6%B0%E1%BB%9Dng_aqjvhe.mp3', 20),
+(35, '别着急', 'bié zhāojí', 'Đừng vội', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784047250/%C4%91%E1%BB%ABng_v%E1%BB%99i_puyabr.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047366/%C4%90%E1%BB%ABng_v%E1%BB%99i_nsr2di.mp3', 21),
+(35, '谢谢大家', 'xièxie dàjiā', 'Cảm ơn mọi người', 'https://res.cloudinary.com/rir6b8kp/image/upload/v1784047232/c%E1%BA%A3m_%C6%A1n_m%E1%BB%8Di_ng%C6%B0%E1%BB%9Di_y6qtax.png', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047346/C%E1%BA%A3m_%C6%A1n_m%E1%BB%8Di_ng%C6%B0%E1%BB%9Di_gaaih9.mp3', 22);
+
+-- Sentence Patterns
+INSERT INTO sentence_patterns (lesson_id, chinese_text, pinyin_text, vietnamese_meaning, audio_url, order_index) VALUES
+(35, '希望以后大家能多多指导我。如果有什么不懂的，就麻烦大家了。', 'Xīwàng yǐhòu dàjiā néng duōduō zhǐdǎo wǒ. Rúguǒ yǒu shénme bù dǒng de, jiù máfan dàjiā le.', 'Sau này mong được mọi người chỉ bảo thêm. Nếu tôi có chỗ nào chưa biết, phải làm phiền mọi người rồi.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047734/MC1-1_g4zyys.mp3', 1),
+(35, '以后还要多多麻烦大家，谢谢大家。', 'Yǐhòu hái yào duōduō máfan dàjiā, xièxie dàjiā.', 'Sau này còn phải làm phiền mọi người nhiều, xin cảm ơn mọi người.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047735/MC1-2_gsi0qy.mp3', 2),
+(35, '我们 factory 的工作节奏很快，刚开始有点不熟悉很正常，别着急。', 'Wǒmen gōngchǎng de gōngzuò jiézòu hěn kuài, gāng kāishǐ yǒudiǎn bù shúxī hěn zhèngcháng, bié zháojí.', 'Nhịp độ công việc ở xưởng mình khá nhanh, mới đầu chưa quen là chuyện bình thường thôi, cứ từ từ nhé (đừng vội).', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047737/MC2-1_tdxnth.mp3', 3),
+(35, '刚开始不熟悉很正常，别着急，慢慢来。', 'Gāng kāishǐ bù shúxī hěn zhèngcháng, bié zháojí, mànmàn lái.', 'Mới đầu chưa quen là chuyện bình thường, đừng vội vàng, cứ từ từ làm.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047738/MC2-2_uey1nc.mp3', 4);
+
+-- Quiz
+INSERT INTO quizzes (title, lesson_id, time_limit_minutes, pass_score) VALUES
+('Trắc nghiệm Chapter 1 Lesson 3', 35, 15, 50);
+SET @c1_l3_quiz_id = LAST_INSERT_ID();
+
+-- Question 1
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l3_quiz_id, 'SINGLE_CHOICE', '大家________！', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047617/ph%C3%A2n_%C4%91o%E1%BA%A1n_1_ytxxyd.mp3', 10, 1, '“大家好” là lời chào phổ biến trong tiếng Trung, có nghĩa là “Xin chào mọi người”. Đây là cách mở đầu thường dùng khi giới thiệu bản thân hoặc phát biểu trước tập thể.');
+SET @q1_c1l3_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q1_c1l3_id, 'A. 好 (hǎo)', TRUE, 1),
+(@q1_c1l3_id, 'B. 是 (shì)', FALSE, 2),
+(@q1_c1l3_id, 'C. 来 (lái)', FALSE, 3),
+(@q1_c1l3_id, 'D. 去 (qù)', FALSE, 4);
+
+-- Question 2
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l3_quiz_id, 'SINGLE_CHOICE', '________！我们 factory 的工作节奏很快。', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047618/ph%C3%A2n_%C4%91o%E1%BA%A1n_2_h16myb.mp3', 10, 2, '“没问题” có nghĩa là “Không vấn đề gì”, “Được thôi”, hoặc “Không sao”. Đây là cách trả lời rất phổ biến để thể hiện sự đồng ý hoặc trấn an người khác. Câu hoàn chỉnh 没问题！我们 factory 的工作节奏很快。 mở đầu bằng lời khẳng định trước khi giới thiệu về môi trường làm việc.');
+SET @q2_c1l3_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q2_c1l3_id, 'A. 高兴 (gāoxìng)', FALSE, 1),
+(@q2_c1l3_id, 'B. 问题 (wèntí)', FALSE, 2),
+(@q2_c1l3_id, 'C. 没问题 (méi wèntí)', TRUE, 3),
+(@q2_c1l3_id, 'D. 工作 (gōngzuò)', FALSE, 4);
+
+-- Question 3
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l3_quiz_id, 'SINGLE_CHOICE', '我 hôm nay ________来上班，很高兴认识大家！', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047619/ph%C3%A2n_%C4%91o%E1%BA%A1n_3_n3na3a.mp3', 10, 3, '“刚” có nghĩa là “vừa mới”. Cấu trúc 刚来上班 nghĩa là “vừa mới đi làm”. Câu hoàn chỉnh 我 hôm nay 刚来上班，很高兴认识大家！ có nghĩa là “Hôm nay tôi vừa mới đi làm, rất vui được làm quen với mọi người!”');
+SET @q3_c1l3_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q3_c1l3_id, 'A. 刚 (gāng)', TRUE, 1),
+(@q3_c1l3_id, 'B. 很 (hěn)', FALSE, 2),
+(@q3_c1l3_id, 'C. 也 (yě)', FALSE, 3),
+(@q3_c1l3_id, 'D. 就 (jiù)', FALSE, 4);
+
+-- Question 4
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l3_quiz_id, 'SINGLE_CHOICE', '我们 factory 的________快，刚开始有点 không quen rất bình thường.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047620/ph%C3%A2n_%C4%91o%E1%BA%A1n_4_ado9kg.mp3', 10, 4, '“工作节奏” có nghĩa là “nhịp độ công việc”. Cụm 工作节奏很快 nghĩa là “nhịp độ công việc rất nhanh”. Đây là cách diễn đạt phổ biến để mô tả cường độ và tốc độ làm việc trong doanh nghiệp hoặc nhà máy.');
+SET @q4_c1l3_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q4_c1l3_id, 'A. 工业园区 (gōngyè yuánqū)', FALSE, 1),
+(@q4_c1l3_id, 'B. 安全规章 (ānquán guīzhāng)', FALSE, 2),
+(@q4_c1l3_id, 'C. 工作节奏 (gōngzuò jiézòu)', TRUE, 3),
+(@q4_c1l3_id, 'D. 部门主管 (bùmén zhǔguǎn)', FALSE, 4);
+
+-- Question 5
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l3_quiz_id, 'SINGLE_CHOICE', '刚开始 hungry 有点不熟悉很正常，________。', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047621/ph%C3%A2n_%C4%91o%E1%BA%A1n_5_oze7ii.mp3', 10, 5, '“别着急” có nghĩa là “Đừng vội”, “Đừng lo lắng”. Câu 刚开始 hungry 有点不熟悉很正常，别 lo lắng。 là lời động viên thường dùng với nhân viên mới, nhấn mạnh rằng việc chưa quen công việc lúc ban đầu là điều bình thường và không cần quá căng thẳng.');
+SET @q5_c1l3_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q5_c1l3_id, 'A. 别着急 (bié zháojí)', TRUE, 1),
+(@q5_c1l3_id, 'B. 谢谢大家 (xièxie dàjiā)', FALSE, 2),
+(@q5_c1l3_id, 'C. 多多指导 (duōduō zhǐdǎo)', FALSE, 3),
+(@q5_c1l3_id, 'D. 没关系 (méiguānxi)', FALSE, 4);
+
+-- Question 6
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l3_quiz_id, 'SINGLE_CHOICE', 'Chọn cụm từ thích hợp để điền vào lời chào lịch sự của nhân viên mới khi giới thiệu bản thân trước tập thể bộ phận:\n“_______！我 hôm nay 刚来上班，很高兴认识大家！”', NULL, 10, 6, 'Cụm từ ''大家好'' (chào mọi người) là lời chào mở đầu phổ biến, lịch sự nhất khi đứng trước một tập thể đông người để giới thiệu bản thân.');
+SET @q6_c1l3_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q6_c1l3_id, 'A. 没问题 (méi wèntí)', FALSE, 1),
+(@q6_c1l3_id, 'B. 大家好 (dàjiā hǎo)', TRUE, 2),
+(@q6_c1l3_id, 'C. 别着急 (bié zhāojí)', FALSE, 3),
+(@q6_c1l3_id, 'D. 旁边 (pángbiān)', FALSE, 4);
+
+-- Question 7
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l3_quiz_id, 'SINGLE_CHOICE', 'Điền cụm từ khuyết thể hiện thái độ cầu thị nhờ vả, làm phiền mọi người hướng dẫn công việc sau này:\n“希望以后大家能多多指导我。如果有什么不懂 của, 就_______大家了。”', NULL, 10, 7, 'Cấu trúc ''就麻烦大家了'' (phải làm phiền mọi người rồi) thể hiện sự khéo léo, tôn trọng và tạo thiện cảm lớn với các đồng nghiệp cũ trong ngày đầu nhận việc.');
+SET @q7_c1l3_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q7_c1l3_id, 'A. 正常 (zhèngcháng)', FALSE, 1),
+(@q7_c1l3_id, 'B. 认识 (rènshi)', FALSE, 2),
+(@q7_c1l3_id, 'C. 麻烦 (máfan)', TRUE, 3),
+(@q7_c1l3_id, 'D. 欢迎 (huānyíng)', FALSE, 4);
+
+-- Question 8
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l3_quiz_id, 'SINGLE_CHOICE', 'Chọn cụm từ khuyết thích hợp thể hiện lời phản hồi khẳng định sẵn sàng hỗ trợ nhân viên mới của người đồng nghiệp:\n“_______！刚开始 hungry 有点 không quen rất bình thường, đừng lo lắng。”', NULL, 10, 8, 'Cụm từ ''没问题'' (không vấn đề gì/được chứ) mang sắc thái cởi mở, khẳng định đồng nghiệp cũ luôn sẵn sàng giúp đỡ và chỉ bảo cho người mới.');
+SET @q8_c1l3_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q8_c1l3_id, 'A. 没问题 (méi wèntí)', TRUE, 1),
+(@q8_c1l3_id, 'B. 节奏 (jiézòu)', FALSE, 2),
+(@q8_c1l3_id, 'C. 上班 (shàngbān)', FALSE, 3),
+(@q8_c1l3_id, 'D. 以后 (yǐhòu)', FALSE, 4);
+
+-- Question 9
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l3_quiz_id, 'SINGLE_CHOICE', 'Điền trạng từ chỉ thời gian thích hợp thể hiện trạng thái vừa mới bước chân vào nhà xưởng đi làm ngày hôm nay:\n“大家好！我 hôm nay _______来上班，很高兴认识大家！”', NULL, 10, 9, 'Phó từ ''刚'' (vừa/vừa mới) đứng trước động từ ''来'' (đến) bổ nghĩa thời gian cho hành động nhận việc xảy ra ngay sát mốc hiện tại.');
+SET @q9_c1l3_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q9_c1l3_id, 'A. 很快 (hěn kuài)', FALSE, 1),
+(@q9_c1l3_id, 'B. 刚 (gāng)', TRUE, 2),
+(@q9_c1l3_id, 'C. 以后 (yǐhòu)', FALSE, 3),
+(@q9_c1l3_id, 'D. 正常 (zhèngcháng)', FALSE, 4);
+
+-- Question 10
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l3_quiz_id, 'SINGLE_CHOICE', 'Hoàn thành lời khuyên trấn an tinh thần của đồng nghiệp khi thấy người mới lo lắng về áp lực tiến độ tại xưởng:\n“我们 factory 的工作节奏很快，刚开始 hungry 有点 không quen rất bình thường,_______。”', NULL, 10, 10, 'Cụm từ khẩu ngữ ''别着急'' (đừng vội/đừng lo lắng) dùng để xoa dịu tâm lý căng thẳng, áp lực cho nhân sự mới khi tiếp xúc với môi trường làm việc tốc độ cao.');
+SET @q10_c1l3_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q10_c1l3_id, 'A. 谢谢大家 (xièxiè dàjiā)', FALSE, 1),
+(@q10_c1l3_id, 'B. 多多指导 (duōduō zhǐdǎo)', FALSE, 2),
+(@q10_c1l3_id, 'C. 别着急 (bié zhāojí)', TRUE, 3),
+(@q10_c1l3_id, 'D. 很高兴 (hěn gāoxìng)', FALSE, 4);
+
+-- Question 11
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l3_quiz_id, 'SINGLE_CHOICE', 'Tìm nghĩa tiếng Việt chuẩn xác nhất của cụm từ “工作节奏” thường dùng để mô tả đặc thù công việc tại các nhà máy, xưởng sản xuất:', NULL, 10, 11, '“工作节奏” ghép từ ''工作'' (công việc) và ''节奏'' (nhịp điệu/nhịp độ), dùng để chỉ tốc độ và áp lực tiến độ hoàn thành các công đoạn sản xuất.');
+SET @q11_c1l3_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q11_c1l3_id, 'A. Quy định an toàn nhà xưởng', FALSE, 1),
+(@q11_c1l3_id, 'B. Nhịp độ công việc / Tốc độ công việc', TRUE, 2),
+(@q11_c1l3_id, 'C. Đồng nghiệp cùng tổ đội', FALSE, 3),
+(@q11_c1l3_id, 'D. Khu công nghiệp tập trung', FALSE, 4);
+
+-- Question 12
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l3_quiz_id, 'SINGLE_CHOICE', 'Xác định phiên âm Pinyin chính xác của từ “认识” (Quen biết, làm quen):', NULL, 10, 12, '“认识” có phiên âm chuẩn xác là ''rènshi'' (thanh 4 kết hợp với thanh nhẹ), thường dùng trong mẫu câu giao tiếp ''很高兴认识 bạn'' (rất vui được làm quen với bạn).');
+SET @q12_c1l3_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q12_c1l3_id, 'A. rènshi', TRUE, 1),
+(@q12_c1l3_id, 'B. rènshì', FALSE, 2),
+(@q12_c1l3_id, 'C. rénshī', FALSE, 3),
+(@q12_c1l3_id, 'D. lènshǐ', FALSE, 4);
+
+-- Question 13
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l3_quiz_id, 'SINGLE_CHOICE', 'Cho chữ Hán “旁边”, hãy xác định ý nghĩa và vị trí không gian không gian tương ứng của từ này:', NULL, 10, 13, '“旁边” phát âm là ''pángbiān'' là danh từ chỉ phương vị mang nghĩa là bên cạnh, kế bên (Ví dụ: 坐在你旁边 - ngồi ngay cạnh bạn).');
+SET @q13_c1l3_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q13_c1l3_id, 'A. Phía sau xưởng', FALSE, 1),
+(@q13_c1l3_id, 'B. Bên cạnh / Kế bên', TRUE, 2),
+(@q13_c1l3_id, 'C. Ngồi đối diện', FALSE, 3),
+(@q13_c1l3_id, 'D. Đi ra ngoài', FALSE, 4);
+
+-- Question 14
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l3_quiz_id, 'SINGLE_CHOICE', 'Xác định nghĩa tiếng Việt chuẩn xác của tính từ “正常” trong câu thoại của đồng nghiệp cũ động viên người mới:', NULL, 10, 14, '“正常” (zhèngcháng) nghĩa là bình thường, điều tất yếu (Ví dụ: 不熟悉很正常 - mới đầu chưa quen là chuyện hết sức bình thường).');
+SET @q14_c1l3_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q14_c1l3_id, 'A. Khó khăn, vất vả', FALSE, 1),
+(@q14_c1l3_id, 'B. Nhanh chóng, khẩn trương', FALSE, 2),
+(@q14_c1l3_id, 'C. Bình thường / Quy luật tự nhiên', TRUE, 3),
+(@q14_c1l3_id, 'D. Nghiêm túc, tuân thủ', FALSE, 4);
+
+-- Question 15
+INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, explanation) VALUES
+(@c1_l3_quiz_id, 'SINGLE_CHOICE', 'Tìm từ viết bằng chữ Hán chuẩn xác ứng với phiên âm “shàngbān” mang nghĩa là đi làm, vào ca làm việc:', NULL, 10, 15, 'Chữ Hán ''上班'' có phiên âm chuẩn là ''shàngbān'', là động từ ly hợp dùng để chỉ hành động đến cơ quan, nhà máy thực hiện ca làm việc.');
+SET @q15_c1l3_id = LAST_INSERT_ID();
+INSERT INTO answers (question_id, content, is_correct, order_index) VALUES
+(@q15_c1l3_id, 'A. 上班', TRUE, 1),
+(@q15_c1l3_id, 'B. 下班', FALSE, 2),
+(@q15_c1l3_id, 'C. 加班', FALSE, 3),
+(@q15_c1l3_id, 'D. 刚来', FALSE, 4);
+
+
+
+
