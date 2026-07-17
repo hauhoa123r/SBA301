@@ -16,7 +16,7 @@ export default function LearnCourseHeader({ sidebarOpen = false, onSidebarToggle
                 >
                     <Menu className="h-5 w-5" />
                 </button>
-                <Link to="/courses" className="hidden items-center gap-2 text-base font-semibold text-brand-courseMuted no-underline hover:text-brand-white sm:inline-flex md:text-lg">
+                <Link to="/learning" className="hidden items-center gap-2 text-base font-semibold text-brand-courseMuted no-underline hover:text-brand-white sm:inline-flex md:text-lg">
                     <Home className="h-4 w-4" />
                     Khóa học
                 </Link>
