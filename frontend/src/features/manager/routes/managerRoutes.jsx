@@ -5,6 +5,7 @@ import UserManager from "../pages/UserManager";
 import RoleManager from "../pages/RoleManager";
 import UserAccountControl from "../pages/UserAccountControl";
 import AuditLogPage from "../pages/AuditLogPage";
+import CouponManager from "../pages/CouponManager";
 
 const managerRoutes = [
     {
@@ -30,6 +31,10 @@ const managerRoutes = [
             {
                 path: "audit-logs",
                 element: <AuditLogPage />,
+            },
+            {
+                path: "coupons",
+                element: <CouponManager />,
             },
         ],
     },

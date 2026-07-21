@@ -32,6 +32,29 @@ const NAV_ITEMS = [
       </svg>
     ),
   },
+  {
+    path: "/admin/audit-logs",
+    label: "Nhật ký hệ thống",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <path d="M14 2v6h6" />
+        <path d="M16 13H8" />
+        <path d="M16 17H8" />
+        <path d="M10 9H8" />
+      </svg>
+    ),
+  },
+  {
+    path: "/admin/coupons",
+    label: "Quản lý mã giảm giá",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
+        <path d="M20.59 13.41 11 3.83a2 2 0 0 0-2.83 0L2.83 9.17a2 2 0 0 0 0 2.83L12.41 21.6a2 2 0 0 0 2.83 0l5.35-5.35a2 2 0 0 0 0-2.84Z" />
+        <path d="M7 7h.01" />
+      </svg>
+    ),
+  },
 ];
 
 export default function ManagerLayout() {
@@ -56,7 +79,6 @@ export default function ManagerLayout() {
               </div>
               Bảng quản trị
             </div>
-
             <nav className="flex-1 py-4 flex flex-col gap-1 px-3">
               {NAV_ITEMS.map(item => {
                 const isActive = location.pathname.startsWith(item.path);

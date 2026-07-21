@@ -1,10 +1,13 @@
 package com.app.features.manager.controller;
 
+import com.app.features.manager.dto.request.CouponCreateRequest;
+import com.app.features.manager.dto.request.CouponUpdateRequest;
 import com.app.features.manager.dto.request.RoleRequest;
 import com.app.features.manager.dto.request.UserCreateRequest;
 import com.app.features.manager.dto.request.UserRoleRequest;
 import com.app.features.manager.dto.request.UserStatusRequest;
 import com.app.features.manager.dto.request.UserUpdateRequest;
+import com.app.features.manager.dto.response.CouponAdminResponse;
 import com.app.features.manager.dto.response.PermissionResponse;
 import com.app.features.manager.dto.response.RoleResponse;
 import com.app.features.manager.dto.response.UserAdminResponse;
@@ -93,6 +96,55 @@ public class AdminController {
             @Valid @RequestBody UserRoleRequest request
     ) {
         return ResponseEntity.ok(adminService.updateUserRoles(id, request));
+    }
+
+    // COUPON MANAGEMENT (US49)
+
+    @GetMapping("/coupons")
+    public ResponseEntity<Map<String, Object>> getAllCoupons(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir
+    ) {
+        Sort sort = sortDir.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<CouponAdminResponse> result = adminService.getAllCoupons(keyword, pageable);
+
+        return ResponseEntity.ok(Map.of(
+                "content", result.getContent(),
+                "totalElements", result.getTotalElements(),
+                "totalPages", result.getTotalPages(),
+                "currentPage", result.getNumber(),
+                "pageSize", result.getSize()
+        ));
+    }
+
+    @GetMapping("/coupons/{id}")
+    public ResponseEntity<CouponAdminResponse> getCouponById(@PathVariable Long id) {
+        return ResponseEntity.ok(adminService.getCouponById(id));
+    }
+
+    @PostMapping("/coupons")
+    public ResponseEntity<CouponAdminResponse> createCoupon(@Valid @RequestBody CouponCreateRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(adminService.createCoupon(request));
+    }
+
+    @PutMapping("/coupons/{id}")
+    public ResponseEntity<CouponAdminResponse> updateCoupon(
+            @PathVariable Long id,
+            @Valid @RequestBody CouponUpdateRequest request
+    ) {
+        return ResponseEntity.ok(adminService.updateCoupon(id, request));
+    }
+
+    @DeleteMapping("/coupons/{id}")
+    public ResponseEntity<Map<String, String>> deleteCoupon(@PathVariable Long id) {
+        adminService.deleteCoupon(id);
+        return ResponseEntity.ok(Map.of("message", "Coupon deleted successfully"));
     }
 
     //ROLE MANAGEMENT (US45)

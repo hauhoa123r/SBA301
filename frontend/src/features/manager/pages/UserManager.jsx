@@ -36,6 +36,8 @@ export default function UserManager() {
         status: filterStatus,
         page,
         size: 8,
+        sortBy: "id",
+        sortDir: "asc",
       });
 
       setUsers(data.content || []);
@@ -95,6 +97,13 @@ export default function UserManager() {
       setTimeout(() => setToast(null), 3000);
       return;
     }
+
+    if (createForm.password.trim().length < 8) {
+      setToast({ message: "Mật khẩu cần ít nhất 8 ký tự", type: "error" });
+      setTimeout(() => setToast(null), 3000);
+      return;
+    }
+
     setCreateLoading(true);
     try {
       await createUser({
@@ -110,7 +119,11 @@ export default function UserManager() {
       setPage(0);
       fetchUsers();
     } catch (error) {
-      const message = error?.response?.data?.message || "Không thể thêm người dùng";
+      const responseData = error?.response?.data;
+      const validationMessage = responseData?.data && typeof responseData.data === "object"
+        ? Object.values(responseData.data)[0]
+        : null;
+      const message = validationMessage || responseData?.message || "Không thể thêm người dùng";
       setToast({ message, type: "error" });
       setTimeout(() => setToast(null), 3000);
     } finally {
@@ -126,8 +139,7 @@ export default function UserManager() {
         <h1 className="text-2xl font-bold">Quản lý người dùng</h1>
         <button
           onClick={handleOpenCreateModal}
-          className="rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white transition-colors hover:bg-blue-500"
-        >
+          className="rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white transition-colors hover:bg-blue-500">
           Thêm người dùng
         </button>
       </div>
@@ -136,9 +148,7 @@ export default function UserManager() {
         keyword={keyword}
         setKeyword={setKeyword}
         filterStatus={filterStatus}
-        setFilterStatus={setFilterStatus}
-      />
-
+        setFilterStatus={setFilterStatus}/>
       <div className="bg-gray-900 rounded-xl overflow-hidden">
         {loading ? (
           <Loading />
@@ -154,8 +164,7 @@ export default function UserManager() {
                   <td className="text-right p-4">
                     <button
                       onClick={() => handleViewUser(user.id)}
-                      className="text-blue-400 font-medium"
-                    >
+                      className="text-blue-400 font-medium">
                       Xem
                     </button>
                   </td>
@@ -165,13 +174,10 @@ export default function UserManager() {
           </table>
         )}
       </div>
-
       <Pagination
         page={page}
         totalPages={totalPages}
-        setPage={setPage}
-      />
-
+        setPage={setPage}/>
       {selectedUser && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/60 p-4">
           <div className="w-full max-w-md rounded-2xl bg-gray-900 border border-gray-800 p-6 shadow-2xl">
@@ -182,12 +188,10 @@ export default function UserManager() {
               </div>
               <button
                 onClick={() => setSelectedUser(null)}
-                className="text-gray-400 hover:text-white"
-              >
+                className="text-gray-400 hover:text-white">
                 Đóng
               </button>
             </div>
-
             {viewLoading ? (
               <Loading />
             ) : (
@@ -229,12 +233,10 @@ export default function UserManager() {
               </div>
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="text-gray-400 hover:text-white"
-              >
+                className="text-gray-400 hover:text-white">
                 Đóng
               </button>
             </div>
-
             <div className="mt-5 space-y-4">
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-300">Họ và tên</label>
@@ -242,10 +244,8 @@ export default function UserManager() {
                   value={createForm.fullName}
                   onChange={(event) => handleCreateFormChange("fullName", event.target.value)}
                   className="w-full rounded-xl bg-gray-800 px-4 py-3 outline-none focus:ring-1 focus:ring-blue-500"
-                  placeholder="Nhập họ và tên"
-                />
+                  placeholder="Nhập họ và tên"/>
               </div>
-
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-300">Email</label>
                 <input
@@ -253,8 +253,7 @@ export default function UserManager() {
                   value={createForm.email}
                   onChange={(event) => handleCreateFormChange("email", event.target.value)}
                   className="w-full rounded-xl bg-gray-800 px-4 py-3 outline-none focus:ring-1 focus:ring-blue-500"
-                  placeholder="Nhập email"
-                />
+                  placeholder="Nhập email"/>
               </div>
 
               <div>
@@ -264,8 +263,7 @@ export default function UserManager() {
                   value={createForm.password}
                   onChange={(event) => handleCreateFormChange("password", event.target.value)}
                   className="w-full rounded-xl bg-gray-800 px-4 py-3 outline-none focus:ring-1 focus:ring-blue-500"
-                  placeholder="Nhập mật khẩu"
-                />
+                  placeholder="Nhập mật khẩu"/>
               </div>
 
               <div>
@@ -273,8 +271,7 @@ export default function UserManager() {
                 <select
                   value={createForm.roleId}
                   onChange={(event) => handleCreateFormChange("roleId", event.target.value)}
-                  className="w-full cursor-pointer rounded-xl bg-gray-800 px-4 py-3 outline-none focus:ring-1 focus:ring-blue-500"
-                >
+                  className="w-full cursor-pointer rounded-xl bg-gray-800 px-4 py-3 outline-none focus:ring-1 focus:ring-blue-500">
                   <option value="">Chọn vai trò</option>
                   {roles.map((role) => (
                     <option key={role.id} value={role.id}>
@@ -294,15 +291,13 @@ export default function UserManager() {
             <div className="mt-6 flex justify-end gap-3">
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="rounded-xl bg-gray-800 px-4 py-3 font-semibold text-gray-200 transition-colors hover:bg-gray-700"
-              >
+                className="rounded-xl bg-gray-800 px-4 py-3 font-semibold text-gray-200 transition-colors hover:bg-gray-700">
                 Hủy
               </button>
               <button
                 onClick={handleCreateUser}
                 disabled={createLoading}
-                className="rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white transition-colors hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
-              >
+                className="rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white transition-colors hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-60">
                 {createLoading ? "Đang thêm..." : "Thêm mới"}
               </button>
             </div>

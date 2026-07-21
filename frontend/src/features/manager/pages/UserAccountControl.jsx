@@ -31,6 +31,8 @@ export default function UserAccountControl() {
         status: filterStatus,
         page,
         size: 8,
+        sortBy: "id",
+        sortDir: "asc",
       });
       setUsers(data.content || []);
       setTotalPages(data.totalPages || 1);
@@ -44,31 +46,36 @@ export default function UserAccountControl() {
   }, [fetchUsers]);
 
   const handleConfirm = async () => {
-    if (confirmModal.type === "delete") {
-      await deleteUser(confirmModal.user.id);
-      showToast("Xóa thành công");
-    } else {
-      const status = confirmModal.user.status === "ACTIVE" ? "LOCKED" : "ACTIVE";
-      await changeUserStatus(confirmModal.user.id, status);
-      showToast("Cập nhật trạng thái thành công");
+    try {
+      if (confirmModal.type === "delete") {
+        await deleteUser(confirmModal.user.id);
+        showToast("Xóa thành công");
+      } else {
+        const status = confirmModal.user.status === "ACTIVE" ? "LOCKED" : "ACTIVE";
+        await changeUserStatus(confirmModal.user.id, status);
+        showToast("Cập nhật trạng thái thành công");
+      }
+      setConfirmModal(null);
+      fetchUsers();
+    } catch (error) {
+      const responseData = error?.response?.data;
+      const validationMessage = responseData?.data && typeof responseData.data === "object"
+        ? Object.values(responseData.data)[0]
+        : null;
+      const message = validationMessage || responseData?.message || "Không thể thực hiện thao tác";
+      showToast(message, "error");
+      setConfirmModal(null);
     }
-    setConfirmModal(null);
-    fetchUsers();
   };
-
   return (
     <div className="p-6 text-white">
       <Toast toast={toast} />
-
       <h1 className="text-2xl font-bold mb-5">Kiểm soát tài khoản người dùng</h1>
-
       <SearchFilter
         keyword={keyword}
         setKeyword={setKeyword}
         filterStatus={filterStatus}
-        setFilterStatus={setFilterStatus}
-      />
-
+        setFilterStatus={setFilterStatus}/>
       <div className="bg-gray-900 rounded-xl overflow-hidden">
         {loading ? (
           <Loading />
@@ -76,23 +83,24 @@ export default function UserAccountControl() {
           <UserTable
             users={users}
             onLock={(user) => setConfirmModal({ type: "status", user })}
-            onDelete={(user) => setConfirmModal({ type: "delete", user })}
-          />
-        )}
+            onDelete={(user) => setConfirmModal({ type: "delete", user })}/>)
+            }
       </div>
-
       <Pagination 
         page={page} 
         totalPages={totalPages} 
-        setPage={setPage} 
-      />
-
-      {confirmModal && (
-        <ConfirmModal 
+        setPage={setPage} />
+      {confirmModal && (<ConfirmModal 
           title="Xác nhận" 
           onClose={() => setConfirmModal(null)} 
           onConfirm={handleConfirm} 
-        />
+          confirmText={confirmModal.type === "delete" ? "Xóa" : (confirmModal.user.status === "ACTIVE" ? "Khóa" : "Mở khóa")}>
+          {confirmModal.type === "delete"
+            ? `Bạn có chắc muốn xóa tài khoản ${confirmModal.user.fullName}?`
+            : confirmModal.user.status === "ACTIVE"
+              ? `Bạn có chắc muốn khóa tài khoản ${confirmModal.user.fullName}?`
+              : `Bạn có chắc muốn mở khóa tài khoản ${confirmModal.user.fullName}?`}
+        </ConfirmModal>
       )}
     </div>
   );

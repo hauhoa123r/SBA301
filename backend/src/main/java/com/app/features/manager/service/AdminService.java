@@ -1,10 +1,13 @@
 package com.app.features.manager.service;
 
 import com.app.features.manager.dto.request.RoleRequest;
+import com.app.features.manager.dto.request.CouponCreateRequest;
+import com.app.features.manager.dto.request.CouponUpdateRequest;
 import com.app.features.manager.dto.request.UserCreateRequest;
 import com.app.features.manager.dto.request.UserRoleRequest;
 import com.app.features.manager.dto.request.UserStatusRequest;
 import com.app.features.manager.dto.request.UserUpdateRequest;
+import com.app.features.manager.dto.response.CouponAdminResponse;
 import com.app.features.manager.dto.response.PermissionResponse;
 import com.app.features.manager.dto.response.RoleResponse;
 import com.app.features.manager.dto.response.UserAdminResponse;
@@ -29,6 +32,17 @@ public interface AdminService {
     void deleteUser(Long id);
 
     UserAdminResponse updateUserRoles(Long id, UserRoleRequest request);
+
+    // ---- Coupon Management ----
+    Page<CouponAdminResponse> getAllCoupons(String keyword, Pageable pageable);
+
+    CouponAdminResponse getCouponById(Long id);
+
+    CouponAdminResponse createCoupon(CouponCreateRequest request);
+
+    CouponAdminResponse updateCoupon(Long id, CouponUpdateRequest request);
+
+    void deleteCoupon(Long id);
 
     // ---- Role Management ----
     List<RoleResponse> getAllRoles();

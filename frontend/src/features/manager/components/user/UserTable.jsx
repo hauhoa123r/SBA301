@@ -26,6 +26,7 @@ export default function UserTable({ users, onLock, onDelete }) {
             <tbody>
                 {users.map((user) => {
                     const status = STATUS_CONFIG[user.status] || STATUS_CONFIG.ACTIVE;
+                    const isAdmin = (user.roles || []).some((role) => role.name === "ADMIN");
 
                     return (
                         <tr key={user.id} className="border-t border-gray-700 hover:bg-gray-800/50">
@@ -40,7 +41,7 @@ export default function UserTable({ users, onLock, onDelete }) {
                             </td>
                             <td>
                                 <div className="flex gap-2">
-                                    {user.status !== "DELETED" && (
+                                    {!isAdmin && user.status !== "DELETED" && (
                                         <button
                                             onClick={() => onLock(user)}
                                             className={`px-3 py-1.5 rounded-lg text-xs border ${user.status === "ACTIVE"
@@ -52,12 +53,18 @@ export default function UserTable({ users, onLock, onDelete }) {
                                         </button>
                                     )}
 
-                                    <button
-                                        onClick={() => onDelete(user)}
-                                        className="px-3 py-1.5 rounded-lg text-xs text-red-400 border border-red-500/30 hover:bg-red-500/10"
-                                    >
-                                        Xóa
-                                    </button>
+                                    {!isAdmin ? (
+                                        <button
+                                            onClick={() => onDelete(user)}
+                                            className="px-3 py-1.5 rounded-lg text-xs text-red-400 border border-red-500/30 hover:bg-red-500/10"
+                                        >
+                                            Xóa
+                                        </button>
+                                    ) : (
+                                        <span className="px-3 py-1.5 rounded-lg text-xs text-gray-400 border border-gray-700">
+                                            ADMIN
+                                        </span>
+                                    )}
                                 </div>
                             </td>
                         </tr>
