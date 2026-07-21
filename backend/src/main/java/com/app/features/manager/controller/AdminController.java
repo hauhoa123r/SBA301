@@ -1,6 +1,7 @@
 package com.app.features.manager.controller;
 
 import com.app.features.manager.dto.request.RoleRequest;
+import com.app.features.manager.dto.request.UserCreateRequest;
 import com.app.features.manager.dto.request.UserRoleRequest;
 import com.app.features.manager.dto.request.UserStatusRequest;
 import com.app.features.manager.dto.request.UserUpdateRequest;
@@ -28,7 +29,7 @@ public class AdminController {
 
     private final AdminService adminService;
 
-    // ===================== USER MANAGEMENT (US44) =====================
+    //USER MANAGEMENT (US44)
 
     @GetMapping("/users")
     public ResponseEntity<Map<String, Object>> getAllUsers(
@@ -57,6 +58,11 @@ public class AdminController {
     @GetMapping("/users/{id}")
     public ResponseEntity<UserAdminResponse> getUserById(@PathVariable Long id) {
         return ResponseEntity.ok(adminService.getUserById(id));
+    }
+
+    @PostMapping("/users")
+    public ResponseEntity<UserAdminResponse> createUser(@Valid @RequestBody UserCreateRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(adminService.createUser(request));
     }
 
     @PutMapping("/users/{id}")
@@ -89,7 +95,7 @@ public class AdminController {
         return ResponseEntity.ok(adminService.updateUserRoles(id, request));
     }
 
-    // ===================== ROLE MANAGEMENT (US45) =====================
+    //ROLE MANAGEMENT (US45)
 
     @GetMapping("/roles")
     public ResponseEntity<List<RoleResponse>> getAllRoles() {
@@ -120,14 +126,14 @@ public class AdminController {
         return ResponseEntity.ok(Map.of("message", "Role deleted successfully"));
     }
 
-    // ===================== PERMISSION MANAGEMENT =====================
+    // PERMISSION MANAGEMENT
 
     @GetMapping("/permissions")
     public ResponseEntity<List<PermissionResponse>> getAllPermissions() {
         return ResponseEntity.ok(adminService.getAllPermissions());
     }
 
-    // ===================== EXCEPTION HANDLER =====================
+    // EXCEPTION HANDLER
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, String>> handleRuntimeException(RuntimeException ex) {
