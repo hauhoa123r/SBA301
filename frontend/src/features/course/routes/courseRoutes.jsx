@@ -15,6 +15,8 @@ import StudentReviewsPage from '../pages/management/StudentReviewsPage';
 import CreateCoursePage from '../pages/management/CreateCoursePage';
 import EditCoursePage from '../pages/management/EditCoursePage';
 import CurriculumDesignPage from '../pages/management/CurriculumDesignPage';
+import QuizBuilderPage from '../pages/management/QuizBuilderPage';
+import QuizDashboardPage from '../pages/management/QuizDashboardPage';
 
 export const courseRoutes = [
     {
@@ -74,6 +76,9 @@ export const managementCourseRoutes = [
             { path: 'courses/create', element: <CreateCoursePage /> },
             { path: 'courses/edit/:courseId', element: <EditCoursePage /> },
             { path: 'courses/:courseId/curriculum', element: <CurriculumDesignPage /> },
+            { path: 'quizzes', element: <QuizDashboardPage /> },
+            { path: 'quizzes/create', element: <QuizBuilderPage /> },
+            { path: 'quizzes/edit/:quizId', element: <QuizBuilderPage /> },
             { path: 'reviews', element: <StudentReviewsPage /> },
         ]
     }
