@@ -36,7 +36,7 @@ public class CourseEntity {
     private String description;
 
     @Builder.Default
-    @OneToMany(mappedBy = "courseEntity", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "courseEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private java.util.List<ChapterEntity> chapterEntities = new java.util.ArrayList<>();
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -57,8 +57,9 @@ public class CourseEntity {
     @Column(name = "created_at", insertable = false, updatable = false)
     private Instant createdAt;
 
-    @Column(name = "updated_at", insertable = false, updatable = false)
+    @Column(name = "updated_at", insertable = false)
     private Instant updatedAt;
+
     @Builder.Default
     @NonNull
     @OneToMany(mappedBy = "course")
@@ -70,7 +71,8 @@ public class CourseEntity {
     @Builder.Default
     @NonNull
     @ManyToMany
-    @JoinTable(name = "course_plan_access", joinColumns = {@JoinColumn(name = "course_id")}, inverseJoinColumns = {@JoinColumn(name = "plan_id")})
+    @JoinTable(name = "course_plan_access", joinColumns = { @JoinColumn(name = "course_id") }, inverseJoinColumns = {
+            @JoinColumn(name = "plan_id") })
     private Set<PlanEntity> plans = new LinkedHashSet<>();
     @Builder.Default
     @NonNull
@@ -79,24 +81,35 @@ public class CourseEntity {
     @Builder.Default
     @NonNull
     @ManyToMany
-    @JoinTable(name = "course_tags", joinColumns = {@JoinColumn(name = "course_id")}, inverseJoinColumns = {@JoinColumn(name = "tag_id")})
+    @JoinTable(name = "course_tags", joinColumns = { @JoinColumn(name = "course_id") }, inverseJoinColumns = {
+            @JoinColumn(name = "tag_id") })
     private Set<TagEntity> tags = new LinkedHashSet<>();
 
     public void addTag(TagEntity tag) {
-        if(this.tags == null){
+        if (this.tags == null) {
             this.tags = new LinkedHashSet<>();
         }
         this.tags.add(tag);
     }
 
     public void addPlan(PlanEntity plan) {
-        if(this.plans== null){
+        if (this.plans == null) {
             this.plans = new LinkedHashSet<>();
         }
         this.plans.add(plan);
-        if(plan.getCourses() == null){
+        if (plan.getCourses() == null) {
             plan.setCourses(new LinkedHashSet<>());
         }
         plan.getCourses().add(this);
+    }
+
+    public void addChapter(ChapterEntity chapter) {
+        chapterEntities.add(chapter);
+        chapter.setCourseEntity(this);
+    }
+
+    public void removeChapter(ChapterEntity chapter) {
+        chapterEntities.remove(chapter);
+        chapter.setCourseEntity(null);
     }
 }

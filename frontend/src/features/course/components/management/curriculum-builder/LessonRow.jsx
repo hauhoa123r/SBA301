@@ -1,7 +1,7 @@
 import { GripVertical, Edit2, Trash2, Video, FileText, Clock, HelpCircle } from 'lucide-react';
 
 
-export default function LessonRow({ lesson, lessonIndex, onEdit, onDelete }) {
+export default function LessonRow({ lesson, lessonIndex, onEdit, onDelete, onDocuments }) {
   const hasVideo = !!lesson.video_url;
   const hasDocs  = (lesson.documents?.length ?? 0) > 0;
   const hasQuiz  = (lesson.quizzes?.length ?? 0) > 0;
@@ -73,6 +73,13 @@ export default function LessonRow({ lesson, lessonIndex, onEdit, onDelete }) {
           title="Edit lesson"
         >
           <Edit2 className="w-3.5 h-3.5" />
+        </button>
+        <button
+          onClick={onDocuments}
+          className="p-1.5 text-brand-mutedText hover:text-brand-info hover:bg-brand-info/10 rounded-lg transition-colors"
+          title="Manage documents"
+        >
+          <FileText className="w-3.5 h-3.5" />
         </button>
         <button
           onClick={onDelete}
