@@ -25,6 +25,7 @@ export default function ChapterNode({
   onAddLesson,
   onEditLesson,
   onDeleteLesson,
+  onManageDocuments,
 }) {
   const lessonCount = chapter.lessons?.length ?? 0;
 
@@ -125,6 +126,7 @@ export default function ChapterNode({
                 lessonIndex={idx}
                 onEdit={() => onEditLesson(lesson)}
                 onDelete={() => onDeleteLesson(lesson)}
+                onDocuments={() => onManageDocuments(lesson.id)}
               />
             ))
           ) : (

@@ -144,7 +144,7 @@ export default function CourseForm({ initialData = null, onSubmit, loading = fal
   return (
     <div className="space-y-6">
       <button
-        onClick={() => navigate('/teacher/courses')}
+        onClick={() => navigate('/management/courses')}
         className="flex items-center gap-2 font-medium text-brand-accentSoft transition-colors duration-200 hover:text-brand-accent"
       >
         <ArrowLeft className="h-4 w-4" />
@@ -248,30 +248,14 @@ export default function CourseForm({ initialData = null, onSubmit, loading = fal
               error={masterDataErrors.tags}
             />
 
-            {initialData ? (
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-brand-textPrimary">
-                  Status
-                </label>
-                <select
-                  name="status"
-                  value={formData.status}
-                  onChange={handleChange}
-                  className="w-full rounded-lg border border-brand-borderSoft bg-brand-dark/50 px-4 py-3 text-brand-textPrimary transition-colors duration-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-brand-accent"
-                >
-                  <option value="DRAFT">Draft</option>
-                  <option value="PENDING">Pending Review</option>
-                  <option value="PUBLISHED">Published</option>
-                </select>
-              </div>
-            ) : null}
+
           </div>
         </div>
 
         <div className="flex gap-4 border-t border-brand-borderSoft pt-6">
           <button
             type="button"
-            onClick={() => navigate('/teacher/courses')}
+            onClick={() => navigate('/management/courses')}
             className="flex-1 rounded-lg border border-brand-borderSoft px-6 py-3 font-medium text-brand-textSecondary transition-colors duration-200 hover:bg-brand-panelAlt hover:text-brand-textPrimary"
           >
             Cancel

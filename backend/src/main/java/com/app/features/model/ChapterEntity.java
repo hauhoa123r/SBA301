@@ -32,11 +32,23 @@ public class ChapterEntity {
     @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("orderIndex ASC")
     private List<LessonEntity> lessonEntities = new java.util.ArrayList<>();
+
     @NotNull
     @Column(name = "order_index", nullable = false)
     private Integer orderIndex;
+
     @Builder.Default
     @NonNull
     @OneToMany(mappedBy = "chapter")
     private Set<QuizEntity> quizzes = new LinkedHashSet<>();
+
+    public void addLesson(LessonEntity lessonEntity) {
+        lessonEntities.add(lessonEntity);
+        lessonEntity.setChapter(this);
+    }
+
+    public void removeLesson(LessonEntity lessonEntity) {
+        lessonEntities.remove(lessonEntity);
+        lessonEntity.setChapter(null);
+    }
 }

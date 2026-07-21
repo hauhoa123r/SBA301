@@ -10,8 +10,9 @@ import LessonModal from '@/features/course/components/management/curriculum-buil
 import ConfirmDeleteModal from '@/features/course/components/management/curriculum-builder/modals/ConfirmDeleteModal';
 
 const enrichLesson = (ls) => ({
-  video_url: "",
-  duration_seconds: 0,
+  video_url: ls.videoUrl || ls.video_url || "",
+  duration_seconds: ls.durationSeconds || ls.duration_seconds || 0,
+  orderIndex: ls.orderIndex || ls.order_index || 0,
   documents: [],
   quizzes: [],
   assignments: [],
@@ -19,6 +20,7 @@ const enrichLesson = (ls) => ({
 });
 const enrichChapter = (ch) => ({
   ...ch,
+  orderIndex: ch.orderIndex || ch.order_index || 0,
   lessons: (ch.lessons ?? []).map(enrichLesson),
 });
 
@@ -44,12 +46,8 @@ export default function CurriculumDesignPage() {
   useEffect(() => {
     if (!courseId) return;
     let cancelled = false;
-    if (location.state?.course?.chapters) {
-      setChapters(location.state.course.chapters.map(enrichChapter));
-      setLoading(false);
-      return;
-    }
-    (async () => {
+
+    const fetchData = async () => {
       try {
         setLoading(true);
         const res = await teacherService.getCurriculum(courseId);
@@ -60,7 +58,10 @@ export default function CurriculumDesignPage() {
       } finally {
         if (!cancelled) setLoading(false);
       }
-    })();
+    };
+
+    fetchData();
+
     return () => {
       cancelled = true;
     };
@@ -88,7 +89,7 @@ export default function CurriculumDesignPage() {
         const newCh = {
           id: Date.now(),
           title,
-          order_index: chapters.length + 1,
+          orderIndex: chapters.length + 1,
           lessons: [],
           isNew: true,
         };
@@ -132,7 +133,7 @@ export default function CurriculumDesignPage() {
                 ...ch.lessons,
                 enrichLesson({
                   id: Date.now(),
-                  order_index: ch.lessons.length + 1,
+                  orderIndex: ch.lessons.length + 1,
                   isNew: true,
                   ...lessonData,
                 }),
@@ -192,8 +193,22 @@ export default function CurriculumDesignPage() {
   const handleSave = async () => {
     try {
       setSaving(true);
-      await teacherService.updateCurriculum(courseId, chapters);
-      navigate("/teacher/courses", {
+      
+      const payload = chapters.map(ch => ({
+        id: ch.isNew ? null : ch.id,
+        title: ch.title,
+        orderIndex: ch.orderIndex,
+        lessonRequests: ch.lessons.map(ls => ({
+          id: ls.isNew ? null : ls.id,
+          title: ls.title,
+          videoUrl: ls.video_url,
+          durationSecond: ls.duration_seconds,
+          orderIndex: ls.orderIndex
+        }))
+      }));
+
+      await teacherService.updateCurriculum(courseId, payload);
+      navigate("/management/courses", {
         state: { message: "Curriculum updated successfully!" },
       });
     } catch (err) {
@@ -202,6 +217,7 @@ export default function CurriculumDesignPage() {
       setSaving(false);
     }
   };
+
   const totalLessons = chapters.reduce(
     (sum, ch) => sum + (ch.lessons?.length ?? 0),
     0,
@@ -222,7 +238,7 @@ export default function CurriculumDesignPage() {
     <div className="space-y-6 max-w-5xl mx-auto">
       <div className="flex items-center justify-between">
         <button
-          onClick={() => navigate("/teacher/courses")}
+          onClick={() => navigate("/management/courses")}
           className="flex items-center gap-2 text-brand-accentSoft hover:text-brand-accent font-medium transition-colors group"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
