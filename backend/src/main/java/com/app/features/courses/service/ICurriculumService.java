@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ICurriculumService {
 
-    public void updateCurriculum(Long courseId, List<ChapterRequest> chapterRequests);
+    public void updateCurriculum(Long courseId, List<ChapterRequest> chapterRequests, Long teacherId);
 
     public List<ChapterResponse> getCurriculumByCourseId(Long courseId);
 }

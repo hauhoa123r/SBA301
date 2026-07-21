@@ -51,4 +51,14 @@ public class ChapterEntity {
         lessonEntities.remove(lessonEntity);
         lessonEntity.setChapter(null);
     }
+
+    public void addQuiz(QuizEntity quiz) {
+        quizzes.add(quiz);
+        quiz.setChapter(this);
+    }
+
+    public void removeQuiz(QuizEntity quiz) {
+        quizzes.remove(quiz);
+        quiz.setChapter(null);
+    }
 }
