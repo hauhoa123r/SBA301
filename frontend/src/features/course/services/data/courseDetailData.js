@@ -20,10 +20,3 @@ export const courseChapters = [
         ],
     },
 ];
-
-export const paymentInfo = {
-    bankName: "MBBank",
-    accountNumber: "0392004902",
-    accountName: "Hầu Văn Hòa",
-    transferContent: "DH8E6E",
-};

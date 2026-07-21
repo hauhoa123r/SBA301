@@ -3,12 +3,10 @@ import { Outlet, useNavigate, useParams } from "react-router-dom";
 import NotFoundPage from "../../../shared/pages/NotFoundPage";
 import LearnCourseHeader from "../components/learn-course/LearnCourseHeader";
 import LearnCourseSidebar from "../components/learn-course/LearnCourseSidebar";
-import { getCourseLearningDetails } from "../api/learning-api";
-import { getLearningCourse } from "../service/learningMock";
+import { getCourseLearningDetails, getCourseProgress, updateLessonProgress } from "../api/learning-api";
 import {
     buildLearningActivities,
     getChapterStats,
-    getCompletedChapters,
     getInitialAnswers,
 } from "../shared/learnCourseUtils";
 
@@ -17,45 +15,86 @@ export default function LearnCourseLayout() {
     const navigate = useNavigate();
     const [course, setCourse] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [courseNotFound, setCourseNotFound] = useState(false);
+    const [loadError, setLoadError] = useState("");
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
-    const [completedLessons, setCompletedLessons] = useState(() => new Set([1001, 1002]));
-    const [passedQuizzes, setPassedQuizzes] = useState(() => new Set([5001]));
+    const [completedLessons, setCompletedLessons] = useState(() => new Set());
+    const [completedChapterIds, setCompletedChapterIds] = useState(() => new Set());
+    const [passedQuizzes, setPassedQuizzes] = useState(() => new Set());
     const [submittedAssignments, setSubmittedAssignments] = useState(() => new Set());
     const [answers, setAnswers] = useState({});
     const [quizResults, setQuizResults] = useState({});
     const [assignmentText, setAssignmentText] = useState("");
+    const [savingLessonId, setSavingLessonId] = useState(null);
+    const [progressError, setProgressError] = useState("");
 
     useEffect(() => {
         let isMounted = true;
         // Keep the existing loading transition while the selected course changes.
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setLoading(true);
-        getCourseLearningDetails(courseId)
-            .then((data) => {
-                if (isMounted) {
-                    setCourse(data);
-                    if (data) {
-                        setAnswers(getInitialAnswers(data));
-                    }
-                    setLoading(false);
+        setCourseNotFound(false);
+        setLoadError("");
+
+        const loadCourse = async () => {
+            try {
+                const [courseResult, progressResult] = await Promise.allSettled([
+                    getCourseLearningDetails(courseId),
+                    getCourseProgress(courseId),
+                ]);
+
+                if (!isMounted) return;
+                if (courseResult.status === "rejected") throw courseResult.reason;
+
+                const data = courseResult.value;
+                setCourse(data);
+                if (progressResult.status === "fulfilled") {
+                    const courseProgress = progressResult.value;
+                    setCompletedLessons(new Set(courseProgress.completedLessonIds.map(Number)));
+                    setCompletedChapterIds(new Set(courseProgress.completedChapterIds.map(Number)));
+                    setProgressError("");
+                } else {
+                    console.error("Failed to load course progress:", progressResult.reason);
+                    setCompletedLessons(new Set());
+                    setCompletedChapterIds(new Set());
+                    setProgressError(
+                        progressResult.reason?.response?.data?.message
+                        || "Không thể tải tiến độ đã lưu. Hãy restart backend rồi tải lại trang."
+                    );
                 }
-            })
-            .catch((err) => {
-                console.error("Failed to fetch course details from API, falling back to mock:", err);
-                if (isMounted) {
-                    const mockData = getLearningCourse(courseId);
-                    setCourse(mockData);
-                    if (mockData) {
-                        setAnswers(getInitialAnswers(mockData));
+
+                if (data) setAnswers(getInitialAnswers(data));
+            } catch (err) {
+                console.error("Failed to fetch owned course details:", err);
+                if (!isMounted) return;
+
+                if (err.response?.status === 403) {
+                    const historyIndex = window.history.state?.idx;
+                    if (typeof historyIndex === "number" && historyIndex > 0) {
+                        navigate(-1);
+                    } else {
+                        navigate("/learning", { replace: true });
                     }
-                    setLoading(false);
+                    return;
                 }
-            });
+
+                if (err.response?.status === 404) {
+                    setCourseNotFound(true);
+                } else {
+                    setLoadError(err.response?.data?.message || "Không thể tải khóa học. Vui lòng thử lại.");
+                }
+                setCourse(null);
+            } finally {
+                if (isMounted) setLoading(false);
+            }
+        };
+
+        loadCourse();
         return () => {
             isMounted = false;
         };
-    }, [courseId]);
+    }, [courseId, navigate]);
 
     useEffect(() => {
         if (!sidebarOpen) return undefined;
@@ -79,7 +118,21 @@ export default function LearnCourseLayout() {
         );
     }
 
-    if (!course) return <NotFoundPage />;
+    if (courseNotFound) return <NotFoundPage />;
+
+    if (loadError || !course) {
+        return (
+            <div role="alert" className="flex min-h-screen items-center justify-center bg-brand-darker px-5 text-brand-white">
+                <div className="max-w-xl border-y border-status-danger/30 px-6 py-10 text-center">
+                    <h1 className="text-xl font-black">Không thể tải khóa học</h1>
+                    <p className="mt-3 text-sm text-brand-textSecondary">{loadError || "Dữ liệu khóa học không hợp lệ."}</p>
+                    <button type="button" onClick={() => window.location.reload()} className="mt-6 rounded-xl bg-brand-accent px-5 py-3 text-sm font-bold hover:bg-brand-accentHover">
+                        Tải lại
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     const { allLessons, allQuizzes, allAssignments, totalActivities } = buildLearningActivities(course);
     const activeLesson = allLessons.find((lesson) => lesson.id === Number(lessonId)) || allLessons[0];
@@ -90,11 +143,28 @@ export default function LearnCourseLayout() {
     const completedCount = completedLessons.size + passedQuizzes.size + submittedAssignments.size;
     const progress = totalActivities ? Math.round((completedCount / totalActivities) * 100) : 0;
     const chapterStats = getChapterStats({ course, completedLessons, passedQuizzes, submittedAssignments });
-    const completedChapters = getCompletedChapters({ course, completedLessons, passedQuizzes, submittedAssignments });
+    const completedChapters = course.chapters.filter((chapter) => completedChapterIds.has(chapter.id));
 
     const goLesson = (id) => navigate(`/learning/courses/${course.id}/lessons/${id}`);
     const goQuiz = (id) => navigate(`/learning/courses/${course.id}/quizzes/${id}`);
     const goAssignment = (id) => navigate(`/learning/courses/${course.id}/chapters/${id}/assignment`);
+
+    const handleLessonComplete = async (lessonId) => {
+        if (completedLessons.has(lessonId) || savingLessonId !== null) return;
+
+        setSavingLessonId(lessonId);
+        setProgressError("");
+        try {
+            const courseProgress = await updateLessonProgress(course.id, lessonId, true);
+            setCompletedLessons(new Set(courseProgress.completedLessonIds.map(Number)));
+            setCompletedChapterIds(new Set(courseProgress.completedChapterIds.map(Number)));
+        } catch (error) {
+            console.error("Failed to save lesson progress:", error);
+            setProgressError(error.response?.data?.message || "Không thể lưu tiến độ bài học. Vui lòng thử lại.");
+        } finally {
+            setSavingLessonId(null);
+        }
+    };
 
     const handleQuizSubmit = () => {
         if (!activeQuiz) return;
@@ -154,6 +224,7 @@ export default function LearnCourseLayout() {
                     activeQuiz={activeQuiz}
                     activeAssignment={activeAssignment}
                     chapterStats={chapterStats}
+                    completedChapterIds={completedChapterIds}
                     completedLessons={completedLessons}
                     passedQuizzes={passedQuizzes}
                     submittedAssignments={submittedAssignments}
@@ -184,19 +255,22 @@ export default function LearnCourseLayout() {
                                 activeQuiz,
                                 activeAssignment,
                                 chapterStats,
+                                completedChapterIds,
                                 completedChapters,
                                 completedCount,
                                 completedLessons,
                                 course,
                                 handleAssignmentSubmit,
+                                handleLessonComplete,
                                 handleQuizSubmit,
                                 handleQuizRetake,
                                 mode,
                                 progress,
+                                progressError,
                                 quizResults,
                                 setAnswers,
                                 setAssignmentText,
-                                setCompletedLessons,
+                                savingLessonId,
                                 submittedAssignments,
                                 totalActivities,
                                 goLesson,

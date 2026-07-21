@@ -1,4 +1,4 @@
-package com.app.features.payments.gateway;
+package com.app.features.payments.dto;
 
 import java.math.BigDecimal;
 import java.util.LinkedHashMap;
@@ -6,7 +6,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-public record PaymentGatewayStatus(
+public record PayOSPaymentStatus(
         String transactionId,
         String status,
         BigDecimal amountPaid,
@@ -15,7 +15,7 @@ public record PaymentGatewayStatus(
 ) {
     private static final Set<String> TERMINAL_STATUSES = Set.of("PAID", "CANCELLED", "EXPIRED");
 
-    public PaymentGatewayStatus {
+    public PayOSPaymentStatus {
         status = status == null ? "UNKNOWN" : status.trim().toUpperCase(Locale.ROOT);
         amountPaid = amountPaid == null ? BigDecimal.ZERO : amountPaid;
         rawResponse = rawResponse == null ? Map.of() : new LinkedHashMap<>(rawResponse);

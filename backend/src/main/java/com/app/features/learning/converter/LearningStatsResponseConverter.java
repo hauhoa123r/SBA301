@@ -20,25 +20,35 @@ public class LearningStatsResponseConverter {
     private final LearningCourseConverter learningCourseConverter;
 
     public LearningStatsResponse toResponse(UserEntity user, CourseSelectionResult selection, LearningStats stats) {
-        if (user == null || selection.selectedCourse() == null) {
+        if (user == null || selection == null) {
             return null;
+        }
+
+        List<LearningCourseDTO> availableCourses = selection.availableCourses().stream().map(learningCourseConverter::toResponse).toList();
+        LearningStatsResponse.LearningStatsResponseBuilder builder = LearningStatsResponse.builder();
+
+        builder.studentName(user.getFullName());
+        builder.enrolledCourses(availableCourses);
+        if (selection.selectedCourse() == null || stats == null) {
+            return builder
+                    .completedActivities(0)
+                    .totalActivities(0)
+                    .openLessons(0)
+                    .earnedCups(0)
+                    .totalCups(0)
+                    .build();
         }
 
         CourseEntity selectedCourse = selection.selectedCourse();
         ActivityStats activityStats = stats.activityStats();
         CupStats cupStats = stats.cupStats();
-        List<LearningCourseDTO> availableCourses = selection.availableCourses().stream().map(learningCourseConverter::toResponse).toList();
-        LearningStatsResponse.LearningStatsResponseBuilder builder = LearningStatsResponse.builder();
-
         builder.courseId(selectedCourse.getId());
         builder.courseTitle(selectedCourse.getTitle());
-        builder.studentName(user.getFullName());
         builder.completedActivities(activityStats.completedActivities());
         builder.totalActivities(activityStats.totalActivities());
         builder.openLessons(activityStats.openLessons());
         builder.earnedCups(cupStats.earnedCups());
         builder.totalCups(cupStats.totalCups());
-        builder.enrolledCourses(availableCourses);
 
         return builder.build();
     }

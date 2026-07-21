@@ -12,11 +12,10 @@ import com.app.features.payments.converter.InvoiceConverter;
 import com.app.features.payments.converter.PaymentConverter;
 import com.app.features.payments.dto.PaymentCreateRequest;
 import com.app.features.payments.dto.PaymentCreateResponse;
-import com.app.features.payments.gateway.PaymentGateway;
-import com.app.features.payments.gateway.PaymentGatewayFactory;
 import com.app.features.payments.repository.InvoiceRepository;
 import com.app.features.payments.repository.PaymentRepository;
 import com.app.features.payments.repository.PaymentUserRepository;
+import com.app.features.payments.service.PayOSService;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 
@@ -50,7 +49,7 @@ class PaymentCreationServiceImplTest {
 
     @Test
     void payosOrderCodeIsStoredAsPaymentTransactionId() {
-        PaymentGatewayFactory gatewayFactory = mock(PaymentGatewayFactory.class);
+        PayOSService payOSService = mock(PayOSService.class);
         InvoiceRepository invoiceRepository = mock(InvoiceRepository.class);
         PaymentRepository paymentRepository = mock(PaymentRepository.class);
         ICourseRepository courseRepository = mock(ICourseRepository.class);
@@ -58,7 +57,7 @@ class PaymentCreationServiceImplTest {
         InvoiceConverter invoiceConverter = mock(InvoiceConverter.class);
         PaymentConverter paymentConverter = mock(PaymentConverter.class);
         PaymentCreationServiceImpl service = new PaymentCreationServiceImpl(
-                gatewayFactory,
+                payOSService,
                 invoiceRepository,
                 paymentRepository,
                 courseRepository,
@@ -67,14 +66,13 @@ class PaymentCreationServiceImplTest {
                 paymentConverter
         );
 
-        PaymentCreateRequest request = new PaymentCreateRequest(1L, PaymentProvider.PAYOS, null);
+        PaymentCreateRequest request = new PaymentCreateRequest(1L, null);
         CourseEntity course = new CourseEntity();
         UserEntity user = new UserEntity();
         InvoiceEntity invoice = new InvoiceEntity();
         invoice.setId(8L);
         invoice.setAmount(BigDecimal.valueOf(199_000));
         PaymentEntity payment = new PaymentEntity();
-        PaymentGateway gateway = mock(PaymentGateway.class);
         PaymentCreateResponse gatewayResponse = new PaymentCreateResponse(
                 8L,
                 "INV-8",
@@ -93,8 +91,7 @@ class PaymentCreationServiceImplTest {
         when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
         when(userRepository.findById(7L)).thenReturn(Optional.of(user));
         when(invoiceConverter.toPendingInvoice(user, course)).thenReturn(invoice);
-        when(gatewayFactory.getGateway(PaymentProvider.PAYOS)).thenReturn(gateway);
-        when(gateway.createPayment(request, invoice, "INV-8")).thenReturn(gatewayResponse);
+        when(payOSService.createPayment(request, invoice, "INV-8")).thenReturn(gatewayResponse);
         when(paymentConverter.toCreatedPayment(
                 invoice,
                 PaymentProvider.PAYOS,

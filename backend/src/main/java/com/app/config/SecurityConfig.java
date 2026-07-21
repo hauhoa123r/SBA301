@@ -35,12 +35,6 @@ public class SecurityConfig {
             "/api/auth/verify-email"
     };
 
-    private static final String[] PAYMENT_CALLBACK_ENDPOINTS = {
-            "/api/payments/momo-ipn",
-            "/api/payments/payos-webhook",
-            "/api/payments/zalopay-callback"
-    };
-
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final RestAuthenticationEntryPoint authenticationEntryPoint;
     private final RestAccessDeniedHandler accessDeniedHandler;
@@ -73,12 +67,8 @@ public class SecurityConfig {
                                         PUBLIC_COURSE_PATH.matcher(request.getServletPath()).matches()
                         ).permitAll()
                         .requestMatchers(
-                                HttpMethod.GET,
-                                "/api/payments/vnpay-return"
-                        ).permitAll()
-                        .requestMatchers(
                                 HttpMethod.POST,
-                                PAYMENT_CALLBACK_ENDPOINTS
+                                "/api/payments/payos-webhook"
                         ).permitAll()
                         .requestMatchers(PUBLIC_AUTH_ENDPOINTS).permitAll()
                         .anyRequest().authenticated()

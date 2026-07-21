@@ -1,21 +1,17 @@
-package com.app.features.payments.gateway;
+package com.app.features.payments.service;
 
 import com.app.features.model.InvoiceEntity;
-import com.app.features.model.enums.PaymentProvider;
+import com.app.features.payments.dto.PayOSPaymentStatus;
 import com.app.features.payments.dto.PaymentCreateRequest;
 import com.app.features.payments.dto.PaymentCreateResponse;
 import com.app.features.payments.dto.PaymentVerifyResponse;
 
 import java.util.Map;
 
-public interface PaymentGateway {
+public interface PayOSService {
     PaymentCreateResponse createPayment(PaymentCreateRequest request, InvoiceEntity invoice, String invoiceCode);
 
     PaymentVerifyResponse verifyCallback(Map<String, String> params);
 
-    default PaymentGatewayStatus getPaymentStatus(String transactionId) {
-        throw new UnsupportedOperationException("Payment status lookup is not supported by " + provider());
-    }
-
-    PaymentProvider provider();
+    PayOSPaymentStatus getPaymentStatus(String transactionId);
 }

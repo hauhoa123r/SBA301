@@ -1,7 +1,6 @@
 package com.app.features.payments.controller;
 
 import com.app.features.model.UserEntity;
-import com.app.features.model.enums.PaymentProvider;
 import com.app.features.payments.dto.PaymentCreateRequest;
 import com.app.features.payments.dto.PaymentCreateResponse;
 import com.app.features.payments.dto.PaymentVerifyResponse;
@@ -14,14 +13,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Map;
@@ -46,24 +42,9 @@ public class PaymentController {
         return ResponseEntity.ok(paymentFacade.syncPayment(invoiceId, authenticatedUserId(authentication)));
     }
 
-    @GetMapping("/vnpay-return")
-    public RedirectView vnpayReturn(@RequestParam Map<String, String> params) {
-        return new RedirectView(paymentFacade.handleRedirectCallback(PaymentProvider.VNPAY, params));
-    }
-
-    @PostMapping("/momo-ipn")
-    public ResponseEntity<PaymentVerifyResponse> momoIpn(@RequestBody Map<String, Object> body) {
-        return ResponseEntity.ok(paymentFacade.handleWebhook(PaymentProvider.MOMO, body));
-    }
-
     @PostMapping("/payos-webhook")
     public ResponseEntity<PaymentVerifyResponse> payosWebhook(@RequestBody Map<String, Object> body) {
-        return ResponseEntity.ok(paymentFacade.handleWebhook(PaymentProvider.PAYOS, body));
-    }
-
-    @PostMapping("/zalopay-callback")
-    public ResponseEntity<PaymentVerifyResponse> zalopayCallback(@RequestBody Map<String, Object> body) {
-        return ResponseEntity.ok(paymentFacade.handleWebhook(PaymentProvider.ZALOPAY, body));
+        return ResponseEntity.ok(paymentFacade.handlePayosWebhook(body));
     }
 
     private Long authenticatedUserId(Authentication authentication) {
