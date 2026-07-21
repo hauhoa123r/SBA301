@@ -11,7 +11,7 @@ import ProtectedRoute from "../../../app/routes/ProtectedRoute";
 import CourseManagementLayout from '../layouts/CourseManagementLayout'; 
 import CourseDashboardPage from '../pages/management/CourseDashboardPage';
 import ManageCoursesPage from '../pages/management/ManageCoursesPage';
-import StudentReviewsPage from '../pages/management/StudentReviewsPage';
+
 import CreateCoursePage from '../pages/management/CreateCoursePage';
 import EditCoursePage from '../pages/management/EditCoursePage';
 import CurriculumDesignPage from '../pages/management/CurriculumDesignPage';
@@ -79,7 +79,7 @@ export const managementCourseRoutes = [
             { path: 'quizzes', element: <QuizDashboardPage /> },
             { path: 'quizzes/create', element: <QuizBuilderPage /> },
             { path: 'quizzes/edit/:quizId', element: <QuizBuilderPage /> },
-            { path: 'reviews', element: <StudentReviewsPage /> },
+
         ]
     }
 ];

@@ -55,7 +55,7 @@ const courseManagementService = {
   // ─── Dashboard ──────────────────────────────────────────────────────────────
   getDashboardStats: async () => {
     try {
-      const response = await axiosInstance.get('/dashboard/stats');
+      const response = await axiosInstance.get(`${API_COURSES}/dashboard/stats`);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Error loading statistics', { cause: error });

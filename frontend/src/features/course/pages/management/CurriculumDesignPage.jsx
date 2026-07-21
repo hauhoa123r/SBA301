@@ -7,7 +7,7 @@ import ChapterNode from '@/features/course/components/management/curriculum-buil
 
 import ChapterModal from '@/features/course/components/management/curriculum-builder/modals/ChapterModal';
 import LessonModal from '@/features/course/components/management/curriculum-builder/modals/LessonModal';
-import ConfirmDeleteModal from '@/features/course/components/management/curriculum-builder/modals/ConfirmDeleteModal';
+import ConfirmDeleteModal from '@/features/course/components/management/common/ConfirmDeleteModal';
 import QuizSelectionModal from '@/features/course/components/management/curriculum-builder/modals/QuizSelectionModal';
 
 const enrichLesson = (ls) => ({
