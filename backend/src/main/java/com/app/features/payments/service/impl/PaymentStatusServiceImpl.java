@@ -7,12 +7,12 @@ import com.app.features.model.InvoiceEntity;
 import com.app.features.model.PaymentEntity;
 import com.app.features.model.enums.InvoiceStatus;
 import com.app.features.model.enums.PaymentProvider;
+import com.app.features.payments.dto.PayOSPaymentStatus;
 import com.app.features.payments.dto.PaymentSyncResponse;
 import com.app.features.payments.dto.PaymentVerifyResponse;
-import com.app.features.payments.gateway.PaymentGatewayStatus;
-import com.app.features.payments.gateway.PaymentGatewayFactory;
 import com.app.features.payments.repository.PaymentRepository;
 import com.app.features.payments.service.PaymentCallbackService;
+import com.app.features.payments.service.PayOSService;
 import com.app.features.payments.service.PaymentStatusService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ import java.util.Map;
 @Slf4j
 public class PaymentStatusServiceImpl implements PaymentStatusService {
     private final PaymentRepository paymentRepository;
-    private final PaymentGatewayFactory paymentGatewayFactory;
+    private final PayOSService payOSService;
     private final PaymentCallbackService paymentCallbackService;
 
     @Override
@@ -47,8 +47,7 @@ public class PaymentStatusServiceImpl implements PaymentStatusService {
             throw new BadRequestException("Payment status sync is only supported for PAYOS");
         }
 
-        PaymentGatewayStatus gatewayStatus = paymentGatewayFactory.getGateway(payment.getProvider())
-                .getPaymentStatus(payment.getTransactionId());
+        PayOSPaymentStatus gatewayStatus = payOSService.getPaymentStatus(payment.getTransactionId());
         validateGatewayStatus(payment, gatewayStatus);
 
         if (gatewayStatus.paid()) {
@@ -71,7 +70,7 @@ public class PaymentStatusServiceImpl implements PaymentStatusService {
         return response(payment, gatewayStatus.status(), false, gatewayStatus.terminal(), message);
     }
 
-    private void validateGatewayStatus(PaymentEntity payment, PaymentGatewayStatus gatewayStatus) {
+    private void validateGatewayStatus(PaymentEntity payment, PayOSPaymentStatus gatewayStatus) {
         if (!payment.getTransactionId().equals(gatewayStatus.transactionId())) {
             throw new BadRequestException("payOS order code does not match this payment");
         }

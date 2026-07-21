@@ -36,36 +36,13 @@ export const buildLearningActivities = (course) => {
     };
 };
 
-export const getChapterStats = ({ course, completedLessons, passedQuizzes, submittedAssignments }) => {
+export const getChapterStats = ({ course, completedLessons }) => {
     if (!course || !course.chapters) return {};
     return course.chapters.reduce((stats, chapter) => {
         const lessons = chapter.lessons || [];
-        const assignmentBase = (chapter.assignment && submittedAssignments.has(chapter.assignment.id)) ? 1 : 0;
-        
-        const done = lessons.reduce((sum, lesson) => {
-            const lessonDone = completedLessons.has(lesson.id) ? 1 : 0;
-            const quizDone = (lesson.quiz && passedQuizzes.has(lesson.quiz.id)) ? 1 : 0;
-            return sum + lessonDone + quizDone;
-        }, assignmentBase);
+        const done = lessons.filter((lesson) => completedLessons.has(lesson.id)).length;
 
-        const totalQuizCount = lessons.filter(l => l.quiz).length;
-        const totalAssignmentCount = chapter.assignment ? 1 : 0;
-
-        stats[chapter.id] = { done, total: lessons.length + totalQuizCount + totalAssignmentCount };
+        stats[chapter.id] = { done, total: lessons.length };
         return stats;
     }, {});
-};
-
-export const getCompletedChapters = ({ course, completedLessons, passedQuizzes, submittedAssignments }) => {
-    if (!course || !course.chapters) return [];
-    return course.chapters.filter((chapter) => {
-        const lessons = chapter.lessons || [];
-        const lessonDone = lessons.every((lesson) => {
-            const lessonCompleted = completedLessons.has(lesson.id);
-            const quizCompleted = !lesson.quiz || passedQuizzes.has(lesson.quiz.id);
-            return lessonCompleted && quizCompleted;
-        });
-        const assignmentCompleted = !chapter.assignment || submittedAssignments.has(chapter.assignment.id);
-        return lessonDone && assignmentCompleted;
-    });
 };

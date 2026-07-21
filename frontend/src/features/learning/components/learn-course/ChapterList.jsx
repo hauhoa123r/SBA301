@@ -1,16 +1,16 @@
 import { ChevronRight, Lock } from "lucide-react";
 import ProgressBar from "./ProgressBar";
 
-export default function ChapterList({ course, activeChapter, chapterStats, onLessonSelect }) {
+export default function ChapterList({ course, activeChapter, chapterStats, completedChapterIds, onLessonSelect }) {
     return (
         <section className="mt-8">
             <h2 className="mb-4 text-base font-bold text-brand-learningLight">Danh sách chương học</h2>
             <div className="space-y-4">
                 {course.chapters.map((chapter) => {
                     const stats = chapterStats[chapter.id];
-                    const percent = Math.round((stats.done / stats.total) * 100);
+                    const percent = stats.total ? Math.round((stats.done / stats.total) * 100) : 0;
                     const previousChapter = course.chapters[chapter.order_index - 2];
-                    const locked = chapter.order_index > 1 && chapterStats[previousChapter.id].done < previousChapter.lessons.length * 2 + 1;
+                    const locked = chapter.order_index > 1 && !completedChapterIds.has(previousChapter.id);
 
                     return (
                         <button

@@ -17,7 +17,7 @@ const INITIAL_REFUNDS = [
         learner: "Nguyen Minh",
         course: "Full-Stack Web Dev with React & Node.js",
         amount: 1290000,
-        method: "VNPay",
+        method: "payOS",
         status: "PENDING",
         requestedAt: "2026-06-18",
         reason: "Duplicate payment was captured during checkout.",

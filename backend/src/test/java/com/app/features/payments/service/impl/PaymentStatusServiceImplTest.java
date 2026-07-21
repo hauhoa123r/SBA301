@@ -8,12 +8,11 @@ import com.app.features.model.UserEntity;
 import com.app.features.model.enums.InvoiceStatus;
 import com.app.features.model.enums.PaymentProvider;
 import com.app.features.model.enums.PaymentStatus;
+import com.app.features.payments.dto.PayOSPaymentStatus;
 import com.app.features.payments.dto.PaymentSyncResponse;
-import com.app.features.payments.gateway.PaymentGateway;
-import com.app.features.payments.gateway.PaymentGatewayFactory;
-import com.app.features.payments.gateway.PaymentGatewayStatus;
 import com.app.features.payments.repository.PaymentRepository;
 import com.app.features.payments.service.PaymentCallbackService;
+import com.app.features.payments.service.PayOSService;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -37,12 +36,11 @@ class PaymentStatusServiceImplTest {
     @Test
     void paidPayosStatusCompletesOwnedInvoice() {
         PaymentRepository paymentRepository = mock(PaymentRepository.class);
-        PaymentGatewayFactory gatewayFactory = mock(PaymentGatewayFactory.class);
+        PayOSService payOSService = mock(PayOSService.class);
         PaymentCallbackService callbackService = mock(PaymentCallbackService.class);
-        PaymentStatusServiceImpl service = new PaymentStatusServiceImpl(paymentRepository, gatewayFactory, callbackService);
+        PaymentStatusServiceImpl service = new PaymentStatusServiceImpl(paymentRepository, payOSService, callbackService);
         PaymentEntity payment = payment(7L);
-        PaymentGateway gateway = mock(PaymentGateway.class);
-        PaymentGatewayStatus gatewayStatus = new PaymentGatewayStatus(
+        PayOSPaymentStatus gatewayStatus = new PayOSPaymentStatus(
                 payment.getTransactionId(),
                 "PAID",
                 payment.getAmount(),
@@ -51,8 +49,7 @@ class PaymentStatusServiceImplTest {
         );
 
         when(paymentRepository.findFirstByInvoice_IdOrderByIdDesc(8L)).thenReturn(Optional.of(payment));
-        when(gatewayFactory.getGateway(PaymentProvider.PAYOS)).thenReturn(gateway);
-        when(gateway.getPaymentStatus(payment.getTransactionId())).thenReturn(gatewayStatus);
+        when(payOSService.getPaymentStatus(payment.getTransactionId())).thenReturn(gatewayStatus);
         when(callbackService.applyVerifiedResult(eq(PaymentProvider.PAYOS), any(), anyMap()))
                 .thenAnswer(invocation -> {
                     payment.getInvoice().setStatus(InvoiceStatus.PAID);
@@ -72,15 +69,13 @@ class PaymentStatusServiceImplTest {
     @Test
     void pendingPayosStatusDoesNotCompleteInvoice() {
         PaymentRepository paymentRepository = mock(PaymentRepository.class);
-        PaymentGatewayFactory gatewayFactory = mock(PaymentGatewayFactory.class);
+        PayOSService payOSService = mock(PayOSService.class);
         PaymentCallbackService callbackService = mock(PaymentCallbackService.class);
-        PaymentStatusServiceImpl service = new PaymentStatusServiceImpl(paymentRepository, gatewayFactory, callbackService);
+        PaymentStatusServiceImpl service = new PaymentStatusServiceImpl(paymentRepository, payOSService, callbackService);
         PaymentEntity payment = payment(7L);
-        PaymentGateway gateway = mock(PaymentGateway.class);
 
         when(paymentRepository.findFirstByInvoice_IdOrderByIdDesc(8L)).thenReturn(Optional.of(payment));
-        when(gatewayFactory.getGateway(PaymentProvider.PAYOS)).thenReturn(gateway);
-        when(gateway.getPaymentStatus(payment.getTransactionId())).thenReturn(new PaymentGatewayStatus(
+        when(payOSService.getPaymentStatus(payment.getTransactionId())).thenReturn(new PayOSPaymentStatus(
                 payment.getTransactionId(),
                 "PENDING",
                 BigDecimal.ZERO,
@@ -99,14 +94,14 @@ class PaymentStatusServiceImplTest {
     @Test
     void userCannotSyncAnotherUsersInvoice() {
         PaymentRepository paymentRepository = mock(PaymentRepository.class);
-        PaymentGatewayFactory gatewayFactory = mock(PaymentGatewayFactory.class);
+        PayOSService payOSService = mock(PayOSService.class);
         PaymentCallbackService callbackService = mock(PaymentCallbackService.class);
-        PaymentStatusServiceImpl service = new PaymentStatusServiceImpl(paymentRepository, gatewayFactory, callbackService);
+        PaymentStatusServiceImpl service = new PaymentStatusServiceImpl(paymentRepository, payOSService, callbackService);
 
         when(paymentRepository.findFirstByInvoice_IdOrderByIdDesc(8L)).thenReturn(Optional.of(payment(7L)));
 
         assertThrows(AccessDeniedException.class, () -> service.syncPayment(8L, 99L));
-        verify(gatewayFactory, never()).getGateway(any());
+        verify(payOSService, never()).getPaymentStatus(any());
     }
 
     private PaymentEntity payment(Long userId) {

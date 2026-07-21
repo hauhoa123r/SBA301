@@ -1,16 +1,16 @@
-package com.app.features.payments.gateway.impl;
+package com.app.features.payments.service.impl;
 
 import com.app.features.model.InvoiceEntity;
 import com.app.features.model.enums.PaymentProvider;
 import com.app.features.payments.dto.PaymentCreateRequest;
 import com.app.features.payments.dto.PaymentCreateResponse;
+import com.app.features.payments.dto.PayOSPaymentStatus;
 import com.app.features.payments.dto.PaymentVerifyResponse;
-import com.app.features.payments.gateway.PaymentGateway;
-import com.app.features.payments.gateway.PaymentGatewayStatus;
+import com.app.features.payments.service.PayOSService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
@@ -32,9 +32,9 @@ import static com.app.utils.StringUtils.isBlank;
 import static com.app.utils.StringUtils.shorten;
 import static com.app.utils.StringUtils.stringValue;
 
-@Component
+@Service
 @Slf4j
-public class PayOSAdapter implements PaymentGateway {
+public class PayOSServiceImpl implements PayOSService {
     private static final String HMAC_SHA256 = "HmacSHA256";
     private static final long ORDER_CODE_SUFFIX_BASE = 100_000L;
 
@@ -58,7 +58,7 @@ public class PayOSAdapter implements PaymentGateway {
     @Value("${app.frontend.payment-result-url:http://localhost:5173/payment/result}")
     private String paymentResultUrl;
 
-    public PayOSAdapter() {
+    public PayOSServiceImpl() {
         this.restClient = RestClient.create();
     }
 
@@ -116,7 +116,7 @@ public class PayOSAdapter implements PaymentGateway {
         if (isBlank(transferContent)) {
             transferContent = description;
         }
-        return new PaymentCreateResponse(invoice.getId(), invoiceCode, provider(), invoice.getAmount(), checkoutUrl, qrCode,
+        return new PaymentCreateResponse(invoice.getId(), invoiceCode, PaymentProvider.PAYOS, invoice.getAmount(), checkoutUrl, qrCode,
                 paymentLink, paymentLinkId, accountName, accountNumber, transferContent, String.valueOf(orderCode)
         );
     }
@@ -142,7 +142,7 @@ public class PayOSAdapter implements PaymentGateway {
     }
 
     @Override
-    public PaymentGatewayStatus getPaymentStatus(String transactionId) {
+    public PayOSPaymentStatus getPaymentStatus(String transactionId) {
         String resolvedClientId = resolveConfig(clientId, "PAYOS_CLIENT_ID", "CLIENT_ID");
         String resolvedApiKey = resolveConfig(apiKey, "PAYOS_API_KEY", "API_BANK_KEY");
         if (isBlank(resolvedClientId) || isBlank(resolvedApiKey)) {
@@ -162,11 +162,6 @@ public class PayOSAdapter implements PaymentGateway {
             throw new IllegalStateException("Unable to get payOS payment status.", exception);
         }
         return extractPaymentStatus(response);
-    }
-
-    @Override
-    public PaymentProvider provider() {
-        return PaymentProvider.PAYOS;
     }
 
     static long buildOrderCode(long epochSecond, long invoiceId) {
@@ -192,7 +187,7 @@ public class PayOSAdapter implements PaymentGateway {
         return (Map<String, Object>) data;
     }
 
-    PaymentGatewayStatus extractPaymentStatus(Map<String, Object> response) {
+    PayOSPaymentStatus extractPaymentStatus(Map<String, Object> response) {
         Map<String, Object> data = extractData(response);
         String orderCode = stringValue(data.get("orderCode"));
         String status = stringValue(data.get("status"));
@@ -200,7 +195,7 @@ public class PayOSAdapter implements PaymentGateway {
             throw new IllegalStateException("payOS returned an invalid payment status response.");
         }
 
-        return new PaymentGatewayStatus(
+        return new PayOSPaymentStatus(
                 orderCode,
                 status,
                 decimalValue(data.get("amountPaid")),
