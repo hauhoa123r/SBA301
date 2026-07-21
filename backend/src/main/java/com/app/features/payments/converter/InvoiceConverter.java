@@ -3,9 +3,8 @@ package com.app.features.payments.converter;
 import com.app.exception.BadRequestException;
 import com.app.features.coupons.repository.ICouponRepository;
 import com.app.features.model.CouponEntity;
+import com.app.features.model.CourseEntity;
 import com.app.features.model.InvoiceEntity;
-import com.app.features.model.PlanEntity;
-import com.app.features.model.SubscriptionEntity;
 import com.app.features.model.UserEntity;
 import com.app.features.model.enums.DiscountType;
 import com.app.features.model.enums.InvoiceStatus;
@@ -26,24 +25,21 @@ public class InvoiceConverter {
         this.couponRepository = couponRepository;
     }
 
-    public InvoiceEntity toPendingInvoice(UserEntity user, PlanEntity plan) {
+    public InvoiceEntity toPendingInvoice(UserEntity user, CourseEntity course) {
         InvoiceEntity source = new InvoiceEntity();
-        source.setOriginalAmount(plan.getPrice());
+        source.setOriginalAmount(course.getPrice());
         source.setDiscountAmount(BigDecimal.ZERO);
-        source.setAmount(plan.getPrice());
+        source.setAmount(course.getPrice());
         source.setStatus(InvoiceStatus.PENDING);
 
         InvoiceEntity invoice = modelMapper.map(source, InvoiceEntity.class);
         invoice.setUser(user);
+        invoice.setCourse(course);
         return invoice;
     }
 
     public void applyPaymentResult(InvoiceEntity invoice, boolean success) {
         invoice.setStatus(success ? InvoiceStatus.PAID : InvoiceStatus.FAILED);
-    }
-
-    public void attachSubscription(InvoiceEntity invoice, SubscriptionEntity subscription) {
-        invoice.setSubscription(subscription);
     }
 
     public void applyCoupon(InvoiceEntity invoice, String couponCode) {

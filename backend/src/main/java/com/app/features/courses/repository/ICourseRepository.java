@@ -18,7 +18,7 @@ public interface ICourseRepository extends JpaRepository<CourseEntity,Long> {
     List<CourseEntity> findAll();
 
     @Override
-    @EntityGraph(attributePaths = {"teacher", "category", "plans", "courseEnrollments", "chapterEntities"})
+    @EntityGraph(attributePaths = {"teacher", "category", "courseEnrollments", "chapterEntities"})
     Optional<CourseEntity> findById(Long id);
 
     @Query("select c from CourseEntity c " +

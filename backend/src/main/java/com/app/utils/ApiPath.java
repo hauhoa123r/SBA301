@@ -24,7 +24,6 @@ public final class ApiPath {
     public static final String API_NOTIFICATIONS = BASE + "/notifications";
     public static final String API_PAYMENTS = BASE + "/payments";
     public static final String API_PERMISSIONS = BASE + "/permissions";
-    public static final String API_PLANS = BASE + "/plans";
     public static final String API_QUESTIONS = BASE + "/questions";
     public static final String API_QUIZ_ATTEMPTS = BASE + "/quiz-attempts";
     public static final String API_QUIZZES = BASE + "/quizzes";
@@ -34,13 +33,11 @@ public final class ApiPath {
     public static final String API_ROLE_PERMISSIONS = BASE + "/role-permissions";
     public static final String API_ROLES = BASE + "/roles";
     public static final String API_STUDENT_ANSWERS = BASE + "/student-answers";
-    public static final String API_SUBSCRIPTIONS = BASE + "/subscriptions";
     public static final String API_TAGS = BASE + "/tags";
     public static final String API_USERS = BASE + "/users";
     public static final String API_VERIFICATION_TOKENS = BASE + "/verification-tokens";
     public static final String API_COURSE_CHAPTERS = API_COURSES + "/{courseId}/chapters";
     public static final String API_COURSE_ENROLLMENTS_BY_COURSE = API_COURSES + "/{courseId}/enrollments";
-    public static final String API_COURSE_PLANS = API_COURSES + "/{courseId}/plans";
     public static final String API_COURSE_REVIEWS_BY_COURSE = API_COURSES + "/{courseId}/reviews";
     public static final String API_COURSE_TAGS = API_COURSES + "/{courseId}/tags";
     public static final String API_LESSON_ASSIGNMENTS = API_LESSONS + "/{lessonId}/assignments";
@@ -60,7 +57,6 @@ public final class ApiPath {
     public static final String API_USER_REFERRALS = API_USERS + "/{userId}/referrals";
     public static final String API_USER_ROLES = API_USERS + "/{userId}/roles";
     public static final String API_USER_STREAK = API_USERS + "/{userId}/streak";
-    public static final String API_USER_SUBSCRIPTIONS = API_USERS + "/{userId}/subscriptions";
     public static final String API_COURSE_CURRICULUM = API_COURSES + "/{courseId}/curriculum";
 
     private ApiPath() {

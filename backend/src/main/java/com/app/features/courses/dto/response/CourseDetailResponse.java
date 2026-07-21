@@ -34,7 +34,6 @@ public class CourseDetailResponse {
     private String level;
     private List<ChapterResponse> chapters;
     private List<Long> tagIds;
-    private List<Long> planIds;
     private Instant createdAt;
     private Instant updatedAt;
 }

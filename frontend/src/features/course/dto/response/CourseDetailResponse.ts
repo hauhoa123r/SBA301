@@ -24,7 +24,7 @@ export interface CourseDetailResponse {
     description?: string;
     thumbnailUrl?: string;
     status?: string;
-    price?: number;
+    price: number;
     students?: number;
     totalLessons?: number;
     totalDurationSeconds?: number;

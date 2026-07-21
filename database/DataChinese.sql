@@ -52,13 +52,6 @@ INSERT INTO tags (id, name, slug) VALUES
 (7, 'Viet chu Han', 'viet-chu-han'),
 (8, 'Tu vung cong xuong', 'tu-vung-cong-xuong');
 
--- 5. plans
-INSERT INTO plans (id, name, duration_days, price, created_at) VALUES
-(1, 'Basic 1 thang', 30, 199000.00, '2026-01-01 08:00:00'),
-(2, 'Standard 3 thang', 90, 499000.00, '2026-01-01 08:00:00'),
-(3, 'Premium 12 thang', 365, 1499000.00, '2026-01-01 08:00:00'),
-(4, 'Mini course 5K', 7, 5000.00, '2026-07-01 08:00:00');
-
 -- 6. users
 INSERT INTO users (id, full_name, email, password_hash, status, total_learning_points, referral_code, created_at, updated_at) VALUES
 (1, 'Nguyen Minh Quan', 'admin@chineselearning.vn', '$2a$10$gkT/LMKGX1C.qF7WtYYUPO1QLh.APSzK2TRRpKygBWbk6ku5IRvu6', 'ACTIVE', 0, 'REFADMIN001', '2026-01-02 08:00:00', '2026-06-20 08:00:00'),
@@ -98,21 +91,16 @@ INSERT INTO verification_tokens (id, token, token_type, user_id, expiry_date, is
 (5, 'VERIFY-AN-2026-0005', 'EMAIL_VERIFY', 14, '2026-07-20 23:59:59', TRUE, '2026-02-08 09:15:00');
 
 -- 10. courses
-INSERT INTO courses (id, teacher_id, category_id, title, description, thumbnail_url, status, created_at, updated_at) VALUES
-(1, 4, 1, 'Tiếng Trung giao tiếp cho Nhân viên Sales (Cơ bản)', 'Hoc chao hoi, gioi thieu ban than, hoi duong va cac mau cau hang ngay.', 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80', 'PUBLISHED', '2026-02-10 08:00:00', '2026-06-10 08:00:00'),
-(2, 4, 2, 'HSK 1 tu con so 0', 'Lo trinh HSK 1 voi 150 tu vung, ngu phap nen tang va de luyen tap.', 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1200&q=80', 'PUBLISHED', '2026-02-12 08:00:00', '2026-06-11 08:00:00'),
-(3, 5, 2, 'HSK 2 cap toc', 'On tap tu vung HSK 2, nghe hieu va doc hieu theo cau truc de thi.', 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80', 'PUBLISHED', '2026-02-14 08:00:00', '2026-06-12 08:00:00'),
-(4, 5, 4, 'Tieng Trung cho cong nhan nha may', 'Tu vung an toan lao dong, ca kip, may moc va trao doi voi quan ly Trung Quoc.', 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1200&q=80', 'PUBLISHED', '2026-02-16 08:00:00', '2026-06-13 08:00:00'),
-(5, 4, 3, 'Tieng Trung thuong mai ung dung', 'Hoi hop, email, bao gia, dam phan va cham soc khach hang bang tieng Trung.', 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80', 'PENDING', '2026-03-01 08:00:00', '2026-06-14 08:00:00'),
-(6, 6, 6, 'Phat am Pinyin chuan ngay tu dau', 'Luyen thanh mau, van mau, thanh dieu va sua loi phat am pho bien.', 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80', 'DRAFT', '2026-03-03 08:00:00', '2026-06-15 08:00:00'),
-(7, 5, 5, 'Ngu phap tieng Trung cho nguoi moi', 'Giai thich cac mau cau co ban voi vi du thuc te trong giao tiep.', 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1200&q=80', 'HIDDEN', '2026-03-05 08:00:00', '2026-06-16 08:00:00'),
-(8, 4, 6, 'Nghe noi tieng Trung moi ngay', 'Bai nghe ngan theo chu de va bai tap phan xa hoi thoai.', 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80', 'PUBLISHED', '2026-03-07 08:00:00', '2026-06-17 08:00:00'),
-(9, 4, 2, 'Mini HSK 1 5K', 'Khoa hoc mini gia 5.000 VND de test thanh toan PayOS va on nhanh Pinyin, chao hoi, so dem HSK 1.', 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1200&q=80', 'PUBLISHED', '2026-07-01 08:00:00', '2026-07-01 08:00:00');
-
--- 11. course_plan_access
-INSERT INTO course_plan_access (course_id, plan_id) VALUES
-(1, 1), (1, 2), (1, 3), (2, 1), (2, 2), (2, 3), (3, 2), (3, 3), (4, 2), (4, 3),
-(5, 3), (6, 1), (6, 2), (7, 1), (7, 2), (8, 1), (8, 2), (8, 3), (9, 4);
+INSERT INTO courses (id, teacher_id, category_id, title, description, price, thumbnail_url, status, created_at, updated_at) VALUES
+(1, 4, 1, 'Tiếng Trung giao tiếp cho Nhân viên Sales (Cơ bản)', 'Hoc chao hoi, gioi thieu ban than, hoi duong va cac mau cau hang ngay.', 199000.00, 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80', 'PUBLISHED', '2026-02-10 08:00:00', '2026-06-10 08:00:00'),
+(2, 4, 2, 'HSK 1 tu con so 0', 'Lo trinh HSK 1 voi 150 tu vung, ngu phap nen tang va de luyen tap.', 199000.00, 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1200&q=80', 'PUBLISHED', '2026-02-12 08:00:00', '2026-06-11 08:00:00'),
+(3, 5, 2, 'HSK 2 cap toc', 'On tap tu vung HSK 2, nghe hieu va doc hieu theo cau truc de thi.', 499000.00, 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80', 'PUBLISHED', '2026-02-14 08:00:00', '2026-06-12 08:00:00'),
+(4, 5, 4, 'Tieng Trung cho cong nhan nha may', 'Tu vung an toan lao dong, ca kip, may moc va trao doi voi quan ly Trung Quoc.', 499000.00, 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1200&q=80', 'PUBLISHED', '2026-02-16 08:00:00', '2026-06-13 08:00:00'),
+(5, 4, 3, 'Tieng Trung thuong mai ung dung', 'Hoi hop, email, bao gia, dam phan va cham soc khach hang bang tieng Trung.', 1499000.00, 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80', 'PENDING', '2026-03-01 08:00:00', '2026-06-14 08:00:00'),
+(6, 6, 6, 'Phat am Pinyin chuan ngay tu dau', 'Luyen thanh mau, van mau, thanh dieu va sua loi phat am pho bien.', 199000.00, 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80', 'DRAFT', '2026-03-03 08:00:00', '2026-06-15 08:00:00'),
+(7, 5, 5, 'Ngu phap tieng Trung cho nguoi moi', 'Giai thich cac mau cau co ban voi vi du thuc te trong giao tiep.', 199000.00, 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1200&q=80', 'HIDDEN', '2026-03-05 08:00:00', '2026-06-16 08:00:00'),
+(8, 4, 6, 'Nghe noi tieng Trung moi ngay', 'Bai nghe ngan theo chu de va bai tap phan xa hoi thoai.', 199000.00, 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80', 'PUBLISHED', '2026-03-07 08:00:00', '2026-06-17 08:00:00'),
+(9, 4, 2, 'Mini HSK 1 5K', 'Khoa hoc mini gia 5.000 VND de test thanh toan PayOS va on nhanh Pinyin, chao hoi, so dem HSK 1.', 5000.00, 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1200&q=80', 'PUBLISHED', '2026-07-01 08:00:00', '2026-07-01 08:00:00');
 
 -- 12. course_tags
 INSERT INTO course_tags (course_id, tag_id) VALUES
@@ -396,41 +384,31 @@ INSERT INTO coupons (id, code, discount_type, discount_value, max_uses, used_cou
 (2, 'HSK50K', 'FIXED_AMOUNT', 50000.00, 200, 76, '2026-02-01 00:00:00', '2026-08-31 23:59:59', 2, '2026-02-01 08:00:00'),
 (3, 'SUMMER30', 'PERCENTAGE', 30.00, 300, 45, '2026-06-01 00:00:00', '2026-07-31 23:59:59', 1, '2026-05-20 08:00:00');
 
--- 30. subscriptions
-INSERT INTO subscriptions (id, user_id, plan_id, start_date, end_date, status, created_at) VALUES
-(1, 7, 3, '2026-03-01', '2027-02-28', 'ACTIVE', '2026-03-01 07:50:00'),
-(2, 8, 2, '2026-03-03', '2026-06-01', 'EXPIRED', '2026-03-03 07:50:00'),
-(3, 9, 2, '2026-03-10', '2026-06-08', 'EXPIRED', '2026-03-10 07:50:00'),
-(4, 10, 1, '2026-03-12', '2026-04-10', 'CANCELLED', '2026-03-12 07:50:00'),
-(5, 11, 3, '2026-03-15', '2027-03-14', 'ACTIVE', '2026-03-15 07:50:00'),
-(6, 12, 2, '2026-04-01', '2026-06-29', 'ACTIVE', '2026-04-01 07:50:00'),
-(7, 14, 1, '2026-04-10', '2026-05-09', 'EXPIRED', '2026-04-10 07:50:00');
-
 -- 31. invoices
-INSERT INTO invoices (id, user_id, subscription_id, coupon_id, original_amount, discount_amount, amount, status, created_at, updated_at) VALUES
-(1, 7, 1, 1, 1499000.00, 299800.00, 1199200.00, 'PAID', '2026-03-01 07:50:00', '2026-03-01 07:55:00'),
-(2, 8, 2, 2, 499000.00, 50000.00, 449000.00, 'PAID', '2026-03-03 07:50:00', '2026-03-03 07:55:00'),
-(3, 9, 3, NULL, 499000.00, 0.00, 499000.00, 'FAILED', '2026-03-10 07:50:00', '2026-03-10 07:55:00'),
-(4, 10, 4, NULL, 199000.00, 0.00, 199000.00, 'REFUNDED', '2026-03-12 07:50:00', '2026-03-13 10:00:00'),
+INSERT INTO invoices (id, user_id, course_id, coupon_id, original_amount, discount_amount, amount, status, created_at, updated_at) VALUES
+(1, 7, 1, 1, 199000.00, 39800.00, 159200.00, 'PAID', '2026-03-01 07:50:00', '2026-03-01 07:55:00'),
+(2, 8, 3, 2, 499000.00, 50000.00, 449000.00, 'PAID', '2026-03-03 07:50:00', '2026-03-03 07:55:00'),
+(3, 9, 4, NULL, 499000.00, 0.00, 499000.00, 'FAILED', '2026-03-10 07:50:00', '2026-03-10 07:55:00'),
+(4, 10, 2, NULL, 199000.00, 0.00, 199000.00, 'REFUNDED', '2026-03-12 07:50:00', '2026-03-13 10:00:00'),
 (5, 11, 5, 3, 1499000.00, 449700.00, 1049300.00, 'PAID', '2026-03-15 07:50:00', '2026-03-15 07:55:00'),
-(6, 12, 6, 2, 499000.00, 50000.00, 449000.00, 'PENDING', '2026-04-01 07:50:00', '2026-04-01 07:50:00'),
-(7, 14, 7, NULL, 199000.00, 0.00, 199000.00, 'PAID', '2026-04-10 07:50:00', '2026-04-10 07:55:00');
+(6, 12, 3, 2, 499000.00, 50000.00, 449000.00, 'PENDING', '2026-04-01 07:50:00', '2026-04-01 07:50:00'),
+(7, 14, 8, NULL, 199000.00, 0.00, 199000.00, 'PAID', '2026-04-10 07:50:00', '2026-04-10 07:55:00');
 
 -- 32. payments
 INSERT INTO payments (id, invoice_id, provider, transaction_id, amount, status, raw_response, created_at) VALUES
-(1, 1, 'VNPAY', 'VNPAY-20260301-0001', 1199200.00, 'SUCCESS', JSON_OBJECT('bankCode', 'NCB', 'responseCode', '00', 'message', 'Approved'), '2026-03-01 07:55:00'),
-(2, 2, 'MOMO', 'MOMO-20260303-0002', 449000.00, 'SUCCESS', JSON_OBJECT('partnerCode', 'MOMO', 'resultCode', 0, 'message', 'Successful'), '2026-03-03 07:55:00'),
-(3, 3, 'STRIPE', 'STRIPE-20260310-0003', 499000.00, 'FAILED', JSON_OBJECT('chargeId', 'ch_hsk2_failed_0003', 'failureCode', 'card_declined'), '2026-03-10 07:55:00'),
-(4, 4, 'VNPAY', 'VNPAY-20260312-0004', 199000.00, 'SUCCESS', JSON_OBJECT('bankCode', 'VCB', 'responseCode', '00', 'message', 'Approved'), '2026-03-12 07:55:00'),
-(5, 5, 'STRIPE', 'STRIPE-20260315-0005', 1049300.00, 'SUCCESS', JSON_OBJECT('chargeId', 'ch_premium_0005', 'currency', 'vnd', 'paid', true), '2026-03-15 07:55:00'),
-(6, 7, 'MOMO', 'MOMO-20260410-0007', 199000.00, 'SUCCESS', JSON_OBJECT('partnerCode', 'MOMO', 'resultCode', 0, 'message', 'Successful'), '2026-04-10 07:55:00');
+(1, 1, 'VNPAY', 'VNPAY-20260301-0001', 159200.00, 'SUCCESS', JSON_OBJECT('courseId', 1, 'bankCode', 'NCB', 'responseCode', '00', 'message', 'Approved'), '2026-03-01 07:55:00'),
+(2, 2, 'MOMO', 'MOMO-20260303-0002', 449000.00, 'SUCCESS', JSON_OBJECT('courseId', 3, 'partnerCode', 'MOMO', 'resultCode', 0, 'message', 'Successful'), '2026-03-03 07:55:00'),
+(3, 3, 'STRIPE', 'STRIPE-20260310-0003', 499000.00, 'FAILED', JSON_OBJECT('courseId', 4, 'chargeId', 'ch_course_failed_0003', 'failureCode', 'card_declined'), '2026-03-10 07:55:00'),
+(4, 4, 'VNPAY', 'VNPAY-20260312-0004', 199000.00, 'SUCCESS', JSON_OBJECT('courseId', 2, 'bankCode', 'VCB', 'responseCode', '00', 'message', 'Approved'), '2026-03-12 07:55:00'),
+(5, 5, 'STRIPE', 'STRIPE-20260315-0005', 1049300.00, 'SUCCESS', JSON_OBJECT('courseId', 5, 'chargeId', 'ch_course_0005', 'currency', 'vnd', 'paid', true), '2026-03-15 07:55:00'),
+(6, 7, 'MOMO', 'MOMO-20260410-0007', 199000.00, 'SUCCESS', JSON_OBJECT('courseId', 8, 'partnerCode', 'MOMO', 'resultCode', 0, 'message', 'Successful'), '2026-04-10 07:55:00');
 
 -- 33. refunds
 INSERT INTO refunds (id, payment_id, user_id, amount, reason, status, processed_by, created_at, processed_at) VALUES
 (1, 4, 10, 199000.00, 'Hoc vien yeu cau hoan tien do trung lich lam viec.', 'PROCESSED', 2, '2026-03-13 09:00:00', '2026-03-13 10:00:00'),
-(2, 2, 8, 449000.00, 'Yeu cau hoan tien sau khi goi da het han khong du dieu kien.', 'REJECTED', 3, '2026-06-02 09:00:00', '2026-06-02 11:00:00'),
+(2, 2, 8, 449000.00, 'Yeu cau hoan tien khong dap ung dieu kien chinh sach.', 'REJECTED', 3, '2026-06-02 09:00:00', '2026-06-02 11:00:00'),
 (3, 5, 11, 300000.00, 'Loi truy cap tam thoi trong ngay khai giang.', 'APPROVED', 1, '2026-03-16 09:00:00', '2026-03-16 11:00:00'),
-(4, 1, 7, 200000.00, 'Can xem xet uu dai bo sung cho hoc vien gioi thieu ban be.', 'PENDING', NULL, '2026-06-20 09:00:00', NULL);
+(4, 1, 7, 100000.00, 'Can xem xet uu dai bo sung cho hoc vien gioi thieu ban be.', 'PENDING', NULL, '2026-06-20 09:00:00', NULL);
 
 -- 34. audit_logs
 INSERT INTO audit_logs (id, user_id, action, method, endpoint, before_data, after_data, ip_address, user_agent, created_at) VALUES
@@ -443,10 +421,10 @@ INSERT INTO audit_logs (id, user_id, action, method, endpoint, before_data, afte
 -- 35. notifications
 INSERT INTO notifications (id, user_id, type, title, content, is_read, created_at) VALUES
 (1, 7, 'COURSE', 'Chuc mung hoan thanh khoa hoc', 'Ban da hoan thanh khoa Tieng Trung giao tiep co ban va nhan chung chi.', TRUE, '2026-04-01 18:05:00'),
-(2, 8, 'PAYMENT', 'Thanh toan thanh cong', 'Goi Standard 3 thang cua ban da duoc kich hoat.', TRUE, '2026-03-03 08:00:00'),
+(2, 8, 'PAYMENT', 'Thanh toan thanh cong', 'Quyen truy cap khoa HSK 2 cap toc cua ban da duoc kich hoat.', TRUE, '2026-03-03 08:00:00'),
 (3, 9, 'QUIZ', 'Diem quiz rat tot', 'Ban dat 100 diem trong bai Dien tu vung so dem.', FALSE, '2026-03-12 09:10:00'),
 (4, 12, 'ASSIGNMENT', 'Bai nop can chinh sua', 'Giang vien da yeu cau bo sung noi dung cho bai Bao cao su co nha may.', FALSE, '2026-04-06 09:05:00'),
-(5, 14, 'SYSTEM', 'Goi hoc da het han', 'Goi Basic cua ban da het han, vui long gia han de hoc tiep.', FALSE, '2026-05-09 08:00:00');
+(5, 14, 'SYSTEM', 'Cap nhat khoa hoc', 'Khoa Nghe noi tieng Trung moi ngay vua co noi dung moi.', FALSE, '2026-05-09 08:00:00');
 
 -- 36. reports
 INSERT INTO reports (id, reporter_id, target_type, target_id, reason, status, resolved_by, created_at, resolved_at) VALUES

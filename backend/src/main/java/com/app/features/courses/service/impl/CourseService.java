@@ -12,7 +12,6 @@ import com.app.features.courses.repository.projection.CourseLessonStats;
 import com.app.features.courses.service.ICourseService;
 import com.app.features.model.*;
 import com.app.features.model.enums.CourseStatus;
-import com.app.features.plans.service.IPlanService;
 import com.app.features.tags.service.ITagService;
 import com.app.features.users.repository.IUserRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +31,6 @@ public class CourseService implements ICourseService {
     private final ICourseRepository courseRepository;
     private final CourseResponseConverter courseResponseConverter;
     private final ITagService tagService;
-    private final IPlanService planService;
     private final ICategoryService categoryService;
     private final IUserRepository userRepository;
 
@@ -116,6 +114,7 @@ public class CourseService implements ICourseService {
         course.setTeacher(teacher);
         course.setCategory(category);
         course.setDescription(request.getDescription());
+        course.setPrice(request.getPrice());
         course.setThumbnailUrl(request.getThumbnailUrl());
         course.setStatus(CourseStatus.DRAFT);
 
@@ -124,16 +123,6 @@ public class CourseService implements ICourseService {
             for(TagEntity tag :  tags) {
                 course.addTag(tag);
             }
-        }
-
-        if (request.getPlanIds() != null && !request.getPlanIds().isEmpty()) {
-            List<PlanEntity> plans = planService.findAllByIds(request.getPlanIds());
-            for(PlanEntity plan : plans) {
-                course.addPlan(plan);
-            }
-        } else{
-            log.warn("Course creation rejected because no plan was selected, teacherId={}", teacherId);
-            throw new BadRequestException("Please choose at least one plan.");
         }
 
         Long courseId = courseRepository.save(course).getId();
@@ -163,6 +152,7 @@ public class CourseService implements ICourseService {
         course.setTitle(request.getTitle());
         course.setCategory(category);
         course.setDescription(request.getDescription());
+        course.setPrice(request.getPrice());
         course.setThumbnailUrl(request.getThumbnailUrl());
         course.setUpdatedAt(new Date().toInstant());
 
@@ -172,22 +162,6 @@ public class CourseService implements ICourseService {
             for (TagEntity tag : tags) {
                 course.addTag(tag);
             }
-        }
-
-        for (PlanEntity plan : course.getPlans()) {
-            if (plan.getCourses() != null) {
-                plan.getCourses().remove(course);
-            }
-        }
-        course.getPlans().clear();
-
-        if (request.getPlanIds() != null && !request.getPlanIds().isEmpty()) {
-            List<PlanEntity> plans = planService.findAllByIds(request.getPlanIds());
-            for (PlanEntity plan : plans) {
-                course.addPlan(plan);
-            }
-        } else {
-            throw new BadRequestException("Please choose at least one plan.");
         }
 
         course = courseRepository.save(course);
@@ -215,12 +189,6 @@ public class CourseService implements ICourseService {
             throw new BadRequestException("Cannot delete course because there are students already enrolled in it.");
         }
 
-        for (PlanEntity plan : course.getPlans()) {
-            if (plan.getCourses() != null) {
-                plan.getCourses().remove(course);
-            }
-        }
-        course.getPlans().clear();
         course.getTags().clear();
 
         courseRepository.delete(course);

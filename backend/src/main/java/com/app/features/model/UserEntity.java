@@ -33,8 +33,6 @@ public class UserEntity {
     @Column(name = "created_at", insertable = false, updatable = false)
     private Instant createdAt;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Set<SubscriptionEntity> subscriptions = new LinkedHashSet<>();
     @Size(max = 255)
     @NotNull
     @Column(name = "password_hash", nullable = false)
