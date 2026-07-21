@@ -4,6 +4,7 @@ import com.app.features.model.enums.PaymentProvider;
 import com.app.features.payments.dto.PaymentCreateRequest;
 import com.app.features.payments.dto.PaymentCreateResponse;
 import com.app.features.payments.dto.PaymentVerifyResponse;
+import com.app.features.payments.dto.PaymentSyncResponse;
 import com.app.features.payments.facade.PaymentFacade;
 import com.app.features.payments.service.PaymentService;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +45,11 @@ public class PaymentFacadeImpl implements PaymentFacade {
             return paymentService.handleCallback(provider, stringifyPayosPayload(body));
         }
         return paymentService.handleCallback(provider, stringify(body));
+    }
+
+    @Override
+    public PaymentSyncResponse syncPayment(Long invoiceId, Long userId) {
+        return paymentService.syncPayment(invoiceId, userId);
     }
 
     @SuppressWarnings("unchecked")

@@ -6,19 +6,21 @@ import { NavLink, useNavigate } from "react-router-dom";
 import useAuth from "../../app/provider/useAuth";
 import UserProfileMenu from "./UserProfileMenu";
 import MobileMenu from "./MobileMenu";
+import { logout } from "../../features/auth/service/authService";
 
 export default function HeroHeader() {
     const [openMobile, setOpenMobile] = useState(false);
     const { user, setUser } = useAuth();
     const navigate = useNavigate();
 
-    const handleLogout = () => {
-        localStorage.removeItem("user");
-        localStorage.removeItem("token");
-        localStorage.removeItem("refreshToken");
-        setUser(null);
-        setOpenMobile(false);
-        navigate("/login");
+    const handleLogout = async () => {
+        try {
+            await logout();
+        } finally {
+            setUser(null);
+            setOpenMobile(false);
+            navigate("/login", { replace: true });
+        }
     };
 
     return (

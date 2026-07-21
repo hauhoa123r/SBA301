@@ -11,6 +11,22 @@ export const exchangeOAuthCode = async (code) => {
   return response.data;
 };
 
+export const logout = async () => {
+  let serverLogoutSucceeded = false;
+  try {
+    await api.post(`${API_AUTH}/logout`);
+    serverLogoutSucceeded = true;
+  } catch {
+    // Client credentials must still be removed when the backend is unavailable.
+  } finally {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
+    sessionStorage.removeItem("oauthReturnTo");
+  }
+  return serverLogoutSucceeded;
+};
+
 export const register = async (data) => {
   const response = await api.post(`${API_AUTH}/register`, data);
   return response.data;

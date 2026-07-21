@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ChevronDown, LogOut, Settings } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import useAuth from "../../app/provider/useAuth";
+import { logout } from "../../features/auth/service/authService";
 
 export default function UserProfileMenu({ variant = "pill" }) {
     const [open, setOpen] = useState(false);
@@ -14,13 +15,14 @@ export default function UserProfileMenu({ variant = "pill" }) {
     const avatarInitial = displayName.charAt(0).toUpperCase();
     const isIcon = variant === "icon";
 
-    const handleLogout = () => {
-        localStorage.removeItem("user");
-        localStorage.removeItem("token");
-        localStorage.removeItem("refreshToken");
-        setUser(null);
-        setOpen(false);
-        navigate("/login");
+    const handleLogout = async () => {
+        try {
+            await logout();
+        } finally {
+            setUser(null);
+            setOpen(false);
+            navigate("/login", { replace: true });
+        }
     };
 
     return (

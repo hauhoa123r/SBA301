@@ -123,7 +123,7 @@ export default function PaymentMethodModal({ course, open, couponCode, finalPric
             return;
         }
         if (!hasAnyRole(user, ["STUDENT"])) {
-            navigate("/forbidden");
+            onClose();
             return;
         }
 

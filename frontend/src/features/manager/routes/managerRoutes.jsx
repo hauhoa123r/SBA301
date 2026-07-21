@@ -1,14 +1,18 @@
-import React from "react";
 import { Navigate } from "react-router-dom";
 import ManagerLayout from "../layouts/ManagerLayout";
 import UserManager from "../pages/UserManager";
 import RoleManager from "../pages/RoleManager";
 import UserAccountControl from "../pages/UserAccountControl";
+import ProtectedRoute from "../../../app/routes/ProtectedRoute";
 
 const managerRoutes = [
     {
         path: "/admin",
-        element: <ManagerLayout />,
+        element: (
+            <ProtectedRoute requiredRole="ADMIN">
+                <ManagerLayout />
+            </ProtectedRoute>
+        ),
         children: [
             {
                 index: true,

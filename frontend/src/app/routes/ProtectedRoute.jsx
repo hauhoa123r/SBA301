@@ -1,8 +1,9 @@
-import { Navigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import useAuth from "../provider/useAuth";
-import { hasAnyRole } from "../../shared/utils/roles";
+import { getRoleHomePath, hasRole } from "../../shared/utils/roles";
 
-export default function ProtectedRoute({ allowedRoles = [], children }) {
+export default function ProtectedRoute({ requiredRole, children }) {
     const { user } = useAuth();
     const location = useLocation();
 
@@ -10,9 +11,23 @@ export default function ProtectedRoute({ allowedRoles = [], children }) {
         return <Navigate to="/login" replace state={{ from: location }} />;
     }
 
-    if (!hasAnyRole(user, allowedRoles)) {
-        return <Navigate to="/forbidden" replace />;
+    if (requiredRole && !hasRole(user, requiredRole)) {
+        const historyIndex = window.history.state?.idx;
+        if (typeof historyIndex === "number" && historyIndex > 0) {
+            return <NavigateBack />;
+        }
+        return <Navigate to={getRoleHomePath(user)} replace />;
     }
 
     return children;
+}
+
+function NavigateBack() {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        navigate(-1);
+    }, [navigate]);
+
+    return null;
 }

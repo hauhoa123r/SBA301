@@ -26,3 +26,8 @@ export const createPayment = async ({ courseId, provider, couponCode }) => {
     qrCode: data.qrCode || data.qrCodeUrl,
   };
 };
+
+export const syncPaymentStatus = async (invoiceId) => {
+  const response = await api.post(`${API_PAYMENTS}/invoices/${invoiceId}/sync`);
+  return response.data;
+};

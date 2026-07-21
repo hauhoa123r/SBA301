@@ -39,7 +39,7 @@ public class PaymentConverter {
         return payment;
     }
 
-    public void applyCallback(PaymentEntity payment, PaymentProvider provider, PaymentVerifyResponse verifyResponse, Map<String, String> params
+    public void applyCallback(PaymentEntity payment, PaymentProvider provider, PaymentVerifyResponse verifyResponse, Map<String, ?> params
     ) {
         Map<String, Object> rawResponse = payment.getRawResponse() == null
                 ? new HashMap<>()
