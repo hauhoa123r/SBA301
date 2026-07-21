@@ -1,141 +1,45 @@
 import { ExternalLink, QrCode, X } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { createPayment } from "../../services/api/payment.service";
-import useAuth from "../../../../app/provider/useAuth";
-import { hasAnyRole } from "../../../../shared/utils/roles";
-
-const getPaymentErrorMessage = (err) => {
-    const data = err?.response?.data;
-    if (data?.message) return data.message;
-    if (data?.error && data?.path) return `${data.error}: ${data.path}`;
-    if (err?.message) return err.message;
-    return "Không thể tạo thanh toán. Vui lòng thử lại.";
-};
-
-const formatCurrency = (value) =>
-    new Intl.NumberFormat("vi-VN", {
-        style: "currency",
-        currency: "VND",
-    }).format(Number(value || 0));
-
-const FOCUSABLE_ELEMENTS = [
-    "a[href]",
-    "button:not([disabled])",
-    "input:not([disabled])",
-    "select:not([disabled])",
-    "textarea:not([disabled])",
-    "[tabindex]:not([tabindex='-1'])",
-].join(",");
+import { useEffect, useId, useRef } from "react";
+import useAccessibleDialog from "../../hooks/useAccessibleDialog";
+import useCreateCoursePayment from "../../hooks/useCreateCoursePayment";
+import PaymentSummary from "./PaymentSummary";
 
 export default function PaymentMethodModal({ course, open, couponCode, finalPrice, discountAmount, onClose }) {
-    const navigate = useNavigate();
-    const { user } = useAuth();
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [error, setError] = useState("");
     const dialogRef = useRef(null);
-    const previouslyFocusedRef = useRef(null);
-    const onCloseRef = useRef(onClose);
     const titleId = useId();
     const descriptionId = useId();
+    const { createCoursePayment, isSubmitting, error, clearError } = useCreateCoursePayment();
+
+    useAccessibleDialog({
+        open,
+        onClose,
+        dialogRef,
+    });
 
     useEffect(() => {
-        onCloseRef.current = onClose;
-    }, [onClose]);
-
-    useEffect(() => {
-        if (!open) return undefined;
-
-        previouslyFocusedRef.current = document.activeElement;
-        const previousBodyOverflow = document.body.style.overflow;
-        document.body.style.overflow = "hidden";
-
-        const focusDialogFrame = window.requestAnimationFrame(() => {
-            dialogRef.current?.focus();
-        });
-
-        const handleDialogKeyDown = (event) => {
-            if (event.key === "Escape") {
-                event.preventDefault();
-                onCloseRef.current();
-                return;
-            }
-
-            if (event.key !== "Tab" || !dialogRef.current) return;
-
-            const dialog = dialogRef.current;
-            const focusableElements = Array.from(dialog.querySelectorAll(FOCUSABLE_ELEMENTS));
-
-            if (focusableElements.length === 0) {
-                event.preventDefault();
-                dialog.focus();
-                return;
-            }
-
-            const firstElement = focusableElements[0];
-            const lastElement = focusableElements[focusableElements.length - 1];
-            const activeElement = document.activeElement;
-
-            if (event.shiftKey && (activeElement === firstElement || !dialog.contains(activeElement))) {
-                event.preventDefault();
-                lastElement.focus();
-            } else if (!event.shiftKey && (activeElement === lastElement || !dialog.contains(activeElement))) {
-                event.preventDefault();
-                firstElement.focus();
-            }
-        };
-
-        document.addEventListener("keydown", handleDialogKeyDown);
-
-        return () => {
-            window.cancelAnimationFrame(focusDialogFrame);
-            document.removeEventListener("keydown", handleDialogKeyDown);
-            document.body.style.overflow = previousBodyOverflow;
-
-            const previouslyFocused = previouslyFocusedRef.current;
-            if (previouslyFocused instanceof HTMLElement && document.contains(previouslyFocused)) {
-                previouslyFocused.focus();
-            }
-        };
-    }, [open]);
+        if (open) {
+            clearError();
+        }
+    }, [clearError, open]);
 
     if (!open) return null;
 
-    const handleCreatePayment = async () => {
-        if (!user) {
-            const returnTo = `${window.location.pathname}${window.location.search}`;
-            navigate(`/login?returnTo=${encodeURIComponent(returnTo)}`);
-            return;
-        }
-        if (!hasAnyRole(user, ["STUDENT"])) {
+    const handleBackdropClick = (event) => {
+        if (event.target === event.currentTarget) {
             onClose();
-            return;
-        }
-
-        setIsSubmitting(true);
-        setError("");
-
-        try {
-            const data = await createPayment({
-                courseId: course.id,
-                couponCode,
-            });
-            navigate("/payment/checkout", {
-                state: {
-                    payment: data,
-                    course,
-                    couponCode,
-                },
-            });
-        } catch (err) {
-            setError(getPaymentErrorMessage(err));
-        } finally {
-            setIsSubmitting(false);
         }
     };
 
+    const handleCreatePayment = () => {
+        createCoursePayment({
+            course,
+            couponCode,
+            onUnauthorizedRole: onClose,
+        });
+    };
+
     return (
-        <div className="user-modal-overlay fixed inset-0 z-50 grid place-items-center bg-brand-black/70 p-3 backdrop-blur-sm sm:px-4 sm:py-6">
+        <div onClick={handleBackdropClick} className="user-modal-overlay fixed inset-0 z-50 grid place-items-center bg-brand-black/70 p-3 backdrop-blur-sm sm:px-4 sm:py-6">
             <div
                 ref={dialogRef}
                 role="dialog"
@@ -158,20 +62,7 @@ export default function PaymentMethodModal({ course, open, couponCode, finalPric
                 </div>
 
                 <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 sm:px-6 sm:py-5">
-                    <div className="mb-5 grid gap-3 rounded-2xl border border-brand-accent/10 bg-brand-light/70 px-4 py-3 text-sm font-semibold text-brand-textSecondary sm:grid-cols-3">
-                        <span>
-                            Giá gốc
-                            <strong className="mt-1 block text-base text-brand-white">{formatCurrency(course.price)}</strong>
-                        </span>
-                        <span>
-                            Giảm giá
-                            <strong className="mt-1 block text-base text-status-success">{formatCurrency(discountAmount || 0)}</strong>
-                        </span>
-                        <span>
-                            Tổng thanh toán
-                            <strong className="mt-1 block text-base text-brand-accentPale">{formatCurrency(finalPrice ?? course.price)}</strong>
-                        </span>
-                    </div>
+                    <PaymentSummary originalPrice={course?.price} discountAmount={discountAmount} finalPrice={finalPrice} />
 
                     <div className="flex min-h-24 items-center gap-4 rounded-2xl border border-brand-accent bg-brand-accent/15 p-4 text-brand-white">
                         <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-brand-accent text-brand-white">
