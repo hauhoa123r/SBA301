@@ -1,10 +1,8 @@
 package com.app.features.manager.service.impl;
 
-import com.app.features.manager.dto.response.AuditLogDetailResponse;
 import com.app.features.manager.dto.response.AuditLogResponse;
 import com.app.features.manager.repository.AuditLogRepository;
 import com.app.features.manager.service.AdminMonitoringService;
-import com.app.features.model.AuditLogEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -32,14 +30,6 @@ public class AdminMonitoringServiceImpl implements AdminMonitoringService {
         ).map(this::toAuditLogResponse);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public AuditLogDetailResponse getAuditLogDetail(Long id) {
-        AuditLogEntity auditLog = auditLogRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Audit log not found with id: " + id));
-        return toAuditLogDetailResponse(auditLog);
-    }
-
     private String normalize(String value) {
         if (value == null || value.isBlank()) {
             return null;
@@ -54,14 +44,6 @@ public class AdminMonitoringServiceImpl implements AdminMonitoringService {
                 .actorName(toStringValue(row[2]))
                 .roleName(toStringValue(row[3]))
                 .action(toStringValue(row[4]))
-                .build();
-    }
-
-    private AuditLogDetailResponse toAuditLogDetailResponse(AuditLogEntity auditLog) {
-        return AuditLogDetailResponse.builder()
-                .id(auditLog.getId())
-                .userId(auditLog.getUserId())
-                .action(auditLog.getAction())
                 .build();
     }
 
