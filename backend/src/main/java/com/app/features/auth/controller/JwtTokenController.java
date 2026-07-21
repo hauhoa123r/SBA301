@@ -11,7 +11,6 @@ import io.jsonwebtoken.JwtException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -44,17 +43,12 @@ public class JwtTokenController {
         return AuthUserResponse.from(user);
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<Void> logout() {
-        // The client discards its bearer tokens. Add a hashed refresh-token store for server-side revocation if required.
-        return ResponseEntity.noContent().build();
-    }
-
     private UserEntity activeUser(Long id) {
-        UserEntity user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(UNAUTHORIZED));
+        UserEntity user = userRepository.findByIdWithRoles(id).orElseThrow(() -> new ResponseStatusException(UNAUTHORIZED));
         if (user.getStatus() != UserStatus.ACTIVE) throw new ResponseStatusException(UNAUTHORIZED);
         return user;
     }
 
     public record RefreshRequest(@NotBlank String refreshToken) {}
 }
+

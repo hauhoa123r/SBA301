@@ -4,14 +4,19 @@ import CourseList from "../../components/catalog/CourseList";
 import CourseSearchSection from "../../components/catalog/CourseSearchSection";
 import { getCourses } from "../../services/api/courseService";
 import UserReveal from "../../../../shared/components/animation/UserReveal";
+import useAuth from "../../../../app/provider/useAuth";
+import { hasRole } from "../../../../shared/utils/roles";
+import { getLearningStats } from "../../../learning/api/learning-profile-api";
 
 const COURSES_PER_PAGE = 8;
 
 export default function ViewCoursesPage() {
+    const { user } = useAuth();
     const [keyword, setKeyword] = useState("");
     const [submittedKeyword, setSubmittedKeyword] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [courses, setCourses] = useState([]);
+    const [ownedCourseIds, setOwnedCourseIds] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -21,9 +26,20 @@ export default function ViewCoursesPage() {
         const fetchCourses = async () => {
             try {
                 setIsLoading(true);
-                const data = await getCourses();
+                const isStudent = hasRole(user, "STUDENT");
+                const [data, learningStats] = await Promise.all([
+                    getCourses(),
+                    isStudent ? getLearningStats() : Promise.resolve(null),
+                ]);
+
                 if (isMounted) {
                     setCourses(data);
+                    setOwnedCourseIds(
+                        Array.isArray(learningStats?.enrolledCourses)
+                            ? learningStats.enrolledCourses.map((course) => String(course.id))
+                            : []
+                    );
+                    setCurrentPage(1);
                     setErrorMessage("");
                 }
             } catch (error) {
@@ -42,14 +58,16 @@ export default function ViewCoursesPage() {
         return () => {
             isMounted = false;
         };
-    }, []);
+    }, [user]);
 
     const filteredCourses = useMemo(() => {
         const searchValue = submittedKeyword.trim().toLowerCase();
+        const ownedIds = new Set(ownedCourseIds);
+        const availableCourses = courses.filter((course) => !ownedIds.has(String(course.id)));
 
-        if (!searchValue) return courses;
+        if (!searchValue) return availableCourses;
 
-        return courses.filter((course) =>
+        return availableCourses.filter((course) =>
             [
                 course.title,
                 course.description,
@@ -61,7 +79,7 @@ export default function ViewCoursesPage() {
                 .toLowerCase()
                 .includes(searchValue)
         );
-    }, [courses, submittedKeyword]);
+    }, [courses, ownedCourseIds, submittedKeyword]);
 
     const totalPages = Math.max(1, Math.ceil(filteredCourses.length / COURSES_PER_PAGE));
     const startIndex = (currentPage - 1) * COURSES_PER_PAGE;
@@ -95,7 +113,15 @@ export default function ViewCoursesPage() {
                         {errorMessage}
                     </div>
                 ) : (
-                    <CourseList courses={visibleCourses} isLoading={isLoading} />
+                    <CourseList
+                        courses={visibleCourses}
+                        isLoading={isLoading}
+                        emptyMessage={
+                            !submittedKeyword && courses.length > 0 && ownedCourseIds.length > 0
+                                ? "Bạn đã sở hữu tất cả khóa học hiện có."
+                                : undefined
+                        }
+                    />
                 )}
 
                 <UserReveal as="nav" aria-label="Phân trang khóa học" className="mt-10 overflow-x-auto pb-1" distance={14} duration={480}>

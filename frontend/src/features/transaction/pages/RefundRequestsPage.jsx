@@ -11,7 +11,48 @@ import {
 } from "lucide-react";
 import ModeratorLayout from "../../moderator/components/ModeratorLayout";
 
-
+const INITIAL_REFUNDS = [
+    {
+        id: "RF-2401",
+        learner: "Nguyen Minh",
+        course: "Full-Stack Web Dev with React & Node.js",
+        amount: 1290000,
+        method: "payOS",
+        status: "PENDING",
+        requestedAt: "2026-06-18",
+        reason: "Duplicate payment was captured during checkout.",
+    },
+    {
+        id: "RF-2402",
+        learner: "Tran Linh",
+        course: "UI/UX Design Mastery: From Figma to Prototype",
+        amount: 990000,
+        method: "Momo",
+        status: "PROCESSING",
+        requestedAt: "2026-06-19",
+        reason: "Refund requested within the 30-day guarantee period.",
+    },
+    {
+        id: "RF-2403",
+        learner: "Le Duc",
+        course: "Machine Learning & AI for Practitioners",
+        amount: 1590000,
+        method: "Credit card",
+        status: "APPROVED",
+        requestedAt: "2026-06-20",
+        reason: "Course access failed after successful payment.",
+    },
+    {
+        id: "RF-2404",
+        learner: "Pham Thu",
+        course: "Digital Marketing & Growth Hacking",
+        amount: 790000,
+        method: "Bank transfer",
+        status: "REJECTED",
+        requestedAt: "2026-06-21",
+        reason: "Request is outside the refund policy window.",
+    },
+];
 
 const STATUS_STYLES = {
     PENDING: "border-amber-200 bg-amber-50 text-amber-700",
@@ -28,7 +69,7 @@ const formatCurrency = (value) =>
     }).format(value);
 
 export default function RefundRequestsPage() {
-    const [refunds, setRefunds] = useState([]);
+    const [refunds, setRefunds] = useState(INITIAL_REFUNDS);
     const [keyword, setKeyword] = useState("");
     const [statusFilter, setStatusFilter] = useState("ALL");
 

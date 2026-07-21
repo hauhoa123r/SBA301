@@ -1,6 +1,5 @@
 package com.app.features.model;
 
-import com.app.features.model.UserEntity;
 import com.app.features.model.enums.InvoiceStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -27,10 +26,10 @@ public class InvoiceEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.SET_NULL)
-    @JoinColumn(name = "subscription_id")
-    private SubscriptionEntity subscription;
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "course_id", nullable = false)
+    private CourseEntity course;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.SET_NULL)
@@ -38,14 +37,14 @@ public class InvoiceEntity {
     private CouponEntity coupon;
 
     @NotNull
-    @Column(name = "original_amount", nullable = false, precision = 12, scale = 2)
+    @Column(name = "original_amount", nullable = false, precision = 15, scale = 2)
     private BigDecimal originalAmount;
 
-    @Column(name = "discount_amount", precision = 12, scale = 2)
+    @Column(name = "discount_amount", precision = 15, scale = 2)
     private BigDecimal discountAmount = BigDecimal.ZERO;
 
     @NotNull
-    @Column(name = "amount", nullable = false, precision = 12, scale = 2)
+    @Column(name = "amount", nullable = false, precision = 15, scale = 2)
     private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)

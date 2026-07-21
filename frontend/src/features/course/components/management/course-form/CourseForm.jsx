@@ -4,16 +4,15 @@ import { useNavigate } from 'react-router-dom';
 import teacherService from '@/features/course/services/api/courseManagementService';
 import CategorySelect from './CategorySelect';
 import TagSelector from './TagSelector';
-import PlanSelector from './PlanSelector';
 
 const getInitialFormState = (initialData) => ({
   title: initialData?.title || '',
   description: initialData?.description || '',
+  price: initialData?.price ?? '',
   categoryId: initialData?.categoryId || '',
   thumbnailUrl: initialData?.thumbnailUrl || '',
   tagIds: Array.isArray(initialData?.tagIds) ? initialData.tagIds : [],
-  planIds: Array.isArray(initialData?.planIds) ? initialData.planIds : [],
-  status: initialData?.status || 'DRAFT',
+  status: initialData?.status || 'PENDING',
 });
 
 const normalizeMasterList = (value) => {
@@ -34,48 +33,39 @@ export default function CourseForm({ initialData = null, onSubmit, loading = fal
   const [masterData, setMasterData] = useState({
     categories: [],
     tags: [],
-    plans: [],
   });
   const [masterDataErrors, setMasterDataErrors] = useState({
     categories: null,
     tags: null,
-    plans: null,
   });
+  const [priceError, setPriceError] = useState('');
   const [loadingMasterData, setLoadingMasterData] = useState(true);
-
-  useEffect(() => {
-    setFormData(getInitialFormState(initialData));
-  }, [initialData]);
 
   useEffect(() => {
     const fetchMasterData = async () => {
       try {
         setLoadingMasterData(true);
-        setMasterDataErrors({ categories: null, tags: null, plans: null });
+        setMasterDataErrors({ categories: null, tags: null });
 
-        const [categoriesResult, tagsResult, plansResult] = await Promise.allSettled([
+        const [categoriesResult, tagsResult] = await Promise.allSettled([
           teacherService.getCategories(),
           teacherService.getTags(),
-          teacherService.getPlans(),
         ]);
 
         setMasterData({
           categories: categoriesResult.status === 'fulfilled' ? normalizeMasterList(categoriesResult.value) : [],
           tags: tagsResult.status === 'fulfilled' ? normalizeMasterList(tagsResult.value) : [],
-          plans: plansResult.status === 'fulfilled' ? normalizeMasterList(plansResult.value) : [],
         });
 
         setMasterDataErrors({
           categories: categoriesResult.status === 'rejected' ? getErrorMessage(categoriesResult.reason) : null,
           tags: tagsResult.status === 'rejected' ? getErrorMessage(tagsResult.reason) : null,
-          plans: plansResult.status === 'rejected' ? getErrorMessage(plansResult.reason) : null,
         });
       } catch (err) {
         console.error('Error loading course master data:', err);
         setMasterDataErrors({
           categories: 'Failed to load categories',
           tags: 'Failed to load tags',
-          plans: 'Failed to load plans',
         });
       } finally {
         setLoadingMasterData(false);
@@ -87,6 +77,9 @@ export default function CourseForm({ initialData = null, onSubmit, loading = fal
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (name === 'price') {
+      setPriceError('');
+    }
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -96,15 +89,6 @@ export default function CourseForm({ initialData = null, onSubmit, loading = fal
       tagIds: prev.tagIds.some((id) => Number(id) === Number(tagId))
         ? prev.tagIds.filter((id) => Number(id) !== Number(tagId))
         : [...prev.tagIds, tagId],
-    }));
-  };
-
-  const handlePlanToggle = (planId) => {
-    setFormData((prev) => ({
-      ...prev,
-      planIds: prev.planIds.some((id) => Number(id) === Number(planId))
-        ? prev.planIds.filter((id) => Number(id) !== Number(planId))
-        : [...prev.planIds, planId],
     }));
   };
 
@@ -121,10 +105,16 @@ export default function CourseForm({ initialData = null, onSubmit, loading = fal
       return;
     }
 
+    const price = Number(formData.price);
+    if (formData.price === '' || !Number.isFinite(price) || price < 0) {
+      setPriceError('Price must be a number greater than or equal to 0.');
+      return;
+    }
+
     const sanitizedFormData = {
       ...formData,
+      price,
       tagIds: [...new Set((formData.tagIds || []).map((id) => Number(id)).filter(Number.isFinite))],
-      planIds: [...new Set((formData.planIds || []).map((id) => Number(id)).filter(Number.isFinite))],
     };
 
     await onSubmit(sanitizedFormData);
@@ -144,7 +134,7 @@ export default function CourseForm({ initialData = null, onSubmit, loading = fal
   return (
     <div className="space-y-6">
       <button
-        onClick={() => navigate('/teacher/courses')}
+        onClick={() => navigate('/management/courses')}
         className="flex items-center gap-2 font-medium text-brand-accentSoft transition-colors duration-200 hover:text-brand-accent"
       >
         <ArrowLeft className="h-4 w-4" />
@@ -199,12 +189,26 @@ export default function CourseForm({ initialData = null, onSubmit, loading = fal
               />
             </div>
 
-            <PlanSelector
-              plans={masterData.plans}
-              selectedPlanIds={formData.planIds}
-              onToggle={handlePlanToggle}
-              error={masterDataErrors.plans}
-            />
+            <div>
+              <label htmlFor="course-price" className="mb-2 block text-sm font-semibold text-brand-textPrimary">
+                Course Price <span className="text-brand-danger">*</span>
+              </label>
+              <input
+                id="course-price"
+                type="number"
+                name="price"
+                min="0"
+                step="0.01"
+                value={formData.price}
+                onChange={handleChange}
+                placeholder="Enter course price"
+                aria-invalid={Boolean(priceError)}
+                aria-describedby={priceError ? 'course-price-error' : undefined}
+                className="w-full rounded-lg border border-brand-borderSoft bg-brand-dark/50 px-4 py-3 text-brand-textPrimary placeholder-brand-mutedText transition-colors duration-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-brand-accent"
+                required
+              />
+              {priceError ? <p id="course-price-error" role="alert" className="mt-2 text-sm text-brand-danger">{priceError}</p> : null}
+            </div>
           </div>
 
           <div className="space-y-6 lg:col-span-1">
@@ -248,30 +252,14 @@ export default function CourseForm({ initialData = null, onSubmit, loading = fal
               error={masterDataErrors.tags}
             />
 
-            {initialData ? (
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-brand-textPrimary">
-                  Status
-                </label>
-                <select
-                  name="status"
-                  value={formData.status}
-                  onChange={handleChange}
-                  className="w-full rounded-lg border border-brand-borderSoft bg-brand-dark/50 px-4 py-3 text-brand-textPrimary transition-colors duration-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-brand-accent"
-                >
-                  <option value="DRAFT">Draft</option>
-                  <option value="PENDING">Pending Review</option>
-                  <option value="PUBLISHED">Published</option>
-                </select>
-              </div>
-            ) : null}
+
           </div>
         </div>
 
         <div className="flex gap-4 border-t border-brand-borderSoft pt-6">
           <button
             type="button"
-            onClick={() => navigate('/teacher/courses')}
+            onClick={() => navigate('/management/courses')}
             className="flex-1 rounded-lg border border-brand-borderSoft px-6 py-3 font-medium text-brand-textSecondary transition-colors duration-200 hover:bg-brand-panelAlt hover:text-brand-textPrimary"
           >
             Cancel

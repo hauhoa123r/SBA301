@@ -1,9 +1,10 @@
-import { ArrowLeft, CheckCircle2, Copy, Download, ExternalLink, QrCode, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Copy, Download, ExternalLink, QrCode } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import AnimatedCard from "../../../../shared/components/animation/AnimatedCard";
 import UserImage from "../../../../shared/components/animation/UserImage";
 import UserReveal from "../../../../shared/components/animation/UserReveal";
 import UserStagger from "../../../../shared/components/animation/UserStagger";
+import { formatVndCurrency } from "../../../../shared/utils/currency";
 
 export default function PaymentCheckoutPage() {
     const location = useLocation();
@@ -23,10 +24,7 @@ export default function PaymentCheckoutPage() {
         );
     }
 
-    const amount = new Intl.NumberFormat("vi-VN", {
-        style: "currency",
-        currency: "VND",
-    }).format(Number(payment.amount || 0));
+    const amount = formatVndCurrency(payment.amount);
     const accountHolder = payment.accountName || payment.accountHolder || payment.beneficiaryName || payment.receiverName || "NGOC THUY NGUYEN";
     const accountNumber = payment.accountNumber || payment.bankAccountNumber || payment.receiverAccountNumber || "";
     const transferContent = payment.transferContent || payment.description || payment.invoiceCode;
@@ -95,15 +93,11 @@ export default function PaymentCheckoutPage() {
 
                 <UserReveal delay={80} distance={20} className="min-w-0">
                 <AnimatedCard className="rounded-3xl border border-brand-accent/10 bg-brand-cardBg p-4 shadow-2xl shadow-brand-black/30 sm:p-6">
-                    <div className="flex flex-col gap-4 border-b border-brand-accent/10 pb-6 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="border-b border-brand-accent/10 pb-6">
                         <div className="min-w-0">
                             <p className="text-sm font-bold text-brand-textSecondary">Mã hóa đơn</p>
                             <h2 className="mt-2 break-words text-2xl font-black text-brand-white sm:text-3xl md:text-4xl">{payment.invoiceCode}</h2>
                         </div>
-                        <span className="inline-flex w-fit items-center gap-2 rounded-full border border-status-success/20 bg-status-success/10 px-4 py-2 text-sm font-black text-status-successSoft">
-                            <ShieldCheck aria-hidden="true" className="h-4 w-4" />
-                            Thanh toán an toàn
-                        </span>
                     </div>
 
                     <UserStagger className="mt-6 grid gap-4 sm:mt-8" step={55} distance={16}>
@@ -120,13 +114,6 @@ export default function PaymentCheckoutPage() {
                             Mở trang thanh toán payOS
                         </a>
                     )}
-
-                    <div className="mt-6 rounded-2xl border border-brand-infoLight/20 bg-brand-info/10 p-4">
-                        <div className="flex items-start gap-3 text-sm font-semibold leading-6 text-brand-infoSoft">
-                            <CheckCircle2 aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0" />
-                            <p>Sau khi payOS xác nhận chuyển khoản, webhook backend sẽ cập nhật hóa đơn và tự động kích hoạt quyền truy cập khóa học.</p>
-                        </div>
-                    </div>
                 </AnimatedCard>
                 </UserReveal>
             </div>

@@ -7,6 +7,15 @@ import useAuth from "../../../app/provider/useAuth";
 import { showApiErrorToast } from "@/shared/utils/toast.js";
 import { validInput } from "@/shared/utils/inputHandler.js";
 import UserReveal from "@/shared/components/animation/UserReveal";
+import { getPostLoginPath } from "@/shared/utils/roles.js";
+
+const getRequestedPath = (location) => {
+    const statePath = location.state?.from
+        ? `${location.state.from.pathname || ""}${location.state.from.search || ""}${location.state.from.hash || ""}`
+        : "";
+    const requestedPath = new URLSearchParams(location.search).get("returnTo") || statePath;
+    return requestedPath?.startsWith("/") && !requestedPath.startsWith("//") ? requestedPath : "";
+};
 
 const LoginPage = () => {
     const [formData, setFormData] = useState({ email: "", password: "" });
@@ -15,10 +24,20 @@ const LoginPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { setUser } = useAuth();
+    const rememberOAuthReturnTo = () => {
+        const requestedPath = getRequestedPath(location);
+        if (requestedPath) {
+            sessionStorage.setItem("oauthReturnTo", requestedPath);
+        } else {
+            sessionStorage.removeItem("oauthReturnTo");
+        }
+    };
     const loginWithGoogle = () => {
+        rememberOAuthReturnTo();
         window.location.assign("/api/oauth2/authorization/google");
     };
     const loginWithFacebook = () => {
+        rememberOAuthReturnTo();
         window.location.assign("/api/oauth2/authorization/facebook");
     };
 
@@ -76,11 +95,7 @@ const LoginPage = () => {
                 localStorage.removeItem("refreshToken");
             }
             setUser(loggedInUser);
-            const requestedPath = new URLSearchParams(location.search).get("returnTo");
-            const returnTo = requestedPath?.startsWith("/") && !requestedPath.startsWith("//")
-                ? requestedPath
-                : "/";
-            navigate(returnTo, { replace: true });
+            navigate(getPostLoginPath(loggedInUser, getRequestedPath(location)), { replace: true });
         } catch (err) {
             showApiErrorToast(err, "Đăng nhập thất bại. Vui lòng kiểm tra email hoặc mật khẩu.");
         }

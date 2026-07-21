@@ -1,18 +1,20 @@
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { BarChart3, BookOpen, Star, Settings, LogOut } from 'lucide-react';
+import { BarChart3, BookOpen, Star, Settings, LogOut, FileQuestion } from 'lucide-react';
 import useAuth from '../../app/provider/useAuth';
+import { logout } from '../../features/auth/service/authService';
 
 export default function TeacherSidebar({ sidebarOpen, onClose }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { setUser } = useAuth();
 
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
-    setUser(null);
-    navigate('/login', { replace: true });
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } finally {
+      setUser(null);
+      navigate('/login', { replace: true });
+    }
   };
 
   const sidebarItems = [
@@ -27,9 +29,9 @@ export default function TeacherSidebar({ sidebarOpen, onClose }) {
       icon: BookOpen,
     },
     {
-      path: '/management/reviews',
-      label: 'Student Reviews',
-      icon: Star,
+      path: '/management/quizzes',
+      label: 'Quiz Bank',
+      icon: FileQuestion,
     },
   ];
 
@@ -53,7 +55,7 @@ export default function TeacherSidebar({ sidebarOpen, onClose }) {
           <div className="p-5 border-b border-brand-borderSoft">
             <div className="flex items-center gap-3">
               <img
-                src="/images/logo-removebg-preview.png"
+                src="/images/logo.svg"
                 alt="Edujar Logo"
                 className="h-9 w-auto object-contain"
               />

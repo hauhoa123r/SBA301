@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, TrendingUp, Users, BookOpen } from 'lucide-react';
-import CourseCard from '../../components/management/ManageCourseCard';
+import { Plus, BookOpen } from 'lucide-react';
+import CourseCard from '@/features/course/components/management/course-card/ManageCourseCard';
+import ConfirmDeleteModal from '@/features/course/components/management/common/ConfirmDeleteModal';
 import teacherService from '@/features/course/services/api/courseManagementService';
 
 export default function ManageCoursesPage() {
@@ -9,24 +10,26 @@ export default function ManageCoursesPage() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [courseToDelete, setCourseToDelete] = useState(null);
 
   useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        setLoading(true);
-        const response = await teacherService.getCourses();
-        setCourses(response.data || response || []);
-        setError(null);
-      } catch (err) {
-        setError(err.message || 'Failed to load course list');
-        setCourses([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchCourses();
   }, []);
+
+  const fetchCourses = async () => {
+    try {
+      setLoading(true);
+      const response = await teacherService.getCourses();
+      setCourses(response.data || response || []);
+      setError(null);
+    } catch (err) {
+      setError(err.message || 'Failed to load course list');
+      setCourses([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleCreateCourse = () => {
     navigate('/management/courses/create');
@@ -38,6 +41,24 @@ export default function ManageCoursesPage() {
 
   const handleDesignCurriculum = (course) => {
     navigate(`/management/courses/${course.id}/curriculum`, { state: { course } });
+  };
+
+  const handleDeleteClick = (course) => {
+    setCourseToDelete(course);
+    setDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!courseToDelete) return;
+    try {
+      setLoading(true);
+      await teacherService.deleteCourse(courseToDelete.id);
+      setError(null); // clear any previous error
+      await fetchCourses(); // reload list
+    } catch (err) {
+      setError(err.message || 'Error deleting course');
+      setLoading(false);
+    }
   };
 
   return (
@@ -54,43 +75,6 @@ export default function ManageCoursesPage() {
           <Plus className="w-5 h-5" />
           New Course
         </button>
-      </div>
-
-      {/* Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-brand-panel p-6 rounded-xl border border-brand-borderSoft shadow-lg shadow-black/10">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-brand-textSecondary text-sm font-medium">Total Courses</p>
-              <p className="text-3xl font-bold text-brand-textPrimary mt-2">{courses.length}</p>
-            </div>
-            <BookOpen className="w-10 h-10 text-brand-accent opacity-20" />
-          </div>
-        </div>
-
-        <div className="bg-brand-panel p-6 rounded-xl border border-brand-borderSoft shadow-lg shadow-black/10">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-brand-textSecondary text-sm font-medium">Published</p>
-              <p className="text-3xl font-bold text-brand-textPrimary mt-2">
-                {courses.filter((c) => c.status === 'PUBLISHED').length}
-              </p>
-            </div>
-            <TrendingUp className="w-10 h-10 text-status-successStrong opacity-20" />
-          </div>
-        </div>
-
-        <div className="bg-brand-panel p-6 rounded-xl border border-brand-borderSoft shadow-lg shadow-black/10">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-brand-textSecondary text-sm font-medium">Active Students</p>
-              <p className="text-3xl font-bold text-brand-textPrimary mt-2">
-                {courses.reduce((sum, course) => sum + (course.students || 0), 0)}
-              </p>
-            </div>
-            <Users className="w-10 h-10 text-brand-info opacity-20" />
-          </div>
-        </div>
       </div>
 
 
@@ -127,12 +111,21 @@ export default function ManageCoursesPage() {
                   course={course}
                   onEdit={handleEditCourse}
                   onDesignCurriculum={handleDesignCurriculum}
+                  onDelete={handleDeleteClick}
                 />
               ))}
             </div>
           )}
         </>
       )}
+
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={confirmDelete}
+        title="Delete Course"
+        message={`Are you sure you want to delete the course "${courseToDelete?.title}"? This action will permanently remove all related chapters and lessons.`}
+      />
     </div>
   );
 }

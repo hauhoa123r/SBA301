@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import useAuth from "../../../app/provider/useAuth";
 import { exchangeOAuthCode } from "../service/authService";
 import UserReveal from "@/shared/components/animation/UserReveal";
+import { getPostLoginPath } from "@/shared/utils/roles.js";
 
 const exchanges = new Map();
 
@@ -39,7 +40,9 @@ export default function OAuthCallbackPage() {
         localStorage.setItem("refreshToken", refreshToken);
         localStorage.setItem("user", JSON.stringify(user));
         setUser(user);
-        if (active) navigate("/", { replace: true });
+        const requestedPath = sessionStorage.getItem("oauthReturnTo") || "";
+        sessionStorage.removeItem("oauthReturnTo");
+        if (active) navigate(getPostLoginPath(user, requestedPath), { replace: true });
       })
       .catch((requestError) => {
         exchanges.delete(callback.code);

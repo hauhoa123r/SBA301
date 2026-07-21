@@ -1,6 +1,5 @@
 package com.app.features.model;
 
-import com.app.features.model.UserEntity;
 import com.app.features.model.enums.RefundStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -34,7 +33,7 @@ public class RefundEntity {
     private UserEntity user;
 
     @NotNull
-    @Column(name = "amount", nullable = false, precision = 12, scale = 2)
+    @Column(name = "amount", nullable = false, precision = 15, scale = 2)
     private BigDecimal amount;
 
     @NotNull

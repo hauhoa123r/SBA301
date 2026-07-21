@@ -1,5 +1,12 @@
 import CourseModerationPage from "../../course/pages/CourseModerationPage";
 import ModeratorDashboardPage from "../pages/ModeratorDashboardPage";
+import ProtectedRoute from "../../../app/routes/ProtectedRoute";
+
+const moderatorOnly = (element) => (
+    <ProtectedRoute requiredRole="MODERATOR">
+        {element}
+    </ProtectedRoute>
+);
 
 const courseModerationPaths = [
     "/moderator/courses",
@@ -12,11 +19,11 @@ const courseModerationPaths = [
 const moderatorRoutes = [
     {
         path: "/moderator",
-        element: <ModeratorDashboardPage />,
+        element: moderatorOnly(<ModeratorDashboardPage />),
     },
     ...courseModerationPaths.map((path) => ({
         path,
-        element: <CourseModerationPage />,
+        element: moderatorOnly(<CourseModerationPage />),
     })),
 ];
 

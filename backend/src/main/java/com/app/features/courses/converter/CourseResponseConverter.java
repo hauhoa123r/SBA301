@@ -5,14 +5,10 @@ import com.app.features.courses.dto.response.CourseDetailResponse;
 import com.app.features.courses.repository.projection.CourseLessonStats;
 import com.app.features.model.CategoryEntity;
 import com.app.features.model.CourseEntity;
-import com.app.features.model.PlanEntity;
 import com.app.features.model.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
-
-import java.math.BigDecimal;
-import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -26,6 +22,7 @@ public class CourseResponseConverter {
         response.setThumbnailUrl(course.getThumbnailUrl());
         applyTeacher(response, course.getTeacher());
         applyCategory(response, course.getCategory());
+        response.setPrice(course.getPrice());
         applyLessonStats(response, lessonStats);
         response.setRating(5.0);
         return response;
@@ -45,10 +42,16 @@ public class CourseResponseConverter {
         if (category != null) {
             response.setCategoryId(category.getId());
         }
-        response.setPrice(getLowestPlanPrice(course));
+        response.setPrice(course.getPrice());
         response.setStudents(course.getCourseEnrollments() == null ? 0 : course.getCourseEnrollments().size());
-        response.setLevel("Tất cả trình độ");
+        response.setLevel("All levels");
         response.setChapters(chapterResponseConverter.toChapterResponses(course));
+        
+        if (course.getTags() != null) {
+            response.setTagIds(course.getTags().stream().map(tagEntity -> {
+                return tagEntity.getId();
+            }).toList());
+        }
         applyLessonStats(response, lessonStats);
         response.setRating(5.0);
 
@@ -93,16 +96,5 @@ public class CourseResponseConverter {
         response.setTotalDurationSeconds(totalDurationSeconds);
         response.setDurationText(durationTextConverter.toDurationText(totalDurationSeconds));
         response.setDuration(response.getDurationText());
-    }
-    private BigDecimal getLowestPlanPrice(CourseEntity course) {
-        if (course.getPlans() == null || course.getPlans().isEmpty()) {
-            return BigDecimal.ZERO;
-        }
-        return course.getPlans()
-                .stream()
-                .map(PlanEntity::getPrice)
-                .filter(Objects::nonNull)
-                .min(BigDecimal::compareTo)
-                .orElse(BigDecimal.ZERO);
     }
 }

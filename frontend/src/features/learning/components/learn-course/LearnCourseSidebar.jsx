@@ -9,6 +9,7 @@ export default function LearnCourseSidebar({
     activeQuiz,
     activeAssignment,
     chapterStats,
+    completedChapterIds,
     completedLessons,
     passedQuizzes,
     submittedAssignments,
@@ -75,7 +76,7 @@ export default function LearnCourseSidebar({
                                 title={`Chương ${chapter.orderIndex || chapter.order_index}: ${chapter.title}`}
                             >
                                 <span className="contents lg:grid lg:h-8 lg:w-8 lg:shrink-0 lg:place-items-center">
-                                    <StatusDot active={isActiveChapter} done={stats.done === stats.total} />
+                                    <StatusDot active={isActiveChapter} done={completedChapterIds.has(chapter.id)} />
                                 </span>
                                 <span className="flex min-w-0 flex-1 items-center gap-2 whitespace-nowrap transition-[opacity,transform] duration-300 ease-in-out lg:-translate-x-2.5 lg:opacity-0 lg:group-hover/sidebar:translate-x-0 lg:group-hover/sidebar:opacity-100">
                                     <span className="min-w-0 flex-1 truncate text-sm font-bold">
@@ -116,7 +117,7 @@ export default function LearnCourseSidebar({
                                             done={submittedAssignments.has(chapter.assignment.id)}
                                             icon={Award}
                                             label={chapter.assignment.title}
-                                            sub={chapterStats[chapter.id]?.done >= chapter.lessons.length * 2 ? "Sẵn sàng" : "Hoàn thành bài học trước"}
+                                            sub={chapterStats[chapter.id]?.done >= chapter.lessons.length ? "Sẵn sàng" : "Hoàn thành bài học trước"}
                                             highlight
                                             onClick={() => selectAssignment(chapter.id)}
                                         />

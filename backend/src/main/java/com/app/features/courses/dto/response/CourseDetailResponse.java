@@ -33,6 +33,7 @@ public class CourseDetailResponse {
     private Double rating;
     private String level;
     private List<ChapterResponse> chapters;
+    private List<Long> tagIds;
     private Instant createdAt;
     private Instant updatedAt;
 }

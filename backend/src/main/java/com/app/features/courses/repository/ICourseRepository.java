@@ -14,12 +14,15 @@ import java.util.Optional;
 
 public interface ICourseRepository extends JpaRepository<CourseEntity,Long> {
 
+    long countByTeacherId(Long teacherId);
+    long countByTeacherIdAndStatus(Long teacherId, com.app.features.model.enums.CourseStatus status);
+
     @Override
     @EntityGraph(attributePaths = {"teacher", "category"})
     List<CourseEntity> findAll();
 
     @Override
-    @EntityGraph(attributePaths = {"teacher", "category", "plans", "courseEnrollments", "chapterEntities"})
+    @EntityGraph(attributePaths = {"teacher", "category", "courseEnrollments", "chapterEntities"})
     Optional<CourseEntity> findById(Long id);
 
     @Query("select c from CourseEntity c " +
@@ -50,7 +53,4 @@ public interface ICourseRepository extends JpaRepository<CourseEntity,Long> {
             "where c.id = :courseId " +
             "group by c.id")
     CourseLessonStats getLessonStatsByCourseId(@Param("courseId") Long courseId);
-
-    List<CourseEntity> findAllByStatusOrderByCreatedAtDesc(CourseStatus status);
 }
-

@@ -12,6 +12,7 @@ import javax.crypto.SecretKey;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class JwtService {
@@ -40,8 +41,18 @@ public class JwtService {
 
     private String create(UserEntity user, Duration ttl, String type) {
         Instant now = Instant.now();
-        return Jwts.builder().subject(user.getId().toString()).claim("email", user.getEmail())
-                .claim("type", type).issuedAt(Date.from(now)).expiration(Date.from(now.plus(ttl)))
-                .signWith(key).compact();
+        List<String> roles = user.getRoles().stream()
+                .map(role -> role.getName())
+                .toList();
+
+        return Jwts.builder()
+                .subject(user.getId().toString())
+                .claim("email", user.getEmail())
+                .claim("roles", roles)
+                .claim("type", type)
+                .issuedAt(Date.from(now))
+                .expiration(Date.from(now.plus(ttl)))
+                .signWith(key)
+                .compact();
     }
 }

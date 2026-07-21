@@ -35,14 +35,6 @@ CREATE TABLE tags (
     slug VARCHAR(100) NOT NULL UNIQUE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE plans (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    duration_days INT NOT NULL,
-    price DECIMAL(12, 2) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 -- ==========================================
 -- 2. AUTHENTICATION & USER MANAGEMENT (UPDATE PHASE 2)
 -- ==========================================
@@ -121,20 +113,14 @@ CREATE TABLE courses (
     category_id BIGINT NULL,
     title VARCHAR(255) NOT NULL,
     description TEXT,
+    price DECIMAL(15, 2) NOT NULL DEFAULT 0,
     thumbnail_url VARCHAR(500),
     status ENUM('DRAFT', 'PENDING', 'PUBLISHED', 'HIDDEN') DEFAULT 'DRAFT',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_courses_teacher FOREIGN KEY (teacher_id) REFERENCES users(id),
-    CONSTRAINT fk_courses_category FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE course_plan_access (
-    course_id BIGINT NOT NULL,
-    plan_id BIGINT NOT NULL,
-    PRIMARY KEY (course_id, plan_id),
-    CONSTRAINT fk_cpa_course FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
-    CONSTRAINT fk_cpa_plan FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE CASCADE
+    CONSTRAINT fk_courses_category FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL,
+    CONSTRAINT chk_courses_price_nonnegative CHECK (price >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE course_tags (
@@ -207,11 +193,15 @@ CREATE TABLE lesson_documents (
 CREATE TABLE quizzes (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
+    teacher_id BIGINT NOT NULL,
+    course_id BIGINT NULL,
     lesson_id BIGINT NULL,
     chapter_id BIGINT NULL,
     time_limit_minutes INT NOT NULL DEFAULT 0,
     pass_score INT NOT NULL DEFAULT 50,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_quizzes_teacher FOREIGN KEY (teacher_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_quizzes_course FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
     CONSTRAINT fk_quizzes_lesson FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE SET NULL,
     CONSTRAINT fk_quizzes_chapter FOREIGN KEY (chapter_id) REFERENCES chapters(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -364,7 +354,7 @@ CREATE TABLE certificates (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ==========================================
--- 6. SUBSCRIPTION & PAYMENT MANAGEMENT (UPDATE PHASE 2)
+-- 6. PAYMENT MANAGEMENT (UPDATE PHASE 2)
 -- ==========================================
 
 -- BẢNG MỚI: Quản lý Mã giảm giá
@@ -382,31 +372,19 @@ CREATE TABLE coupons (
     CONSTRAINT fk_coupons_creator FOREIGN KEY (created_by) REFERENCES users(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE subscriptions (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id BIGINT NOT NULL,
-    plan_id BIGINT NOT NULL,
-    start_date DATE NOT NULL,
-    end_date DATE NOT NULL,
-    status ENUM('ACTIVE', 'EXPIRED', 'CANCELLED') DEFAULT 'ACTIVE',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_subs_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    CONSTRAINT fk_subs_plan FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 CREATE TABLE invoices (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT NOT NULL,
-    subscription_id BIGINT NULL,
+    course_id BIGINT NOT NULL,
     coupon_id BIGINT NULL, -- NEW: Liên kết mã giảm giá
-    original_amount DECIMAL(12, 2) NOT NULL, -- Giá gốc
-    discount_amount DECIMAL(12, 2) DEFAULT 0, -- Số tiền được giảm
-    amount DECIMAL(12, 2) NOT NULL, -- Giá cuối cùng phải thanh toán
+    original_amount DECIMAL(15, 2) NOT NULL, -- Giá gốc tại thời điểm mua
+    discount_amount DECIMAL(15, 2) DEFAULT 0, -- Số tiền được giảm
+    amount DECIMAL(15, 2) NOT NULL, -- Giá cuối cùng phải thanh toán
     status ENUM('PENDING', 'PAID', 'FAILED', 'CANCELLED', 'REFUNDED') DEFAULT 'PENDING',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_invoices_user FOREIGN KEY (user_id) REFERENCES users(id),
-    CONSTRAINT fk_invoices_sub FOREIGN KEY (subscription_id) REFERENCES subscriptions(id) ON DELETE SET NULL,
+    CONSTRAINT fk_invoices_course FOREIGN KEY (course_id) REFERENCES courses(id),
     CONSTRAINT fk_invoices_coupon FOREIGN KEY (coupon_id) REFERENCES coupons(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -415,7 +393,7 @@ CREATE TABLE payments (
     invoice_id BIGINT NOT NULL,
     provider ENUM('VNPAY', 'MOMO', 'PAYOS', 'ZALOPAY', 'STRIPE') NOT NULL,
     transaction_id VARCHAR(150) NOT NULL,
-    amount DECIMAL(12, 2) NOT NULL,
+    amount DECIMAL(15, 2) NOT NULL,
     status ENUM('CREATED', 'SUCCESS', 'FAILED', 'CANCELLED') NOT NULL,
     raw_response JSON NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -427,7 +405,7 @@ CREATE TABLE refunds (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     payment_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
-    amount DECIMAL(12, 2) NOT NULL,
+    amount DECIMAL(15, 2) NOT NULL,
     reason TEXT NOT NULL,
     status ENUM('PENDING', 'APPROVED', 'REJECTED', 'PROCESSED') DEFAULT 'PENDING',
     processed_by BIGINT NULL,
@@ -583,7 +561,6 @@ CREATE INDEX idx_courses_status_teacher ON courses(status, teacher_id);
 CREATE INDEX idx_lessons_chapter ON lessons(chapter_id);
 CREATE INDEX idx_quizzes_lesson_chapter ON quizzes(lesson_id, chapter_id);
 CREATE INDEX idx_quiz_attempts_user_quiz ON quiz_attempts(user_id, quiz_id, status);
-CREATE INDEX idx_subscriptions_range ON subscriptions(user_id, status, end_date);
 CREATE INDEX idx_invoices_status_user ON invoices(status, user_id);
 CREATE INDEX idx_audit_logs_search ON audit_logs(action, created_at);
 CREATE INDEX idx_notifications_user_unread ON notifications(user_id, is_read);

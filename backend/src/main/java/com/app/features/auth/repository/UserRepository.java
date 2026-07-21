@@ -12,6 +12,10 @@ public interface UserRepository
         extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> findByEmail(String email);
 
+    @EntityGraph(attributePaths = "roles")
+    @org.springframework.data.jpa.repository.Query("select u from UserEntity u where u.email = :email")
+    Optional<UserEntity> findByEmailWithRoles(String email);
+
     boolean existsByEmail(String email);
 
     @EntityGraph(attributePaths = "roles")

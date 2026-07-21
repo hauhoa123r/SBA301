@@ -15,19 +15,22 @@ export default function LearnCoursePage() {
         activeQuiz,
         activeAssignment,
         chapterStats,
+        completedChapterIds,
         completedChapters,
         completedCount,
         completedLessons,
         course,
         handleAssignmentSubmit,
+        handleLessonComplete,
         handleQuizSubmit,
         handleQuizRetake,
         mode,
         progress,
+        progressError,
         quizResults,
         setAnswers,
         setAssignmentText,
-        setCompletedLessons,
+        savingLessonId,
         submittedAssignments,
         totalActivities,
         goLesson,
@@ -51,7 +54,9 @@ export default function LearnCoursePage() {
                     <LessonPanel
                         lesson={activeLesson}
                         isCompleted={completedLessons.has(activeLesson.id)}
-                        onComplete={() => setCompletedLessons((prev) => new Set(prev).add(activeLesson.id))}
+                        isSaving={savingLessonId === activeLesson.id}
+                        errorMessage={progressError}
+                        onComplete={() => handleLessonComplete(activeLesson.id)}
                         onQuiz={() => activeLesson.quiz && goQuiz(activeLesson.quiz.id)}
                     />
                 </UserReveal>
@@ -88,6 +93,7 @@ export default function LearnCoursePage() {
                     course={course}
                     activeChapter={activeChapter}
                     chapterStats={chapterStats}
+                    completedChapterIds={completedChapterIds}
                     onLessonSelect={goLesson}
                 />
             </UserReveal>

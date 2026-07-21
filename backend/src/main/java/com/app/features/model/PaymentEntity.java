@@ -43,7 +43,7 @@ public class PaymentEntity {
     private String transactionId;
 
     @NotNull
-    @Column(name = "amount", nullable = false, precision = 12, scale = 2)
+    @Column(name = "amount", nullable = false, precision = 15, scale = 2)
     private BigDecimal amount;
 
     @NotNull

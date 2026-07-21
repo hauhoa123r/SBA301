@@ -66,4 +66,14 @@ public class QuestionEntity {
     @NonNull
     @OneToMany(mappedBy = "question")
     private Set<StudentAnswerEntity> studentAnswers = new LinkedHashSet<>();
+
+    public void addAnswer(AnswerEntity answer) {
+        answerEntities.add(answer);
+        answer.setQuestionEntity(this);
+    }
+
+    public void removeAnswer(AnswerEntity answer) {
+        answerEntities.remove(answer);
+        answer.setQuestionEntity(null);
+    }
 }

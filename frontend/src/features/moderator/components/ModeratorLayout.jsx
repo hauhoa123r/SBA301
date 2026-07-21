@@ -53,9 +53,9 @@ export default function ModeratorLayout({
           <Link to="/" className="flex items-center gap-3 no-underline">
             <span className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-red-600 shadow-lg shadow-red-600/20">
               <img
-                src="/images/logo-removebg-preview.png"
+                src="/images/logo.svg"
                 alt="Edujar logo"
-                className="h-9 w-9 object-contain"
+                className="h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
               />
             </span>
             <span className="text-base font-extrabold uppercase tracking-wide text-slate-950">
@@ -141,9 +141,9 @@ export default function ModeratorLayout({
             >
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-red-600">
                 <img
-                  src="/images/logo-removebg-preview.png"
+                  src="/images/logo.svg"
                   alt="Edujar logo"
-                  className="h-8 w-8 object-contain"
+                  className="h-8 w-auto object-contain"
                 />
               </span>
               <span className="font-extrabold uppercase">Edujar</span>

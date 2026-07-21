@@ -5,6 +5,7 @@ export interface CourseCatalogResponse {
     title?: string;
     description?: string;
     thumbnailUrl?: string;
+    price: number;
     totalLessons?: number;
     durationText?: string;
     rating?: number;

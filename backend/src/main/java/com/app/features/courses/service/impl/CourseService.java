@@ -15,6 +15,8 @@ import com.app.features.model.enums.CourseStatus;
 import com.app.features.plans.service.IPlanService;
 import com.app.features.tags.service.ITagService;
 import com.app.features.users.repository.IUserRepository;
+import com.app.features.courses.repository.IQuizRepository;
+import com.app.features.courses.dto.response.DashboardStatsResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,7 @@ public class CourseService implements ICourseService {
     private final IPlanService planService;
     private final ICategoryService categoryService;
     private final IUserRepository userRepository;
+    private final IQuizRepository quizRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -74,6 +77,7 @@ public class CourseService implements ICourseService {
         List<CourseEntity> courseEntities = courseRepository.findAllByTeacherId(teacherId);
         if (courseEntities.isEmpty()) {
             log.warn("No courses found for teacher, teacherId={}", teacherId);
+            throw new ResourceNotFoundException("No courses found for teacher, teacherId: " + teacherId);
         }
         return courseEntities.stream().map(courseEntity -> {
             CourseLessonStats stats = courseRepository.getLessonStatsByCourseId(courseEntity.getId());
@@ -136,8 +140,9 @@ public class CourseService implements ICourseService {
         course.setTeacher(teacher);
         course.setCategory(category);
         course.setDescription(request.getDescription());
+        course.setPrice(request.getPrice());
         course.setThumbnailUrl(request.getThumbnailUrl());
-        course.setStatus(CourseStatus.DRAFT);
+        course.setStatus(CourseStatus.PENDING);
 
         if (request.getTagIds() != null && !request.getTagIds().isEmpty()) {
             List<TagEntity> tags = tagService.findAllById(request.getTagIds());
@@ -161,6 +166,71 @@ public class CourseService implements ICourseService {
         return courseId;
     }
 
+    @Override
+    @Transactional
+    public CourseDetailResponse updateCourse(Long courseId, CourseRequest request, Long teacherId) {
+        log.info("Course update requested, courseId={}, teacherId={}", courseId, teacherId);
+        CourseEntity course = courseRepository.findById(courseId).orElseThrow(() -> {
+            log.warn("Course update failed because course was not found, courseId={}", courseId);
+            return new ResourceNotFoundException("Course not found with id: " + courseId);
+        });
+
+        if (!course.getTeacher().getId().equals(teacherId)) {
+            log.warn("Course update rejected for unauthorized teacher, courseId={}, teacherId={}", courseId, teacherId);
+            throw new BadRequestException("You are not authorized to update this course.");
+        }
+
+        CategoryEntity category = categoryService.findCategoryById(request.getCategoryId());
+        if (category == null) {
+            throw new ResourceNotFoundException("Category not found with id: " + request.getCategoryId());
+        }
+
+        course.setTitle(request.getTitle());
+        course.setCategory(category);
+        course.setDescription(request.getDescription());
+        course.setPrice(request.getPrice());
+        course.setThumbnailUrl(request.getThumbnailUrl());
+        course.setUpdatedAt(new Date().toInstant());
+
+        course.getTags().clear();
+        if (request.getTagIds() != null && !request.getTagIds().isEmpty()) {
+            List<TagEntity> tags = tagService.findAllById(request.getTagIds());
+            for (TagEntity tag : tags) {
+                course.addTag(tag);
+            }
+        }
+
+        course = courseRepository.save(course);
+        log.info("Course updated successfully, courseId={}", courseId);
+        Map<Long, CourseLessonStats> lessonStatsByCourseId = getLessonStatsByCourseId(List.of(course));
+        return courseResponseConverter.toCourseDetailResponse(course, lessonStatsByCourseId.get(course.getId()));
+    }
+
+    @Override
+    @Transactional
+    public void deleteCourse(Long courseId, Long teacherId) {
+        log.info("Course deletion requested, courseId={}, teacherId={}", courseId, teacherId);
+        CourseEntity course = courseRepository.findById(courseId).orElseThrow(() -> {
+            log.warn("Course deletion failed because course was not found, courseId={}", courseId);
+            return new ResourceNotFoundException("Course not found with id: " + courseId);
+        });
+
+        if (!course.getTeacher().getId().equals(teacherId)) {
+            log.warn("Course deletion rejected for unauthorized teacher, courseId={}, teacherId={}", courseId, teacherId);
+            throw new BadRequestException("You are not authorized to delete this course.");
+        }
+
+        if (!course.getCourseEnrollments().isEmpty()) {
+            log.warn("Course deletion rejected because it has enrolled students, courseId={}", courseId);
+            throw new BadRequestException("Cannot delete course because there are students already enrolled in it.");
+        }
+
+        course.getTags().clear();
+
+        courseRepository.delete(course);
+        log.info("Course deleted successfully, courseId={}", courseId);
+    }
+
     private Map<Long, CourseLessonStats> getLessonStatsByCourseId(List<CourseEntity> courses) {
         List<Long> courseIds = courses.stream().map(CourseEntity::getId).filter(Objects::nonNull).toList();
         if (courseIds.isEmpty()) {
@@ -171,5 +241,19 @@ public class CourseService implements ICourseService {
                 .collect(Collectors.toMap(CourseLessonStats::getCourseId, Function.identity()));
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public DashboardStatsResponse getDashboardStats(Long teacherId) {
+        log.info("Loading dashboard stats for teacherId={}", teacherId);
+        long totalCourses = courseRepository.countByTeacherId(teacherId);
+        long activeCourses = courseRepository.countByTeacherIdAndStatus(teacherId, CourseStatus.PUBLISHED);
+        long totalQuizzes = quizRepository.countByTeacherId(teacherId);
+
+        return DashboardStatsResponse.builder()
+                .totalCourses(totalCourses)
+                .totalQuizzes(totalQuizzes)
+                .activeCourses(activeCourses)
+                .build();
+    }
 
 }

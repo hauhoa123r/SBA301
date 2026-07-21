@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Check, CheckCircle2, ClipboardList, FileText, Play, BookOpen, MessageCircle } from "lucide-react";
+import { Check, CheckCircle2, ClipboardList, FileText, Play, BookOpen, Loader2, MessageCircle } from "lucide-react";
 import FlashcardsPanel from "./FlashcardsPanel";
 import SentencePatternsPanel from "./SentencePatternsPanel";
 
-export default function LessonPanel({ lesson, isCompleted, onComplete, onQuiz }) {
+export default function LessonPanel({ lesson, isCompleted, isSaving = false, errorMessage = "", onComplete, onQuiz }) {
     const [activeTab, setActiveTab] = useState("video");
     const tabs = [
         { id: "video", label: "Video bài học", icon: Play },
@@ -67,10 +67,11 @@ export default function LessonPanel({ lesson, isCompleted, onComplete, onQuiz })
                         <button
                             type="button"
                             onClick={onComplete}
-                            className="inline-flex items-center gap-2 rounded-xl bg-brand-accent px-5 py-3 text-sm font-bold transition hover:bg-brand-accentHover"
+                            disabled={isCompleted || isSaving}
+                            className="inline-flex items-center gap-2 rounded-xl bg-brand-accent px-5 py-3 text-sm font-bold transition hover:bg-brand-accentHover disabled:cursor-not-allowed disabled:opacity-70"
                         >
-                            {isCompleted ? <CheckCircle2 className="h-4 w-4" /> : <Check className="h-4 w-4" />}
-                            {isCompleted ? "Đã hoàn thành bài học" : "Đánh dấu hoàn thành"}
+                            {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : isCompleted ? <CheckCircle2 className="h-4 w-4" /> : <Check className="h-4 w-4" />}
+                            {isSaving ? "Đang lưu..." : isCompleted ? "Đã hoàn thành bài học" : "Đánh dấu hoàn thành"}
                         </button>
                         {lesson.quiz && (
                             <button
@@ -83,6 +84,7 @@ export default function LessonPanel({ lesson, isCompleted, onComplete, onQuiz })
                             </button>
                         )}
                     </div>
+                    {errorMessage && <p role="alert" className="mt-3 text-sm font-semibold text-status-danger">{errorMessage}</p>}
                 </div>
             </div>
 

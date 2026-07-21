@@ -29,9 +29,7 @@ public class ChapterResponseConverter {
     }
 
     private ChapterResponse toChapterResponse(ChapterEntity chapter) {
-        List<LessonResponse> lessons = chapter.getLessonEntities() == null
-                ? List.of()
-                : chapter.getLessonEntities()
+        List<LessonResponse> lessons = chapter.getLessonEntities() == null ? List.of() : chapter.getLessonEntities()
                 .stream()
                 .sorted(Comparator.comparing(LessonEntity::getOrderIndex, Comparator.nullsLast(Integer::compareTo)))
                 .map(lessonResponseConverter::toLessonResponse)

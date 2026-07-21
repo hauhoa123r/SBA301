@@ -2,11 +2,16 @@ import LearnCoursePage from "../pages/LearnCoursePage";
 import LearnCourseLayout from "../layouts/LearnCourseLayout";
 import LearningLayout from "../layouts/LearningLayout";
 import StartLearningPage from "../pages/StartLearningPage";
+import ProtectedRoute from "../../../app/routes/ProtectedRoute";
 
 const learningRoutes = [
     {
         path: "/learning",
-        element: <LearningLayout />,
+        element: (
+            <ProtectedRoute requiredRole="STUDENT">
+                <LearningLayout />
+            </ProtectedRoute>
+        ),
         children: [
             {
                 index: true,
@@ -16,7 +21,11 @@ const learningRoutes = [
     },
     {
         path: "/learning/courses/:courseId",
-        element: <LearnCourseLayout />,
+        element: (
+            <ProtectedRoute requiredRole="STUDENT">
+                <LearnCourseLayout />
+            </ProtectedRoute>
+        ),
         children: [
             {
                 index: true,

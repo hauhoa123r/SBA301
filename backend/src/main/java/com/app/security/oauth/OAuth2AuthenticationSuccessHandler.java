@@ -1,6 +1,6 @@
 package com.app.security.oauth;
 
-import com.app.features.oauth.OAuthAuthorizationCodeService;
+import com.app.features.oauth.service.OAuthAuthorizationCodeService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -33,3 +33,4 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         response.sendRedirect(target);
     }
 }
+

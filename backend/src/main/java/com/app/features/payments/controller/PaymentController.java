@@ -1,24 +1,24 @@
 package com.app.features.payments.controller;
 
 import com.app.features.model.UserEntity;
-import com.app.features.model.enums.PaymentProvider;
 import com.app.features.payments.dto.PaymentCreateRequest;
 import com.app.features.payments.dto.PaymentCreateResponse;
 import com.app.features.payments.dto.PaymentVerifyResponse;
+import com.app.features.payments.dto.PaymentSyncResponse;
 import com.app.features.payments.facade.PaymentFacade;
 import com.app.security.oauth.CustomOAuth2User;
 import com.app.utils.ApiPath;
+import com.app.utils.SecurityUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Map;
@@ -32,43 +32,20 @@ public class PaymentController {
     private final PaymentFacade paymentFacade;
 
     @PostMapping("/create")
-    public ResponseEntity<PaymentCreateResponse> createPayment(@Valid @RequestBody PaymentCreateRequest request,
-                                                               Authentication authentication) {
-        return ResponseEntity.ok(paymentFacade.createPayment(request, authenticatedUserId(authentication)));
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<PaymentCreateResponse> createPayment(@Valid @RequestBody PaymentCreateRequest request) {
+        return ResponseEntity.ok(paymentFacade.createPayment(request, SecurityUtils.getCurrentUser().getId()));
     }
 
-    @GetMapping("/vnpay-return")
-    public RedirectView vnpayReturn(@RequestParam Map<String, String> params) {
-        return new RedirectView(paymentFacade.handleRedirectCallback(PaymentProvider.VNPAY, params));
-    }
-
-    @PostMapping("/momo-ipn")
-    public ResponseEntity<PaymentVerifyResponse> momoIpn(@RequestBody Map<String, Object> body) {
-        return ResponseEntity.ok(paymentFacade.handleWebhook(PaymentProvider.MOMO, body));
+    @PostMapping("/invoices/{invoiceId}/sync")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<PaymentSyncResponse> syncPayment(@PathVariable Long invoiceId, Authentication authentication) {
+        return ResponseEntity.ok(paymentFacade.syncPayment(invoiceId,SecurityUtils.getCurrentUser().getId()));
     }
 
     @PostMapping("/payos-webhook")
     public ResponseEntity<PaymentVerifyResponse> payosWebhook(@RequestBody Map<String, Object> body) {
-        return ResponseEntity.ok(paymentFacade.handleWebhook(PaymentProvider.PAYOS, body));
+        return ResponseEntity.ok(paymentFacade.handlePayosWebhook(body));
     }
 
-    @PostMapping("/zalopay-callback")
-    public ResponseEntity<PaymentVerifyResponse> zalopayCallback(@RequestBody Map<String, Object> body) {
-        return ResponseEntity.ok(paymentFacade.handleWebhook(PaymentProvider.ZALOPAY, body));
-    }
-
-    private Long authenticatedUserId(Authentication authentication) {
-        if (authentication == null) {
-            throw new ResponseStatusException(UNAUTHORIZED, "Authentication required");
-        }
-
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof UserEntity user) {
-            return user.getId();
-        }
-        if (principal instanceof CustomOAuth2User oauthUser) {
-            return oauthUser.getUser().getId();
-        }
-        throw new ResponseStatusException(UNAUTHORIZED, "Authentication required");
-    }
 }

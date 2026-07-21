@@ -13,9 +13,14 @@ public interface ICourseService {
 
     List<CourseDetailResponse> getAllCourseByTeacherId(Long teacherId);
 
+    CourseDetailResponse getCourseByTeacher(Long courseId, Long teacherId);
+
     Long createCourse(CourseRequest course, Long teacherId);
 
     List<CourseDetailResponse> getPendingCourses();
+    CourseDetailResponse updateCourse(Long courseId, CourseRequest courseRequest, Long teacherId);
 
     CourseDetailResponse approvePendingCourse(Long courseId);
+    void deleteCourse(Long courseId, Long teacherId);
+    com.app.features.courses.dto.response.DashboardStatsResponse getDashboardStats(Long teacherId);
 }

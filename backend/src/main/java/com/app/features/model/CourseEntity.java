@@ -1,10 +1,8 @@
 package com.app.features.model;
 
-import com.app.features.model.*;
 import com.app.features.model.enums.CourseStatus;
-import com.app.features.model.PlanEntity;
-import com.app.features.model.UserEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -12,6 +10,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.jspecify.annotations.NonNull;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -35,8 +34,14 @@ public class CourseEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @NotNull
+    @DecimalMin(value = "0.0", inclusive = true)
+    @Column(nullable = false, precision = 15, scale = 2)
     @Builder.Default
-    @OneToMany(mappedBy = "courseEntity", cascade = CascadeType.ALL)
+    private BigDecimal price = BigDecimal.ZERO;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "courseEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private java.util.List<ChapterEntity> chapterEntities = new java.util.ArrayList<>();
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -57,8 +62,9 @@ public class CourseEntity {
     @Column(name = "created_at", insertable = false, updatable = false)
     private Instant createdAt;
 
-    @Column(name = "updated_at", insertable = false, updatable = false)
+    @Column(name = "updated_at", insertable = false)
     private Instant updatedAt;
+
     @Builder.Default
     @NonNull
     @OneToMany(mappedBy = "course")
@@ -69,34 +75,29 @@ public class CourseEntity {
     private Set<CourseEnrollmentEntity> courseEnrollments = new LinkedHashSet<>();
     @Builder.Default
     @NonNull
-    @ManyToMany
-    @JoinTable(name = "course_plan_access", joinColumns = {@JoinColumn(name = "course_id")}, inverseJoinColumns = {@JoinColumn(name = "plan_id")})
-    private Set<PlanEntity> plans = new LinkedHashSet<>();
-    @Builder.Default
-    @NonNull
     @OneToMany(mappedBy = "course")
     private Set<CourseReviewEntity> courseReviews = new LinkedHashSet<>();
     @Builder.Default
     @NonNull
     @ManyToMany
-    @JoinTable(name = "course_tags", joinColumns = {@JoinColumn(name = "course_id")}, inverseJoinColumns = {@JoinColumn(name = "tag_id")})
+    @JoinTable(name = "course_tags", joinColumns = { @JoinColumn(name = "course_id") }, inverseJoinColumns = {
+            @JoinColumn(name = "tag_id") })
     private Set<TagEntity> tags = new LinkedHashSet<>();
 
     public void addTag(TagEntity tag) {
-        if(this.tags == null){
+        if (this.tags == null) {
             this.tags = new LinkedHashSet<>();
         }
         this.tags.add(tag);
     }
 
-    public void addPlan(PlanEntity plan) {
-        if(this.plans== null){
-            this.plans = new LinkedHashSet<>();
-        }
-        this.plans.add(plan);
-        if(plan.getCourses() == null){
-            plan.setCourses(new LinkedHashSet<>());
-        }
-        plan.getCourses().add(this);
+    public void addChapter(ChapterEntity chapter) {
+        chapterEntities.add(chapter);
+        chapter.setCourseEntity(this);
+    }
+
+    public void removeChapter(ChapterEntity chapter) {
+        chapterEntities.remove(chapter);
+        chapter.setCourseEntity(null);
     }
 }

@@ -7,13 +7,16 @@ import ViewCoursesPage from "../pages/catalog/ViewCoursesPage";
 import AboutPage from "../../../shared/components/about/AboutPage";
 import BlogPage from "../../../shared/components/blog/BlogPage";
 import ContactPage from "../../../shared/components/contact/ContactPage";
+import ProtectedRoute from "../../../app/routes/ProtectedRoute";
 import CourseManagementLayout from '../layouts/CourseManagementLayout'; 
 import CourseDashboardPage from '../pages/management/CourseDashboardPage';
 import ManageCoursesPage from '../pages/management/ManageCoursesPage';
-import StudentReviewsPage from '../pages/management/StudentReviewsPage';
+
 import CreateCoursePage from '../pages/management/CreateCoursePage';
 import EditCoursePage from '../pages/management/EditCoursePage';
 import CurriculumDesignPage from '../pages/management/CurriculumDesignPage';
+import QuizBuilderPage from '../pages/management/QuizBuilderPage';
+import QuizDashboardPage from '../pages/management/QuizDashboardPage';
 
 export const courseRoutes = [
     {
@@ -30,11 +33,19 @@ export const courseRoutes = [
     },
     {
         path: "/payment/checkout",
-        element: <PaymentCheckoutPage />
+        element: (
+            <ProtectedRoute requiredRole="STUDENT">
+                <PaymentCheckoutPage />
+            </ProtectedRoute>
+        )
     },
     {
         path: "/payment/result",
-        element: <PaymentResultPage />
+        element: (
+            <ProtectedRoute requiredRole="STUDENT">
+                <PaymentResultPage />
+            </ProtectedRoute>
+        )
     },
     {
         path: "/about",
@@ -53,7 +64,11 @@ export const courseRoutes = [
 export const managementCourseRoutes = [
     {
         path: "/management",
-        element: <CourseManagementLayout />,
+        element: (
+            <ProtectedRoute requiredRole="TEACHER">
+                <CourseManagementLayout />
+            </ProtectedRoute>
+        ),
         children: [
             { index: true, element: <Navigate to="dashboard" replace /> },
             { path: 'dashboard', element: <CourseDashboardPage /> },
@@ -61,7 +76,10 @@ export const managementCourseRoutes = [
             { path: 'courses/create', element: <CreateCoursePage /> },
             { path: 'courses/edit/:courseId', element: <EditCoursePage /> },
             { path: 'courses/:courseId/curriculum', element: <CurriculumDesignPage /> },
-            { path: 'reviews', element: <StudentReviewsPage /> },
+            { path: 'quizzes', element: <QuizDashboardPage /> },
+            { path: 'quizzes/create', element: <QuizBuilderPage /> },
+            { path: 'quizzes/edit/:quizId', element: <QuizBuilderPage /> },
+
         ]
     }
 ];

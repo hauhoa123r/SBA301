@@ -1,9 +1,14 @@
 import ViewProfilePage from "../pages/ViewProfilePage";
+import ProtectedRoute from "../../../app/routes/ProtectedRoute";
 
 const userRoutes = [
   {
     path: "/user/profile",
-    element: <ViewProfilePage />,
+    element: (
+      <ProtectedRoute>
+        <ViewProfilePage />
+      </ProtectedRoute>
+    ),
   },
 ];
 
