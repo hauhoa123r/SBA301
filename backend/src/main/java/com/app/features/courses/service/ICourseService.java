@@ -13,7 +13,11 @@ public interface ICourseService {
 
     List<CourseDetailResponse> getAllCourseByTeacherId(Long teacherId);
 
+    CourseDetailResponse getCourseByTeacher(Long courseId, Long teacherId);
+
     Long createCourse(CourseRequest course, Long teacherId);
 
+    CourseDetailResponse updateCourse(Long courseId, CourseRequest courseRequest, Long teacherId);
 
+    void deleteCourse(Long courseId, Long teacherId);
 }

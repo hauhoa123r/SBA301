@@ -5,6 +5,7 @@ import com.app.features.courses.dto.response.CourseCatalogResponse;
 import com.app.features.courses.dto.response.CourseDetailResponse;
 import com.app.features.courses.service.ICourseService;
 import com.app.utils.ApiPath;
+import com.app.utils.SecurityUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -30,15 +31,32 @@ public class CourseController {
 
     @GetMapping("/manage-course")
     public ResponseEntity<List<CourseDetailResponse>> getCourseByTeacherId() {
-        // Xử lí lấy id ở token sau
-        // Tạm thời hard code id
-        return ResponseEntity.ok(courseService.getAllCourseByTeacherId(4L));
+        Long currentTeacherId = SecurityUtils.getCurrentUserId();
+        return ResponseEntity.ok(courseService.getAllCourseByTeacherId(currentTeacherId));
+    }
+
+    @GetMapping("/manage-course/{id}")
+    public ResponseEntity<CourseDetailResponse> getCourseByTeacherId(@PathVariable Long id) {
+        Long currentTeacherId = SecurityUtils.getCurrentUserId();
+        return ResponseEntity.ok(courseService.getCourseByTeacher(id, currentTeacherId));
     }
 
     @PostMapping
-    public ResponseEntity<Long> getCourseByTeacherId(@Valid @RequestBody CourseRequest courseRequest) {
-        // Xử lí lấy id ở token sau
-        // Tạm thời hard code id
-        return ResponseEntity.ok(courseService.createCourse(courseRequest, 4l));
+    public ResponseEntity<Long> createCourse(@Valid @RequestBody CourseRequest courseRequest) {
+        Long currentTeacherId = SecurityUtils.getCurrentUserId();
+        return ResponseEntity.ok(courseService.createCourse(courseRequest, currentTeacherId));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CourseDetailResponse> updateCourse(@PathVariable Long id, @Valid @RequestBody CourseRequest courseRequest) {
+        Long currentTeacherId = SecurityUtils.getCurrentUserId();
+        return ResponseEntity.ok(courseService.updateCourse(id, courseRequest, currentTeacherId));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCourse(@PathVariable Long id) {
+        Long currentTeacherId = SecurityUtils.getCurrentUserId();
+        courseService.deleteCourse(id, currentTeacherId);
+        return ResponseEntity.noContent().build();
     }
 }

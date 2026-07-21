@@ -66,7 +66,7 @@ export default function EditCoursePage() {
         <div className="text-center">
           <p className="text-brand-danger font-medium mb-4">{error}</p>
           <button
-            onClick={() => navigate('/teacher/courses')}
+            onClick={() => navigate('/management/courses')}
             className="px-6 py-3 bg-brand-accent hover:bg-brand-accentHover text-brand-white font-medium rounded-lg transition-colors duration-200"
           >
             Go Back

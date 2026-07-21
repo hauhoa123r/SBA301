@@ -13,7 +13,7 @@ export default function CreateCoursePage() {
       setLoading(true);
       setError(null);
       await teacherService.createCourse(formData);
-      navigate('/teacher/courses', {
+      navigate('/management/courses', {
         state: { message: 'Course created successfully!' },
       });
     } catch (err) {

@@ -49,4 +49,5 @@ public interface ICourseRepository extends JpaRepository<CourseEntity,Long> {
             "where c.id = :courseId " +
             "group by c.id")
     CourseLessonStats getLessonStatsByCourseId(@Param("courseId") Long courseId);
+
 }

@@ -8,6 +8,15 @@ import {
 
 const courseManagementService = {
   
+  getCourseById: async (id) => {
+    try {
+      const response = await axiosInstance.get(`${API_COURSES}/manage-course/${id}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Error loading course details');
+    }
+  },
+
   getCourses: async () => {
     try {
       const response = await axiosInstance.get(`${API_COURSES}/manage-course`);
@@ -28,7 +37,7 @@ const courseManagementService = {
 
   updateCourse: async (id, data) => {
     try {
-      const response = await axiosInstance.put(`/courses/${id}`, data);
+      const response = await axiosInstance.put(`${API_COURSES}/${id}`, data);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Error updating course');
@@ -37,7 +46,7 @@ const courseManagementService = {
 
   deleteCourse: async (id) => {
     try {
-      const response = await axiosInstance.delete(`/courses/${id}`);
+      const response = await axiosInstance.delete(`${API_COURSES}/${id}`);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Error deleting course');
@@ -70,7 +79,7 @@ const courseManagementService = {
   // ─── Curriculum ─────────────────────────────────────────────────────────────
   getCurriculum: async (courseId) => {
     try {
-      const response = await axiosInstance.get(`/courses/${courseId}/curriculum`);
+      const response = await axiosInstance.get(`${API_COURSES}/${courseId}/curriculum`);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Error loading curriculum');
@@ -79,7 +88,7 @@ const courseManagementService = {
 
   updateCurriculum: async (courseId, chapters) => {
     try {
-      const response = await axiosInstance.put(`/courses/${courseId}/curriculum`, chapters);
+      const response = await axiosInstance.put(`${API_COURSES}/${courseId}/curriculum`, chapters);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Error updating curriculum');
