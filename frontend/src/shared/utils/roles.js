@@ -34,3 +34,46 @@ export const hasAnyRole = (user, allowedRoles = []) => {
     if (acceptedRoles.length === 0) return Boolean(user);
     return extractRoles(user).some((role) => acceptedRoles.includes(role));
 };
+
+export const hasRole = (user, requiredRole) => {
+    if (!requiredRole) return Boolean(user);
+    return extractRoles(user).includes(normalizeRole(requiredRole));
+};
+
+const ROLE_HOME_PATHS = {
+    student: "/",
+    user: "/",
+    teacher: "/management",
+    admin: "/admin",
+    moderator: "/moderator",
+};
+
+const ROLE_PROTECTED_PATHS = [
+    { prefix: "/management", role: "teacher" },
+    { prefix: "/admin", role: "admin" },
+    { prefix: "/moderator", role: "moderator" },
+    { prefix: "/payment", role: "student" },
+    { prefix: "/learning", role: "student" },
+];
+
+const AUTH_PATHS = ["/login", "/register", "/oauth/callback"];
+
+export const getRoleHomePath = (user) => {
+    const role = extractRoles(user).find((candidate) => ROLE_HOME_PATHS[candidate]);
+    return role ? ROLE_HOME_PATHS[role] : "/";
+};
+
+export const getPostLoginPath = (user, requestedPath = "") => {
+    const fallback = getRoleHomePath(user);
+    if (!requestedPath.startsWith("/") || requestedPath.startsWith("//")) return fallback;
+
+    const pathname = requestedPath.split(/[?#]/, 1)[0];
+    if (AUTH_PATHS.includes(pathname)) return fallback;
+
+    const protectedPath = ROLE_PROTECTED_PATHS.find(({ prefix }) =>
+        pathname === prefix || pathname.startsWith(`${prefix}/`)
+    );
+
+    if (protectedPath && !hasRole(user, protectedPath.role)) return fallback;
+    return requestedPath;
+};

@@ -5,6 +5,7 @@ import com.app.features.model.enums.PaymentProvider;
 import com.app.features.payments.dto.PaymentCreateRequest;
 import com.app.features.payments.dto.PaymentCreateResponse;
 import com.app.features.payments.dto.PaymentVerifyResponse;
+import com.app.features.payments.dto.PaymentSyncResponse;
 import com.app.features.payments.facade.PaymentFacade;
 import com.app.security.oauth.CustomOAuth2User;
 import com.app.utils.ApiPath;
@@ -13,9 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,11 +37,13 @@ public class PaymentController {
     @PostMapping("/create")
     @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<PaymentCreateResponse> createPayment(@Valid @RequestBody PaymentCreateRequest request, Authentication authentication) {
-        UserEntity user = (UserEntity) authentication.getPrincipal();
-
-        System.out.println(user.getId());
-        System.out.println(user.getEmail());
         return ResponseEntity.ok(paymentFacade.createPayment(request, authenticatedUserId(authentication)));
+    }
+
+    @PostMapping("/invoices/{invoiceId}/sync")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<PaymentSyncResponse> syncPayment(@PathVariable Long invoiceId, Authentication authentication) {
+        return ResponseEntity.ok(paymentFacade.syncPayment(invoiceId, authenticatedUserId(authentication)));
     }
 
     @GetMapping("/vnpay-return")

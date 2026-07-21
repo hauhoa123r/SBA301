@@ -55,6 +55,7 @@ class PaymentCallbackServiceImplTest {
                 "payOS success"
         );
         InvoiceEntity invoice = new InvoiceEntity();
+        invoice.setId(8L);
         invoice.setStatus(InvoiceStatus.PAID);
         PaymentEntity payment = new PaymentEntity();
         payment.setInvoice(invoice);
@@ -65,6 +66,7 @@ class PaymentCallbackServiceImplTest {
                 PaymentProvider.PAYOS,
                 "175000000000008"
         )).thenReturn(Optional.of(payment));
+        when(invoiceRepository.findByIdForUpdate(8L)).thenReturn(Optional.of(invoice));
 
         PaymentVerifyResponse result = service.handleCallback(PaymentProvider.PAYOS, params);
 
@@ -120,6 +122,7 @@ class PaymentCallbackServiceImplTest {
                 PaymentProvider.PAYOS,
                 "175000000000009"
         )).thenReturn(Optional.of(payment));
+        when(invoiceRepository.findByIdForUpdate(8L)).thenReturn(Optional.of(invoice));
         when(courseEnrollmentRepository.findByUser_IdAndCourse_Id(7L, 1L)).thenReturn(Optional.empty());
 
         assertSame(response, service.handleCallback(PaymentProvider.PAYOS, params));

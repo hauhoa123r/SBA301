@@ -48,20 +48,29 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
             throw new IllegalArgumentException("Invalid payment signature");
         }
 
+        return applyVerifiedResult(provider, verifyResponse, params);
+    }
+
+    @Override
+    @Transactional
+    public PaymentVerifyResponse applyVerifiedResult(PaymentProvider provider, PaymentVerifyResponse verifyResponse,
+                                                     Map<String, ?> details) {
         PaymentEntity payment = paymentRepository
                 .findFirstByProviderAndTransactionIdOrderByIdDesc(provider, verifyResponse.invoiceCode())
                 .orElseThrow(() -> {
                     log.warn("Payment callback has no matching payment, provider={}, transactionId={}", provider, verifyResponse.invoiceCode());
                     return new ResourceNotFoundException("Payment not found for transaction: " + verifyResponse.invoiceCode());
                 });
-        InvoiceEntity invoice = payment.getInvoice();
+        InvoiceEntity invoice = invoiceRepository.findByIdForUpdate(payment.getInvoice().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Invoice not found for payment: " + payment.getId()));
+        payment.setInvoice(invoice);
 
         if (invoice.getStatus() == InvoiceStatus.PAID) {
             log.info("Payment callback ignored because invoice is already paid, paymentId={}, invoiceId={}", payment.getId(), invoice.getId());
             return verifyResponse;
         }
 
-        paymentConverter.applyCallback(payment, provider, verifyResponse, params);
+        paymentConverter.applyCallback(payment, provider, verifyResponse, details);
         paymentRepository.save(payment);
 
         invoiceConverter.applyPaymentResult(invoice, verifyResponse.success());

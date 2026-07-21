@@ -13,5 +13,9 @@ public interface PaymentGateway {
 
     PaymentVerifyResponse verifyCallback(Map<String, String> params);
 
+    default PaymentGatewayStatus getPaymentStatus(String transactionId) {
+        throw new UnsupportedOperationException("Payment status lookup is not supported by " + provider());
+    }
+
     PaymentProvider provider();
 }
