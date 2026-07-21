@@ -34,7 +34,7 @@ public class AuthServiceImpl implements AuthService {
     private final RegisterConverter registerConverter;
     @Override
     public TokenResponse login(LoginRequest user) {
-        UserEntity userEntity = userRepositoryImpl.findByEmail(user.getEmail())
+        UserEntity userEntity = userRepositoryImpl.findByEmailWithRoles(user.getEmail())
                 .orElseThrow(() -> {
                     log.warn("Login failed because email does not exist, email={}", user.getEmail());
                     return new InvalidLoginException("Email không tồn tại");
@@ -62,3 +62,4 @@ public class AuthServiceImpl implements AuthService {
         return loginConverter.loginConverter(savedUser);
     }
 }
+

@@ -1,10 +1,14 @@
-package com.app.features.oauth;
+package com.app.features.oauth.service.impl;
 
 import com.app.features.auth.repository.UserRepository;
 import com.app.features.manager.repository.RoleRepository;
 import com.app.features.model.RoleEntity;
 import com.app.features.model.UserEntity;
 import com.app.features.model.enums.UserStatus;
+import com.app.features.oauth.converter.OAuthAccountConverter;
+import com.app.features.oauth.dto.OAuth2UserInfo;
+import com.app.features.oauth.repository.OAuthAccountRepository;
+import com.app.features.oauth.service.OAuthAccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -17,11 +21,13 @@ import java.util.Locale;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class OAuthAccountService {
+public class OAuthAccountServiceImpl implements OAuthAccountService {
     private final OAuthAccountRepository oauthAccountRepository;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final OAuthAccountConverter oauthAccountConverter;
 
+    @Override
     @Transactional
     public UserEntity findOrCreate(OAuth2UserInfo info) {
         if (info.providerUserId() == null || info.providerUserId().isBlank()) {
@@ -44,15 +50,10 @@ public class OAuthAccountService {
             throw oauthError("email_not_verified", "Provider email is not verified");
         }
 
-        UserEntity user = userRepository.findByEmail(email).orElseGet(() -> createUser(info, email));
+        UserEntity user = userRepository.findByEmailWithRoles(email).orElseGet(() -> createUser(info, email));
         ensureLoginAllowed(user);
 
-        OAuthAccountEntity account = new OAuthAccountEntity();
-        account.setUser(user);
-        account.setProvider(info.provider());
-        account.setProviderUserId(info.providerUserId());
-        account.setProviderEmail(email);
-        oauthAccountRepository.save(account);
+        oauthAccountRepository.save(oauthAccountConverter.toOAuthAccount(user, info, email));
         log.info("OAuth account linked, provider={}, userId={}", info.provider(), user.getId());
         return updateExisting(user, info);
     }
@@ -60,21 +61,12 @@ public class OAuthAccountService {
     private UserEntity createUser(OAuth2UserInfo info, String email) {
         RoleEntity role = roleRepository.findByName("STUDENT")
                 .orElseThrow(() -> oauthError("configuration_error", "Default role STUDENT is missing"));
-        UserEntity user = new UserEntity();
-        user.setEmail(email);
-        user.setFullName(nonBlank(info.fullName(), email.substring(0, email.indexOf('@'))));
-        user.setAvatarUrl(info.avatarUrl());
-        user.setPasswordHash("{oauth}");
-        user.setStatus(UserStatus.ACTIVE);
-        user.setTotalLearningPoints(0);
-        user.getRoles().add(role);
-        return userRepository.save(user);
+        return userRepository.save(oauthAccountConverter.toOAuthUser(info, email, role));
     }
 
     private UserEntity updateExisting(UserEntity user, OAuth2UserInfo info) {
         ensureLoginAllowed(user);
-        if (info.fullName() != null && !info.fullName().isBlank()) user.setFullName(info.fullName().trim());
-        if (info.avatarUrl() != null && !info.avatarUrl().isBlank()) user.setAvatarUrl(info.avatarUrl());
+        oauthAccountConverter.updateProfile(user, info);
         return userRepository.save(user);
     }
 
@@ -89,11 +81,8 @@ public class OAuthAccountService {
         return email.trim().toLowerCase(Locale.ROOT);
     }
 
-    private String nonBlank(String value, String fallback) {
-        return value == null || value.isBlank() ? fallback : value.trim();
-    }
-
     private OAuth2AuthenticationException oauthError(String code, String description) {
         return new OAuth2AuthenticationException(new OAuth2Error(code), description);
     }
 }
+

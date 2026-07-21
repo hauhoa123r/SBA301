@@ -11,7 +11,10 @@ import com.app.utils.ApiPath;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,8 +35,12 @@ public class PaymentController {
     private final PaymentFacade paymentFacade;
 
     @PostMapping("/create")
-    public ResponseEntity<PaymentCreateResponse> createPayment(@Valid @RequestBody PaymentCreateRequest request,
-                                                               Authentication authentication) {
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<PaymentCreateResponse> createPayment(@Valid @RequestBody PaymentCreateRequest request, Authentication authentication) {
+        UserEntity user = (UserEntity) authentication.getPrincipal();
+
+        System.out.println(user.getId());
+        System.out.println(user.getEmail());
         return ResponseEntity.ok(paymentFacade.createPayment(request, authenticatedUserId(authentication)));
     }
 

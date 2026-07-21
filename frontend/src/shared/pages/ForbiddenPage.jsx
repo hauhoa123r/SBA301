@@ -15,10 +15,10 @@ export default function ForbiddenPage() {
                         Access restricted
                     </p>
                     <h1 className="text-3xl font-bold text-slate-950">
-                        Can co quyen moderator
+                        Khong du quyen truy cap
                     </h1>
                     <p className="mt-3 text-sm leading-6 text-slate-600">
-                        Khu vuc nay chi danh cho tai khoan co role moderator. Neu dang nhap bang tai khoan learner, he thong se khong cho vao trang nay.
+                        Khu vuc nay chi danh cho tai khoan co vai tro phu hop. De thanh toan khoa hoc, vui long dang nhap bang tai khoan STUDENT.
                     </p>
                     <button
                         type="button"

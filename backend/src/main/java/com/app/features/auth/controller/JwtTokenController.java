@@ -46,15 +46,15 @@ public class JwtTokenController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
-        // The client discards its bearer tokens. Add a hashed refresh-token store for server-side revocation if required.
         return ResponseEntity.noContent().build();
     }
 
     private UserEntity activeUser(Long id) {
-        UserEntity user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(UNAUTHORIZED));
+        UserEntity user = userRepository.findByIdWithRoles(id).orElseThrow(() -> new ResponseStatusException(UNAUTHORIZED));
         if (user.getStatus() != UserStatus.ACTIVE) throw new ResponseStatusException(UNAUTHORIZED);
         return user;
     }
 
     public record RefreshRequest(@NotBlank String refreshToken) {}
 }
+

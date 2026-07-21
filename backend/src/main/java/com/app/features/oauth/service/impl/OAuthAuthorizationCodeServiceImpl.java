@@ -1,6 +1,9 @@
-package com.app.features.oauth;
+package com.app.features.oauth.service.impl;
 
 import com.app.features.model.UserEntity;
+import com.app.features.oauth.entity.OAuthAuthorizationCodeEntity;
+import com.app.features.oauth.repository.OAuthAuthorizationCodeRepository;
+import com.app.features.oauth.service.OAuthAuthorizationCodeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -19,11 +22,12 @@ import java.util.Base64;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class OAuthAuthorizationCodeService {
+public class OAuthAuthorizationCodeServiceImpl implements OAuthAuthorizationCodeService {
     private static final Duration TTL = Duration.ofSeconds(60);
     private final OAuthAuthorizationCodeRepository repository;
     private final SecureRandom secureRandom = new SecureRandom();
 
+    @Override
     @Transactional
     public String create(UserEntity user) {
         byte[] random = new byte[32];
@@ -37,6 +41,7 @@ public class OAuthAuthorizationCodeService {
         return rawCode;
     }
 
+    @Override
     @Transactional
     public UserEntity consume(String rawCode) {
         if (rawCode == null || rawCode.isBlank()) throw invalidCode();
@@ -47,7 +52,9 @@ public class OAuthAuthorizationCodeService {
             log.warn("OAuth authorization code expired");
             throw new OAuth2AuthenticationException(new OAuth2Error("authorization_code_expired"));
         }
-        return entity.getUser();
+        UserEntity user = entity.getUser();
+        user.getRoles().size();
+        return user;
     }
 
     private OAuth2AuthenticationException invalidCode() {
@@ -63,3 +70,4 @@ public class OAuthAuthorizationCodeService {
         }
     }
 }
+

@@ -3,6 +3,8 @@ import { useEffect, useId, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UserImage from "../../../../shared/components/animation/UserImage";
 import { createPayment } from "../../services/api/payment.service";
+import useAuth from "../../../../app/provider/useAuth";
+import { hasAnyRole } from "../../../../shared/utils/roles";
 
 const PAYMENT_METHODS = [
     { value: "VNPAY", label: "VNPay", description: "Thanh toán qua cổng VNPay", icon: Landmark },
@@ -36,6 +38,7 @@ const FOCUSABLE_ELEMENTS = [
 
 export default function PaymentMethodModal({ course, open, couponCode, finalPrice, discountAmount, onClose }) {
     const navigate = useNavigate();
+    const { user } = useAuth();
     const [provider, setProvider] = useState("VNPAY");
     const [payment, setPayment] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -114,10 +117,13 @@ export default function PaymentMethodModal({ course, open, couponCode, finalPric
     };
 
     const handleCreatePayment = async () => {
-        const hasSession = localStorage.getItem("token") || localStorage.getItem("refreshToken");
-        if (!hasSession) {
+        if (!user) {
             const returnTo = `${window.location.pathname}${window.location.search}`;
             navigate(`/login?returnTo=${encodeURIComponent(returnTo)}`);
+            return;
+        }
+        if (!hasAnyRole(user, ["STUDENT"])) {
+            navigate("/forbidden");
             return;
         }
 

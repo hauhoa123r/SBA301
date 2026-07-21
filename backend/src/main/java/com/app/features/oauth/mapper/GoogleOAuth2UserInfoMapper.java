@@ -1,5 +1,7 @@
-package com.app.features.oauth;
+package com.app.features.oauth.mapper;
 
+import com.app.features.oauth.dto.OAuth2UserInfo;
+import com.app.features.oauth.entity.AuthProvider;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
