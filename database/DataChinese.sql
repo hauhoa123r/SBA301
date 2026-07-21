@@ -177,7 +177,7 @@ INSERT INTO lesson_documents (id, lesson_id, title, file_url, created_at) VALUES
 (8, 29, 'Transcript nghe chu de an uong', 'https://cdn.chineselearning.vn/docs/nghe-an-uong.pdf', '2026-03-07 09:00:00');
 
 -- 16. quizzes
-INSERT INTO quizzes (id, title, lesson_id, chapter_id, time_limit_minutes, pass_score, created_at) VALUES
+INSERT INTO quizzes (id, title, teacher_id, lesson_id, chapter_id, time_limit_minutes, pass_score, created_at) VALUES
 (3, 'Dien tu vung so dem', 6, NULL, 10, 70, '2026-02-12 10:00:00'),
 (4, 'Noi tu HSK 1', NULL, 4, 15, 70, '2026-02-12 10:10:00'),
 (5, 'Nghe hieu HSK 2 tranh anh', 11, NULL, 20, 70, '2026-02-14 10:00:00'),
@@ -558,7 +558,7 @@ VALUES
 -- Seed Quizzes for Lesson 1
 DELETE FROM quizzes WHERE lesson_id = @lesson_1_id;
 
-INSERT INTO quizzes (title, lesson_id, chapter_id, time_limit_minutes, pass_score)
+INSERT INTO quizzes (title, teacher_id, lesson_id, chapter_id, time_limit_minutes, pass_score)
 VALUES ('Bài trắc nghiệm Lesson 1: Hỏi thông tin cá nhân', @lesson_1_id, @chapter_3_id, 10, 50);
 
 SET @quiz_1_id = LAST_INSERT_ID();
@@ -945,8 +945,8 @@ INSERT INTO sentence_patterns (lesson_id, chinese_text, pinyin_text, vietnamese_
 (3, '他在公司担任销售经理，主要负责客户服务。', 'Tā zài gōngsī dānrèn xiāoshòu jīnglǐ, zhǔyào fùzé kèhù fúwù.', 'Anh ấy đảm nhiệm chức vụ quản lý kinh doanh tại công ty, chịu trách nhiệm chính về mảng chăm sóc khách hàng.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051197/MC2-2_vvy4no.mp3', 4);
 
 -- Quiz
-INSERT INTO quizzes (title, lesson_id, time_limit_minutes, pass_score) VALUES
-('Trắc nghiệm Chapter 2 Lesson 1', 3, 15, 50);
+INSERT INTO quizzes (title, teacher_id, lesson_id, time_limit_minutes, pass_score) VALUES
+('Trắc nghiệm Chapter 2 Lesson 1', 4, 3, 15, 50);
 SET @c2_l1_quiz_id = LAST_INSERT_ID();
 
 -- Quiz Questions & Answers
@@ -1075,8 +1075,8 @@ INSERT INTO sentence_patterns (lesson_id, chinese_text, pinyin_text, vietnamese_
 (4, '我们提供人工智能学习 platform。', 'Wǒmen tígōng réngōng zhìnéng xuéxí píngtái.', 'Chúng tôi cung cấp nền tảng học tập trí tuệ nhân tạo.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051589/MC3-1_aqogd3.mp3', 4);
 
 -- Quiz
-INSERT INTO quizzes (title, lesson_id, time_limit_minutes, pass_score) VALUES
-('Trắc nghiệm Chapter 2 Lesson 2', 4, 15, 50);
+INSERT INTO quizzes (title, teacher_id, lesson_id, time_limit_minutes, pass_score) VALUES
+('Trắc nghiệm Chapter 2 Lesson 2', 4, 4, 15, 50);
 SET @c2_l2_quiz_id = LAST_INSERT_ID();
 
 -- Quiz Questions & Answers
@@ -1260,8 +1260,8 @@ INSERT INTO sentence_patterns (lesson_id, chinese_text, pinyin_text, vietnamese_
 (1, '认识您，我也很高兴。', 'Rènshi nín, wǒ yě hěn gāoxìng.', 'Được làm quen với bạn, tôi cũng rất vui.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784046978/MC2-2_hnbhbd.mp3', 4);
 
 -- Quiz
-INSERT INTO quizzes (title, lesson_id, time_limit_minutes, pass_score) VALUES
-('Trắc nghiệm Chapter 1 Lesson 1', 1, 15, 50);
+INSERT INTO quizzes (title, teacher_id, lesson_id, time_limit_minutes, pass_score) VALUES
+('Trắc nghiệm Chapter 1 Lesson 1', 4, 1, 15, 50);
 SET @c1_l1_quiz_id = LAST_INSERT_ID();
 
 -- Quiz Questions & Answers
@@ -1463,8 +1463,8 @@ INSERT INTO sentence_patterns (lesson_id, chinese_text, pinyin_text, vietnamese_
 (2, '欢迎加入我们的团队，现在我带你去认识一下车间的同事。', 'Huānyíng jiārù wǒmen de tuánduì, xiànzài wǒ dài nǐ qù rènshi yíxià chējiān de tóngshì.', 'Chào mừng cậu gia nhập đội ngũ chúng ta, bây giờ tôi dẫn cậu đi làm quen đồng nghiệp trong phân xưởng.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047057/MC2-2_ckgs9b.mp3', 4);
 
 -- Quiz
-INSERT INTO quizzes (title, lesson_id, time_limit_minutes, pass_score) VALUES
-('Trắc nghiệm Chapter 1 Lesson 2', 2, 15, 50);
+INSERT INTO quizzes (title, teacher_id, lesson_id, time_limit_minutes, pass_score) VALUES
+('Trắc nghiệm Chapter 1 Lesson 2', 4, 2, 15, 50);
 SET @c1_l2_quiz_id = LAST_INSERT_ID();
 
 -- Question 1
@@ -1651,8 +1651,8 @@ INSERT INTO sentence_patterns (lesson_id, chinese_text, pinyin_text, vietnamese_
 (35, '刚开始不熟悉很正常，别着急，慢慢来。', 'Gāng kāishǐ bù shúxī hěn zhèngcháng, bié zháojí, mànmàn lái.', 'Mới đầu chưa quen là chuyện bình thường, đừng vội vàng, cứ từ từ làm.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047738/MC2-2_uey1nc.mp3', 4);
 
 -- Quiz
-INSERT INTO quizzes (title, lesson_id, time_limit_minutes, pass_score) VALUES
-('Trắc nghiệm Chapter 1 Lesson 3', 35, 15, 50);
+INSERT INTO quizzes (title, teacher_id, lesson_id, time_limit_minutes, pass_score) VALUES
+('Trắc nghiệm Chapter 1 Lesson 3', 4, 35, 15, 50);
 SET @c1_l3_quiz_id = LAST_INSERT_ID();
 
 -- Question 1

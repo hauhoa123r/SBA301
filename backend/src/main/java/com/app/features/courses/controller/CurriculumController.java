@@ -4,6 +4,7 @@ import com.app.features.courses.dto.request.ChapterRequest;
 import com.app.features.courses.dto.response.ChapterResponse;
 import com.app.features.courses.service.ICurriculumService;
 import com.app.utils.ApiPath;
+import com.app.utils.SecurityUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +22,8 @@ import java.util.Map;
         public ResponseEntity<?> updateCurriculum(
                 @PathVariable("courseId") Long courseId,
                 @Valid @RequestBody List<ChapterRequest> chapterRequests) {
-
-            curriculumService.updateCurriculum(courseId, chapterRequests);
+            Long currentTeacherId = SecurityUtils.getCurrentUserId();
+            curriculumService.updateCurriculum(courseId, chapterRequests, currentTeacherId);
             return ResponseEntity.ok(Map.of("message", "Curriculum updated"));
         }
 

@@ -1,5 +1,5 @@
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { BarChart3, BookOpen, Star, Settings, LogOut } from 'lucide-react';
+import { BarChart3, BookOpen, Star, Settings, LogOut, FileQuestion } from 'lucide-react';
 import useAuth from '../../app/provider/useAuth';
 
 export default function TeacherSidebar({ sidebarOpen, onClose }) {
@@ -27,9 +27,9 @@ export default function TeacherSidebar({ sidebarOpen, onClose }) {
       icon: BookOpen,
     },
     {
-      path: '/management/reviews',
-      label: 'Student Reviews',
-      icon: Star,
+      path: '/management/quizzes',
+      label: 'Quiz Bank',
+      icon: FileQuestion,
     },
   ];
 

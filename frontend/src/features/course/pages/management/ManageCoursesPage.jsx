@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, TrendingUp, Users, BookOpen } from 'lucide-react';
 import CourseCard from '../../components/management/ManageCourseCard';
+import ConfirmDeleteModal from '@/features/course/components/management/curriculum-builder/modals/ConfirmDeleteModal';
 import teacherService from '@/features/course/services/api/courseManagementService';
 
 export default function ManageCoursesPage() {
@@ -9,24 +10,26 @@ export default function ManageCoursesPage() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [courseToDelete, setCourseToDelete] = useState(null);
 
   useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        setLoading(true);
-        const response = await teacherService.getCourses();
-        setCourses(response.data || response || []);
-        setError(null);
-      } catch (err) {
-        setError(err.message || 'Failed to load course list');
-        setCourses([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchCourses();
   }, []);
+
+  const fetchCourses = async () => {
+    try {
+      setLoading(true);
+      const response = await teacherService.getCourses();
+      setCourses(response.data || response || []);
+      setError(null);
+    } catch (err) {
+      setError(err.message || 'Failed to load course list');
+      setCourses([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleCreateCourse = () => {
     navigate('/management/courses/create');
@@ -38,6 +41,24 @@ export default function ManageCoursesPage() {
 
   const handleDesignCurriculum = (course) => {
     navigate(`/management/courses/${course.id}/curriculum`, { state: { course } });
+  };
+
+  const handleDeleteClick = (course) => {
+    setCourseToDelete(course);
+    setDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!courseToDelete) return;
+    try {
+      setLoading(true);
+      await teacherService.deleteCourse(courseToDelete.id);
+      setError(null); // clear any previous error
+      await fetchCourses(); // reload list
+    } catch (err) {
+      setError(err.message || 'Error deleting course');
+      setLoading(false);
+    }
   };
 
   return (
@@ -127,12 +148,21 @@ export default function ManageCoursesPage() {
                   course={course}
                   onEdit={handleEditCourse}
                   onDesignCurriculum={handleDesignCurriculum}
+                  onDelete={handleDeleteClick}
                 />
               ))}
             </div>
           )}
         </>
       )}
+
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={confirmDelete}
+        title="Delete Course"
+        message={`Are you sure you want to delete the course "${courseToDelete?.title}"? This action will permanently remove all related chapters and lessons.`}
+      />
     </div>
   );
 }

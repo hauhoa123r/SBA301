@@ -1,5 +1,6 @@
-import { GripVertical, ChevronDown, ChevronUp, Edit2, Trash2, Plus, BookOpen } from 'lucide-react';
+import { GripVertical, ChevronDown, ChevronUp, Edit2, Trash2, Plus, BookOpen, FileQuestion } from 'lucide-react';
 import LessonRow from './LessonRow';
+import QuizRow from './QuizRow';
 
 /**
  * ChapterNode — A single chapter card in the curriculum canvas.
@@ -25,9 +26,14 @@ export default function ChapterNode({
   onAddLesson,
   onEditLesson,
   onDeleteLesson,
+  onAddQuiz,
+  onEditQuiz,
+  onDeleteQuiz,
   onManageDocuments,
 }) {
   const lessonCount = chapter.lessons?.length ?? 0;
+  const quizCount = chapter.quizzes?.length ?? 0;
+  const totalItems = lessonCount + quizCount;
 
   return (
     <div
@@ -79,7 +85,7 @@ export default function ChapterNode({
           </div>
 
           <span className="ml-auto text-[11px] font-semibold text-brand-mutedText bg-brand-dark/50 px-2.5 py-1 rounded-full flex-shrink-0 ring-1 ring-brand-borderSoft/50">
-            {lessonCount} {lessonCount === 1 ? 'lesson' : 'lessons'}
+            {totalItems} {totalItems === 1 ? 'item' : 'items'}
           </span>
         </button>
 
@@ -107,6 +113,14 @@ export default function ChapterNode({
             <Plus className="w-3.5 h-3.5" />
             Add Lesson
           </button>
+          <button
+            onClick={onAddQuiz}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold bg-brand-info/15 text-brand-info hover:bg-brand-info hover:text-brand-white rounded-lg transition-all duration-200 hover:shadow-md hover:shadow-brand-info/20"
+            title="Add quiz to this chapter"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Add Quiz
+          </button>
         </div>
       </div>
 
@@ -118,17 +132,28 @@ export default function ChapterNode({
         `}
       >
         <div className="px-4 py-3 space-y-2">
-          {lessonCount > 0 ? (
-            chapter.lessons.map((lesson, idx) => (
-              <LessonRow
-                key={lesson.id}
-                lesson={lesson}
-                lessonIndex={idx}
-                onEdit={() => onEditLesson(lesson)}
-                onDelete={() => onDeleteLesson(lesson)}
-                onDocuments={() => onManageDocuments(lesson.id)}
-              />
-            ))
+          {totalItems > 0 ? (
+            <>
+              {chapter.lessons?.map((lesson, idx) => (
+                <LessonRow
+                  key={lesson.id}
+                  lesson={lesson}
+                  lessonIndex={idx}
+                  onEdit={() => onEditLesson(lesson)}
+                  onDelete={() => onDeleteLesson(lesson)}
+                  onDocuments={() => onManageDocuments(lesson.id)}
+                />
+              ))}
+              {chapter.quizzes?.map((quiz, idx) => (
+                <QuizRow
+                  key={`quiz-${quiz.id}`}
+                  quiz={quiz}
+                  quizIndex={idx}
+                  onEdit={() => onEditQuiz(quiz)}
+                  onDelete={() => onDeleteQuiz(quiz)}
+                />
+              ))}
+            </>
           ) : (
             <div className="flex flex-col items-center py-10 text-brand-mutedText/50">
               <div className="w-12 h-12 rounded-full bg-brand-dark/40 flex items-center justify-center mb-3">
@@ -136,13 +161,22 @@ export default function ChapterNode({
               </div>
               <p className="text-sm font-medium mb-1">No lessons yet</p>
               <p className="text-xs text-brand-mutedText/40 mb-3">Add your first lesson to this chapter</p>
-              <button
-                onClick={onAddLesson}
-                className="flex items-center gap-1.5 text-sm font-medium text-brand-accentSoft hover:text-brand-accent px-4 py-2 rounded-lg border border-dashed border-brand-borderSoft hover:border-brand-accent transition-all"
-              >
-                <Plus className="w-4 h-4" />
-                Add First Lesson
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={onAddLesson}
+                  className="flex items-center gap-1.5 text-sm font-medium text-brand-accentSoft hover:text-brand-accent px-4 py-2 rounded-lg border border-dashed border-brand-borderSoft hover:border-brand-accent transition-all"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add First Lesson
+                </button>
+                <button
+                  onClick={onAddQuiz}
+                  className="flex items-center gap-1.5 text-sm font-medium text-brand-info hover:text-brand-info/80 px-4 py-2 rounded-lg border border-dashed border-brand-borderSoft hover:border-brand-info transition-all"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add First Quiz
+                </button>
+              </div>
             </div>
           )}
         </div>

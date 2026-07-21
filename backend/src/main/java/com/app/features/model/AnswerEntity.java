@@ -22,6 +22,7 @@ public class AnswerEntity {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
+    @Builder.Default
     @Column(name = "is_correct", nullable = false)
     private Boolean isCorrect = false;
     @Lob
