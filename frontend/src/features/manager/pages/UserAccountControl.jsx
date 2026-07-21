@@ -60,7 +60,7 @@ export default function UserAccountControl() {
     <div className="p-6 text-white">
       <Toast toast={toast} />
 
-      <h1 className="text-2xl font-bold mb-5">User Account Control</h1>
+      <h1 className="text-2xl font-bold mb-5">Kiểm soát tài khoản người dùng</h1>
 
       <SearchFilter
         keyword={keyword}
@@ -89,7 +89,7 @@ export default function UserAccountControl() {
 
       {confirmModal && (
         <ConfirmModal 
-          title="Confirm" 
+          title="Xác nhận" 
           onClose={() => setConfirmModal(null)} 
           onConfirm={handleConfirm} 
         />

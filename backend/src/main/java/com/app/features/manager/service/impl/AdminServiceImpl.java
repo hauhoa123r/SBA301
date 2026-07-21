@@ -34,6 +34,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AdminServiceImpl implements AdminService {
 
+    private static final String ROLE_ADMIN = "ADMIN";
+    private static final List<String> MANAGEABLE_ROLE_NAMES = List.of("MODERATOR", "TEACHER", "STUDENT");
+
     private final AdminUserRepository adminUserRepository;
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
@@ -116,18 +119,37 @@ public class AdminServiceImpl implements AdminService {
         UserEntity user = adminUserRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
 
-        // Clear existing roles
-        user.getRoles().clear();
-
-        // Assign new roles
-        if (request.getRoleIds() != null) {
-            for (Long roleId : request.getRoleIds()) {
-                RoleEntity role = roleRepository.findById(roleId)
-                        .orElseThrow(() -> new RuntimeException("Role not found with id: " + roleId));
-                user.getRoles().add(role);
-            }
+        List<Long> requestedRoleIds = request.getRoleIds();
+        if (requestedRoleIds == null || requestedRoleIds.size() != 1) {
+            throw new RuntimeException("Exactly one role must be selected for this account");
         }
-        
+
+        boolean isAdminAccount = user.getRoles().stream()
+                .map(RoleEntity::getName)
+                .anyMatch(ROLE_ADMIN::equalsIgnoreCase);
+        if (isAdminAccount) {
+            throw new RuntimeException("ADMIN accounts cannot be assigned to another role");
+        }
+
+        boolean hasManageableCurrentRole = user.getRoles().stream()
+                .map(RoleEntity::getName)
+                .filter(roleName -> roleName != null && !roleName.isBlank())
+                .map(roleName -> roleName.trim().toUpperCase())
+                .anyMatch(MANAGEABLE_ROLE_NAMES::contains);
+        if (!hasManageableCurrentRole) {
+            throw new RuntimeException("Only MODERATOR, TEACHER or STUDENT accounts can be reassigned");
+        }
+
+        RoleEntity targetRole = roleRepository.findById(requestedRoleIds.get(0))
+                .orElseThrow(() -> new RuntimeException("Role not found with id: " + requestedRoleIds.get(0)));
+
+        String normalizedTargetRoleName = targetRole.getName() == null ? "" : targetRole.getName().trim().toUpperCase();
+        if (!MANAGEABLE_ROLE_NAMES.contains(normalizedTargetRoleName)) {
+            throw new RuntimeException("Role must be one of MODERATOR, TEACHER or STUDENT");
+        }
+
+        user.getRoles().clear();
+        user.getRoles().add(targetRole);
         user = adminUserRepository.save(user);
         return toUserAdminResponse(user);
     }

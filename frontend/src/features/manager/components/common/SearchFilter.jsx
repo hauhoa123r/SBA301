@@ -18,10 +18,10 @@ export default function SearchFilter({
                 onChange={(e) => setFilterStatus(e.target.value)}
                 className="bg-gray-800 rounded-xl px-4 outline-none focus:ring-1 focus:ring-purple-500 cursor-pointer"
             >
-                <option value="">All</option>
-                <option value="ACTIVE">Active</option>
-                <option value="LOCKED">Locked</option>
-                <option value="DELETED">Deleted</option>
+                <option value="">Tất cả</option>
+                <option value="ACTIVE">Hoạt động</option>
+                <option value="LOCKED">Đã khóa</option>
+                <option value="DELETED">Đã xóa</option>
             </select>
         </div>
     );

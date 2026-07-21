@@ -1,14 +1,14 @@
 const STATUS_CONFIG = {
     ACTIVE: {
-        label: "Active",
+        label: "Hoạt động",
         style: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
     },
     LOCKED: {
-        label: "Locked",
+        label: "Đã khóa",
         style: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
     },
     DELETED: {
-        label: "Deleted",
+        label: "Đã xóa",
         style: "bg-red-500/10 text-red-400 border-red-500/20",
     },
 };
@@ -17,11 +17,10 @@ export default function UserTable({ users, onLock, onDelete }) {
         <table className="w-full text-left border-collapse">
             <thead>
                 <tr className="bg-gray-800">
-                    <th className="p-4">User</th>
+                    <th className="p-4">Người dùng</th>
                     <th>Email</th>
-                    <th>Status</th>
-                    <th>Points</th>
-                    <th>Action</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
                 </tr>
             </thead>
             <tbody>
@@ -39,7 +38,6 @@ export default function UserTable({ users, onLock, onDelete }) {
                                     {status.label}
                                 </span>
                             </td>
-                            <td>{user.totalLearningPoints ?? 0} pts</td>
                             <td>
                                 <div className="flex gap-2">
                                     {user.status !== "DELETED" && (
@@ -50,7 +48,7 @@ export default function UserTable({ users, onLock, onDelete }) {
                                                     : "text-green-400 border-green-500/30 hover:bg-green-500/10"
                                                 }`}
                                         >
-                                            {user.status === "ACTIVE" ? "Lock" : "Unlock"}
+                                            {user.status === "ACTIVE" ? "Khóa" : "Mở khóa"}
                                         </button>
                                     )}
 
@@ -58,7 +56,7 @@ export default function UserTable({ users, onLock, onDelete }) {
                                         onClick={() => onDelete(user)}
                                         className="px-3 py-1.5 rounded-lg text-xs text-red-400 border border-red-500/30 hover:bg-red-500/10"
                                     >
-                                        Delete
+                                        Xóa
                                     </button>
                                 </div>
                             </td>
