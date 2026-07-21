@@ -27,6 +27,14 @@ export const getUserById = async (id) => {
 };
 
 /**
+ * Tạo user mới
+ */
+export const createUser = async (data) => {
+    const response = await api.post("/api/admin/users", data);
+    return response.data;
+};
+
+/**
  * Cập nhật thông tin user
  */
 export const updateUser = async (id, data) => {

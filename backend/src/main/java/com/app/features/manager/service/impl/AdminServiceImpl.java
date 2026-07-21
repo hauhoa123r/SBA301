@@ -1,6 +1,7 @@
 package com.app.features.manager.service.impl;
 
 import com.app.features.manager.dto.request.RoleRequest;
+import com.app.features.manager.dto.request.UserCreateRequest;
 import com.app.features.manager.dto.request.UserRoleRequest;
 import com.app.features.manager.dto.request.UserStatusRequest;
 import com.app.features.manager.dto.request.UserUpdateRequest;
@@ -43,7 +44,7 @@ public class AdminServiceImpl implements AdminService {
     private final RolePermissionRepository rolePermissionRepository;
     private final UserRoleRepository userRoleRepository;
 
-    // ===== USER MANAGEMENT =====
+    //USER MANAGEMENT
 
     @Override
     public Page<UserAdminResponse> getAllUsers(String keyword, String status, Pageable pageable) {
@@ -69,6 +70,36 @@ public class AdminServiceImpl implements AdminService {
                     return new RuntimeException("User not found with id: " + id);
                 });
         return toUserAdminResponse(user);
+    }
+
+    @Override
+    @Transactional
+    public UserAdminResponse createUser(UserCreateRequest request) {
+        String normalizedEmail = request.getEmail().trim().toLowerCase();
+        if (adminUserRepository.existsByEmail(normalizedEmail)) {
+            throw new RuntimeException("Email đã được sử dụng: " + normalizedEmail);
+        }
+
+        RoleEntity role = roleRepository.findById(request.getRoleId())
+                .orElseThrow(() -> new RuntimeException("Role not found with id: " + request.getRoleId()));
+
+        String normalizedRoleName = role.getName() == null ? "" : role.getName().trim().toUpperCase();
+        if (!MANAGEABLE_ROLE_NAMES.contains(normalizedRoleName)) {
+            throw new RuntimeException("Vai trò phải là MODERATOR, TEACHER hoặc STUDENT");
+        }
+
+        UserEntity user = new UserEntity();
+        user.setFullName(request.getFullName().trim());
+        user.setEmail(normalizedEmail);
+        user.setPasswordHash(request.getPassword());
+        user.setStatus(UserStatus.ACTIVE);
+        user.setTotalLearningPoints(0);
+        user.getRoles().clear();
+        user.getRoles().add(role);
+
+        UserEntity savedUser = adminUserRepository.save(user);
+        log.info("Admin user created successfully, userId={}, role={}", savedUser.getId(), normalizedRoleName);
+        return toUserAdminResponse(savedUser);
     }
 
     @Override
@@ -228,7 +259,7 @@ public class AdminServiceImpl implements AdminService {
         log.info("Role deleted successfully, roleId={}", id);
     }
 
-    // ===== PERMISSION MANAGEMENT =====
+    //PERMISSION MANAGEMENT
 
     @Override
     public List<PermissionResponse> getAllPermissions() {
@@ -242,7 +273,7 @@ public class AdminServiceImpl implements AdminService {
                 .collect(Collectors.toList());
     }
 
-    // ===== PRIVATE HELPERS =====
+    //PRIVATE HELPERS
 
     private void assignPermissionsToRole(RoleEntity role, List<Long> permissionIds) {
         if (permissionIds == null || permissionIds.isEmpty()) return;

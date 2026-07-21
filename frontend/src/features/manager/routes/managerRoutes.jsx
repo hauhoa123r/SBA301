@@ -1,18 +1,15 @@
+import React from "react";
 import { Navigate } from "react-router-dom";
 import ManagerLayout from "../layouts/ManagerLayout";
 import UserManager from "../pages/UserManager";
 import RoleManager from "../pages/RoleManager";
 import UserAccountControl from "../pages/UserAccountControl";
-import ProtectedRoute from "../../../app/routes/ProtectedRoute";
+import AuditLogPage from "../pages/AuditLogPage";
 
 const managerRoutes = [
     {
         path: "/admin",
-        element: (
-            <ProtectedRoute requiredRole="ADMIN">
-                <ManagerLayout />
-            </ProtectedRoute>
-        ),
+        element: <ManagerLayout />,
         children: [
             {
                 index: true,
@@ -29,6 +26,10 @@ const managerRoutes = [
             {
                 path: "roles",
                 element: <RoleManager />,
+            },
+            {
+                path: "audit-logs",
+                element: <AuditLogPage />,
             },
         ],
     },

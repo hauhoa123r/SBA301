@@ -1,6 +1,7 @@
 package com.app.features.manager.service;
 
 import com.app.features.manager.dto.request.RoleRequest;
+import com.app.features.manager.dto.request.UserCreateRequest;
 import com.app.features.manager.dto.request.UserRoleRequest;
 import com.app.features.manager.dto.request.UserStatusRequest;
 import com.app.features.manager.dto.request.UserUpdateRequest;
@@ -18,6 +19,8 @@ public interface AdminService {
     Page<UserAdminResponse> getAllUsers(String keyword, String status, Pageable pageable);
 
     UserAdminResponse getUserById(Long id);
+
+    UserAdminResponse createUser(UserCreateRequest request);
 
     UserAdminResponse updateUser(Long id, UserUpdateRequest request);
 
