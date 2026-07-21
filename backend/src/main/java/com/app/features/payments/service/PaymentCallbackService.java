@@ -7,4 +7,7 @@ import java.util.Map;
 
 public interface PaymentCallbackService {
     PaymentVerifyResponse handleCallback(PaymentProvider provider, Map<String, String> params);
+
+    PaymentVerifyResponse applyVerifiedResult(PaymentProvider provider, PaymentVerifyResponse verifyResponse,
+                                              Map<String, ?> details);
 }

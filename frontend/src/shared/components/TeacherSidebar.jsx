@@ -1,18 +1,20 @@
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { BarChart3, BookOpen, Star, Settings, LogOut } from 'lucide-react';
 import useAuth from '../../app/provider/useAuth';
+import { logout } from '../../features/auth/service/authService';
 
 export default function TeacherSidebar({ sidebarOpen, onClose }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { setUser } = useAuth();
 
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
-    setUser(null);
-    navigate('/login', { replace: true });
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } finally {
+      setUser(null);
+      navigate('/login', { replace: true });
+    }
   };
 
   const sidebarItems = [

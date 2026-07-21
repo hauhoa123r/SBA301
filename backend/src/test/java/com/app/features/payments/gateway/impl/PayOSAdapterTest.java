@@ -1,6 +1,7 @@
 package com.app.features.payments.gateway.impl;
 
 import com.app.features.payments.dto.PaymentVerifyResponse;
+import com.app.features.payments.gateway.PaymentGatewayStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -60,6 +61,28 @@ class PayOSAdapterTest {
 
         assertTrue(exception.getMessage().contains("code=231"));
         assertTrue(exception.getMessage().contains("Payment order already exists"));
+    }
+
+    @Test
+    void extractPaymentStatusReturnsPaidAmountAndOrderCode() {
+        PayOSAdapter adapter = new PayOSAdapter();
+
+        PaymentGatewayStatus status = adapter.extractPaymentStatus(Map.of(
+                "code", "00",
+                "desc", "success",
+                "data", Map.of(
+                        "id", "payment-link-id",
+                        "orderCode", 175000000000008L,
+                        "amountPaid", 199000,
+                        "status", "PAID"
+                )
+        ));
+
+        assertEquals("175000000000008", status.transactionId());
+        assertEquals("PAID", status.status());
+        assertEquals(0, status.amountPaid().compareTo(new java.math.BigDecimal("199000")));
+        assertTrue(status.paid());
+        assertTrue(status.terminal());
     }
 
     @Test

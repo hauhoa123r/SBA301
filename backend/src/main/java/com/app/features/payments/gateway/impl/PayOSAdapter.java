@@ -6,6 +6,7 @@ import com.app.features.payments.dto.PaymentCreateRequest;
 import com.app.features.payments.dto.PaymentCreateResponse;
 import com.app.features.payments.dto.PaymentVerifyResponse;
 import com.app.features.payments.gateway.PaymentGateway;
+import com.app.features.payments.gateway.PaymentGatewayStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -15,6 +16,7 @@ import org.springframework.web.client.RestClientException;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -50,6 +52,9 @@ public class PayOSAdapter implements PaymentGateway {
     @Value("${payos.create-payment-url:https://api-merchant.payos.vn/v2/payment-requests}")
     private String createPaymentUrl;
 
+    @Value("${payos.payment-request-url:https://api-merchant.payos.vn/v2/payment-requests}")
+    private String paymentRequestUrl;
+
     @Value("${app.frontend.payment-result-url:http://localhost:5173/payment/result}")
     private String paymentResultUrl;
 
@@ -70,8 +75,9 @@ public class PayOSAdapter implements PaymentGateway {
         long orderCode = buildOrderCode(Instant.now().getEpochSecond(), invoice.getId());
         long amount = invoice.getAmount().setScale(0, RoundingMode.HALF_UP).longValueExact();
         String description = shorten(invoiceCode, 25);
-        String returnUrl = paymentResultUrl + "?success=true&invoiceCode=" + invoiceCode + "&message=payOS%20success";
-        String cancelUrl = paymentResultUrl + "?success=false&invoiceCode=" + invoiceCode + "&message=Payment%20cancelled";
+        String resultQuery = "?invoiceId=" + invoice.getId() + "&invoiceCode=" + invoiceCode;
+        String returnUrl = paymentResultUrl + resultQuery;
+        String cancelUrl = paymentResultUrl + resultQuery + "&cancel=true";
 
         Map<String, Object> signaturePayload = new LinkedHashMap<>();
         signaturePayload.put("amount", amount);
@@ -136,6 +142,29 @@ public class PayOSAdapter implements PaymentGateway {
     }
 
     @Override
+    public PaymentGatewayStatus getPaymentStatus(String transactionId) {
+        String resolvedClientId = resolveConfig(clientId, "PAYOS_CLIENT_ID", "CLIENT_ID");
+        String resolvedApiKey = resolveConfig(apiKey, "PAYOS_API_KEY", "API_BANK_KEY");
+        if (isBlank(resolvedClientId) || isBlank(resolvedApiKey)) {
+            throw new IllegalStateException("Missing payOS configuration. Please set PAYOS_CLIENT_ID and PAYOS_API_KEY.");
+        }
+
+        Map<String, Object> response;
+        try {
+            response = restClient.get()
+                    .uri(paymentRequestUrl + "/{id}", transactionId)
+                    .header("x-client-id", resolvedClientId)
+                    .header("x-api-key", resolvedApiKey)
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<>() {});
+        } catch (RestClientException exception) {
+            log.error("payOS status request failed, orderCode={}", transactionId, exception);
+            throw new IllegalStateException("Unable to get payOS payment status.", exception);
+        }
+        return extractPaymentStatus(response);
+    }
+
+    @Override
     public PaymentProvider provider() {
         return PaymentProvider.PAYOS;
     }
@@ -161,6 +190,34 @@ public class PayOSAdapter implements PaymentGateway {
             );
         }
         return (Map<String, Object>) data;
+    }
+
+    PaymentGatewayStatus extractPaymentStatus(Map<String, Object> response) {
+        Map<String, Object> data = extractData(response);
+        String orderCode = stringValue(data.get("orderCode"));
+        String status = stringValue(data.get("status"));
+        if (isBlank(orderCode) || isBlank(status)) {
+            throw new IllegalStateException("payOS returned an invalid payment status response.");
+        }
+
+        return new PaymentGatewayStatus(
+                orderCode,
+                status,
+                decimalValue(data.get("amountPaid")),
+                stringValue(data.get("id")),
+                data
+        );
+    }
+
+    private BigDecimal decimalValue(Object value) {
+        if (value == null) {
+            return BigDecimal.ZERO;
+        }
+        try {
+            return new BigDecimal(stringValue(value));
+        } catch (NumberFormatException exception) {
+            throw new IllegalStateException("payOS returned an invalid paid amount.", exception);
+        }
     }
 
     private String safeResponseValue(Object value, String fallback) {

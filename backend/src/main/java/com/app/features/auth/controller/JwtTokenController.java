@@ -11,7 +11,6 @@ import io.jsonwebtoken.JwtException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -42,11 +41,6 @@ public class JwtTokenController {
     public AuthUserResponse me(@AuthenticationPrincipal UserEntity user) {
         if (user == null) throw new ResponseStatusException(UNAUTHORIZED);
         return AuthUserResponse.from(user);
-    }
-
-    @PostMapping("/logout")
-    public ResponseEntity<Void> logout() {
-        return ResponseEntity.noContent().build();
     }
 
     private UserEntity activeUser(Long id) {

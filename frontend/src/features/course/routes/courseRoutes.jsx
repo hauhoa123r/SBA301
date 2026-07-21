@@ -32,14 +32,18 @@ export const courseRoutes = [
     {
         path: "/payment/checkout",
         element: (
-            <ProtectedRoute allowedRoles={["STUDENT"]}>
+            <ProtectedRoute requiredRole="STUDENT">
                 <PaymentCheckoutPage />
             </ProtectedRoute>
         )
     },
     {
         path: "/payment/result",
-        element: <PaymentResultPage />
+        element: (
+            <ProtectedRoute requiredRole="STUDENT">
+                <PaymentResultPage />
+            </ProtectedRoute>
+        )
     },
     {
         path: "/about",
@@ -58,7 +62,11 @@ export const courseRoutes = [
 export const managementCourseRoutes = [
     {
         path: "/management",
-        element: <CourseManagementLayout />,
+        element: (
+            <ProtectedRoute requiredRole="TEACHER">
+                <CourseManagementLayout />
+            </ProtectedRoute>
+        ),
         children: [
             { index: true, element: <Navigate to="dashboard" replace /> },
             { path: 'dashboard', element: <CourseDashboardPage /> },
