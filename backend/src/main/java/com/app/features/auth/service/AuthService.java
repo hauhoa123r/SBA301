@@ -5,7 +5,7 @@ import com.app.features.auth.dto.request.RegisterRequest;
 import com.app.features.auth.dto.response.LoginResponse;
 import com.app.features.auth.dto.response.TokenResponse;
 
-public interface UserService {
+public interface AuthService {
     TokenResponse login(LoginRequest user);
     public LoginResponse register(RegisterRequest request);
 }

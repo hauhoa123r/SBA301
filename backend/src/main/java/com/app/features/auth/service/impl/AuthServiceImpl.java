@@ -1,17 +1,18 @@
 package com.app.features.auth.service.impl;
 
 import com.app.features.auth.converter.LoginConverter;
+import com.app.features.auth.converter.RegisterConverter;
 import com.app.features.auth.dto.request.LoginRequest;
 import com.app.features.auth.dto.request.RegisterRequest;
 import com.app.features.auth.dto.response.LoginResponse;
 import com.app.features.auth.dto.response.AuthUserResponse;
 import com.app.features.auth.dto.response.TokenResponse;
+import com.app.features.auth.service.AuthService;
 import com.app.security.jwt.JwtService;
 import com.app.features.auth.exception.InvalidLoginException;
 import com.app.features.auth.exception.RegisterException;
 import com.app.features.auth.repository.UserRepository;
 import com.app.features.auth.service.EmailVerificationService;
-import com.app.features.auth.service.UserService;
 import com.app.features.manager.repository.RoleRepository;
 import com.app.features.model.RoleEntity;
 import com.app.features.model.UserEntity;
@@ -24,14 +25,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UserServiceImpl implements UserService {
+public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepositoryImpl;
-    private final RoleRepository roleRepository;
     private final LoginConverter loginConverter;
-    private final EmailVerificationService emailVerificationService;
+    private final EmailVerificationService emailVerificationServiceImpl;
     private final JwtService jwtService;
-
+    private final RegisterConverter registerConverter;
     @Override
     public TokenResponse login(LoginRequest user) {
         UserEntity userEntity = userRepositoryImpl.findByEmail(user.getEmail())
@@ -56,20 +56,8 @@ public class UserServiceImpl implements UserService {
             log.warn("Register failed because email already exists, email={}", email);
             throw new RegisterException("Email đã được sử dụng");
         }
-
-        UserEntity user = new UserEntity();
-        user.setFullName(request.getFullName().trim());
-        user.setEmail(email);
-        user.setPasswordHash(request.getPassword());
-        user.setStatus(UserStatus.PENDING);
-        user.setTotalLearningPoints(0);
-        RoleEntity studentRole = roleRepository.findByName("STUDENT")
-                .orElseThrow(() -> new RegisterException("Role STUDENT is not confined"));
-        user.getRoles().add(studentRole);
-
-        UserEntity savedUser = userRepositoryImpl.save(user);
-        emailVerificationService.sendVerificationEmail(savedUser);
-
+        UserEntity savedUser = userRepositoryImpl.save(registerConverter.convert(request));
+        emailVerificationServiceImpl.sendVerificationEmail(savedUser);
         log.info("Register successful, userId={}", savedUser.getId());
         return loginConverter.loginConverter(savedUser);
     }
