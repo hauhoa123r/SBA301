@@ -2,6 +2,8 @@ package com.app.features.courses.dto.response;
 
 import com.app.features.model.enums.CourseStatus;
 
+import java.math.BigDecimal;
+
 public class CourseResponse {
     private Long id;
     private Long categoryId;
@@ -9,5 +11,6 @@ public class CourseResponse {
     private String description;
     private String thumbnailUrl;
     private CourseStatus status;
+    private BigDecimal price;
 
 }

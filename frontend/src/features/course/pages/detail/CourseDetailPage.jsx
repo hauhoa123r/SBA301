@@ -22,20 +22,27 @@ export default function CourseDetailPage() {
     const [course, setCourse] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isNotFound, setIsNotFound] = useState(false);
+    const [loadError, setLoadError] = useState("");
 
     useEffect(() => {
         let isMounted = true;
         const fetchCourse = async () => {
             try {
                 setIsLoading(true);
+                setLoadError("");
                 const data = await getCourseById(id);
                 if (isMounted) {
                     setCourse(data);
                     setIsNotFound(false);
                 }
-            } catch {
+            } catch (error) {
                 if (isMounted) {
-                    setIsNotFound(true);
+                    const status = error?.response?.status;
+                    setCourse(null);
+                    setIsNotFound(status === 404);
+                    if (status !== 404) {
+                        setLoadError("Không thể tải thông tin khóa học. Vui lòng thử lại sau.");
+                    }
                 }
             } finally {
                 if (isMounted) {
@@ -65,7 +72,15 @@ export default function CourseDetailPage() {
         );
     }
 
-    if (isNotFound || !course) return <NotFoundPage />;
+    if (isNotFound) return <NotFoundPage />;
+
+    if (loadError || !course) {
+        return (
+            <section role="alert" className="user-ui-scope container mx-auto px-4 py-16 text-center text-brand-danger sm:px-6">
+                {loadError || "Không thể tải thông tin khóa học."}
+            </section>
+        );
+    }
 
     const isVoucherValid = voucherStatus === "VALID" && Boolean(verifiedCoupon);
     const calculateDiscountAmount = () => {

@@ -1,10 +1,8 @@
 package com.app.features.model;
 
-import com.app.features.model.*;
 import com.app.features.model.enums.CourseStatus;
-import com.app.features.model.PlanEntity;
-import com.app.features.model.UserEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -12,6 +10,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.jspecify.annotations.NonNull;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -34,6 +33,12 @@ public class CourseEntity {
 
     @Column(columnDefinition = "TEXT")
     private String description;
+
+    @NotNull
+    @DecimalMin(value = "0.0", inclusive = true)
+    @Column(nullable = false, precision = 15, scale = 2)
+    @Builder.Default
+    private BigDecimal price = BigDecimal.ZERO;
 
     @Builder.Default
     @OneToMany(mappedBy = "courseEntity", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -70,12 +75,6 @@ public class CourseEntity {
     private Set<CourseEnrollmentEntity> courseEnrollments = new LinkedHashSet<>();
     @Builder.Default
     @NonNull
-    @ManyToMany
-    @JoinTable(name = "course_plan_access", joinColumns = { @JoinColumn(name = "course_id") }, inverseJoinColumns = {
-            @JoinColumn(name = "plan_id") })
-    private Set<PlanEntity> plans = new LinkedHashSet<>();
-    @Builder.Default
-    @NonNull
     @OneToMany(mappedBy = "course")
     private Set<CourseReviewEntity> courseReviews = new LinkedHashSet<>();
     @Builder.Default
@@ -90,17 +89,6 @@ public class CourseEntity {
             this.tags = new LinkedHashSet<>();
         }
         this.tags.add(tag);
-    }
-
-    public void addPlan(PlanEntity plan) {
-        if (this.plans == null) {
-            this.plans = new LinkedHashSet<>();
-        }
-        this.plans.add(plan);
-        if (plan.getCourses() == null) {
-            plan.setCourses(new LinkedHashSet<>());
-        }
-        plan.getCourses().add(this);
     }
 
     public void addChapter(ChapterEntity chapter) {

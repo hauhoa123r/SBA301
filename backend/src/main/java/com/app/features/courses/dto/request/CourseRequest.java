@@ -1,7 +1,7 @@
 package com.app.features.courses.dto.request;
 
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.URL;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Getter
@@ -23,13 +24,14 @@ public class CourseRequest {
     @NotBlank(message = "Description can not empty or blank.")
     private String description;
 
+    @NotNull(message = "Price is required.")
+    @DecimalMin(value = "0.0", inclusive = true, message = "Price must be greater than or equal to 0.")
+    private BigDecimal price;
+
     @NotNull(message = "Please choose at least 1 category.")
     private Long categoryId;
 
     private String thumbnailUrl;
 
     private List<Long> tagIds;
-
-    @NotEmpty(message = "PLease choose at least one membership plan.")
-    private List<Long> planIds;
 }

@@ -1,9 +1,13 @@
-import { BookOpenText, Clock, Play, Star } from "lucide-react";
+import { BookOpenText, CircleDollarSign, Clock, Play, Star } from "lucide-react";
 
 export default function CourseCard({ course }) {
     const rating = Number(course.rating ?? 5.0);
     const totalLessons = course.totalLessons ?? 0;
     const durationText = course.durationText ?? "0m";
+    const price = Number(course.price ?? 0);
+    const formattedPrice = price === 0
+        ? "Miễn phí"
+        : new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(price);
 
     return (
         <div className="group bg-brand-cardBg border border-brand-accent/10 rounded-2xl overflow-hidden hover:border-brand-accent/40 transition-all hover:shadow-xl hover:shadow-brand-accent/10 hover:-translate-y-1 cursor-pointer">
@@ -37,6 +41,11 @@ export default function CourseCard({ course }) {
                 <p className="line-clamp-2 min-h-10 text-sm leading-5 text-brand-textSecondary mb-4">
                     {course.description}
                 </p>
+
+                <div className="mb-4 flex items-center gap-1.5 text-sm font-bold text-brand-accentSoft">
+                    <CircleDollarSign className="h-4 w-4" aria-hidden="true" />
+                    <span>{formattedPrice}</span>
+                </div>
 
                 <div className="flex items-center gap-3 text-xs text-brand-textSecondary mb-4">
                     <div className="flex items-center gap-1">

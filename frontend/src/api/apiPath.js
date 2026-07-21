@@ -19,8 +19,6 @@ export const API_LESSON_QA = `${API_BASE_URL}/lesson-qa`;
 export const API_PAYMENTS = `${API_BASE_URL}/payments`;
 export const API_LEARNING = `${API_BASE_URL}/learning`;
 export const API_COUPON = `${API_BASE_URL}/coupon`;
-export const API_PLANS = `${API_BASE_URL}/plans`;
-export const API_SUBSCRIPTIONS = `${API_BASE_URL}/subscriptions`;
 export const API_VERIFICATION_TOKENS = `${API_BASE_URL}/verification-tokens`;
 
 export const apiPath = {
@@ -44,7 +42,5 @@ export const apiPath = {
   payments: API_PAYMENTS,
   learning: API_LEARNING,
   coupon: API_COUPON,
-  plans: API_PLANS,
-  subscriptions: API_SUBSCRIPTIONS,
   verificationTokens: API_VERIFICATION_TOKENS,
 };

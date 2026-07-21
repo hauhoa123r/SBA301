@@ -3,7 +3,6 @@ package com.app.features.payments.converter;
 import com.app.features.model.CourseEntity;
 import com.app.features.model.InvoiceEntity;
 import com.app.features.model.PaymentEntity;
-import com.app.features.model.PlanEntity;
 import com.app.features.model.enums.PaymentProvider;
 import com.app.features.model.enums.PaymentStatus;
 import com.app.features.payments.dto.PaymentVerifyResponse;
@@ -22,7 +21,7 @@ public class PaymentConverter {
     }
 
     public PaymentEntity toCreatedPayment(InvoiceEntity invoice, PaymentProvider provider, String transactionId,
-                                          String invoiceCode, CourseEntity course, PlanEntity plan) {
+                                          String invoiceCode, CourseEntity course) {
         PaymentEntity source = new PaymentEntity();
         source.setProvider(provider);
         source.setTransactionId(transactionId);
@@ -30,7 +29,7 @@ public class PaymentConverter {
         source.setStatus(PaymentStatus.CREATED);
         source.setRawResponse(new HashMap<>(Map.of(
                 "courseId", course.getId(),
-                "planId", plan.getId(),
+                "coursePrice", invoice.getOriginalAmount(),
                 "invoiceCode", invoiceCode,
                 "demo", true
         )));
