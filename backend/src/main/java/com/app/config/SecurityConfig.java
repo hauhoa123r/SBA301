@@ -3,10 +3,7 @@ package com.app.config;
 import com.app.security.handler.RestAccessDeniedHandler;
 import com.app.security.handler.RestAuthenticationEntryPoint;
 import com.app.security.jwt.JwtAuthenticationFilter;
-import com.app.security.oauth.OAuth2AuthenticationFailureHandler;
-import com.app.security.oauth.OAuth2AuthenticationSuccessHandler;
-import com.app.security.oauth.facebook.CustomOAuth2UserService;
-import com.app.security.oauth.google.CustomOidcUserService;
+import com.app.security.oauth.config.OAuth2SecurityConfigurer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,14 +23,13 @@ public class SecurityConfig {
     private static final Pattern PUBLIC_COURSE_PATH =
             Pattern.compile("^/api/courses(?:/\\d+)?$");
 
-    private static final String[] PUBLIC_ENDPOINTS = {
-            "/api/auth/**",
-            "/api/oauth2/**",
-            "/oauth2/**",
-            "/login/oauth2/**",
-            "/actuator/health",
-            "/swagger-ui/**",
-            "/v3/api-docs/**"
+    private static final String[] PUBLIC_AUTH_ENDPOINTS = {
+            "/api/auth/login",
+            "/api/auth/register",
+            "/api/auth/refresh-token",
+            "/api/auth/forgot-password",
+            "/api/auth/reset-password",
+            "/api/auth/verify-email"
     };
 
     private static final String[] PAYMENT_CALLBACK_ENDPOINTS = {
@@ -43,12 +39,9 @@ public class SecurityConfig {
     };
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final CustomOAuth2UserService oauth2UserService;
-    private final CustomOidcUserService oidcUserService;
-    private final OAuth2AuthenticationSuccessHandler successHandler;
-    private final OAuth2AuthenticationFailureHandler failureHandler;
     private final RestAuthenticationEntryPoint authenticationEntryPoint;
     private final RestAccessDeniedHandler accessDeniedHandler;
+    private final OAuth2SecurityConfigurer oauth2SecurityConfigurer;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -78,20 +71,10 @@ public class SecurityConfig {
                                 HttpMethod.POST,
                                 PAYMENT_CALLBACK_ENDPOINTS
                         ).permitAll()
-                        .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                        .requestMatchers(PUBLIC_AUTH_ENDPOINTS).permitAll()
                         .anyRequest().authenticated()
                 )
-                .oauth2Login(oauth -> oauth
-                        .authorizationEndpoint(endpoint -> endpoint
-                                .baseUri("/api/oauth2/authorization")
-                        )
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(oauth2UserService)
-                                .oidcUserService(oidcUserService)
-                        )
-                        .successHandler(successHandler)
-                        .failureHandler(failureHandler)
-                )
+                .oauth2Login(oauth2SecurityConfigurer::configure)
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class
