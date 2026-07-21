@@ -28,6 +28,16 @@ public class CourseController {
         return ResponseEntity.ok(courseService.getCourseById(id));
     }
 
+    @GetMapping("/moderation/pending")
+    public ResponseEntity<List<CourseDetailResponse>> getPendingCourses() {
+        return ResponseEntity.ok(courseService.getPendingCourses());
+    }
+
+    @PostMapping("/moderation/{courseId}/approve")
+    public ResponseEntity<CourseDetailResponse> approvePendingCourse(@PathVariable Long courseId) {
+        return ResponseEntity.ok(courseService.approvePendingCourse(courseId));
+    }
+    
     @GetMapping("/manage-course")
     public ResponseEntity<List<CourseDetailResponse>> getCourseByTeacherId() {
         // Xử lí lấy id ở token sau

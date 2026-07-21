@@ -82,6 +82,42 @@ public class CourseService implements ICourseService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<CourseDetailResponse> getPendingCourses() {
+        List<CourseEntity> courses = courseRepository.findAllByStatusOrderByCreatedAtDesc(CourseStatus.PENDING);
+        Map<Long, CourseLessonStats> lessonStatsByCourseId = getLessonStatsByCourseId(courses);
+
+        return courses.stream()
+                .map(course -> courseResponseConverter.toCourseDetailResponse(
+                        course,
+                        lessonStatsByCourseId.get(course.getId())
+                ))
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public CourseDetailResponse approvePendingCourse(Long courseId) {
+        log.info("Course approval requested, courseId={}", courseId);
+        CourseEntity course = courseRepository.findById(courseId).orElseThrow(() -> {
+            log.warn("Course approval failed because course was not found, courseId={}", courseId);
+            return new ResourceNotFoundException("Course not found with id: " + courseId);
+        });
+
+        if (course.getStatus() != CourseStatus.PENDING) {
+            log.warn("Course approval rejected because course is not pending, courseId={}, status={}", courseId, course.getStatus());
+            throw new BadRequestException("Only pending courses can be approved.");
+        }
+
+        course.setStatus(CourseStatus.PUBLISHED);
+        CourseEntity savedCourse = courseRepository.save(course);
+        CourseLessonStats stats = courseRepository.getLessonStatsByCourseId(savedCourse.getId());
+        log.info("Course approved successfully, courseId={}", savedCourse.getId());
+
+        return courseResponseConverter.toCourseDetailResponse(savedCourse, stats);
+    }
+
+    @Override
     @Transactional
     public Long createCourse(CourseRequest request, Long teacherId) {
         log.info("Course creation requested, teacherId={}, categoryId={}", teacherId, request.getCategoryId());

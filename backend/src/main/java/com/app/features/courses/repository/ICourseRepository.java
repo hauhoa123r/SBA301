@@ -2,6 +2,7 @@ package com.app.features.courses.repository;
 
 import com.app.features.courses.repository.projection.CourseLessonStats;
 import com.app.features.model.CourseEntity;
+import com.app.features.model.enums.CourseStatus;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -49,4 +50,7 @@ public interface ICourseRepository extends JpaRepository<CourseEntity,Long> {
             "where c.id = :courseId " +
             "group by c.id")
     CourseLessonStats getLessonStatsByCourseId(@Param("courseId") Long courseId);
+
+    List<CourseEntity> findAllByStatusOrderByCreatedAtDesc(CourseStatus status);
 }
+

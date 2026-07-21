@@ -115,4 +115,13 @@ const courseManagementService = {
   },
 };
 
+export const getPendingCoursesForReview = async () => {
+  const response = await axiosInstance.get(`${API_COURSES}/moderation/pending`);
+  return response.data?.data ?? response.data ?? [];
+};
+
+export const approveCourseForPublication = async (courseId) => {
+  const response = await axiosInstance.post(`${API_COURSES}/moderation/${courseId}/approve`);
+  return response.data?.data ?? response.data;
+};
 export default courseManagementService;

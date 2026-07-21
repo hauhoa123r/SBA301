@@ -15,5 +15,7 @@ public interface ICourseService {
 
     Long createCourse(CourseRequest course, Long teacherId);
 
+    List<CourseDetailResponse> getPendingCourses();
 
+    CourseDetailResponse approvePendingCourse(Long courseId);
 }
