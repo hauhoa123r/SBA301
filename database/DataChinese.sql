@@ -177,17 +177,17 @@ INSERT INTO lesson_documents (id, lesson_id, title, file_url, created_at) VALUES
 (8, 29, 'Transcript nghe chu de an uong', 'https://cdn.chineselearning.vn/docs/nghe-an-uong.pdf', '2026-03-07 09:00:00');
 
 -- 16. quizzes
-INSERT INTO quizzes (id, title, teacher_id, lesson_id, chapter_id, time_limit_minutes, pass_score, created_at) VALUES
-(3, 'Dien tu vung so dem', 6, NULL, 10, 70, '2026-02-12 10:00:00'),
-(4, 'Noi tu HSK 1', NULL, 4, 15, 70, '2026-02-12 10:10:00'),
-(5, 'Nghe hieu HSK 2 tranh anh', 11, NULL, 20, 70, '2026-02-14 10:00:00'),
-(6, 'De mo phong HSK 1', NULL, 4, 35, 60, '2026-02-12 11:00:00'),
-(7, 'Quiz tu vung nha may', 13, NULL, 10, 60, '2026-02-16 10:00:00'),
-(8, 'Quiz bao cao su co', 15, NULL, 15, 70, '2026-02-16 10:10:00'),
-(9, 'Quiz email thuong mai', 18, NULL, 15, 70, '2026-03-01 10:00:00'),
-(10, 'Noi cap thanh dieu Pinyin', 23, NULL, 10, 70, '2026-03-03 10:00:00'),
-(11, 'Quiz nghe chu de an uong', 29, NULL, 15, 70, '2026-03-07 10:00:00'),
-(12, 'Quiz phan xa dat mon', 32, NULL, 12, 60, '2026-03-07 10:10:00');
+INSERT INTO quizzes (id, title, teacher_id, course_id, lesson_id, chapter_id, time_limit_minutes, pass_score, created_at) VALUES
+(3, 'Dien tu vung so dem', 4, NULL, 6, NULL, 10, 70, '2026-02-12 10:00:00'),
+(4, 'Noi tu HSK 1', 4, NULL, NULL, 4, 15, 70, '2026-02-12 10:10:00'),
+(5, 'Nghe hieu HSK 2 tranh anh', 5, NULL, 11, NULL, 20, 70, '2026-02-14 10:00:00'),
+(6, 'De mo phong HSK 1', 4, NULL, NULL, 4, 35, 60, '2026-02-12 11:00:00'),
+(7, 'Quiz tu vung nha may', 5, NULL, 13, NULL, 10, 60, '2026-02-16 10:00:00'),
+(8, 'Quiz bao cao su co', 5, NULL, 15, NULL, 15, 70, '2026-02-16 10:10:00'),
+(9, 'Quiz email thuong mai', 4, NULL, 18, NULL, 15, 70, '2026-03-01 10:00:00'),
+(10, 'Noi cap thanh dieu Pinyin', 6, NULL, 23, NULL, 10, 70, '2026-03-03 10:00:00'),
+(11, 'Quiz nghe chu de an uong', 4, NULL, 29, NULL, 15, 70, '2026-03-07 10:00:00'),
+(12, 'Quiz phan xa dat mon', 4, NULL, 32, NULL, 12, 60, '2026-03-07 10:10:00');
 
 -- 17. questions
 INSERT INTO questions (id, quiz_id, question_type, content, audio_url, points, order_index) VALUES
@@ -559,7 +559,7 @@ VALUES
 DELETE FROM quizzes WHERE lesson_id = @lesson_1_id;
 
 INSERT INTO quizzes (title, teacher_id, lesson_id, chapter_id, time_limit_minutes, pass_score)
-VALUES ('Bài trắc nghiệm Lesson 1: Hỏi thông tin cá nhân', @lesson_1_id, @chapter_3_id, 10, 50);
+VALUES ('Bài trắc nghiệm Lesson 1: Hỏi thông tin cá nhân', 4, @lesson_1_id, @chapter_3_id, 10, 50);
 
 SET @quiz_1_id = LAST_INSERT_ID();
 
