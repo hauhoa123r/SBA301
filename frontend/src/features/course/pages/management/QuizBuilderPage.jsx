@@ -4,6 +4,7 @@ import { ArrowLeft, FileQuestion, Settings, ListChecks, Save } from 'lucide-reac
 import QuizSettingsTab from '../../components/management/quiz-builder/QuizSettingsTab';
 import QuestionBuilderTab from '../../components/management/quiz-builder/QuestionBuilderTab';
 import { quizService } from '../../services/api/quiz.services';
+import { showErrorToast, showSuccessToast } from '@/shared/utils/toast';
 
 const emptyQuiz = () => ({
   title: '',
@@ -85,7 +86,7 @@ export default function QuizBuilderPage() {
       navigate('/management/quizzes');
     } catch (error) {
       console.error("Failed to save quiz", error);
-      alert("Error saving quiz");
+      showErrorToast("Error saving quiz");
     } finally {
       setIsSaving(false);
     }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, BookOpen, Link2, Clock } from 'lucide-react';
+import { X, BookOpen, Link2, Clock, FileText, Plus, Trash2 } from 'lucide-react';
 
 /**
  * Creates a fresh empty lesson scaffold.
@@ -7,6 +7,7 @@ import { X, BookOpen, Link2, Clock } from 'lucide-react';
 const emptyLesson = () => ({
   title:            '',
   video_url:        '',
+  documents:        [],
 });
 
 /**
@@ -30,6 +31,7 @@ export default function LessonModal({ isOpen, onClose, onSubmit, initialData }) 
         ? {
             title:            initialData.title || '',
             video_url:        initialData.video_url || '',
+            documents:        initialData.documents ? [...initialData.documents] : [],
           }
         : emptyLesson()
       );
@@ -50,6 +52,28 @@ export default function LessonModal({ isOpen, onClose, onSubmit, initialData }) 
   // ── Field helpers ─────────────────────────────────────────
   const setField = (field, value) =>
     setForm((prev) => ({ ...prev, [field]: value }));
+
+  const handleAddDocument = () => {
+    setForm(prev => ({
+      ...prev,
+      documents: [...prev.documents, { id: null, title: '', fileUrl: '' }]
+    }));
+  };
+
+  const handleRemoveDocument = (index) => {
+    setForm(prev => ({
+      ...prev,
+      documents: prev.documents.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleDocumentChange = (index, field, value) => {
+    setForm(prev => {
+      const newDocs = [...prev.documents];
+      newDocs[index] = { ...newDocs[index], [field]: value };
+      return { ...prev, documents: newDocs };
+    });
+  };
 
   // ── Submit ────────────────────────────────────────────────
   const handleSubmit = (e) => {
@@ -171,6 +195,59 @@ export default function LessonModal({ isOpen, onClose, onSubmit, initialData }) 
             <p className="mt-2 text-xs text-brand-mutedText/60">
               Enter minutes (e.g., 15) or minutes and seconds (e.g., 15:30).
             </p>
+          </div>
+
+          <div className="pt-4 border-t border-brand-borderSoft">
+            <div className="flex items-center justify-between mb-4">
+              <label className="flex items-center gap-2 text-sm font-semibold text-brand-textSecondary">
+                <FileText className="w-4 h-4" />
+                Attached Documents
+              </label>
+              <button
+                type="button"
+                onClick={handleAddDocument}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-brand-accent bg-brand-accent/10 hover:bg-brand-accent/20 rounded-lg transition-colors"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                Add Document
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              {form.documents.map((doc, idx) => (
+                <div key={idx} className="flex items-start gap-3 p-3 bg-brand-dark/40 border border-brand-borderSoft rounded-lg">
+                  <div className="flex-1 space-y-3">
+                    <input
+                      type="text"
+                      placeholder="Document Title (e.g. Grammar Cheat Sheet)"
+                      value={doc.title}
+                      onChange={(e) => handleDocumentChange(idx, 'title', e.target.value)}
+                      className={inputCls}
+                    />
+                    <input
+                      type="text"
+                      placeholder="URL (e.g. https://drive.google.com/...)"
+                      value={doc.fileUrl || doc.file_url || ''}
+                      onChange={(e) => handleDocumentChange(idx, 'fileUrl', e.target.value)}
+                      className={inputCls}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveDocument(idx)}
+                    className="p-2 text-brand-mutedText hover:text-status-danger hover:bg-status-danger/10 rounded-lg transition-colors mt-1"
+                    title="Remove document"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+              {form.documents.length === 0 && (
+                <p className="text-xs text-brand-mutedText/60 italic text-center py-4 bg-brand-dark/20 rounded-lg border border-dashed border-brand-borderSoft">
+                  No documents attached yet.
+                </p>
+              )}
+            </div>
           </div>
         </form>
 

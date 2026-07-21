@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { ArrowLeft, Plus, Save, BookOpen, Layers } from "lucide-react";
 import teacherService from '@/features/course/services/api/courseManagementService';
+import { showSuccessToast, showErrorToast } from '@/shared/utils/toast';
 
 import ChapterNode from '@/features/course/components/management/curriculum-builder/ChapterNode';
 
@@ -262,17 +263,21 @@ export default function CurriculumDesignPage() {
           title: ls.title,
           videoUrl: ls.video_url,
           durationSecond: ls.durationSeconds,
-          orderIndex: ls.orderIndex
+          orderIndex: ls.orderIndex,
+          documents: (ls.documents || []).map(d => ({
+            id: d.id,
+            title: d.title,
+            fileUrl: d.fileUrl || d.file_url
+          }))
         })),
         quizIds: (ch.quizzes || []).map(q => q.id)
       }));
 
       await teacherService.updateCurriculum(courseId, payload);
-      navigate("/management/courses", {
-        state: { message: "Curriculum updated successfully!" },
-      });
+      showSuccessToast("Curriculum updated successfully!");
     } catch (err) {
       console.error("Error saving curriculum:", err);
+      showErrorToast("Error saving curriculum");
     } finally {
       setSaving(false);
     }
