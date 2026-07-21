@@ -20,4 +20,5 @@ public interface ICourseService {
     CourseDetailResponse updateCourse(Long courseId, CourseRequest courseRequest, Long teacherId);
 
     void deleteCourse(Long courseId, Long teacherId);
+    com.app.features.courses.dto.response.DashboardStatsResponse getDashboardStats(Long teacherId);
 }

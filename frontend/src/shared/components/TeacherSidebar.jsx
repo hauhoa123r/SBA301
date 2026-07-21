@@ -55,7 +55,7 @@ export default function TeacherSidebar({ sidebarOpen, onClose }) {
           <div className="p-5 border-b border-brand-borderSoft">
             <div className="flex items-center gap-3">
               <img
-                src="/images/logo-removebg-preview.png"
+                src="/images/logo.svg"
                 alt="Edujar Logo"
                 className="h-9 w-auto object-contain"
               />

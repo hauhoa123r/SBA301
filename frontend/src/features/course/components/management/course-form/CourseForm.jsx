@@ -12,7 +12,7 @@ const getInitialFormState = (initialData) => ({
   categoryId: initialData?.categoryId || '',
   thumbnailUrl: initialData?.thumbnailUrl || '',
   tagIds: Array.isArray(initialData?.tagIds) ? initialData.tagIds : [],
-  status: initialData?.status || 'DRAFT',
+  status: initialData?.status || 'PENDING',
 });
 
 const normalizeMasterList = (value) => {
