@@ -14,6 +14,8 @@ import com.app.features.model.*;
 import com.app.features.model.enums.CourseStatus;
 import com.app.features.tags.service.ITagService;
 import com.app.features.users.repository.IUserRepository;
+import com.app.features.courses.repository.IQuizRepository;
+import com.app.features.courses.dto.response.DashboardStatsResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,7 @@ public class CourseService implements ICourseService {
     private final ITagService tagService;
     private final ICategoryService categoryService;
     private final IUserRepository userRepository;
+    private final IQuizRepository quizRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -72,6 +75,7 @@ public class CourseService implements ICourseService {
         List<CourseEntity> courseEntities = courseRepository.findAllByTeacherId(teacherId);
         if (courseEntities.isEmpty()) {
             log.warn("No courses found for teacher, teacherId={}", teacherId);
+            throw new ResourceNotFoundException("No courses found for teacher, teacherId: " + teacherId);
         }
         return courseEntities.stream().map(courseEntity -> {
             CourseLessonStats stats = courseRepository.getLessonStatsByCourseId(courseEntity.getId());
@@ -116,7 +120,7 @@ public class CourseService implements ICourseService {
         course.setDescription(request.getDescription());
         course.setPrice(request.getPrice());
         course.setThumbnailUrl(request.getThumbnailUrl());
-        course.setStatus(CourseStatus.DRAFT);
+        course.setStatus(CourseStatus.PENDING);
 
         if (request.getTagIds() != null && !request.getTagIds().isEmpty()) {
             List<TagEntity> tags = tagService.findAllById(request.getTagIds());
@@ -205,5 +209,19 @@ public class CourseService implements ICourseService {
                 .collect(Collectors.toMap(CourseLessonStats::getCourseId, Function.identity()));
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public DashboardStatsResponse getDashboardStats(Long teacherId) {
+        log.info("Loading dashboard stats for teacherId={}", teacherId);
+        long totalCourses = courseRepository.countByTeacherId(teacherId);
+        long activeCourses = courseRepository.countByTeacherIdAndStatus(teacherId, CourseStatus.PUBLISHED);
+        long totalQuizzes = quizRepository.countByTeacherId(teacherId);
+
+        return DashboardStatsResponse.builder()
+                .totalCourses(totalCourses)
+                .totalQuizzes(totalQuizzes)
+                .activeCourses(activeCourses)
+                .build();
+    }
 
 }

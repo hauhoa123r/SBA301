@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface IQuizRepository extends JpaRepository<QuizEntity, Long> {
     List<QuizEntity> findByTeacherId(Long teacherId);
+
+    long countByTeacherId(Long teacherId);
 }
