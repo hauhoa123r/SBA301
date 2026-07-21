@@ -34,7 +34,7 @@ export default function LessonModal({ isOpen, onClose, onSubmit, initialData }) 
         : emptyLesson()
       );
       
-      const totalSeconds = initialData?.duration_seconds || 0;
+      const totalSeconds = initialData?.durationSeconds || 0;
       if (totalSeconds > 0) {
         const m = Math.floor(totalSeconds / 60);
         const s = totalSeconds % 60;
@@ -74,7 +74,7 @@ export default function LessonModal({ isOpen, onClose, onSubmit, initialData }) 
     onSubmit({ 
       ...form, 
       title: form.title.trim(),
-      duration_seconds: totalSeconds
+      durationSeconds: totalSeconds
     });
     onClose();
   };

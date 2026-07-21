@@ -1,8 +1,8 @@
-import { Star, Clock, PlayCircle, Edit2, ListChecks, Users } from 'lucide-react';
+import { Star, Clock, PlayCircle, Edit2, ListChecks, Users, Trash2 } from 'lucide-react';
 import StatusBadge from './StatusBadge';
 
 const formatPrice = (price) => {
-  if (!price || price === 0) return 'Miễn phí';
+  if (!price || price === 0) return 'Free';
   return new Intl.NumberFormat('vi-VN', {
     style: 'currency',
     currency: 'VND',
@@ -11,7 +11,7 @@ const formatPrice = (price) => {
 
 const IMAGE_FALLBACK = '/images/image_404.png';
 
-export default function ManageCourseCard({ course, onEdit, onDesignCurriculum }) {
+export default function ManageCourseCard({ course, onEdit, onDesignCurriculum, onDelete }) {
   return (
     <div className="bg-brand-panel rounded-xl border border-brand-borderSoft overflow-hidden hover:shadow-xl hover:shadow-black/15 hover:border-brand-borderHover transition-all duration-300 group flex flex-col">
       {/* Image Header */}
@@ -77,21 +77,30 @@ export default function ManageCourseCard({ course, onEdit, onDesignCurriculum })
       </div>
 
       {/* Footer Actions */}
-      <div className="grid grid-cols-2 gap-2 p-4 pt-0">
+      <div className="flex items-center gap-2 p-4 pt-0">
         <button
           onClick={() => onEdit(course)}
-          className="flex items-center justify-center gap-2 px-3 py-2 bg-brand-accent hover:bg-brand-accentHover text-brand-white text-sm font-medium rounded-lg transition-colors duration-200"
+          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-brand-accent hover:bg-brand-accentHover text-brand-white text-sm font-medium rounded-lg transition-colors duration-200"
         >
           <Edit2 className="w-4 h-4" />
           Edit Info
         </button>
         <button
           onClick={() => onDesignCurriculum(course)}
-          className="flex items-center justify-center gap-2 px-3 py-2 bg-brand-surface hover:bg-brand-elevated text-brand-textSecondary hover:text-brand-textPrimary text-sm font-medium rounded-lg transition-colors duration-200"
+          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-brand-surface hover:bg-brand-elevated text-brand-textSecondary hover:text-brand-textPrimary text-sm font-medium rounded-lg transition-colors duration-200"
         >
           <ListChecks className="w-4 h-4" />
           Curriculum
         </button>
+        {onDelete && (
+          <button
+            onClick={() => onDelete(course)}
+            title="Delete course"
+            className="flex-shrink-0 flex items-center justify-center p-2 bg-status-danger/10 hover:bg-status-danger/20 text-status-danger rounded-lg transition-colors duration-200"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        )}
       </div>
     </div>
   );

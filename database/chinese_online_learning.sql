@@ -193,11 +193,15 @@ CREATE TABLE lesson_documents (
 CREATE TABLE quizzes (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
+    teacher_id BIGINT NOT NULL,
+    course_id BIGINT NULL,
     lesson_id BIGINT NULL,
     chapter_id BIGINT NULL,
     time_limit_minutes INT NOT NULL DEFAULT 0,
     pass_score INT NOT NULL DEFAULT 50,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_quizzes_teacher FOREIGN KEY (teacher_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_quizzes_course FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
     CONSTRAINT fk_quizzes_lesson FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE SET NULL,
     CONSTRAINT fk_quizzes_chapter FOREIGN KEY (chapter_id) REFERENCES chapters(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

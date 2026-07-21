@@ -44,7 +44,7 @@ public class CourseResponseConverter {
         }
         response.setPrice(course.getPrice());
         response.setStudents(course.getCourseEnrollments() == null ? 0 : course.getCourseEnrollments().size());
-        response.setLevel("Tất cả trình độ");
+        response.setLevel("All levels");
         response.setChapters(chapterResponseConverter.toChapterResponses(course));
         
         if (course.getTags() != null) {

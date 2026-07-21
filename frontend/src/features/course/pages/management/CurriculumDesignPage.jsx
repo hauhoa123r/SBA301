@@ -8,10 +8,11 @@ import ChapterNode from '@/features/course/components/management/curriculum-buil
 import ChapterModal from '@/features/course/components/management/curriculum-builder/modals/ChapterModal';
 import LessonModal from '@/features/course/components/management/curriculum-builder/modals/LessonModal';
 import ConfirmDeleteModal from '@/features/course/components/management/curriculum-builder/modals/ConfirmDeleteModal';
+import QuizSelectionModal from '@/features/course/components/management/curriculum-builder/modals/QuizSelectionModal';
 
 const enrichLesson = (ls) => ({
   video_url: ls.videoUrl || ls.video_url || "",
-  duration_seconds: ls.durationSeconds || ls.duration_seconds || 0,
+  durationSeconds: ls.durationSeconds || ls.duration_seconds || 0,
   orderIndex: ls.orderIndex || ls.order_index || 0,
   documents: [],
   quizzes: [],
@@ -22,6 +23,7 @@ const enrichChapter = (ch) => ({
   ...ch,
   orderIndex: ch.orderIndex || ch.order_index || 0,
   lessons: (ch.lessons ?? []).map(enrichLesson),
+  quizzes: ch.quizzes ?? [],
 });
 
 
@@ -40,6 +42,7 @@ export default function CurriculumDesignPage() {
 
   const [isChapterModalOpen, setChapterModalOpen] = useState(false);
   const [isLessonModalOpen, setLessonModalOpen] = useState(false);
+  const [isQuizSelectionOpen, setQuizSelectionOpen] = useState(false);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [editingTarget, setEditingTarget] = useState(null);
 
@@ -91,6 +94,7 @@ export default function CurriculumDesignPage() {
           title,
           orderIndex: chapters.length + 1,
           lessons: [],
+          quizzes: [],
           isNew: true,
         };
         setChapters((prev) => [...prev, newCh]);
@@ -147,6 +151,41 @@ export default function CurriculumDesignPage() {
   );
 
 
+  const openAddQuizModal = useCallback((chapterId) => {
+    setEditingTarget({ chapterId });
+    setQuizSelectionOpen(true);
+  }, []);
+
+  const openEditQuizModal = useCallback((chapterId, quiz) => {
+    navigate(`/management/quizzes/edit/${quiz.id}`);
+  }, [navigate]);
+
+  const handleQuizAttach = useCallback(
+    (selectedQuiz) => {
+      const { chapterId } = editingTarget;
+      setChapters((prev) =>
+        prev.map((ch) => {
+          if (ch.id !== chapterId) return ch;
+          const quizzes = ch.quizzes || [];
+          
+          // Avoid attaching the same quiz twice
+          if (quizzes.some(q => q.id === selectedQuiz.id)) {
+            return ch;
+          }
+
+          return {
+            ...ch,
+            quizzes: [
+              ...quizzes,
+              { ...selectedQuiz, orderIndex: quizzes.length + 1 }
+            ],
+          };
+        }),
+      );
+    },
+    [editingTarget],
+  );
+
   const openDeleteChapterModal = useCallback((chapter) => {
     setEditingTarget({
       type: "chapter",
@@ -162,6 +201,16 @@ export default function CurriculumDesignPage() {
       chapterId,
       lessonId: lesson.id,
       label: `lesson "${lesson.title}"`,
+    });
+    setDeleteModalOpen(true);
+  }, []);
+
+  const openDeleteQuizModal = useCallback((chapterId, quiz) => {
+    setEditingTarget({
+      type: "quiz",
+      chapterId,
+      quizId: quiz.id,
+      label: `quiz "${quiz.title}"`,
     });
     setDeleteModalOpen(true);
   }, []);
@@ -186,6 +235,16 @@ export default function CurriculumDesignPage() {
           };
         }),
       );
+    } else if (editingTarget.type === "quiz") {
+      setChapters((prev) =>
+        prev.map((ch) => {
+          if (ch.id !== editingTarget.chapterId) return ch;
+          return {
+            ...ch,
+            quizzes: (ch.quizzes || []).filter((q) => q.id !== editingTarget.quizId),
+          };
+        }),
+      );
     }
   }, [editingTarget]);
 
@@ -202,9 +261,10 @@ export default function CurriculumDesignPage() {
           id: ls.isNew ? null : ls.id,
           title: ls.title,
           videoUrl: ls.video_url,
-          durationSecond: ls.duration_seconds,
+          durationSecond: ls.durationSeconds,
           orderIndex: ls.orderIndex
-        }))
+        })),
+        quizIds: (ch.quizzes || []).map(q => q.id)
       }));
 
       await teacherService.updateCurriculum(courseId, payload);
@@ -313,6 +373,9 @@ export default function CurriculumDesignPage() {
               onDeleteLesson={(lesson) =>
                 openDeleteLessonModal(chapter.id, lesson)
               }
+              onAddQuiz={() => openAddQuizModal(chapter.id)}
+              onEditQuiz={(quiz) => openEditQuizModal(chapter.id, quiz)}
+              onDeleteQuiz={(quiz) => openDeleteQuizModal(chapter.id, quiz)}
             />
           ))
         ) : (
@@ -361,12 +424,19 @@ export default function CurriculumDesignPage() {
         initialData={editingTarget?.lessonData ?? null}
       />
 
+      <QuizSelectionModal
+        isOpen={isQuizSelectionOpen}
+        onClose={() => setQuizSelectionOpen(false)}
+        onSelect={handleQuizAttach}
+      />
+
       <ConfirmDeleteModal
         isOpen={isDeleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleDeleteConfirm}
         title={
-          editingTarget?.type === "chapter" ? "Delete Chapter" : "Delete Lesson"
+          editingTarget?.type === "chapter" ? "Delete Chapter" : 
+          editingTarget?.type === "lesson" ? "Delete Lesson" : "Delete Quiz"
         }
         message={
           editingTarget?.label

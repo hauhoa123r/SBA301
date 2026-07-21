@@ -27,7 +27,13 @@ public class QuizEntity {
     @Column(nullable = false)
     private String title;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "teacher_id", nullable = false)
+    private UserEntity teacher;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "course_id")
+    private CourseEntity course;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lesson_id")
@@ -57,4 +63,14 @@ public class QuizEntity {
     @NonNull
     @OneToMany(mappedBy = "quiz")
     private Set<QuizAttemptEntity> quizAttempts = new LinkedHashSet<>();
+
+    public void addQuestion(QuestionEntity question) {
+        questionEntities.add(question);
+        question.setQuizEntity(this);
+    }
+
+    public void removeQuestion(QuestionEntity question) {
+        questionEntities.remove(question);
+        question.setQuizEntity(null);
+    }
 }
