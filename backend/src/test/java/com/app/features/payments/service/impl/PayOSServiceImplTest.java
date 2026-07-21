@@ -1,7 +1,7 @@
-package com.app.features.payments.gateway.impl;
+package com.app.features.payments.service.impl;
 
 import com.app.features.payments.dto.PaymentVerifyResponse;
-import com.app.features.payments.gateway.PaymentGatewayStatus;
+import com.app.features.payments.dto.PayOSPaymentStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -20,13 +20,13 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class PayOSAdapterTest {
+class PayOSServiceImplTest {
 
     @Test
     void buildOrderCodeCombinesTimeAndInvoiceId() {
-        long first = PayOSAdapter.buildOrderCode(1_750_000_000L, 8L);
-        long secondInvoice = PayOSAdapter.buildOrderCode(1_750_000_000L, 9L);
-        long secondTime = PayOSAdapter.buildOrderCode(1_750_000_001L, 8L);
+        long first = PayOSServiceImpl.buildOrderCode(1_750_000_000L, 8L);
+        long secondInvoice = PayOSServiceImpl.buildOrderCode(1_750_000_000L, 9L);
+        long secondTime = PayOSServiceImpl.buildOrderCode(1_750_000_001L, 8L);
 
         assertEquals(175_000_000_000_008L, first);
         assertNotEquals(first, secondInvoice);
@@ -36,10 +36,10 @@ class PayOSAdapterTest {
 
     @Test
     void extractDataReturnsSuccessfulPayload() {
-        PayOSAdapter adapter = new PayOSAdapter();
+        PayOSServiceImpl service = new PayOSServiceImpl();
         Map<String, Object> data = Map.of("checkoutUrl", "https://pay.payos.vn/example");
 
-        Map<String, Object> result = adapter.extractData(Map.of(
+        Map<String, Object> result = service.extractData(Map.of(
                 "code", "00",
                 "desc", "success",
                 "data", data
@@ -50,10 +50,10 @@ class PayOSAdapterTest {
 
     @Test
     void extractDataPreservesPayosErrorDetails() {
-        PayOSAdapter adapter = new PayOSAdapter();
+        PayOSServiceImpl service = new PayOSServiceImpl();
 
         IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
-                adapter.extractData(Map.of(
+                service.extractData(Map.of(
                         "code", "231",
                         "desc", "Payment order already exists"
                 ))
@@ -65,9 +65,9 @@ class PayOSAdapterTest {
 
     @Test
     void extractPaymentStatusReturnsPaidAmountAndOrderCode() {
-        PayOSAdapter adapter = new PayOSAdapter();
+        PayOSServiceImpl service = new PayOSServiceImpl();
 
-        PaymentGatewayStatus status = adapter.extractPaymentStatus(Map.of(
+        PayOSPaymentStatus status = service.extractPaymentStatus(Map.of(
                 "code", "00",
                 "desc", "success",
                 "data", Map.of(
@@ -88,8 +88,8 @@ class PayOSAdapterTest {
     @Test
     void verifyCallbackTreatsSignedCode00AsSuccessful() throws Exception {
         String checksumKey = "test-checksum-key";
-        PayOSAdapter adapter = new PayOSAdapter();
-        ReflectionTestUtils.setField(adapter, "checksumKey", checksumKey);
+        PayOSServiceImpl service = new PayOSServiceImpl();
+        ReflectionTestUtils.setField(service, "checksumKey", checksumKey);
 
         Map<String, String> params = new HashMap<>();
         params.put("orderCode", "175000000000008");
@@ -100,7 +100,7 @@ class PayOSAdapterTest {
         params.put("reference", "bank-reference");
         params.put("signature", sign(params, checksumKey));
 
-        PaymentVerifyResponse response = adapter.verifyCallback(params);
+        PaymentVerifyResponse response = service.verifyCallback(params);
 
         assertTrue(response.valid());
         assertTrue(response.success());
@@ -111,8 +111,8 @@ class PayOSAdapterTest {
     @Test
     void verifyCallbackKeepsSignedPayosErrorUnsuccessful() throws Exception {
         String checksumKey = "test-checksum-key";
-        PayOSAdapter adapter = new PayOSAdapter();
-        ReflectionTestUtils.setField(adapter, "checksumKey", checksumKey);
+        PayOSServiceImpl service = new PayOSServiceImpl();
+        ReflectionTestUtils.setField(service, "checksumKey", checksumKey);
 
         Map<String, String> params = new HashMap<>();
         params.put("orderCode", "175000000000008");
@@ -120,7 +120,7 @@ class PayOSAdapterTest {
         params.put("desc", "failed");
         params.put("signature", sign(params, checksumKey));
 
-        PaymentVerifyResponse response = adapter.verifyCallback(params);
+        PaymentVerifyResponse response = service.verifyCallback(params);
 
         assertTrue(response.valid());
         assertFalse(response.success());

@@ -15,7 +15,8 @@ import java.time.Instant;
 @Getter
 @Setter
 @Entity
-@Table(name = "lesson_progress", schema = "chinese_online_learning")
+@Table(name = "lesson_progress", schema = "chinese_online_learning",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "lesson_id"}))
 public class LessonProgressEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -12,11 +12,10 @@ import com.app.features.model.enums.PaymentProvider;
 import com.app.features.payments.converter.InvoiceConverter;
 import com.app.features.payments.converter.PaymentConverter;
 import com.app.features.payments.dto.PaymentVerifyResponse;
-import com.app.features.payments.gateway.PaymentGateway;
-import com.app.features.payments.gateway.PaymentGatewayFactory;
 import com.app.features.payments.repository.InvoiceRepository;
 import com.app.features.payments.repository.PaymentRepository;
 import com.app.features.payments.service.PaymentCallbackService;
+import com.app.features.payments.service.PayOSService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class PaymentCallbackServiceImpl implements PaymentCallbackService {
-    private final PaymentGatewayFactory paymentGatewayFactory;
+    private final PayOSService payOSService;
     private final InvoiceRepository invoiceRepository;
     private final PaymentRepository paymentRepository;
     private final ICourseEnrollmentRepository courseEnrollmentRepository;
@@ -40,8 +39,10 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
     @Transactional
     public PaymentVerifyResponse handleCallback(PaymentProvider provider, Map<String, String> params) {
         log.info("Payment callback received, provider={}", provider);
-        PaymentGateway gateway = paymentGatewayFactory.getGateway(provider);
-        PaymentVerifyResponse verifyResponse = gateway.verifyCallback(params);
+        if (provider != PaymentProvider.PAYOS) {
+            throw new IllegalArgumentException("Unsupported payment provider: " + provider);
+        }
+        PaymentVerifyResponse verifyResponse = payOSService.verifyCallback(params);
 
         if (!verifyResponse.valid()) {
             log.warn("Payment callback rejected due to invalid signature, provider={}", provider);

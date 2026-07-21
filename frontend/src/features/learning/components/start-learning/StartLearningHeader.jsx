@@ -54,7 +54,7 @@ export default function StartLearningHeader({
                         <LayoutGrid className="h-4 w-4 text-brand-accentSoft" />
                         <span className="truncate">Chương trình bạn chọn:</span>
                         <span className="font-bold text-brand-accentSoft">
-                            {selectedCourse ? selectedCourse.title : "Đang tải..."}
+                            {selectedCourse ? selectedCourse.title : enrolledCourses.length ? "Đang tải..." : "Chưa có khóa học"}
                         </span>
                         <ChevronDown className={`h-4 w-4 text-brand-textSecondary transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
                     </button>

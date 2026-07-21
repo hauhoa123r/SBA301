@@ -4,7 +4,7 @@ import AnimatedCard from "../../../../shared/components/animation/AnimatedCard";
 import UserImage from "../../../../shared/components/animation/UserImage";
 import UserStagger from "../../../../shared/components/animation/UserStagger";
 
-export default function CourseList({ courses, isLoading = false }) {
+export default function CourseList({ courses, isLoading = false, emptyMessage = "Không tìm thấy khóa học nào. Hãy thử từ khóa khác." }) {
     const formatRating = (rating) => Number(rating ?? 5.0).toFixed(1);
 
     if (isLoading) {
@@ -18,7 +18,7 @@ export default function CourseList({ courses, isLoading = false }) {
     if (courses.length === 0) {
         return (
             <div role="status" className="rounded-2xl border border-brand-accent/10 bg-brand-cardBg p-10 text-center text-brand-textSecondary">
-                Không tìm thấy khóa học nào. Hãy thử từ khóa khác.
+                {emptyMessage}
             </div>
         );
     }
