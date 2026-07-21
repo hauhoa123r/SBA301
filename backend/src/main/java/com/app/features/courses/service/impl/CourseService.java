@@ -82,6 +82,22 @@ public class CourseService implements ICourseService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public CourseDetailResponse getCourseByTeacher(Long courseId, Long teacherId) {
+        log.info("Loading course for teacher edit, courseId={}, teacherId={}", courseId, teacherId);
+        CourseEntity course = courseRepository.findById(courseId).orElseThrow(() -> 
+            new ResourceNotFoundException("Course not found with id: " + courseId)
+        );
+        
+        if (!course.getTeacher().getId().equals(teacherId)) {
+            throw new BadRequestException("You are not authorized to view this course.");
+        }
+
+        Map<Long, CourseLessonStats> lessonStatsByCourseId = getLessonStatsByCourseId(List.of(course));
+        return courseResponseConverter.toCourseDetailResponse(course, lessonStatsByCourseId.get(course.getId()));
+    }
+
+    @Override
     @Transactional
     public Long createCourse(CourseRequest request, Long teacherId) {
         log.info("Course creation requested, teacherId={}, categoryId={}", teacherId, request.getCategoryId());
@@ -123,6 +139,92 @@ public class CourseService implements ICourseService {
         Long courseId = courseRepository.save(course).getId();
         log.info("Course created successfully, courseId={}, createdBy={}", courseId, teacherId);
         return courseId;
+    }
+
+    @Override
+    @Transactional
+    public CourseDetailResponse updateCourse(Long courseId, CourseRequest request, Long teacherId) {
+        log.info("Course update requested, courseId={}, teacherId={}", courseId, teacherId);
+        CourseEntity course = courseRepository.findById(courseId).orElseThrow(() -> {
+            log.warn("Course update failed because course was not found, courseId={}", courseId);
+            return new ResourceNotFoundException("Course not found with id: " + courseId);
+        });
+
+        if (!course.getTeacher().getId().equals(teacherId)) {
+            log.warn("Course update rejected for unauthorized teacher, courseId={}, teacherId={}", courseId, teacherId);
+            throw new BadRequestException("You are not authorized to update this course.");
+        }
+
+        CategoryEntity category = categoryService.findCategoryById(request.getCategoryId());
+        if (category == null) {
+            throw new ResourceNotFoundException("Category not found with id: " + request.getCategoryId());
+        }
+
+        course.setTitle(request.getTitle());
+        course.setCategory(category);
+        course.setDescription(request.getDescription());
+        course.setThumbnailUrl(request.getThumbnailUrl());
+        course.setUpdatedAt(new Date().toInstant());
+
+        course.getTags().clear();
+        if (request.getTagIds() != null && !request.getTagIds().isEmpty()) {
+            List<TagEntity> tags = tagService.findAllById(request.getTagIds());
+            for (TagEntity tag : tags) {
+                course.addTag(tag);
+            }
+        }
+
+        for (PlanEntity plan : course.getPlans()) {
+            if (plan.getCourses() != null) {
+                plan.getCourses().remove(course);
+            }
+        }
+        course.getPlans().clear();
+
+        if (request.getPlanIds() != null && !request.getPlanIds().isEmpty()) {
+            List<PlanEntity> plans = planService.findAllByIds(request.getPlanIds());
+            for (PlanEntity plan : plans) {
+                course.addPlan(plan);
+            }
+        } else {
+            throw new BadRequestException("Please choose at least one plan.");
+        }
+
+        course = courseRepository.save(course);
+        log.info("Course updated successfully, courseId={}", courseId);
+        Map<Long, CourseLessonStats> lessonStatsByCourseId = getLessonStatsByCourseId(List.of(course));
+        return courseResponseConverter.toCourseDetailResponse(course, lessonStatsByCourseId.get(course.getId()));
+    }
+
+    @Override
+    @Transactional
+    public void deleteCourse(Long courseId, Long teacherId) {
+        log.info("Course deletion requested, courseId={}, teacherId={}", courseId, teacherId);
+        CourseEntity course = courseRepository.findById(courseId).orElseThrow(() -> {
+            log.warn("Course deletion failed because course was not found, courseId={}", courseId);
+            return new ResourceNotFoundException("Course not found with id: " + courseId);
+        });
+
+        if (!course.getTeacher().getId().equals(teacherId)) {
+            log.warn("Course deletion rejected for unauthorized teacher, courseId={}, teacherId={}", courseId, teacherId);
+            throw new BadRequestException("You are not authorized to delete this course.");
+        }
+
+        if (!course.getCourseEnrollments().isEmpty()) {
+            log.warn("Course deletion rejected because it has enrolled students, courseId={}", courseId);
+            throw new BadRequestException("Cannot delete course because there are students already enrolled in it.");
+        }
+
+        for (PlanEntity plan : course.getPlans()) {
+            if (plan.getCourses() != null) {
+                plan.getCourses().remove(course);
+            }
+        }
+        course.getPlans().clear();
+        course.getTags().clear();
+
+        courseRepository.delete(course);
+        log.info("Course deleted successfully, courseId={}", courseId);
     }
 
     private Map<Long, CourseLessonStats> getLessonStatsByCourseId(List<CourseEntity> courses) {

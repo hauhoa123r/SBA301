@@ -18,12 +18,12 @@ public class OAuth2SecurityConfigurer {
     private final OAuth2AuthenticationSuccessHandler successHandler;
     private final OAuth2AuthenticationFailureHandler failureHandler;
 
-    public void configure(
-            OAuth2LoginConfigurer<HttpSecurity> oauth
-    ) {
-        oauth
-                .authorizationEndpoint(endpoint -> endpoint
+    public void configure(OAuth2LoginConfigurer<HttpSecurity> oauth) {
+        oauth.authorizationEndpoint(endpoint -> endpoint
                         .baseUri("/api/oauth2/authorization")
+                )
+                .redirectionEndpoint(endpoint -> endpoint
+                        .baseUri("/login/oauth2/code/*")
                 )
                 .userInfoEndpoint(userInfo -> userInfo
                         .userService(oauth2UserService)

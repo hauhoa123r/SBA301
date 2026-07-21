@@ -1,9 +1,9 @@
 package com.app.security.oauth.facebook;
 
 import com.app.features.model.UserEntity;
-import com.app.features.oauth.OAuth2UserInfo;
-import com.app.features.oauth.OAuth2UserInfoMapper;
-import com.app.features.oauth.OAuthAccountService;
+import com.app.features.oauth.dto.OAuth2UserInfo;
+import com.app.features.oauth.mapper.OAuth2UserInfoMapper;
+import com.app.features.oauth.service.OAuthAccountService;
 import com.app.security.oauth.CustomOAuth2User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,3 +36,4 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         return new CustomOAuth2User(delegate, user);
     }
 }
+

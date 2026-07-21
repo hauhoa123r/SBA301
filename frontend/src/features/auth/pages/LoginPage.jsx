@@ -76,7 +76,10 @@ const LoginPage = () => {
                 localStorage.removeItem("refreshToken");
             }
             setUser(loggedInUser);
-            const requestedPath = new URLSearchParams(location.search).get("returnTo");
+            const statePath = location.state?.from
+                ? `${location.state.from.pathname || ""}${location.state.from.search || ""}${location.state.from.hash || ""}`
+                : "";
+            const requestedPath = new URLSearchParams(location.search).get("returnTo") || statePath;
             const returnTo = requestedPath?.startsWith("/") && !requestedPath.startsWith("//")
                 ? requestedPath
                 : "/";

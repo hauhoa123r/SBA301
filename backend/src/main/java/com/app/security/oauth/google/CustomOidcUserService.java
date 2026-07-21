@@ -1,8 +1,8 @@
 package com.app.security.oauth.google;
 
 import com.app.features.model.UserEntity;
-import com.app.features.oauth.OAuth2UserInfoMapper;
-import com.app.features.oauth.OAuthAccountService;
+import com.app.features.oauth.mapper.OAuth2UserInfoMapper;
+import com.app.features.oauth.service.OAuthAccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
@@ -30,3 +30,4 @@ public class CustomOidcUserService implements OAuth2UserService<OidcUserRequest,
         return new CustomOidcUser(delegate, user);
     }
 }
+

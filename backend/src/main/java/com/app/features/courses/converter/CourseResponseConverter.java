@@ -49,6 +49,18 @@ public class CourseResponseConverter {
         response.setStudents(course.getCourseEnrollments() == null ? 0 : course.getCourseEnrollments().size());
         response.setLevel("Tất cả trình độ");
         response.setChapters(chapterResponseConverter.toChapterResponses(course));
+        
+        if (course.getTags() != null) {
+            response.setTagIds(course.getTags().stream().map(tagEntity -> {
+                return tagEntity.getId();
+            }).toList());
+        }
+        if (course.getPlans() != null) {
+            response.setPlanIds(course.getPlans().stream().map( planEntity -> {
+                return planEntity.getId();
+            }).toList());
+        }
+
         applyLessonStats(response, lessonStats);
         response.setRating(5.0);
 

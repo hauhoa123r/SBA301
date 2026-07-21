@@ -7,6 +7,7 @@ import ViewCoursesPage from "../pages/catalog/ViewCoursesPage";
 import AboutPage from "../../../shared/components/about/AboutPage";
 import BlogPage from "../../../shared/components/blog/BlogPage";
 import ContactPage from "../../../shared/components/contact/ContactPage";
+import ProtectedRoute from "../../../app/routes/ProtectedRoute";
 import CourseManagementLayout from '../layouts/CourseManagementLayout'; 
 import CourseDashboardPage from '../pages/management/CourseDashboardPage';
 import ManageCoursesPage from '../pages/management/ManageCoursesPage';
@@ -30,7 +31,11 @@ export const courseRoutes = [
     },
     {
         path: "/payment/checkout",
-        element: <PaymentCheckoutPage />
+        element: (
+            <ProtectedRoute allowedRoles={["STUDENT"]}>
+                <PaymentCheckoutPage />
+            </ProtectedRoute>
+        )
     },
     {
         path: "/payment/result",

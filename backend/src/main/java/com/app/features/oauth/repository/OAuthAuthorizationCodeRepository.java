@@ -1,8 +1,9 @@
-package com.app.features.oauth;
+package com.app.features.oauth.repository;
 
+import com.app.features.oauth.entity.OAuthAuthorizationCodeEntity;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
-import jakarta.persistence.LockModeType;
 
 import java.util.Optional;
 

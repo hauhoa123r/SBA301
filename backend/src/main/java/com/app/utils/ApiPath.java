@@ -61,6 +61,7 @@ public final class ApiPath {
     public static final String API_USER_ROLES = API_USERS + "/{userId}/roles";
     public static final String API_USER_STREAK = API_USERS + "/{userId}/streak";
     public static final String API_USER_SUBSCRIPTIONS = API_USERS + "/{userId}/subscriptions";
+    public static final String API_COURSE_CURRICULUM = API_COURSES + "/{courseId}/curriculum";
 
     private ApiPath() {
     }
