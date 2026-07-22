@@ -10,7 +10,7 @@ export default function QuizSettingsTab({ form, setField }) {
       <div>
         <label className="flex items-center gap-2 text-sm font-semibold text-brand-textSecondary mb-2">
           <FileText className="w-4 h-4" />
-          Tiêu đề bài tập <span className="text-status-danger">*</span>
+          Tiêu đề bài kiểm tra <span className="text-status-danger">*</span>
         </label>
         <input
           autoFocus
@@ -21,7 +21,7 @@ export default function QuizSettingsTab({ form, setField }) {
           className={inputCls}
         />
         <p className="mt-2 text-xs text-brand-mutedText/60">
-          Tiêu đề rõ ràng giúp học viên hiểu mục đích của bài tập.
+          Tiêu đề rõ ràng giúp học viên hiểu mục tiêu của bài kiểm tra.
         </p>
       </div>
 
@@ -41,25 +41,25 @@ export default function QuizSettingsTab({ form, setField }) {
             className={inputCls}
           />
           <p className="mt-2 text-xs text-brand-mutedText/60">
-            Phần trăm tối thiểu để đạt bài tập này (ví dụ: 50 tương đương 50%).
+            Tỷ lệ phần trăm tối thiểu để đạt bài kiểm tra này, ví dụ 50 cho 50%.
           </p>
         </div>
 
         <div>
           <label className="flex items-center gap-2 text-sm font-semibold text-brand-textSecondary mb-2">
             <Timer className="w-4 h-4" />
-            Giới hạn thời gian (Phút)
+            Giới hạn thời gian (phút)
           </label>
           <input
             type="number"
             min="0"
-            placeholder="0 để không giới hạn"
+            placeholder="0 nếu không giới hạn"
             value={form.timeLimitMinutes}
             onChange={(e) => setField('timeLimitMinutes', parseInt(e.target.value) || 0)}
             className={inputCls}
           />
           <p className="mt-2 text-xs text-brand-mutedText/60">
-            Đặt thành 0 nếu bạn không muốn giới hạn thời gian.
+            Đặt là 0 nếu không muốn giới hạn thời gian.
           </p>
         </div>
       </div>

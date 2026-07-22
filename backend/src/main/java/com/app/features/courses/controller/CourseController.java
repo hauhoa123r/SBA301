@@ -1,5 +1,7 @@
 package com.app.features.courses.controller;
 
+import com.app.features.courses.dto.request.CourseHideRequest;
+import com.app.features.courses.dto.request.CourseRejectionRequest;
 import com.app.features.courses.dto.request.CourseRequest;
 import com.app.features.courses.dto.response.CourseCatalogResponse;
 import com.app.features.courses.dto.response.CourseDetailResponse;
@@ -82,5 +84,26 @@ public class CourseController {
     public ResponseEntity<DashboardStatsResponse> getDashboardStats() {
         Long currentTeacherId = SecurityUtils.getCurrentUserId();
         return ResponseEntity.ok(courseService.getDashboardStats(currentTeacherId));
+    }
+
+    @PostMapping("/moderation/{courseId}/reject")
+    public ResponseEntity<CourseDetailResponse> rejectPendingCourse(
+            @PathVariable Long courseId,
+            @Valid @RequestBody CourseRejectionRequest request
+    ) {
+        return ResponseEntity.ok(courseService.rejectPendingCourse(courseId, request));
+    }
+
+    @GetMapping("/moderation/published")
+    public ResponseEntity<List<CourseDetailResponse>> getPublishedCourses() {
+        return ResponseEntity.ok(courseService.getPublishedCourses());
+    }
+
+    @PostMapping("/moderation/{courseId}/hide")
+    public ResponseEntity<CourseDetailResponse> hidePublishedCourse(
+            @PathVariable Long courseId,
+            @Valid @RequestBody CourseHideRequest request
+    ) {
+        return ResponseEntity.ok(courseService.hidePublishedCourse(courseId, request));
     }
 }

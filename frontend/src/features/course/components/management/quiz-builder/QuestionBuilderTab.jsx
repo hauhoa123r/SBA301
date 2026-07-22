@@ -69,7 +69,7 @@ export default function QuestionBuilderTab({ questions, setQuestions }) {
         <div className="flex-1 overflow-y-auto p-3 space-y-2">
           {questions.length === 0 ? (
             <div className="text-center p-6 text-brand-mutedText text-sm">
-              Chưa có câu hỏi nào. Nhấp vào Thêm để bắt đầu.
+              Chưa có câu hỏi nào. Nhấn Thêm để bắt đầu.
             </div>
           ) : (
             questions.map((q, idx) => (
@@ -111,7 +111,7 @@ export default function QuestionBuilderTab({ questions, setQuestions }) {
           <div className="p-6 space-y-6">
             
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold text-brand-textPrimary">Sửa Câu Hỏi</h2>
+              <h2 className="text-lg font-bold text-brand-textPrimary">Sửa câu hỏi</h2>
               <div className="w-48">
                 <select
                   value={selectedQ.questionType}
@@ -132,7 +132,7 @@ export default function QuestionBuilderTab({ questions, setQuestions }) {
                 </label>
                 <textarea
                   rows="3"
-                  placeholder="Nhập câu hỏi của bạn tại đây..."
+                  placeholder="Nhập câu hỏi tại đây..."
                   value={selectedQ.content}
                   onChange={(e) => updateSelectedQuestion('content', e.target.value)}
                   className="w-full px-4 py-3 border border-brand-borderSoft rounded-lg bg-brand-dark/60 text-brand-textPrimary placeholder-brand-mutedText/60 text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent transition-all resize-y"
@@ -153,10 +153,10 @@ export default function QuestionBuilderTab({ questions, setQuestions }) {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-brand-textSecondary mb-2">Giải thích (Tùy chọn)</label>
+                <label className="block text-sm font-semibold text-brand-textSecondary mb-2">Giải thích (không bắt buộc)</label>
                 <textarea
                   rows="2"
-                  placeholder="Giải thích tại sao đáp án đúng lại đúng..."
+                  placeholder="Giải thích vì sao đáp án đúng là chính xác..."
                   value={selectedQ.explanation || ''}
                   onChange={(e) => updateSelectedQuestion('explanation', e.target.value)}
                   className="w-full px-4 py-2 border border-brand-borderSoft rounded-lg bg-brand-dark/60 text-brand-textPrimary placeholder-brand-mutedText/60 text-sm focus:outline-none focus:border-brand-accent resize-y"
@@ -180,8 +180,8 @@ export default function QuestionBuilderTab({ questions, setQuestions }) {
         ) : (
           <div className="flex flex-col items-center justify-center h-full text-brand-mutedText p-8 text-center">
             <CheckCircle2 className="w-16 h-16 opacity-20 mb-4" />
-            <p className="text-lg font-medium">Chọn một câu hỏi để sửa</p>
-            <p className="text-sm mt-1">Hoặc nhấp vào "Thêm" để tạo mới.</p>
+            <p className="text-lg font-medium">Chọn một câu hỏi để chỉnh sửa</p>
+            <p className="text-sm mt-1">Hoặc nhấn "Thêm" để tạo câu hỏi mới.</p>
           </div>
         )}
       </div>

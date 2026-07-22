@@ -20,17 +20,17 @@ export default function TeacherSidebar({ sidebarOpen, onClose }) {
   const sidebarItems = [
     {
       path: '/management/dashboard',
-      label: 'Bảng Điều Khiển',
+      label: 'Bảng điều khiển',
       icon: BarChart3,
     },
     {
       path: '/management/courses',
-      label: 'Khóa Học Của Tôi',
+      label: 'Khóa học của tôi',
       icon: BookOpen,
     },
     {
       path: '/management/quizzes',
-      label: 'Ngân Hàng Bài Tập',
+      label: 'Ngân hàng bài kiểm tra',
       icon: FileQuestion,
     },
   ];
@@ -56,7 +56,7 @@ export default function TeacherSidebar({ sidebarOpen, onClose }) {
             <div className="flex items-center gap-3">
               <img
                 src="/images/logo.svg"
-                alt="Edujar Logo"
+                alt="Logo Edujar"
                 className="h-9 w-auto object-contain"
               />
               <span
@@ -94,14 +94,14 @@ export default function TeacherSidebar({ sidebarOpen, onClose }) {
           <div className="p-4 border-t border-brand-borderSoft space-y-1.5">
             <button className="w-full flex items-center gap-3 px-4 py-3 text-brand-textSecondary hover:bg-brand-sidebarHover hover:text-brand-textPrimary rounded-lg transition-colors duration-200">
               <Settings className="w-5 h-5" />
-              <span className="font-medium">Cài Đặt</span>
+              <span className="font-medium">Cài đặt</span>
             </button>
             <button
               onClick={handleLogout}
               className="w-full flex items-center gap-3 px-4 py-3 text-brand-danger hover:bg-brand-danger/10 rounded-lg transition-colors duration-200"
             >
               <LogOut className="w-5 h-5" />
-              <span className="font-medium">Đăng Xuất</span>
+              <span className="font-medium">Đăng xuất</span>
             </button>
           </div>
         </div>

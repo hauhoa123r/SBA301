@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import teacherService from '@/features/course/services/api/courseManagementService';
 import CategorySelect from './CategorySelect';
 import TagSelector from './TagSelector';
-import { showErrorToast } from '@/shared/utils/toast';
 
 const getInitialFormState = (initialData) => ({
   title: initialData?.title || '',
@@ -25,7 +24,7 @@ const normalizeMasterList = (value) => {
   return [];
 };
 
-const getErrorMessage = (error) => error?.message || 'Không thể tải dữ liệu phần này';
+const getErrorMessage = (error) => error?.message || 'Không thể tải phần này';
 
 export default function CourseForm({ initialData = null, onSubmit, loading = false, error = null }) {
   const navigate = useNavigate();
@@ -63,10 +62,10 @@ export default function CourseForm({ initialData = null, onSubmit, loading = fal
           tags: tagsResult.status === 'rejected' ? getErrorMessage(tagsResult.reason) : null,
         });
       } catch (err) {
-        console.error('Error loading course master data:', err);
+        console.error('Không thể tải dữ liệu khóa học:', err);
         setMasterDataErrors({
-          categories: 'Lỗi tải danh mục',
-          tags: 'Lỗi tải nhãn',
+          categories: 'Không thể tải danh mục',
+          tags: 'Không thể tải thẻ',
         });
       } finally {
         setLoadingMasterData(false);
@@ -97,18 +96,18 @@ export default function CourseForm({ initialData = null, onSubmit, loading = fal
     e.preventDefault();
 
     if (!formData.title.trim()) {
-      showErrorToast('Tiêu đề khóa học không được để trống');
+      alert('Tên khóa học không được để trống');
       return;
     }
 
     if (!formData.categoryId) {
-      showErrorToast('Vui lòng chọn danh mục');
+      alert('Vui lòng chọn danh mục');
       return;
     }
 
     const price = Number(formData.price);
     if (formData.price === '' || !Number.isFinite(price) || price < 0) {
-      setPriceError('Giá khóa học phải là một số lớn hơn hoặc bằng 0.');
+      setPriceError('Giá phải là số lớn hơn hoặc bằng 0.');
       return;
     }
 
@@ -139,15 +138,15 @@ export default function CourseForm({ initialData = null, onSubmit, loading = fal
         className="flex items-center gap-2 font-medium text-brand-accentSoft transition-colors duration-200 hover:text-brand-accent"
       >
         <ArrowLeft className="h-4 w-4" />
-        Quay Lại
+        Quay lại
       </button>
 
       <div>
         <h1 className="text-4xl font-bold text-brand-textPrimary">
-          {initialData ? 'Sửa Khóa Học' : 'Tạo Khóa Học Mới'}
+          {initialData ? 'Chỉnh sửa khóa học' : 'Tạo khóa học mới'}
         </h1>
         <p className="mt-2 text-brand-textSecondary">
-          {initialData ? 'Cập nhật thông tin khóa học của bạn' : 'Điền các thông tin cơ bản để tạo khóa học mới'}
+          {initialData ? 'Cập nhật thông tin khóa học' : 'Điền thông tin cơ bản để tạo khóa học mới'}
         </p>
       </div>
 
@@ -162,14 +161,14 @@ export default function CourseForm({ initialData = null, onSubmit, loading = fal
           <div className="space-y-6 lg:col-span-2">
             <div>
               <label className="mb-2 block text-sm font-semibold text-brand-textPrimary">
-                Tiêu đề khóa học <span className="text-brand-danger">*</span>
+                Tên khóa học <span className="text-brand-danger">*</span>
               </label>
               <input
                 type="text"
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                placeholder="Nhập tiêu đề khóa học"
+                placeholder="Nhập tên khóa học"
                 className="w-full rounded-lg border border-brand-borderSoft bg-brand-dark/50 px-4 py-3 text-brand-textPrimary placeholder-brand-mutedText transition-colors duration-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-brand-accent"
                 required
               />
@@ -192,7 +191,7 @@ export default function CourseForm({ initialData = null, onSubmit, loading = fal
 
             <div>
               <label htmlFor="course-price" className="mb-2 block text-sm font-semibold text-brand-textPrimary">
-                Giá Khóa Học <span className="text-brand-danger">*</span>
+                Giá khóa học <span className="text-brand-danger">*</span>
               </label>
               <input
                 id="course-price"
@@ -229,14 +228,14 @@ export default function CourseForm({ initialData = null, onSubmit, loading = fal
                 name="thumbnailUrl"
                 value={formData.thumbnailUrl}
                 onChange={handleChange}
-                placeholder="Nhập đường dẫn ảnh (URL)..."
+                placeholder="Nhập URL hình ảnh..."
                 className="w-full rounded-lg border border-brand-borderSoft bg-brand-dark/50 px-4 py-3 text-brand-textPrimary placeholder-brand-mutedText transition-colors duration-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-brand-accent"
               />
               {formData.thumbnailUrl ? (
                 <div className="mt-3 overflow-hidden rounded-lg">
                   <img
                     src={formData.thumbnailUrl}
-                    alt="Course thumbnail preview"
+                    alt="Xem trước ảnh đại diện khóa học"
                     className="h-40 w-full object-cover rounded-lg"
                     onError={(e) => {
                       e.target.style.display = 'none';
@@ -278,12 +277,12 @@ export default function CourseForm({ initialData = null, onSubmit, loading = fal
             ) : initialData ? (
               <>
                 <Plus className="h-5 w-5" />
-                Lưu Thay Đổi
+                Lưu thay đổi
               </>
             ) : (
               <>
                 <Plus className="h-5 w-5" />
-                Tạo Khóa Học
+                Tạo khóa học
               </>
             )}
           </button>

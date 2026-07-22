@@ -4,7 +4,6 @@ import { ArrowLeft, FileQuestion, Settings, ListChecks, Save } from 'lucide-reac
 import QuizSettingsTab from '../../components/management/quiz-builder/QuizSettingsTab';
 import QuestionBuilderTab from '../../components/management/quiz-builder/QuestionBuilderTab';
 import { quizService } from '../../services/api/quiz.services';
-import { showErrorToast, showSuccessToast } from '@/shared/utils/toast';
 
 const emptyQuiz = () => ({
   title: '',
@@ -37,7 +36,7 @@ export default function QuizBuilderPage() {
           questions: data.questions || [],
         });
       }).catch(err => {
-        console.error("Failed to load quiz", err);
+        console.error("Không thể tải bài kiểm tra", err);
       });
     } else if (initialQuizData) {
       setForm({
@@ -85,8 +84,8 @@ export default function QuizBuilderPage() {
       
       navigate('/management/quizzes');
     } catch (error) {
-      console.error("Failed to save quiz", error);
-      showErrorToast("Error saving quiz");
+      console.error("Không thể lưu bài kiểm tra", error);
+      alert("Không thể lưu bài kiểm tra");
     } finally {
       setIsSaving(false);
     }
@@ -103,7 +102,7 @@ export default function QuizBuilderPage() {
           className="flex items-center gap-2 text-brand-accentSoft hover:text-brand-accent font-medium transition-colors group"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-          Quay Lại Ngân Hàng
+          Quay lại ngân hàng bài kiểm tra
         </button>
 
         <button
@@ -112,7 +111,7 @@ export default function QuizBuilderPage() {
           className="flex items-center gap-2 px-6 py-2.5 bg-brand-accent hover:bg-brand-accentHover text-brand-white text-sm font-semibold rounded-lg shadow-lg shadow-brand-accent/20 hover:shadow-brand-accent/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
         >
           <Save className="w-4 h-4" />
-          {isEditing ? 'Lưu Thay Đổi' : 'Lưu Bài Kiểm Tra'}
+          {isEditing ? 'Lưu thay đổi' : 'Lưu bài kiểm tra'}
         </button>
       </div>
 
@@ -127,17 +126,17 @@ export default function QuizBuilderPage() {
             </div>
             <div>
               <h1 className="text-xl font-bold text-brand-textPrimary">
-                {isEditing ? 'Sửa Bài Kiểm Tra' : 'Tạo Bài Kiểm Tra Mới'}
+                {isEditing ? 'Sửa bài kiểm tra' : 'Tạo bài kiểm tra mới'}
               </h1>
               <p className="text-sm text-brand-textSecondary mt-1">
-                {form.questions.length} Câu hỏi · Tổng điểm: {totalPoints}
+                {form.questions.length} câu hỏi · Tổng điểm: {totalPoints}
               </p>
             </div>
           </div>
           
           <div className="text-right">
              <p className="text-xs text-brand-mutedText/60">
-              {!form.title.trim() && <span className="text-status-warning block">⚠ Cần có tiêu đề</span>}
+              {!form.title.trim() && <span className="text-status-warning block">⚠ Cần nhập tiêu đề</span>}
               {form.title.trim() && form.questions.length === 0 && <span className="text-status-warning block">⚠ Thêm ít nhất một câu hỏi</span>}
             </p>
           </div>
@@ -154,7 +153,7 @@ export default function QuizBuilderPage() {
             }`}
           >
             <Settings className="w-4 h-4" />
-            Cài Đặt Bài Kiểm Tra
+            Cài đặt bài kiểm tra
           </button>
           <button
             onClick={() => setActiveTab('questions')}
@@ -165,7 +164,7 @@ export default function QuizBuilderPage() {
             }`}
           >
             <ListChecks className="w-4 h-4" />
-            Xây Dựng Câu Hỏi
+            Xây dựng câu hỏi
           </button>
         </div>
 

@@ -13,7 +13,7 @@ export default function ConfirmDeleteModal({
   isOpen,
   onClose,
   onConfirm,
-  title = 'Xác Nhận Xóa',
+  title = 'Xác nhận xóa',
   message,
 }) {
   if (!isOpen) return null;
@@ -56,10 +56,10 @@ export default function ConfirmDeleteModal({
           </div>
           <div className="space-y-2">
             <p className="text-brand-textPrimary font-semibold text-base">
-              Bạn có chắc chắn không?
+              Bạn có chắc không?
             </p>
             <p className="text-brand-textSecondary text-sm leading-relaxed max-w-xs">
-              {message || 'Bạn có chắc chắn muốn xóa mục này không? Hành động này không thể hoàn tác.'}
+              {message || 'Bạn có chắc muốn xóa mục này không? Hành động này không thể hoàn tác.'}
             </p>
           </div>
         </div>

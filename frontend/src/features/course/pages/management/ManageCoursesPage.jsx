@@ -24,7 +24,7 @@ export default function ManageCoursesPage() {
       setCourses(response.data || response || []);
       setError(null);
     } catch (err) {
-      setError(err.message || 'Lỗi tải danh sách khóa học');
+      setError(err.message || 'Không thể tải danh sách khóa học');
       setCourses([]);
     } finally {
       setLoading(false);
@@ -56,7 +56,7 @@ export default function ManageCoursesPage() {
       setError(null); // clear any previous error
       await fetchCourses(); // reload list
     } catch (err) {
-      setError(err.message || 'Lỗi khi xóa khóa học');
+      setError(err.message || 'Không thể xóa khóa học');
       setLoading(false);
     }
   };
@@ -65,15 +65,15 @@ export default function ManageCoursesPage() {
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-bold text-brand-textPrimary mb-2">Khóa Học Của Tôi</h1>
-          <p className="text-brand-textSecondary">Quản lý và phát triển khóa học của bạn</p>
+          <h1 className="text-4xl font-bold text-brand-textPrimary mb-2">Khóa học của tôi</h1>
+          <p className="text-brand-textSecondary">Quản lý và phát triển các khóa học của bạn</p>
         </div>
         <button
           onClick={handleCreateCourse}
           className="flex items-center gap-2 px-6 py-3 bg-brand-accent hover:bg-brand-accentHover text-brand-white font-medium rounded-lg transition-colors duration-200 shadow-lg shadow-brand-accent/20 hover:shadow-xl"
         >
           <Plus className="w-5 h-5" />
-          Tạo Khóa Học
+          Tạo khóa học
         </button>
       </div>
 
@@ -123,8 +123,8 @@ export default function ManageCoursesPage() {
         isOpen={isDeleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={confirmDelete}
-        title="Xóa Khóa Học"
-        message={`Bạn có chắc chắn muốn xóa khóa học "${courseToDelete?.title}"? Hành động này sẽ xóa vĩnh viễn tất cả các chương và bài học liên quan.`}
+        title="Xóa khóa học"
+        message={`Bạn có chắc muốn xóa khóa học "${courseToDelete?.title}" không? Hành động này sẽ xóa vĩnh viễn toàn bộ chương và bài học liên quan.`}
       />
     </div>
   );

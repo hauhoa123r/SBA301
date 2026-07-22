@@ -17,7 +17,7 @@ export default function CreateCoursePage() {
         state: { message: 'Tạo khóa học thành công!' },
       });
     } catch (err) {
-      setError(err.message || 'Lỗi khi tạo khóa học');
+      setError(err.message || 'Không thể tạo khóa học');
       setLoading(false);
     }
   };

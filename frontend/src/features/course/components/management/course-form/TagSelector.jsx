@@ -2,7 +2,7 @@ export default function TagSelector({ tags = [], selectedTagIds = [], onToggle, 
   return (
     <div>
       <label className="mb-3 block text-sm font-semibold text-brand-textPrimary">
-        Tags
+        Thẻ
       </label>
       {error ? <p className="mb-3 text-sm text-brand-danger">{error}</p> : null}
 
@@ -27,7 +27,7 @@ export default function TagSelector({ tags = [], selectedTagIds = [], onToggle, 
           })}
         </div>
       ) : (
-        <p className="text-sm text-brand-mutedText">No tags available</p>
+        <p className="text-sm text-brand-mutedText">Chưa có thẻ nào</p>
       )}
     </div>
   );

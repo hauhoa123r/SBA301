@@ -13,7 +13,7 @@ export default function QuizRow({ quiz, quizIndex, onEdit, onDelete }) {
 
       <div className="flex-1 min-w-0">
         <h4 className="text-sm font-semibold text-brand-textPrimary truncate">
-          Bài tập {quizIndex + 1}: {quiz.title}
+          Bài kiểm tra {quizIndex + 1}: {quiz.title}
         </h4>
         <div className="flex items-center gap-3 mt-0.5">
           <span className="text-[11px] text-brand-mutedText/80">
@@ -34,14 +34,14 @@ export default function QuizRow({ quiz, quizIndex, onEdit, onDelete }) {
         <button
           onClick={onEdit}
           className="p-1.5 text-brand-mutedText hover:text-brand-info hover:bg-brand-info/10 rounded-md transition-colors"
-          title="Sửa bài tập"
+          title="Sửa bài kiểm tra"
         >
           <Edit2 className="w-3.5 h-3.5" />
         </button>
         <button
           onClick={onDelete}
           className="p-1.5 text-brand-mutedText hover:text-status-danger hover:bg-status-danger/10 rounded-md transition-colors"
-          title="Xóa bài tập"
+          title="Xóa bài kiểm tra"
         >
           <Trash2 className="w-3.5 h-3.5" />
         </button>

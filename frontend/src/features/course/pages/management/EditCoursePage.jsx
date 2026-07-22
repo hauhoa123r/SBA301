@@ -25,7 +25,7 @@ export default function EditCoursePage() {
             setError('Không tìm thấy khóa học');
           }
         } catch (err) {
-          setError(err.message || 'Lỗi khi tải dữ liệu khóa học');
+          setError(err.message || 'Không thể tải dữ liệu khóa học');
         } finally {
           setCourseLoading(false);
         }
@@ -44,7 +44,7 @@ export default function EditCoursePage() {
         state: { message: 'Cập nhật khóa học thành công!' },
       });
     } catch (err) {
-      setError(err.message || 'Lỗi khi cập nhật khóa học');
+      setError(err.message || 'Không thể cập nhật khóa học');
       setLoading(false);
     }
   };
@@ -69,7 +69,7 @@ export default function EditCoursePage() {
             onClick={() => navigate('/management/courses')}
             className="px-6 py-3 bg-brand-accent hover:bg-brand-accentHover text-brand-white font-medium rounded-lg transition-colors duration-200"
           >
-            Quay Lại
+            Quay lại
           </button>
         </div>
       </div>

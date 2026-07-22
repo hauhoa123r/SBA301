@@ -71,7 +71,7 @@ export default function SingleChoiceBuilder({ isMultiple, answers, setAnswers })
         onClick={addAnswer}
         className="flex items-center gap-2 mt-2 px-4 py-2 text-sm font-semibold text-brand-accent hover:bg-brand-accent/10 rounded-lg transition-colors"
       >
-        <Plus className="w-4 h-4" /> Thêm Lựa Chọn
+        <Plus className="w-4 h-4" /> Thêm lựa chọn
       </button>
     </div>
   );

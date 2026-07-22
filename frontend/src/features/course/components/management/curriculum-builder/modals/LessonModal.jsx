@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, BookOpen, Link2, Clock, FileText, Plus, Trash2 } from 'lucide-react';
+import { X, BookOpen, Link2, Clock } from 'lucide-react';
 
 /**
  * Creates a fresh empty lesson scaffold.
@@ -7,7 +7,6 @@ import { X, BookOpen, Link2, Clock, FileText, Plus, Trash2 } from 'lucide-react'
 const emptyLesson = () => ({
   title:            '',
   video_url:        '',
-  documents:        [],
 });
 
 /**
@@ -31,7 +30,6 @@ export default function LessonModal({ isOpen, onClose, onSubmit, initialData }) 
         ? {
             title:            initialData.title || '',
             video_url:        initialData.video_url || '',
-            documents:        initialData.documents ? [...initialData.documents] : [],
           }
         : emptyLesson()
       );
@@ -52,28 +50,6 @@ export default function LessonModal({ isOpen, onClose, onSubmit, initialData }) 
   // ── Field helpers ─────────────────────────────────────────
   const setField = (field, value) =>
     setForm((prev) => ({ ...prev, [field]: value }));
-
-  const handleAddDocument = () => {
-    setForm(prev => ({
-      ...prev,
-      documents: [...prev.documents, { id: null, title: '', fileUrl: '' }]
-    }));
-  };
-
-  const handleRemoveDocument = (index) => {
-    setForm(prev => ({
-      ...prev,
-      documents: prev.documents.filter((_, i) => i !== index)
-    }));
-  };
-
-  const handleDocumentChange = (index, field, value) => {
-    setForm(prev => {
-      const newDocs = [...prev.documents];
-      newDocs[index] = { ...newDocs[index], [field]: value };
-      return { ...prev, documents: newDocs };
-    });
-  };
 
   // ── Submit ────────────────────────────────────────────────
   const handleSubmit = (e) => {
@@ -126,10 +102,10 @@ export default function LessonModal({ isOpen, onClose, onSubmit, initialData }) 
             </div>
             <div>
               <h2 className="text-lg font-bold text-brand-textPrimary">
-                {isEditing ? 'Sửa Bài Học' : 'Thêm Bài Học Mới'}
+                {isEditing ? 'Sửa bài học' : 'Thêm bài học mới'}
               </h2>
               <p className="text-xs text-brand-mutedText/60 mt-0.5">
-                {isEditing ? 'Cập nhật thông tin cơ bản của bài học' : 'Điền thông tin cơ bản của bài học'}
+                {isEditing ? 'Cập nhật thông tin cơ bản của bài học' : 'Điền thông tin cơ bản cho bài học'}
               </p>
             </div>
           </div>
@@ -148,25 +124,25 @@ export default function LessonModal({ isOpen, onClose, onSubmit, initialData }) 
         >
           <div>
             <label className="block text-sm font-semibold text-brand-textSecondary mb-2">
-              Tiêu đề bài học <span className="text-status-danger">*</span>
+              Tên bài học <span className="text-status-danger">*</span>
             </label>
             <input
               autoFocus
               type="text"
-              placeholder="Ví dụ: Cài đặt môi trường"
+              placeholder="Ví dụ: Hiểu về thanh điệu Pinyin"
               value={form.title}
               onChange={(e) => setField('title', e.target.value)}
               className={inputCls}
             />
             <p className="mt-2 text-xs text-brand-mutedText/60">
-              Tiêu đề rõ ràng giúp học viên dễ theo dõi khóa học.
+              Tên bài học rõ ràng giúp học viên dễ theo dõi khóa học.
             </p>
           </div>
 
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-brand-textSecondary mb-2">
               <Link2 className="w-4 h-4" />
-              Đường dẫn Video
+              URL video
             </label>
             <input
               type="text"
@@ -176,7 +152,7 @@ export default function LessonModal({ isOpen, onClose, onSubmit, initialData }) 
               className={inputCls}
             />
             <p className="mt-2 text-xs text-brand-mutedText/60">
-              Dán đường dẫn video trực tiếp hoặc đường dẫn từ YouTube/Vimeo.
+              Dán link video trực tiếp hoặc URL YouTube/Vimeo.
             </p>
           </div>
 
@@ -193,68 +169,15 @@ export default function LessonModal({ isOpen, onClose, onSubmit, initialData }) 
               className={inputCls}
             />
             <p className="mt-2 text-xs text-brand-mutedText/60">
-              Nhập số phút (ví dụ: 15) hoặc phút và giây (ví dụ: 15:30).
+              Nhập số phút, ví dụ 15, hoặc phút và giây, ví dụ 15:30.
             </p>
-          </div>
-
-          <div className="pt-4 border-t border-brand-borderSoft">
-            <div className="flex items-center justify-between mb-4">
-              <label className="flex items-center gap-2 text-sm font-semibold text-brand-textSecondary">
-                <FileText className="w-4 h-4" />
-                Tài liệu đính kèm
-              </label>
-              <button
-                type="button"
-                onClick={handleAddDocument}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-brand-accent bg-brand-accent/10 hover:bg-brand-accent/20 rounded-lg transition-colors"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                Thêm Tài Liệu
-              </button>
-            </div>
-
-            <div className="space-y-3">
-              {form.documents.map((doc, idx) => (
-                <div key={idx} className="flex items-start gap-3 p-3 bg-brand-dark/40 border border-brand-borderSoft rounded-lg">
-                  <div className="flex-1 space-y-3">
-                    <input
-                      type="text"
-                      placeholder="Tên tài liệu (Ví dụ: Slide bài giảng)"
-                      value={doc.title}
-                      onChange={(e) => handleDocumentChange(idx, 'title', e.target.value)}
-                      className={inputCls}
-                    />
-                    <input
-                      type="text"
-                      placeholder="Đường dẫn (Ví dụ: https://drive.google.com/...)"
-                      value={doc.fileUrl || doc.file_url || ''}
-                      onChange={(e) => handleDocumentChange(idx, 'fileUrl', e.target.value)}
-                      className={inputCls}
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveDocument(idx)}
-                    className="p-2 text-brand-mutedText hover:text-status-danger hover:bg-status-danger/10 rounded-lg transition-colors mt-1"
-                    title="Xóa tài liệu"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
-              {form.documents.length === 0 && (
-                <p className="text-xs text-brand-mutedText/60 italic text-center py-4 bg-brand-dark/20 rounded-lg border border-dashed border-brand-borderSoft">
-                  Chưa có tài liệu đính kèm nào.
-                </p>
-              )}
-            </div>
           </div>
         </form>
 
         {/* ── Footer ───────────────────────────────────────── */}
         <div className="flex items-center justify-between px-6 py-4 border-t border-brand-borderSoft flex-shrink-0">
           <p className="text-xs text-brand-mutedText/50">
-            {form.title.trim() ? '✓ Đã có tiêu đề' : '⚠ Bắt buộc có tiêu đề'}
+            {form.title.trim() ? '✓ Đã nhập tên' : '⚠ Cần nhập tên'}
             {form.video_url ? ' · ✓ Video' : ''}
           </p>
           <div className="flex items-center gap-3">
@@ -270,7 +193,7 @@ export default function LessonModal({ isOpen, onClose, onSubmit, initialData }) 
               disabled={!form.title.trim()}
               className="px-6 py-2.5 text-sm font-semibold bg-brand-accent hover:bg-brand-accentHover text-brand-white rounded-lg shadow-lg shadow-brand-accent/25 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
             >
-              {isEditing ? 'Lưu Thay Đổi' : 'Thêm Bài Học'}
+              {isEditing ? 'Lưu thay đổi' : 'Thêm bài học'}
             </button>
           </div>
         </div>

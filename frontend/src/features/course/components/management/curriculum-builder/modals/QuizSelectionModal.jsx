@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { X, FileQuestion, Search, CheckCircle2 } from 'lucide-react';
 import { quizService } from '../../../../services/api/quiz.services';
 
-export default function QuizSelectionModal({ isOpen, onClose, onSelect, courseId }) {
+export default function QuizSelectionModal({ isOpen, onClose, onSelect }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedQuizId, setSelectedQuizId] = useState(null);
   const [quizzes, setQuizzes] = useState([]);
@@ -19,10 +19,10 @@ export default function QuizSelectionModal({ isOpen, onClose, onSelect, courseId
   const fetchQuizzes = async () => {
     setLoading(true);
     try {
-      const response = await quizService.getMyQuizzes(courseId);
+      const response = await quizService.getMyQuizzes();
       setQuizzes(response.data || []);
     } catch (error) {
-      console.error("Error fetching quizzes:", error);
+      console.error("Không thể tải bài kiểm tra:", error);
     } finally {
       setLoading(false);
     }
@@ -56,10 +56,10 @@ export default function QuizSelectionModal({ isOpen, onClose, onSelect, courseId
             </div>
             <div>
               <h2 className="text-lg font-bold text-brand-textPrimary">
-                Thêm Bài Tập
+                Gắn bài kiểm tra
               </h2>
               <p className="text-xs text-brand-mutedText/60 mt-0.5">
-                Chọn một bài tập từ Ngân Hàng Câu Hỏi để thêm vào chương này.
+                Chọn một bài kiểm tra từ ngân hàng bài kiểm tra để gắn vào chương này.
               </p>
             </div>
           </div>
@@ -78,7 +78,7 @@ export default function QuizSelectionModal({ isOpen, onClose, onSelect, courseId
             <input
               type="text"
               autoFocus
-              placeholder="Tìm kiếm bài tập..."
+              placeholder="Tìm bài kiểm tra của bạn..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-9 pr-4 py-2.5 border border-brand-borderSoft rounded-lg bg-brand-dark/60 text-brand-textPrimary placeholder-brand-mutedText/60 text-sm focus:outline-none focus:ring-2 focus:ring-brand-info transition-all"
@@ -90,14 +90,14 @@ export default function QuizSelectionModal({ isOpen, onClose, onSelect, courseId
         <div className="flex-1 overflow-y-auto p-6 bg-brand-surface">
           {loading ? (
              <div className="flex items-center justify-center py-20 text-brand-textSecondary">
-                Đang tải danh sách bài tập...
+                Đang tải bài kiểm tra...
              </div>
           ) : filteredQuizzes.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center text-brand-textSecondary">
               <FileQuestion className="w-12 h-12 mb-4 opacity-50" />
-              <p>Không tìm thấy bài tập nào phù hợp với tìm kiếm của bạn.</p>
+              <p>Không có bài kiểm tra nào khớp với tìm kiếm.</p>
               <p className="text-sm mt-1 opacity-70">
-                Bạn có thể tạo thêm bài tập trong Ngân Hàng Câu Hỏi.
+                Bạn có thể tạo thêm bài kiểm tra trong ngân hàng bài kiểm tra.
               </p>
             </div>
           ) : (
@@ -116,7 +116,7 @@ export default function QuizSelectionModal({ isOpen, onClose, onSelect, courseId
                     {quiz.title}
                   </h4>
                   <p className="text-xs text-brand-textSecondary mt-1">
-                    {quiz.questionsCount} Câu hỏi · {quiz.timeLimitMinutes > 0 ? `${quiz.timeLimitMinutes} phút` : 'Không giới hạn thời gian'} · Điểm đạt: {quiz.passScore}%
+                    {quiz.questionsCount} câu hỏi · {quiz.timeLimitMinutes > 0 ? `${quiz.timeLimitMinutes} phút` : 'Không giới hạn thời gian'} · Điểm đạt: {quiz.passScore}%
                   </p>
                 </div>
                 {selectedQuizId === quiz.id && (
@@ -140,7 +140,7 @@ export default function QuizSelectionModal({ isOpen, onClose, onSelect, courseId
             disabled={!selectedQuizId}
             className="px-6 py-2.5 text-sm font-semibold bg-brand-info hover:bg-brand-info/80 text-brand-white rounded-lg shadow-lg shadow-brand-info/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Thêm Bài Tập
+            Gắn bài kiểm tra
           </button>
         </div>
 

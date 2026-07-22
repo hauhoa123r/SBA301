@@ -61,15 +61,15 @@ export default function ManageCourseCard({ course, onEdit, onDesignCurriculum, o
 
         {/* Stats Row */}
         <div className="flex items-center justify-between mt-auto pt-3 border-t border-brand-borderSoft text-brand-textSecondary text-xs">
-          <div className="flex items-center gap-1.5" title="Students">
+          <div className="flex items-center gap-1.5" title="Học viên">
             <Users className="w-3.5 h-3.5" />
             <span>{course.students ?? 0}</span>
           </div>
-          <div className="flex items-center gap-1.5" title="Lessons">
+          <div className="flex items-center gap-1.5" title="Bài học">
             <PlayCircle className="w-3.5 h-3.5" />
             <span>{course.totalLessons ?? 0}</span>
           </div>
-          <div className="flex items-center gap-1.5" title="Duration">
+          <div className="flex items-center gap-1.5" title="Thời lượng">
             <Clock className="w-3.5 h-3.5" />
             <span>{course.duration || '—'}</span>
           </div>
@@ -83,19 +83,19 @@ export default function ManageCourseCard({ course, onEdit, onDesignCurriculum, o
           className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-brand-accent hover:bg-brand-accentHover text-brand-white text-sm font-medium rounded-lg transition-colors duration-200"
         >
           <Edit2 className="w-4 h-4" />
-          Sửa TT
+          Sửa thông tin
         </button>
         <button
           onClick={() => onDesignCurriculum(course)}
           className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-brand-surface hover:bg-brand-elevated text-brand-textSecondary hover:text-brand-textPrimary text-sm font-medium rounded-lg transition-colors duration-200"
         >
           <ListChecks className="w-4 h-4" />
-          Lộ Trình
+          Chương trình
         </button>
         {onDelete && (
           <button
             onClick={() => onDelete(course)}
-            title="Delete course"
+            title="Xóa khóa học"
             className="flex-shrink-0 flex items-center justify-center p-2 bg-status-danger/10 hover:bg-status-danger/20 text-status-danger rounded-lg transition-colors duration-200"
           >
             <Trash2 className="w-4 h-4" />

@@ -29,6 +29,7 @@ export default function ChapterNode({
   onAddQuiz,
   onEditQuiz,
   onDeleteQuiz,
+  onManageDocuments,
 }) {
   const lessonCount = chapter.lessons?.length ?? 0;
   const quizCount = chapter.quizzes?.length ?? 0;
@@ -110,7 +111,7 @@ export default function ChapterNode({
             title="Thêm bài học vào chương này"
           >
             <Plus className="w-3.5 h-3.5" />
-            Thêm Bài Học
+            Thêm bài học
           </button>
           <button
             onClick={onAddQuiz}
@@ -118,7 +119,7 @@ export default function ChapterNode({
             title="Thêm bài kiểm tra vào chương này"
           >
             <Plus className="w-3.5 h-3.5" />
-            Thêm Bài Tập
+            Thêm bài kiểm tra
           </button>
         </div>
       </div>
@@ -140,7 +141,7 @@ export default function ChapterNode({
                   lessonIndex={idx}
                   onEdit={() => onEditLesson(lesson)}
                   onDelete={() => onDeleteLesson(lesson)}
-                  onDocuments={() => onEditLesson(lesson)}
+                  onDocuments={() => onManageDocuments(lesson.id)}
                 />
               ))}
               {chapter.quizzes?.map((quiz, idx) => (
@@ -166,14 +167,14 @@ export default function ChapterNode({
                   className="flex items-center gap-1.5 text-sm font-medium text-brand-accentSoft hover:text-brand-accent px-4 py-2 rounded-lg border border-dashed border-brand-borderSoft hover:border-brand-accent transition-all"
                 >
                   <Plus className="w-4 h-4" />
-                  Thêm Bài Học Đầu Tiên
+                  Thêm bài học đầu tiên
                 </button>
                 <button
                   onClick={onAddQuiz}
                   className="flex items-center gap-1.5 text-sm font-medium text-brand-info hover:text-brand-info/80 px-4 py-2 rounded-lg border border-dashed border-brand-borderSoft hover:border-brand-info transition-all"
                 >
                   <Plus className="w-4 h-4" />
-                  Thêm Bài Tập Đầu Tiên
+                  Thêm bài kiểm tra đầu tiên
                 </button>
               </div>
             </div>

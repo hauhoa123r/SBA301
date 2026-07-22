@@ -6,13 +6,13 @@ import { MODERATOR_FEATURES } from "../data/moderatorFeatures";
 export default function ModeratorDashboardPage() {
     return (
         <ModeratorLayout
-            title="Moderator Dashboard"
+            title="Bảng điều khiển kiểm duyệt"
         >
             <section className="mb-6 grid gap-4 md:grid-cols-3">
                 {[
-                    { label: "Course tasks", value: "28", note: "Review, approve, reject, hide" },
-                    { label: "Violation reports", value: "14", note: "Open va in-review" },
-                    { label: "Refund queue", value: "9", note: "Cho xu ly giao dich" },
+                    { label: "Tác vụ khóa học", value: "28", note: "Duyệt, phê duyệt, từ chối, ẩn" },
+                    { label: "Báo cáo vi phạm", value: "14", note: "Đang mở và đang xác minh" },
+                    { label: "Hàng đợi hoàn tiền", value: "9", note: "Chờ xử lý giao dịch" },
                 ].map((item) => (
                     <article key={item.label} className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
                         <p className="text-sm font-semibold text-slate-500">{item.label}</p>

@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { ArrowLeft, Plus, Save, BookOpen, Layers } from "lucide-react";
 import teacherService from '@/features/course/services/api/courseManagementService';
-import { showSuccessToast, showErrorToast } from '@/shared/utils/toast';
 
 import ChapterNode from '@/features/course/components/management/curriculum-builder/ChapterNode';
 
@@ -58,7 +57,7 @@ export default function CurriculumDesignPage() {
         const raw = res?.data ?? res ?? [];
         if (!cancelled) setChapters(raw.map(enrichChapter));
       } catch (err) {
-        console.error("Error loading curriculum:", err);
+        console.error("Không thể tải chương trình học:", err);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -191,7 +190,7 @@ export default function CurriculumDesignPage() {
     setEditingTarget({
       type: "chapter",
       chapterId: chapter.id,
-      label: `chapter "${chapter.title}"`,
+          label: `chương "${chapter.title}"`,
     });
     setDeleteModalOpen(true);
   }, []);
@@ -201,7 +200,7 @@ export default function CurriculumDesignPage() {
       type: "lesson",
       chapterId,
       lessonId: lesson.id,
-      label: `lesson "${lesson.title}"`,
+      label: `bài học "${lesson.title}"`,
     });
     setDeleteModalOpen(true);
   }, []);
@@ -211,7 +210,7 @@ export default function CurriculumDesignPage() {
       type: "quiz",
       chapterId,
       quizId: quiz.id,
-      label: `quiz "${quiz.title}"`,
+      label: `bài kiểm tra "${quiz.title}"`,
     });
     setDeleteModalOpen(true);
   }, []);
@@ -263,24 +262,17 @@ export default function CurriculumDesignPage() {
           title: ls.title,
           videoUrl: ls.video_url,
           durationSecond: ls.durationSeconds,
-          orderIndex: ls.orderIndex,
-          documents: (ls.documents || []).map(d => ({
-            id: d.id,
-            title: d.title,
-            fileUrl: d.fileUrl || d.file_url
-          }))
+          orderIndex: ls.orderIndex
         })),
-        quizzes: (ch.quizzes || []).map(q => ({
-          quizId: q.id,
-          orderIndex: q.orderIndex
-        }))
+        quizIds: (ch.quizzes || []).map(q => q.id)
       }));
 
       await teacherService.updateCurriculum(courseId, payload);
-      showSuccessToast("Cập nhật lộ trình thành công!");
+      navigate("/management/courses", {
+        state: { message: "Cập nhật chương trình học thành công!" },
+      });
     } catch (err) {
-      console.error("Error saving curriculum:", err);
-      showErrorToast("Lỗi khi lưu lộ trình");
+      console.error("Không thể lưu chương trình học:", err);
     } finally {
       setSaving(false);
     }
@@ -296,7 +288,7 @@ export default function CurriculumDesignPage() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-2 border-brand-accent border-t-transparent mb-4" />
-          <p className="text-brand-textSecondary">Đang tải lộ trình...</p>
+          <p className="text-brand-textSecondary">Đang tải chương trình học...</p>
         </div>
       </div>
     );
@@ -310,7 +302,7 @@ export default function CurriculumDesignPage() {
           className="flex items-center gap-2 text-brand-accentSoft hover:text-brand-accent font-medium transition-colors group"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-          Quay Lại Khóa Học
+          Quay lại khóa học của tôi
         </button>
 
         <button
@@ -326,7 +318,7 @@ export default function CurriculumDesignPage() {
           ) : (
             <>
               <Save className="w-4 h-4" />
-              Lưu Lộ Trình
+              Lưu chương trình học
             </>
           )}
         </button>
@@ -338,7 +330,7 @@ export default function CurriculumDesignPage() {
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-accent to-brand-accentHover flex items-center justify-center shadow-lg shadow-brand-accent/20">
               <Layers className="w-5 h-5 text-brand-white" />
             </div>
-            Xây Dựng Lộ Trình
+            Thiết kế chương trình học
           </h1>
           {course?.title && (
             <p className="text-brand-textSecondary mt-2 ml-[52px]">
@@ -351,11 +343,11 @@ export default function CurriculumDesignPage() {
           <div className="flex items-center gap-2">
             <span className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-panel rounded-lg border border-brand-borderSoft text-xs font-medium text-brand-textSecondary">
               <BookOpen className="w-3.5 h-3.5 text-brand-accent" />
-              {chapters.length} Chương
+              {chapters.length} chương
             </span>
             <span className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-panel rounded-lg border border-brand-borderSoft text-xs font-medium text-brand-textSecondary">
               <Layers className="w-3.5 h-3.5 text-brand-info" />
-              {totalLessons} Bài Học
+              {totalLessons} bài học
             </span>
           </div>
         )}
@@ -395,14 +387,14 @@ export default function CurriculumDesignPage() {
               Chưa có chương nào
             </p>
             <p className="text-sm text-brand-mutedText/60 mb-6">
-              Bắt đầu xây dựng lộ trình của bạn bằng cách thêm chương đầu tiên.
+              Bắt đầu xây dựng chương trình học bằng cách thêm chương đầu tiên.
             </p>
             <button
               onClick={openAddChapterModal}
               className="flex items-center gap-2 px-6 py-3 bg-brand-accent hover:bg-brand-accentHover text-brand-white text-sm font-semibold rounded-lg shadow-lg shadow-brand-accent/25 hover:shadow-brand-accent/35 transition-all"
             >
               <Plus className="w-4 h-4" />
-              Thêm Chương Đầu Tiên
+              Thêm chương đầu tiên
             </button>
           </div>
         )}
@@ -414,7 +406,7 @@ export default function CurriculumDesignPage() {
           className="w-full flex items-center justify-center gap-2 py-4 border-2 border-dashed border-brand-borderSoft text-brand-accentSoft hover:text-brand-accent hover:border-brand-accent hover:bg-brand-accent/5 rounded-xl font-medium transition-all"
         >
           <Plus className="w-5 h-5" />
-          Thêm Chương Mới
+          Thêm chương mới
         </button>
       )}
 
@@ -436,7 +428,6 @@ export default function CurriculumDesignPage() {
         isOpen={isQuizSelectionOpen}
         onClose={() => setQuizSelectionOpen(false)}
         onSelect={handleQuizAttach}
-        courseId={courseId}
       />
 
       <ConfirmDeleteModal
@@ -444,12 +435,12 @@ export default function CurriculumDesignPage() {
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleDeleteConfirm}
         title={
-          editingTarget?.type === "chapter" ? "Xóa Chương" : 
-          editingTarget?.type === "lesson" ? "Xóa Bài Học" : "Xóa Bài Kiểm Tra"
+          editingTarget?.type === "chapter" ? "Xóa chương" : 
+          editingTarget?.type === "lesson" ? "Xóa bài học" : "Xóa bài kiểm tra"
         }
         message={
           editingTarget?.label
-            ? `Bạn có chắc chắn muốn xóa ${editingTarget.label}? Hành động này không thể hoàn tác.`
+            ? `Bạn có chắc muốn xóa ${editingTarget.label} không? Hành động này không thể hoàn tác.`
             : undefined
         }
       />
