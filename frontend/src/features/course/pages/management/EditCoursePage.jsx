@@ -22,10 +22,10 @@ export default function EditCoursePage() {
           if (foundCourse) {
             setCourse(foundCourse);
           } else {
-            setError('Course not found');
+            setError('Không tìm thấy khóa học');
           }
         } catch (err) {
-          setError(err.message || 'Error loading course data');
+          setError(err.message || 'Không thể tải dữ liệu khóa học');
         } finally {
           setCourseLoading(false);
         }
@@ -41,10 +41,10 @@ export default function EditCoursePage() {
       setError(null);
       await teacherService.updateCourse(courseId, formData);
       navigate('/management/courses', {
-        state: { message: 'Course updated successfully!' },
+        state: { message: 'Cập nhật khóa học thành công!' },
       });
     } catch (err) {
-      setError(err.message || 'Error updating course');
+      setError(err.message || 'Không thể cập nhật khóa học');
       setLoading(false);
     }
   };
@@ -54,7 +54,7 @@ export default function EditCoursePage() {
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-2 border-brand-accent border-t-transparent mb-4" />
-          <p className="text-brand-textSecondary">Loading course data...</p>
+          <p className="text-brand-textSecondary">Đang tải dữ liệu khóa học...</p>
         </div>
       </div>
     );
@@ -69,7 +69,7 @@ export default function EditCoursePage() {
             onClick={() => navigate('/management/courses')}
             className="px-6 py-3 bg-brand-accent hover:bg-brand-accentHover text-brand-white font-medium rounded-lg transition-colors duration-200"
           >
-            Go Back
+            Quay lại
           </button>
         </div>
       </div>

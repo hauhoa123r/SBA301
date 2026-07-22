@@ -24,7 +24,7 @@ export default function DocumentModal({ isOpen, onClose, lessonId }) {
           setDocuments([]); 
           setError(null);
         } catch (err) {
-          setError('Failed to load documents');
+          setError('Không thể tải tài liệu');
         } finally {
           setLoading(false);
         }
@@ -38,7 +38,7 @@ export default function DocumentModal({ isOpen, onClose, lessonId }) {
   const handleAddDocument = async (e) => {
     e.preventDefault();
     if (!newDoc.title.trim() || !newDoc.file_url.trim()) {
-      setError('Title and File URL are required');
+      setError('Cần nhập tiêu đề và URL tệp');
       return;
     }
 
@@ -54,7 +54,7 @@ export default function DocumentModal({ isOpen, onClose, lessonId }) {
       setDocuments([...documents, addedDoc]);
       setNewDoc({ title: '', file_url: '' });
     } catch (err) {
-      setError('Failed to add document');
+      setError('Không thể thêm tài liệu');
     } finally {
       setSaving(false);
     }
@@ -68,7 +68,7 @@ export default function DocumentModal({ isOpen, onClose, lessonId }) {
       // Simulation
       setDocuments(documents.filter(d => d.id !== docId));
     } catch (err) {
-      setError('Failed to delete document');
+      setError('Không thể xóa tài liệu');
     }
   };
 
@@ -90,8 +90,8 @@ export default function DocumentModal({ isOpen, onClose, lessonId }) {
               <FileText className="w-5 h-5 text-brand-info" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-brand-textPrimary">Manage Documents</h2>
-              <p className="text-xs text-brand-mutedText/60 mt-0.5">Add or remove resources for this lesson</p>
+              <h2 className="text-lg font-bold text-brand-textPrimary">Quản lý tài liệu</h2>
+              <p className="text-xs text-brand-mutedText/60 mt-0.5">Thêm hoặc xóa tài nguyên cho bài học này</p>
             </div>
           </div>
           <button
@@ -113,14 +113,14 @@ export default function DocumentModal({ isOpen, onClose, lessonId }) {
 
           {/* Document List */}
           <div>
-            <h3 className="text-sm font-semibold text-brand-textSecondary mb-3">Attached Documents</h3>
+            <h3 className="text-sm font-semibold text-brand-textSecondary mb-3">Tài liệu đã đính kèm</h3>
             {loading ? (
               <div className="flex justify-center py-4">
                 <div className="animate-spin rounded-full h-6 w-6 border-2 border-brand-info border-t-transparent" />
               </div>
             ) : documents.length === 0 ? (
               <div className="text-center py-6 border-2 border-dashed border-brand-borderSoft rounded-lg bg-brand-dark/20 text-brand-mutedText/60 text-sm">
-                No documents attached yet.
+                Chưa có tài liệu nào được đính kèm.
               </div>
             ) : (
               <div className="space-y-3">
@@ -149,12 +149,12 @@ export default function DocumentModal({ isOpen, onClose, lessonId }) {
 
           {/* Add Form */}
           <div className="border-t border-brand-borderSoft pt-5">
-            <h3 className="text-sm font-semibold text-brand-textSecondary mb-3">Add New Document</h3>
+            <h3 className="text-sm font-semibold text-brand-textSecondary mb-3">Thêm tài liệu mới</h3>
             <form onSubmit={handleAddDocument} className="space-y-3">
               <div>
                 <input
                   type="text"
-                  placeholder="Document Title"
+                  placeholder="Tiêu đề tài liệu"
                   value={newDoc.title}
                   onChange={(e) => setNewDoc({ ...newDoc, title: e.target.value })}
                   className={inputCls}
@@ -163,7 +163,7 @@ export default function DocumentModal({ isOpen, onClose, lessonId }) {
               <div>
                 <input
                   type="text"
-                  placeholder="File URL or Link"
+                  placeholder="URL tệp hoặc liên kết"
                   value={newDoc.file_url}
                   onChange={(e) => setNewDoc({ ...newDoc, file_url: e.target.value })}
                   className={inputCls}
@@ -179,7 +179,7 @@ export default function DocumentModal({ isOpen, onClose, lessonId }) {
                 ) : (
                   <Plus className="w-4 h-4" />
                 )}
-                Add Document
+                Thêm tài liệu
               </button>
             </form>
           </div>

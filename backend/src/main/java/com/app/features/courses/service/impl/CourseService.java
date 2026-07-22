@@ -4,6 +4,8 @@ import com.app.exception.BadRequestException;
 import com.app.exception.ResourceNotFoundException;
 import com.app.features.categories.service.ICategoryService;
 import com.app.features.courses.converter.CourseResponseConverter;
+import com.app.features.courses.dto.request.CourseHideRequest;
+import com.app.features.courses.dto.request.CourseRejectionRequest;
 import com.app.features.courses.dto.request.CourseRequest;
 import com.app.features.courses.dto.response.CourseCatalogResponse;
 import com.app.features.courses.dto.response.CourseDetailResponse;
@@ -263,5 +265,75 @@ public class CourseService implements ICourseService {
                 .activeCourses(activeCourses)
                 .build();
     }
+
+    @Override
+    @Transactional
+    public CourseDetailResponse rejectPendingCourse(Long courseId, CourseRejectionRequest request) {
+        log.info("Course rejection requested, courseId={}", courseId);
+
+        CourseEntity course = courseRepository.findById(courseId).orElseThrow(() -> {
+            log.warn("Course rejection failed because course was not found, courseId={}", courseId);
+            return new ResourceNotFoundException("Course not found with id: " + courseId);
+        });
+
+        if (course.getStatus() != CourseStatus.PENDING) {
+            log.warn("Course rejection rejected because course is not pending, courseId={}, status={}", courseId, course.getStatus());
+            throw new BadRequestException("Only pending courses can be rejected.");
+        }
+
+        String reason = request.getReason().trim();
+        log.info("Course rejected with reason, courseId={}, reason={}", courseId, reason);
+
+        course.setStatus(CourseStatus.DRAFT);
+        CourseEntity savedCourse = courseRepository.save(course);
+
+        CourseLessonStats stats = courseRepository.getLessonStatsByCourseId(savedCourse.getId());
+        log.info("Course rejected successfully, courseId={}", savedCourse.getId());
+
+        return courseResponseConverter.toCourseDetailResponse(savedCourse, stats);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CourseDetailResponse> getPublishedCourses() {
+        List<CourseEntity> courses = courseRepository.findAllByStatusOrderByCreatedAtDesc(CourseStatus.PUBLISHED);
+        Map<Long, CourseLessonStats> lessonStatsByCourseId = getLessonStatsByCourseId(courses);
+
+        return courses.stream()
+                .map(course -> courseResponseConverter.toCourseDetailResponse(
+                        course,
+                        lessonStatsByCourseId.get(course.getId())
+                ))
+                .toList();
+    }
+
+
+    @Override
+    @Transactional
+    public CourseDetailResponse hidePublishedCourse(Long courseId, CourseHideRequest request) {
+        log.info("Course hide requested, courseId={}", courseId);
+
+        CourseEntity course = courseRepository.findById(courseId).orElseThrow(() -> {
+            log.warn("Course hide failed because course was not found, courseId={}", courseId);
+            return new ResourceNotFoundException("Course not found with id: " + courseId);
+        });
+
+        if (course.getStatus() != CourseStatus.PUBLISHED) {
+            log.warn("Course hide rejected because course is not published, courseId={}, status={}", courseId, course.getStatus());
+            throw new BadRequestException("Only published courses can be hidden.");
+        }
+
+        String reason = request.getReason().trim();
+        log.info("Course hidden with reason, courseId={}, reason={}", courseId, reason);
+
+        course.setStatus(CourseStatus.HIDDEN);
+        CourseEntity savedCourse = courseRepository.save(course);
+
+        CourseLessonStats stats = courseRepository.getLessonStatsByCourseId(savedCourse.getId());
+        log.info("Course hidden successfully, courseId={}", savedCourse.getId());
+
+        return courseResponseConverter.toCourseDetailResponse(savedCourse, stats);
+    }
+
 
 }

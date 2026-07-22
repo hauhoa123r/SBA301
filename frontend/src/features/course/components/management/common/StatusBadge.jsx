@@ -2,19 +2,19 @@ export default function StatusBadge({ status }) {
   const statusConfig = {
     PUBLISHED: {
       className: 'bg-status-successStrong/20 text-status-successSoft',
-      label: 'Published',
+      label: 'Đã xuất bản',
     },
     DRAFT: {
       className: 'bg-brand-warning/20 text-status-warningSoft',
-      label: 'Draft',
+      label: 'Bản nháp',
     },
     PENDING: {
       className: 'bg-brand-accent/20 text-brand-accentSoft',
-      label: 'Pending',
+      label: 'Chờ duyệt',
     },
     HIDDEN: {
       className: 'bg-brand-mutedText/20 text-brand-mutedText',
-      label: 'Hidden',
+      label: 'Đã ẩn',
     },
   };
 

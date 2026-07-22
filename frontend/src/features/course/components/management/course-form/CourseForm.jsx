@@ -24,7 +24,7 @@ const normalizeMasterList = (value) => {
   return [];
 };
 
-const getErrorMessage = (error) => error?.message || 'Unable to load this section';
+const getErrorMessage = (error) => error?.message || 'Không thể tải phần này';
 
 export default function CourseForm({ initialData = null, onSubmit, loading = false, error = null }) {
   const navigate = useNavigate();
@@ -62,10 +62,10 @@ export default function CourseForm({ initialData = null, onSubmit, loading = fal
           tags: tagsResult.status === 'rejected' ? getErrorMessage(tagsResult.reason) : null,
         });
       } catch (err) {
-        console.error('Error loading course master data:', err);
+        console.error('Không thể tải dữ liệu khóa học:', err);
         setMasterDataErrors({
-          categories: 'Failed to load categories',
-          tags: 'Failed to load tags',
+          categories: 'Không thể tải danh mục',
+          tags: 'Không thể tải thẻ',
         });
       } finally {
         setLoadingMasterData(false);
@@ -96,18 +96,18 @@ export default function CourseForm({ initialData = null, onSubmit, loading = fal
     e.preventDefault();
 
     if (!formData.title.trim()) {
-      alert('Course title cannot be empty');
+      alert('Tên khóa học không được để trống');
       return;
     }
 
     if (!formData.categoryId) {
-      alert('Please select a category');
+      alert('Vui lòng chọn danh mục');
       return;
     }
 
     const price = Number(formData.price);
     if (formData.price === '' || !Number.isFinite(price) || price < 0) {
-      setPriceError('Price must be a number greater than or equal to 0.');
+      setPriceError('Giá phải là số lớn hơn hoặc bằng 0.');
       return;
     }
 
@@ -125,7 +125,7 @@ export default function CourseForm({ initialData = null, onSubmit, loading = fal
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
           <div className="mb-4 inline-block h-12 w-12 animate-spin rounded-full border-2 border-brand-accent border-t-transparent" />
-          <p className="text-brand-textSecondary">Loading course data...</p>
+          <p className="text-brand-textSecondary">Đang tải dữ liệu khóa học...</p>
         </div>
       </div>
     );
@@ -138,15 +138,15 @@ export default function CourseForm({ initialData = null, onSubmit, loading = fal
         className="flex items-center gap-2 font-medium text-brand-accentSoft transition-colors duration-200 hover:text-brand-accent"
       >
         <ArrowLeft className="h-4 w-4" />
-        Back
+        Quay lại
       </button>
 
       <div>
         <h1 className="text-4xl font-bold text-brand-textPrimary">
-          {initialData ? 'Edit Course' : 'Create New Course'}
+          {initialData ? 'Chỉnh sửa khóa học' : 'Tạo khóa học mới'}
         </h1>
         <p className="mt-2 text-brand-textSecondary">
-          {initialData ? 'Update your course information' : 'Fill in the basics to create a new course'}
+          {initialData ? 'Cập nhật thông tin khóa học' : 'Điền thông tin cơ bản để tạo khóa học mới'}
         </p>
       </div>
 
@@ -161,14 +161,14 @@ export default function CourseForm({ initialData = null, onSubmit, loading = fal
           <div className="space-y-6 lg:col-span-2">
             <div>
               <label className="mb-2 block text-sm font-semibold text-brand-textPrimary">
-                Course Title <span className="text-brand-danger">*</span>
+                Tên khóa học <span className="text-brand-danger">*</span>
               </label>
               <input
                 type="text"
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                placeholder="Enter course title"
+                placeholder="Nhập tên khóa học"
                 className="w-full rounded-lg border border-brand-borderSoft bg-brand-dark/50 px-4 py-3 text-brand-textPrimary placeholder-brand-mutedText transition-colors duration-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-brand-accent"
                 required
               />
@@ -176,13 +176,13 @@ export default function CourseForm({ initialData = null, onSubmit, loading = fal
 
             <div>
               <label className="mb-2 block text-sm font-semibold text-brand-textPrimary">
-                Course Description <span className="text-brand-danger">*</span>
+                Mô tả khóa học <span className="text-brand-danger">*</span>
               </label>
               <textarea
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
-                placeholder="Enter a detailed course description"
+                placeholder="Nhập mô tả chi tiết cho khóa học"
                 rows="6"
                 className="w-full resize-none rounded-lg border border-brand-borderSoft bg-brand-dark/50 px-4 py-3 text-brand-textPrimary placeholder-brand-mutedText transition-colors duration-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-brand-accent"
                 required
@@ -191,7 +191,7 @@ export default function CourseForm({ initialData = null, onSubmit, loading = fal
 
             <div>
               <label htmlFor="course-price" className="mb-2 block text-sm font-semibold text-brand-textPrimary">
-                Course Price <span className="text-brand-danger">*</span>
+                Giá khóa học <span className="text-brand-danger">*</span>
               </label>
               <input
                 id="course-price"
@@ -201,7 +201,7 @@ export default function CourseForm({ initialData = null, onSubmit, loading = fal
                 step="0.01"
                 value={formData.price}
                 onChange={handleChange}
-                placeholder="Enter course price"
+                placeholder="Nhập giá khóa học"
                 aria-invalid={Boolean(priceError)}
                 aria-describedby={priceError ? 'course-price-error' : undefined}
                 className="w-full rounded-lg border border-brand-borderSoft bg-brand-dark/50 px-4 py-3 text-brand-textPrimary placeholder-brand-mutedText transition-colors duration-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-brand-accent"
@@ -221,21 +221,21 @@ export default function CourseForm({ initialData = null, onSubmit, loading = fal
 
             <div>
               <label className="mb-2 block text-sm font-semibold text-brand-textPrimary">
-                Thumbnail
+                Ảnh đại diện
               </label>
               <input
                 type="text"
                 name="thumbnailUrl"
                 value={formData.thumbnailUrl}
                 onChange={handleChange}
-                placeholder="Enter image URL..."
+                placeholder="Nhập URL hình ảnh..."
                 className="w-full rounded-lg border border-brand-borderSoft bg-brand-dark/50 px-4 py-3 text-brand-textPrimary placeholder-brand-mutedText transition-colors duration-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-brand-accent"
               />
               {formData.thumbnailUrl ? (
                 <div className="mt-3 overflow-hidden rounded-lg">
                   <img
                     src={formData.thumbnailUrl}
-                    alt="Course thumbnail preview"
+                    alt="Xem trước ảnh đại diện khóa học"
                     className="h-40 w-full object-cover rounded-lg"
                     onError={(e) => {
                       e.target.style.display = 'none';
@@ -262,7 +262,7 @@ export default function CourseForm({ initialData = null, onSubmit, loading = fal
             onClick={() => navigate('/management/courses')}
             className="flex-1 rounded-lg border border-brand-borderSoft px-6 py-3 font-medium text-brand-textSecondary transition-colors duration-200 hover:bg-brand-panelAlt hover:text-brand-textPrimary"
           >
-            Cancel
+            Hủy
           </button>
           <button
             type="submit"
@@ -272,17 +272,17 @@ export default function CourseForm({ initialData = null, onSubmit, loading = fal
             {loading ? (
               <>
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-brand-white border-t-transparent" />
-                Saving...
+                Đang lưu...
               </>
             ) : initialData ? (
               <>
                 <Plus className="h-5 w-5" />
-                Save Changes
+                Lưu thay đổi
               </>
             ) : (
               <>
                 <Plus className="h-5 w-5" />
-                Create Course
+                Tạo khóa học
               </>
             )}
           </button>

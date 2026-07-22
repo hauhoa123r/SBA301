@@ -36,7 +36,7 @@ export default function QuizBuilderPage() {
           questions: data.questions || [],
         });
       }).catch(err => {
-        console.error("Failed to load quiz", err);
+        console.error("Không thể tải bài kiểm tra", err);
       });
     } else if (initialQuizData) {
       setForm({
@@ -84,8 +84,8 @@ export default function QuizBuilderPage() {
       
       navigate('/management/quizzes');
     } catch (error) {
-      console.error("Failed to save quiz", error);
-      alert("Error saving quiz");
+      console.error("Không thể lưu bài kiểm tra", error);
+      alert("Không thể lưu bài kiểm tra");
     } finally {
       setIsSaving(false);
     }
@@ -102,7 +102,7 @@ export default function QuizBuilderPage() {
           className="flex items-center gap-2 text-brand-accentSoft hover:text-brand-accent font-medium transition-colors group"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-          Back to Quiz Bank
+          Quay lại ngân hàng bài kiểm tra
         </button>
 
         <button
@@ -111,7 +111,7 @@ export default function QuizBuilderPage() {
           className="flex items-center gap-2 px-6 py-2.5 bg-brand-accent hover:bg-brand-accentHover text-brand-white text-sm font-semibold rounded-lg shadow-lg shadow-brand-accent/20 hover:shadow-brand-accent/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
         >
           <Save className="w-4 h-4" />
-          {isEditing ? 'Save Changes' : 'Save Quiz'}
+          {isEditing ? 'Lưu thay đổi' : 'Lưu bài kiểm tra'}
         </button>
       </div>
 
@@ -126,18 +126,18 @@ export default function QuizBuilderPage() {
             </div>
             <div>
               <h1 className="text-xl font-bold text-brand-textPrimary">
-                {isEditing ? 'Edit Quiz' : 'Create New Quiz'}
+                {isEditing ? 'Sửa bài kiểm tra' : 'Tạo bài kiểm tra mới'}
               </h1>
               <p className="text-sm text-brand-textSecondary mt-1">
-                {form.questions.length} Questions · Total Points: {totalPoints}
+                {form.questions.length} câu hỏi · Tổng điểm: {totalPoints}
               </p>
             </div>
           </div>
           
           <div className="text-right">
              <p className="text-xs text-brand-mutedText/60">
-              {!form.title.trim() && <span className="text-status-warning block">⚠ Title required</span>}
-              {form.title.trim() && form.questions.length === 0 && <span className="text-status-warning block">⚠ Add at least one question</span>}
+              {!form.title.trim() && <span className="text-status-warning block">⚠ Cần nhập tiêu đề</span>}
+              {form.title.trim() && form.questions.length === 0 && <span className="text-status-warning block">⚠ Thêm ít nhất một câu hỏi</span>}
             </p>
           </div>
         </div>
@@ -153,7 +153,7 @@ export default function QuizBuilderPage() {
             }`}
           >
             <Settings className="w-4 h-4" />
-            Quiz Settings
+            Cài đặt bài kiểm tra
           </button>
           <button
             onClick={() => setActiveTab('questions')}
@@ -164,7 +164,7 @@ export default function QuizBuilderPage() {
             }`}
           >
             <ListChecks className="w-4 h-4" />
-            Question Builder
+            Xây dựng câu hỏi
           </button>
         </div>
 

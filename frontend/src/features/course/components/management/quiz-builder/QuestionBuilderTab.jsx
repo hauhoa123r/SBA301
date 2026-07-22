@@ -3,8 +3,8 @@ import { Plus, Trash2, GripVertical, CheckCircle2 } from 'lucide-react';
 import SingleChoiceBuilder from './SingleChoiceBuilder';
 
 const QUESTION_TYPES = [
-  { value: 'SINGLE_CHOICE', label: 'Single Choice' },
-  { value: 'MULTIPLE_CHOICE', label: 'Multiple Choice' },
+  { value: 'SINGLE_CHOICE', label: 'Một đáp án' },
+  { value: 'MULTIPLE_CHOICE', label: 'Nhiều đáp án' },
   // Adding more types later based on QuestionType enum
 ];
 
@@ -57,19 +57,19 @@ export default function QuestionBuilderTab({ questions, setQuestions }) {
       {/* Left Sidebar: Question List */}
       <div className="w-1/3 bg-brand-surface border-r border-brand-borderSoft flex flex-col">
         <div className="p-4 border-b border-brand-borderSoft flex items-center justify-between">
-          <h3 className="font-bold text-brand-textPrimary">Questions ({questions.length})</h3>
+          <h3 className="font-bold text-brand-textPrimary">Câu hỏi ({questions.length})</h3>
           <button
             onClick={addQuestion}
             className="flex items-center gap-1 px-3 py-1.5 bg-brand-accent/10 hover:bg-brand-accent/20 text-brand-accent text-sm font-semibold rounded-lg transition-colors"
           >
-            <Plus className="w-4 h-4" /> Add
+            <Plus className="w-4 h-4" /> Thêm
           </button>
         </div>
         
         <div className="flex-1 overflow-y-auto p-3 space-y-2">
           {questions.length === 0 ? (
             <div className="text-center p-6 text-brand-mutedText text-sm">
-              No questions yet. Click Add to start.
+              Chưa có câu hỏi nào. Nhấn Thêm để bắt đầu.
             </div>
           ) : (
             questions.map((q, idx) => (
@@ -87,10 +87,10 @@ export default function QuestionBuilderTab({ questions, setQuestions }) {
                 </div>
                 <div className="flex-1 overflow-hidden">
                   <p className={`text-sm font-medium truncate ${!q.content ? 'text-brand-mutedText italic' : 'text-brand-textPrimary'}`}>
-                    {q.content || 'Empty Question...'}
+                    {q.content || 'Câu hỏi trống...'}
                   </p>
                   <p className="text-xs text-brand-textSecondary mt-1">
-                    {QUESTION_TYPES.find(t => t.value === q.questionType)?.label || q.questionType} · {q.points || 0} pts
+                    {QUESTION_TYPES.find(t => t.value === q.questionType)?.label || q.questionType} · {q.points || 0} điểm
                   </p>
                 </div>
                 <button
@@ -111,7 +111,7 @@ export default function QuestionBuilderTab({ questions, setQuestions }) {
           <div className="p-6 space-y-6">
             
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold text-brand-textPrimary">Edit Question</h2>
+              <h2 className="text-lg font-bold text-brand-textPrimary">Sửa câu hỏi</h2>
               <div className="w-48">
                 <select
                   value={selectedQ.questionType}
@@ -128,11 +128,11 @@ export default function QuestionBuilderTab({ questions, setQuestions }) {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-brand-textSecondary mb-2">
-                  Question Content <span className="text-status-danger">*</span>
+                  Nội dung câu hỏi <span className="text-status-danger">*</span>
                 </label>
                 <textarea
                   rows="3"
-                  placeholder="Type your question here..."
+                  placeholder="Nhập câu hỏi tại đây..."
                   value={selectedQ.content}
                   onChange={(e) => updateSelectedQuestion('content', e.target.value)}
                   className="w-full px-4 py-3 border border-brand-borderSoft rounded-lg bg-brand-dark/60 text-brand-textPrimary placeholder-brand-mutedText/60 text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent transition-all resize-y"
@@ -141,7 +141,7 @@ export default function QuestionBuilderTab({ questions, setQuestions }) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-brand-textSecondary mb-2">Points</label>
+                  <label className="block text-sm font-semibold text-brand-textSecondary mb-2">Điểm</label>
                   <input
                     type="number"
                     min="1"
@@ -153,10 +153,10 @@ export default function QuestionBuilderTab({ questions, setQuestions }) {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-brand-textSecondary mb-2">Explanation (Optional)</label>
+                <label className="block text-sm font-semibold text-brand-textSecondary mb-2">Giải thích (không bắt buộc)</label>
                 <textarea
                   rows="2"
-                  placeholder="Explain why the correct answer is right..."
+                  placeholder="Giải thích vì sao đáp án đúng là chính xác..."
                   value={selectedQ.explanation || ''}
                   onChange={(e) => updateSelectedQuestion('explanation', e.target.value)}
                   className="w-full px-4 py-2 border border-brand-borderSoft rounded-lg bg-brand-dark/60 text-brand-textPrimary placeholder-brand-mutedText/60 text-sm focus:outline-none focus:border-brand-accent resize-y"
@@ -166,7 +166,7 @@ export default function QuestionBuilderTab({ questions, setQuestions }) {
 
             {/* Answer Builder specific to type */}
             <div className="pt-6 border-t border-brand-borderSoft">
-              <h3 className="text-base font-bold text-brand-textPrimary mb-4">Answers</h3>
+              <h3 className="text-base font-bold text-brand-textPrimary mb-4">Đáp án</h3>
               {(selectedQ.questionType === 'SINGLE_CHOICE' || selectedQ.questionType === 'MULTIPLE_CHOICE') && (
                 <SingleChoiceBuilder 
                   isMultiple={selectedQ.questionType === 'MULTIPLE_CHOICE'}
@@ -180,8 +180,8 @@ export default function QuestionBuilderTab({ questions, setQuestions }) {
         ) : (
           <div className="flex flex-col items-center justify-center h-full text-brand-mutedText p-8 text-center">
             <CheckCircle2 className="w-16 h-16 opacity-20 mb-4" />
-            <p className="text-lg font-medium">Select a question to edit</p>
-            <p className="text-sm mt-1">Or click "Add" to create a new one.</p>
+            <p className="text-lg font-medium">Chọn một câu hỏi để chỉnh sửa</p>
+            <p className="text-sm mt-1">Hoặc nhấn "Thêm" để tạo câu hỏi mới.</p>
           </div>
         )}
       </div>

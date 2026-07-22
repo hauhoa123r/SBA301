@@ -102,10 +102,10 @@ export default function LessonModal({ isOpen, onClose, onSubmit, initialData }) 
             </div>
             <div>
               <h2 className="text-lg font-bold text-brand-textPrimary">
-                {isEditing ? 'Edit Lesson' : 'Add New Lesson'}
+                {isEditing ? 'Sửa bài học' : 'Thêm bài học mới'}
               </h2>
               <p className="text-xs text-brand-mutedText/60 mt-0.5">
-                {isEditing ? 'Update lesson basic details' : 'Fill in lesson basic details'}
+                {isEditing ? 'Cập nhật thông tin cơ bản của bài học' : 'Điền thông tin cơ bản cho bài học'}
               </p>
             </div>
           </div>
@@ -124,25 +124,25 @@ export default function LessonModal({ isOpen, onClose, onSubmit, initialData }) 
         >
           <div>
             <label className="block text-sm font-semibold text-brand-textSecondary mb-2">
-              Lesson Title <span className="text-status-danger">*</span>
+              Tên bài học <span className="text-status-danger">*</span>
             </label>
             <input
               autoFocus
               type="text"
-              placeholder="e.g. Understanding Pinyin Tones"
+              placeholder="Ví dụ: Hiểu về thanh điệu Pinyin"
               value={form.title}
               onChange={(e) => setField('title', e.target.value)}
               className={inputCls}
             />
             <p className="mt-2 text-xs text-brand-mutedText/60">
-              A clear lesson title helps students navigate the course.
+              Tên bài học rõ ràng giúp học viên dễ theo dõi khóa học.
             </p>
           </div>
 
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-brand-textSecondary mb-2">
               <Link2 className="w-4 h-4" />
-              Video URL
+              URL video
             </label>
             <input
               type="text"
@@ -152,24 +152,24 @@ export default function LessonModal({ isOpen, onClose, onSubmit, initialData }) 
               className={inputCls}
             />
             <p className="mt-2 text-xs text-brand-mutedText/60">
-              Paste a direct video link or a YouTube/Vimeo URL.
+              Dán link video trực tiếp hoặc URL YouTube/Vimeo.
             </p>
           </div>
 
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-brand-textSecondary mb-2">
               <Clock className="w-4 h-4" />
-              Duration
+              Thời lượng
             </label>
             <input
               type="text"
-              placeholder="e.g. 15 or 15:30"
+              placeholder="Ví dụ: 15 hoặc 15:30"
               value={durationInput}
               onChange={(e) => setDurationInput(e.target.value)}
               className={inputCls}
             />
             <p className="mt-2 text-xs text-brand-mutedText/60">
-              Enter minutes (e.g., 15) or minutes and seconds (e.g., 15:30).
+              Nhập số phút, ví dụ 15, hoặc phút và giây, ví dụ 15:30.
             </p>
           </div>
         </form>
@@ -177,7 +177,7 @@ export default function LessonModal({ isOpen, onClose, onSubmit, initialData }) 
         {/* ── Footer ───────────────────────────────────────── */}
         <div className="flex items-center justify-between px-6 py-4 border-t border-brand-borderSoft flex-shrink-0">
           <p className="text-xs text-brand-mutedText/50">
-            {form.title.trim() ? '✓ Title set' : '⚠ Title required'}
+            {form.title.trim() ? '✓ Đã nhập tên' : '⚠ Cần nhập tên'}
             {form.video_url ? ' · ✓ Video' : ''}
           </p>
           <div className="flex items-center gap-3">
@@ -186,14 +186,14 @@ export default function LessonModal({ isOpen, onClose, onSubmit, initialData }) 
               onClick={onClose}
               className="px-5 py-2.5 text-sm font-medium text-brand-textSecondary border border-brand-borderSoft rounded-lg hover:bg-brand-surface hover:text-brand-textPrimary transition-colors"
             >
-              Cancel
+              Hủy
             </button>
             <button
               onClick={handleSubmit}
               disabled={!form.title.trim()}
               className="px-6 py-2.5 text-sm font-semibold bg-brand-accent hover:bg-brand-accentHover text-brand-white rounded-lg shadow-lg shadow-brand-accent/25 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
             >
-              {isEditing ? 'Save Changes' : 'Add Lesson'}
+              {isEditing ? 'Lưu thay đổi' : 'Thêm bài học'}
             </button>
           </div>
         </div>

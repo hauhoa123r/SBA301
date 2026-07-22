@@ -13,20 +13,20 @@ const MENU_GROUPS = [
   {
     icon: LayoutDashboard,
     items: [
-      { label: "Dashboard", path: "/moderator", icon: ShieldCheck },
+      { label: "Tổng quan", path: "/moderator", icon: ShieldCheck },
       {
-        label: "Course Management",
+        label: "Quản lý khóa học",
         path: "/moderator/courses",
         activePathPrefix: "/moderator/courses",
         icon: Eye,
       },
       {
-        label: "Violation Reports",
+        label: "Báo cáo vi phạm",
         path: "/moderator/reports/violations",
         icon: ClipboardList,
       },
       {
-        label: "Refund Requests",
+        label: "Yêu cầu hoàn tiền",
         path: "/moderator/transactions/refunds",
         icon: ReceiptText,
       },
@@ -54,7 +54,7 @@ export default function ModeratorLayout({
             <span className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-red-600 shadow-lg shadow-red-600/20">
               <img
                 src="/images/logo.svg"
-                alt="Edujar logo"
+                alt="Logo Edujar"
                 className="h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
               />
             </span>
@@ -118,7 +118,7 @@ export default function ModeratorLayout({
                 <UserRoundCheck className="h-5 w-5" />
               </span>
               <div>
-                <p className="text-sm font-bold text-slate-950">Moderator</p>
+                <p className="text-sm font-bold text-slate-950">Kiểm duyệt viên</p>
               </div>
             </div>
           </div>
@@ -127,7 +127,7 @@ export default function ModeratorLayout({
             className="flex h-12 items-center justify-center gap-2 rounded-lg border border-violet-600 bg-white text-sm font-bold text-violet-700 no-underline transition hover:bg-violet-50"
           >
             <LogOut className="h-4 w-4" />
-            Back to Home
+            Về trang chủ
           </Link>
         </div>
       </aside>
@@ -142,14 +142,14 @@ export default function ModeratorLayout({
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-red-600">
                 <img
                   src="/images/logo.svg"
-                  alt="Edujar logo"
+                  alt="Logo Edujar"
                   className="h-8 w-auto object-contain"
                 />
               </span>
               <span className="font-extrabold uppercase">Edujar</span>
             </Link>
             <span className="rounded-lg bg-violet-50 px-3 py-1 text-xs font-bold uppercase text-violet-700">
-              Moderator
+              Kiểm duyệt viên
             </span>
           </div>
         </div>

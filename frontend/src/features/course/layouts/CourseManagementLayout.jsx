@@ -8,7 +8,7 @@ export default function CourseManagementLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const { user } = useAuth();
 
-  const displayName = user?.fullName || user?.name || user?.username || 'Teacher';
+  const displayName = user?.fullName || user?.name || user?.username || 'Giảng viên';
   const avatarUrl = user?.avatar || user?.avatarUrl || user?.image;
   const avatarInitial = displayName.charAt(0).toUpperCase();
 

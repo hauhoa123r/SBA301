@@ -13,7 +13,7 @@ export default function TeacherHeader({ sidebarOpen, onSidebarToggle, displayNam
           </button>
           <div className="hidden md:flex items-center gap-2 flex-1 ml-4">
             <h2 className="text-lg font-medium text-brand-textSecondary">
-              Welcome back, <span className="text-brand-textPrimary font-semibold">{displayName}</span>!
+              Chào mừng trở lại, <span className="text-brand-textPrimary font-semibold">{displayName}</span>!
             </h2>
           </div>
         </div>
@@ -27,7 +27,7 @@ export default function TeacherHeader({ sidebarOpen, onSidebarToggle, displayNam
           <div className="flex items-center gap-3 pl-4 border-l border-brand-borderSoft">
             <div className="hidden sm:flex flex-col text-right text-sm">
               <p className="font-medium text-brand-textPrimary">{displayName}</p>
-              <p className="text-xs text-brand-mutedText">Teacher</p>
+              <p className="text-xs text-brand-mutedText">Giảng viên</p>
             </div>
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-accent text-brand-white font-bold text-sm ring-2 ring-brand-accentSoft/30">
               {avatarUrl ? (

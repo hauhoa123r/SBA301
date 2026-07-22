@@ -1,5 +1,7 @@
 package com.app.features.courses.service;
 
+import com.app.features.courses.dto.request.CourseHideRequest;
+import com.app.features.courses.dto.request.CourseRejectionRequest;
 import com.app.features.courses.dto.request.CourseRequest;
 import com.app.features.courses.dto.response.CourseCatalogResponse;
 import com.app.features.courses.dto.response.CourseDetailResponse;
@@ -23,4 +25,10 @@ public interface ICourseService {
     CourseDetailResponse approvePendingCourse(Long courseId);
     void deleteCourse(Long courseId, Long teacherId);
     com.app.features.courses.dto.response.DashboardStatsResponse getDashboardStats(Long teacherId);
+
+    CourseDetailResponse rejectPendingCourse(Long courseId, CourseRejectionRequest request);
+
+    List<CourseDetailResponse> getPublishedCourses();
+
+    CourseDetailResponse hidePublishedCourse(Long courseId, CourseHideRequest request);
 }

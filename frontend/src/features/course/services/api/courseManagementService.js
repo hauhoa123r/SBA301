@@ -125,3 +125,21 @@ export const approveCourseForPublication = async (courseId) => {
   return response.data?.data ?? response.data;
 };
 export default courseManagementService;
+
+export const rejectCourseForRevision = async (courseId, reason) => {
+  const response = await axiosInstance.post(`${API_COURSES}/moderation/${courseId}/reject`, {
+    reason,
+  });
+  return response.data?.data ?? response.data;
+};
+export const getPublishedCoursesForHide = async () => {
+  const response = await axiosInstance.get(`${API_COURSES}/moderation/published`);
+  return response.data?.data ?? response.data ?? [];
+};
+
+export const hideCourseFromCatalog = async (courseId, reason) => {
+  const response = await axiosInstance.post(`${API_COURSES}/moderation/${courseId}/hide`, {
+    reason,
+  });
+  return response.data?.data ?? response.data;
+};
