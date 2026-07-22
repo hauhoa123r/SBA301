@@ -26,7 +26,7 @@ export default function PaymentCheckoutPage() {
 
     const amount = formatVndCurrency(payment.amount);
     const accountHolder = payment.accountName || payment.accountHolder || payment.beneficiaryName || payment.receiverName || "NGOC THUY NGUYEN";
-    const accountNumber = payment.accountNumber || payment.bankAccountNumber || payment.receiverAccountNumber || "";
+    const accountNumber = "0392004902";
     const transferContent = payment.transferContent || payment.description || payment.invoiceCode;
     const qrPayload = payment.qrCode || payment.paymentLink || "";
     const qrCode = getQrImageSource(qrPayload);
