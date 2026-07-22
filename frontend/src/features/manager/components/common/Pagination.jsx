@@ -6,7 +6,7 @@ export default function Pagination({ page, totalPages, setPage }) {
                 onClick={() => setPage(page - 1)}
                 className="bg-gray-800 px-4 py-2 rounded disabled:opacity-50"
             >
-                Prev
+                Trước
             </button>
 
             <span className="text-sm">
@@ -18,7 +18,7 @@ export default function Pagination({ page, totalPages, setPage }) {
                 onClick={() => setPage(page + 1)}
                 className="bg-gray-800 px-4 py-2 rounded disabled:opacity-50"
             >
-                Next
+                Sau
             </button>
         </div>
     );

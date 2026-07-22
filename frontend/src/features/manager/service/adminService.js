@@ -27,6 +27,14 @@ export const getUserById = async (id) => {
 };
 
 /**
+ * Tạo user mới
+ */
+export const createUser = async (data) => {
+    const response = await api.post("/api/admin/users", data);
+    return response.data;
+};
+
+/**
  * Cập nhật thông tin user
  */
 export const updateUser = async (id, data) => {
@@ -60,7 +68,41 @@ export const updateUserRoles = async (id, roleIds) => {
     return response.data;
 };
 
-// ============ ROLE MANAGEMENT (US45) ============
+//  COUPON MANAGEMENT (US49)
+
+export const getCoupons = async ({ keyword = "", page = 0, size = 10, sortBy = "createdAt", sortDir = "desc" } = {}) => {
+    const params = new URLSearchParams();
+    if (keyword) params.append("keyword", keyword);
+    params.append("page", page);
+    params.append("size", size);
+    params.append("sortBy", sortBy);
+    params.append("sortDir", sortDir);
+
+    const response = await api.get(`/api/admin/coupons?${params.toString()}`);
+    return response.data;
+};
+
+export const getCouponById = async (id) => {
+    const response = await api.get(`/api/admin/coupons/${id}`);
+    return response.data;
+};
+
+export const createCoupon = async (data) => {
+    const response = await api.post("/api/admin/coupons", data);
+    return response.data;
+};
+
+export const updateCoupon = async (id, data) => {
+    const response = await api.put(`/api/admin/coupons/${id}`, data);
+    return response.data;
+};
+
+export const deleteCoupon = async (id) => {
+    const response = await api.delete(`/api/admin/coupons/${id}`);
+    return response.data;
+};
+
+// = ROLE MANAGEMENT (US45) 
 
 /**
  * Lấy tất cả roles

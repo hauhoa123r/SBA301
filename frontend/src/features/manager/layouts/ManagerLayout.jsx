@@ -6,7 +6,7 @@ import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 const NAV_ITEMS = [
   {
     path: "/admin/users",
-    label: "User Management",
+    label: "Quản lý người dùng",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" />
@@ -16,7 +16,7 @@ const NAV_ITEMS = [
   },
   {
     path: "/admin/accounts",
-    label: "User Account Control",
+    label: "Kiểm soát tài khoản",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
         <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
@@ -25,10 +25,33 @@ const NAV_ITEMS = [
   },
   {
     path: "/admin/roles",
-    label: "Role Management",
+    label: "Quản lý vai trò",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      </svg>
+    ),
+  },
+  {
+    path: "/admin/audit-logs",
+    label: "Nhật ký hệ thống",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <path d="M14 2v6h6" />
+        <path d="M16 13H8" />
+        <path d="M16 17H8" />
+        <path d="M10 9H8" />
+      </svg>
+    ),
+  },
+  {
+    path: "/admin/coupons",
+    label: "Quản lý mã giảm giá",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
+        <path d="M20.59 13.41 11 3.83a2 2 0 0 0-2.83 0L2.83 9.17a2 2 0 0 0 0 2.83L12.41 21.6a2 2 0 0 0 2.83 0l5.35-5.35a2 2 0 0 0 0-2.84Z" />
+        <path d="M7 7h.01" />
       </svg>
     ),
   },
@@ -54,9 +77,8 @@ export default function ManagerLayout() {
                   <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                 </svg>
               </div>
-              Admin Panel
+              Bảng quản trị
             </div>
-
             <nav className="flex-1 py-4 flex flex-col gap-1 px-3">
               {NAV_ITEMS.map(item => {
                 const isActive = location.pathname.startsWith(item.path);
@@ -98,7 +120,7 @@ export default function ManagerLayout() {
                   <div className="w-8 h-8 rounded-full bg-gradient-to-r from-brand-accent to-purple-600 flex items-center justify-center text-white text-xs font-bold shadow-lg">A</div>
                   <div className="hidden sm:block">
                     <p className="text-xs font-semibold text-white leading-tight">Admin</p>
-                    <p className="text-xs text-brand-textSecondary leading-tight">System</p>
+                    <p className="text-xs text-brand-textSecondary leading-tight">Hệ thống</p>
                   </div>
                 </div>
               </div>

@@ -1,14 +1,14 @@
 const STATUS = {
     ACTIVE: {
-        text: "Active",
+        text: "Hoạt động",
         style: "text-green-400 bg-green-500/10",
     },
     LOCKED: {
-        text: "Locked",
+        text: "Đã khóa",
         style: "text-yellow-400 bg-yellow-500/10",
     },
     DELETED: {
-        text: "Deleted",
+        text: "Đã xóa",
         style: "text-red-400 bg-red-500/10",
     },
 };
