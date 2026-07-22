@@ -2,7 +2,10 @@ package com.app.features.users.service;
 
 import com.app.features.users.dto.request.ChangePasswordRequest;
 import com.app.features.users.dto.request.UpdateUserProfileRequest;
+import com.app.features.users.dto.response.InvoicesResponse;
 import com.app.features.users.dto.response.UserProfileResponse;
+
+import java.util.List;
 
 public interface UserProfileService {
     UserProfileResponse getProfile(Long id);
@@ -10,4 +13,6 @@ public interface UserProfileService {
     UserProfileResponse updateProfile(Long id, UpdateUserProfileRequest request);
 
     String changePassword(ChangePasswordRequest request);
+
+    List<InvoicesResponse> getOrderHistory(Long userId);
 }

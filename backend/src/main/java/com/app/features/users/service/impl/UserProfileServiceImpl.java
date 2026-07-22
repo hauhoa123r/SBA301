@@ -1,8 +1,10 @@
 package com.app.features.users.service.impl;
 
 import com.app.features.model.UserEntity;
+import com.app.features.payments.repository.InvoiceRepository;
 import com.app.features.users.dto.request.ChangePasswordRequest;
 import com.app.features.users.dto.request.UpdateUserProfileRequest;
+import com.app.features.users.dto.response.InvoicesResponse;
 import com.app.features.users.dto.response.UserProfileResponse;
 import com.app.features.users.repository.ProfileUserRepository;
 import com.app.features.users.service.UserProfileService;
@@ -13,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,6 +23,7 @@ import java.util.Optional;
 @Slf4j
 public class UserProfileServiceImpl implements UserProfileService {
     private final ProfileUserRepository profileUserRepository;
+    private final InvoiceRepository invoiceRepository;
 
     @Override
     public UserProfileResponse getProfile(Long id) {
@@ -69,7 +73,7 @@ public class UserProfileServiceImpl implements UserProfileService {
             return validationMessage;
         }
 
-        String email = normalize(request.getEmail()).toLowerCase();
+        String email = normalize(request.getEmail()).trim().toLowerCase();
         String currentPassword = normalize(request.getCurrentPassword());
         String newPassword = normalize(request.getNewPassword());
 
@@ -89,6 +93,24 @@ public class UserProfileServiceImpl implements UserProfileService {
         profileUserRepository.save(user);
         log.info("User password changed successfully, userId={}", user.getId());
         return null;
+    }
+
+    @Override
+    public List<InvoicesResponse> getOrderHistory(Long userId) {
+        findUser(userId);
+        return invoiceRepository.findAllByUser_IdOrderByCreatedAtDesc(userId)
+                .stream()
+                .map(invoice -> new InvoicesResponse(
+                        invoice.getId(),
+                        invoice.getCourse().getId(),
+                        invoice.getCourse().getTitle(),
+                        invoice.getOriginalAmount(),
+                        invoice.getDiscountAmount(),
+                        invoice.getAmount(),
+                        invoice.getStatus(),
+                        invoice.getCreatedAt(),
+                        invoice.getUpdatedAt()
+                )).toList();
     }
 
     private String validateChangePassword(ChangePasswordRequest request) {

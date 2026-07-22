@@ -29,28 +29,16 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
     @Override
     @Transactional
     public VerificationTokenEntity createToken(UserEntity user, String tokenType, String token, Duration ttl) {
-        if (user == null) {
-            throw new IllegalArgumentException("Không tìm thấy người dùng.");
-        }
-        if (normalize(tokenType).isBlank()) {
-            throw new IllegalArgumentException("Loại mã xác minh không hợp lệ.");
-        }
-        if (normalize(token).isBlank()) {
-            throw new IllegalArgumentException("Mã xác minh không hợp lệ.");
-        }
-        if (ttl == null || ttl.isZero() || ttl.isNegative()) {
-            throw new IllegalArgumentException("Thời hạn mã xác minh không hợp lệ.");
-        }
+        validateCreateTokenInput(user, tokenType, token, ttl);
 
-        List<VerificationTokenEntity> oldTokens = verificationTokenRepository.findAllByUserAndTokenTypeAndUsedFalse(user, tokenType);
-        if (!oldTokens.isEmpty()) {
-            oldTokens.forEach(oldToken -> oldToken.setUsed(true));
-            verificationTokenRepository.saveAll(oldTokens);
-        }
+        String normalizedToken = normalize(token);
+        String normalizedTokenType = normalize(tokenType);
+
+        revokeActiveTokens(user, tokenType);
 
         VerificationTokenEntity verificationToken = VerificationTokenEntity.builder()
-                .token(token)
-                .tokenType(tokenType)
+                .token(normalizedToken)
+                .tokenType(normalizedTokenType)
                 .user(user)
                 .expiryDate(Instant.now().plus(ttl))
                 .used(false)
@@ -108,5 +96,28 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
 
     private String normalize(String value) {
         return value == null ? "" : value.trim();
+    }
+
+    private void revokeActiveTokens(UserEntity user, String tokenType) {
+        List<VerificationTokenEntity> activeTokens =
+                verificationTokenRepository.findAllByUserAndTokenTypeAndUsedFalse(user, tokenType);
+
+        activeTokens.forEach(token -> token.setUsed(true));
+        verificationTokenRepository.saveAll(activeTokens);
+    }
+
+    private void validateCreateTokenInput(UserEntity user, String tokenType, String token, Duration ttl) {
+        if (user == null) {
+            throw new IllegalArgumentException("Không tìm thấy người dùng.");
+        }
+        if (normalize(tokenType).isBlank()) {
+            throw new IllegalArgumentException("Loại mã xác minh không hợp lệ.");
+        }
+        if (normalize(token).isBlank()) {
+            throw new IllegalArgumentException("Mã xác minh không hợp lệ.");
+        }
+        if (ttl == null || ttl.isZero() || ttl.isNegative()) {
+            throw new IllegalArgumentException("Thời hạn mã xác minh không hợp lệ.");
+        }
     }
 }

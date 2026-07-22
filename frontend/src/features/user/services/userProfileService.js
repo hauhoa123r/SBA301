@@ -6,6 +6,11 @@ export const getUserProfile = async (userId) => {
     return response.data;
 };
 
+export const getOrderHistory = async (userId) => {
+    const response = await api.get(`${API_USERS}/${userId}/orders`);
+    return response.data;
+};
+
 export const updateUserProfile = async (userId, data) => {
     const response = await api.patch(`${API_USERS}/${userId}`, data);
     return response.data;

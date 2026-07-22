@@ -12,10 +12,10 @@ const menuGroups = [
         title: "THANH TOÁN",
         items: [{ id: "orders", label: "Lịch sử đơn hàng", icon: ReceiptText }],
     },
-    {
-        title: "CÔNG CỤ",
-        items: [{ id: "activation", label: "Mã kích hoạt", icon: Ticket }],
-    },
+    // {
+    //     title: "CÔNG CỤ",
+    //     items: [{ id: "activation", label: "Mã kích hoạt", icon: Ticket }],
+    // },
 ];
 
 export default function Sidebar({ activeTab, onTabChange }) {
