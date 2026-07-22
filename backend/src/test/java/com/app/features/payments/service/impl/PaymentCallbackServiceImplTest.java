@@ -1,7 +1,6 @@
 package com.app.features.payments.service.impl;
 
 import com.app.features.learning.repository.ICourseEnrollmentRepository;
-import com.app.features.model.CourseEnrollmentEntity;
 import com.app.features.model.CourseEntity;
 import com.app.features.model.InvoiceEntity;
 import com.app.features.model.PaymentEntity;
@@ -14,13 +13,14 @@ import com.app.features.payments.dto.PaymentVerifyResponse;
 import com.app.features.payments.repository.InvoiceRepository;
 import com.app.features.payments.repository.PaymentRepository;
 import com.app.features.payments.service.PayOSService;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,13 +35,15 @@ class PaymentCallbackServiceImplTest {
         ICourseEnrollmentRepository courseEnrollmentRepository = mock(ICourseEnrollmentRepository.class);
         InvoiceConverter invoiceConverter = mock(InvoiceConverter.class);
         PaymentConverter paymentConverter = mock(PaymentConverter.class);
+        EntityManager entityManager = mock(EntityManager.class);
         PaymentCallbackServiceImpl service = new PaymentCallbackServiceImpl(
                 payOSService,
                 invoiceRepository,
                 paymentRepository,
                 courseEnrollmentRepository,
                 invoiceConverter,
-                paymentConverter
+                paymentConverter,
+                entityManager
         );
 
         Map<String, String> params = Map.of("orderCode", "175000000000008");
@@ -82,13 +84,15 @@ class PaymentCallbackServiceImplTest {
         ICourseEnrollmentRepository courseEnrollmentRepository = mock(ICourseEnrollmentRepository.class);
         InvoiceConverter invoiceConverter = mock(InvoiceConverter.class);
         PaymentConverter paymentConverter = mock(PaymentConverter.class);
+        EntityManager entityManager = mock(EntityManager.class);
         PaymentCallbackServiceImpl service = new PaymentCallbackServiceImpl(
                 payOSService,
                 invoiceRepository,
                 paymentRepository,
                 courseEnrollmentRepository,
                 invoiceConverter,
-                paymentConverter
+                paymentConverter,
+                entityManager
         );
 
         Map<String, String> params = Map.of("orderCode", "175000000000009");
@@ -118,14 +122,12 @@ class PaymentCallbackServiceImplTest {
                 "175000000000009"
         )).thenReturn(Optional.of(payment));
         when(invoiceRepository.findByIdForUpdate(8L)).thenReturn(Optional.of(invoice));
-        when(courseEnrollmentRepository.findByUser_IdAndCourse_Id(7L, 1L)).thenReturn(Optional.empty());
+        when(courseEnrollmentRepository.insertIfAbsent(any(), any(), any())).thenReturn(1);
 
         assertSame(response, service.handleCallback(PaymentProvider.PAYOS, params));
 
-        ArgumentCaptor<CourseEnrollmentEntity> enrollmentCaptor = ArgumentCaptor.forClass(CourseEnrollmentEntity.class);
-        verify(courseEnrollmentRepository).save(enrollmentCaptor.capture());
-        assertSame(user, enrollmentCaptor.getValue().getUser());
-        assertSame(course, enrollmentCaptor.getValue().getCourse());
+        verify(courseEnrollmentRepository).insertIfAbsent(org.mockito.ArgumentMatchers.eq(7L),
+                org.mockito.ArgumentMatchers.eq(1L), any());
         verify(invoiceConverter).applyPaymentResult(invoice, true);
         verify(invoiceRepository).save(invoice);
     }

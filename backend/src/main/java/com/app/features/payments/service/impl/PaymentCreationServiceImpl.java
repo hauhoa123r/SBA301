@@ -1,7 +1,9 @@
 package com.app.features.payments.service.impl;
 
+import com.app.exception.BadRequestException;
 import com.app.exception.ResourceNotFoundException;
 import com.app.features.courses.repository.ICourseRepository;
+import com.app.features.learning.repository.ICourseEnrollmentRepository;
 import com.app.features.model.CourseEntity;
 import com.app.features.model.InvoiceEntity;
 import com.app.features.model.PaymentEntity;
@@ -30,6 +32,7 @@ public class PaymentCreationServiceImpl implements PaymentCreationService {
     private final PaymentRepository paymentRepository;
     private final ICourseRepository courseRepository;
     private final PaymentUserRepository paymentUserRepository;
+    private final ICourseEnrollmentRepository courseEnrollmentRepository;
     private final InvoiceConverter invoiceConverter;
     private final PaymentConverter paymentConverter;
 
@@ -48,6 +51,10 @@ public class PaymentCreationServiceImpl implements PaymentCreationService {
                     log.warn("Payment creation failed because user was not found, userId={}", userId);
                     return new ResourceNotFoundException("User not found with id: " + userId);
                 });
+        if (courseEnrollmentRepository.existsByUser_IdAndCourse_Id(userId, course.getId())) {
+            log.warn("Payment creation rejected because user already owns course, userId={}, courseId={}", userId, course.getId());
+            throw new BadRequestException("You already own this course");
+        }
 
         InvoiceEntity invoice = invoiceConverter.toPendingInvoice(user, course);
         invoiceConverter.applyCoupon(invoice, request.couponCode());

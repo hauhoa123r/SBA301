@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.util.List;
 
 @Setter
 @Getter
@@ -19,4 +20,5 @@ public class LessonRequest {
     private Integer durationSecond;
     @NotNull(message = "Order index is required")
     private Integer orderIndex;
+    private List<LessonDocumentRequest> documents;
 }

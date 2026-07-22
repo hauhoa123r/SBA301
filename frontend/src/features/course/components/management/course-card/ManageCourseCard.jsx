@@ -1,5 +1,5 @@
 import { Star, Clock, PlayCircle, Edit2, ListChecks, Users, Trash2 } from 'lucide-react';
-import StatusBadge from './StatusBadge';
+import StatusBadge from '../common/StatusBadge';
 
 const formatPrice = (price) => {
   if (!price || price === 0) return 'Free';

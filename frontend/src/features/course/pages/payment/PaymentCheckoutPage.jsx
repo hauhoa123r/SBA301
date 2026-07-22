@@ -4,6 +4,7 @@ import AnimatedCard from "../../../../shared/components/animation/AnimatedCard";
 import UserImage from "../../../../shared/components/animation/UserImage";
 import UserReveal from "../../../../shared/components/animation/UserReveal";
 import UserStagger from "../../../../shared/components/animation/UserStagger";
+import { formatVndCurrency } from "../../../../shared/utils/currency";
 
 export default function PaymentCheckoutPage() {
     const location = useLocation();
@@ -23,10 +24,7 @@ export default function PaymentCheckoutPage() {
         );
     }
 
-    const amount = new Intl.NumberFormat("vi-VN", {
-        style: "currency",
-        currency: "VND",
-    }).format(Number(payment.amount || 0));
+    const amount = formatVndCurrency(payment.amount);
     const accountHolder = payment.accountName || payment.accountHolder || payment.beneficiaryName || payment.receiverName || "NGOC THUY NGUYEN";
     const accountNumber = payment.accountNumber || payment.bankAccountNumber || payment.receiverAccountNumber || "";
     const transferContent = payment.transferContent || payment.description || payment.invoiceCode;

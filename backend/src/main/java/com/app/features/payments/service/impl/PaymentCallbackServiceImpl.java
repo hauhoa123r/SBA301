@@ -3,7 +3,6 @@ package com.app.features.payments.service.impl;
 import com.app.exception.ResourceNotFoundException;
 import com.app.features.learning.repository.ICourseEnrollmentRepository;
 import com.app.features.model.CouponEntity;
-import com.app.features.model.CourseEnrollmentEntity;
 import com.app.features.model.CourseEntity;
 import com.app.features.model.InvoiceEntity;
 import com.app.features.model.PaymentEntity;
@@ -16,6 +15,7 @@ import com.app.features.payments.repository.InvoiceRepository;
 import com.app.features.payments.repository.PaymentRepository;
 import com.app.features.payments.service.PaymentCallbackService;
 import com.app.features.payments.service.PayOSService;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,6 +34,7 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
     private final ICourseEnrollmentRepository courseEnrollmentRepository;
     private final InvoiceConverter invoiceConverter;
     private final PaymentConverter paymentConverter;
+    private final EntityManager entityManager;
 
     @Override
     @Transactional
@@ -64,6 +65,7 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
                 });
         InvoiceEntity invoice = invoiceRepository.findByIdForUpdate(payment.getInvoice().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Invoice not found for payment: " + payment.getId()));
+        entityManager.refresh(invoice);
         payment.setInvoice(invoice);
 
         if (invoice.getStatus() == InvoiceStatus.PAID) {
@@ -103,16 +105,11 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
 
         Long userId = invoice.getUser().getId();
         Long courseId = course.getId();
-        if (courseEnrollmentRepository.findByUser_IdAndCourse_Id(userId, courseId).isPresent()) {
+        int inserted = courseEnrollmentRepository.insertIfAbsent(userId, courseId, Instant.now());
+        if (inserted == 0) {
             log.info("Course enrollment already exists, userId={}, courseId={}", userId, courseId);
             return;
         }
-
-        CourseEnrollmentEntity enrollment = new CourseEnrollmentEntity();
-        enrollment.setUser(invoice.getUser());
-        enrollment.setCourse(course);
-        enrollment.setEnrolledAt(Instant.now());
-        courseEnrollmentRepository.save(enrollment);
         log.info("Course enrollment activated, userId={}, courseId={}", userId, courseId);
     }
 }

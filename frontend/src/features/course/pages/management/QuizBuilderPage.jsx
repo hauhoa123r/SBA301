@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, FileQuestion, Settings, ListChecks, Save } from 'lucide-react';
-import QuizSettingsTab from '../../components/management/curriculum-builder/modals/quiz/QuizSettingsTab';
-import QuestionBuilderTab from '../../components/management/curriculum-builder/modals/quiz/QuestionBuilderTab';
-import { quizApi } from '../../api/quizApi';
+import QuizSettingsTab from '../../components/management/quiz-builder/QuizSettingsTab';
+import QuestionBuilderTab from '../../components/management/quiz-builder/QuestionBuilderTab';
+import { quizService } from '../../services/api/quiz.services';
+import { showErrorToast, showSuccessToast } from '@/shared/utils/toast';
 
 const emptyQuiz = () => ({
   title: '',
@@ -26,7 +27,7 @@ export default function QuizBuilderPage() {
 
   useEffect(() => {
     if (quizId) {
-      quizApi.getQuizById(quizId).then(res => {
+      quizService.getQuizById(quizId).then(res => {
         const data = res.data;
         setForm({
           id: data.id,
@@ -77,15 +78,15 @@ export default function QuizBuilderPage() {
       };
       
       if (quizId) {
-        await quizApi.updateQuiz(quizId, payload);
+        await quizService.updateQuiz(quizId, payload);
       } else {
-        await quizApi.createQuiz(payload);
+        await quizService.createQuiz(payload);
       }
       
       navigate('/management/quizzes');
     } catch (error) {
       console.error("Failed to save quiz", error);
-      alert("Error saving quiz");
+      showErrorToast("Error saving quiz");
     } finally {
       setIsSaving(false);
     }

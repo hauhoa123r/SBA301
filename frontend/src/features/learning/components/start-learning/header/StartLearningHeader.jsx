@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Bell, ChevronDown, Flame, LayoutGrid, Menu } from "lucide-react";
-import HeroLogo from "../../../../shared/components/HeroLogo";
-import UserProfileMenu from "../../../../shared/components/UserProfileMenu";
+import HeroLogo from "../../../../../shared/components/HeroLogo";
+import UserProfileMenu from "../../../../../shared/components/UserProfileMenu";
 
 export default function StartLearningHeader({
     selectedCourseId,

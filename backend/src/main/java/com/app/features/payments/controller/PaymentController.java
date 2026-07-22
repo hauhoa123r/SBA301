@@ -8,6 +8,7 @@ import com.app.features.payments.dto.PaymentSyncResponse;
 import com.app.features.payments.facade.PaymentFacade;
 import com.app.security.oauth.CustomOAuth2User;
 import com.app.utils.ApiPath;
+import com.app.utils.SecurityUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,14 +33,14 @@ public class PaymentController {
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('STUDENT')")
-    public ResponseEntity<PaymentCreateResponse> createPayment(@Valid @RequestBody PaymentCreateRequest request, Authentication authentication) {
-        return ResponseEntity.ok(paymentFacade.createPayment(request, authenticatedUserId(authentication)));
+    public ResponseEntity<PaymentCreateResponse> createPayment(@Valid @RequestBody PaymentCreateRequest request) {
+        return ResponseEntity.ok(paymentFacade.createPayment(request, SecurityUtils.getCurrentUser().getId()));
     }
 
     @PostMapping("/invoices/{invoiceId}/sync")
     @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<PaymentSyncResponse> syncPayment(@PathVariable Long invoiceId, Authentication authentication) {
-        return ResponseEntity.ok(paymentFacade.syncPayment(invoiceId, authenticatedUserId(authentication)));
+        return ResponseEntity.ok(paymentFacade.syncPayment(invoiceId,SecurityUtils.getCurrentUser().getId()));
     }
 
     @PostMapping("/payos-webhook")
@@ -47,18 +48,4 @@ public class PaymentController {
         return ResponseEntity.ok(paymentFacade.handlePayosWebhook(body));
     }
 
-    private Long authenticatedUserId(Authentication authentication) {
-        if (authentication == null) {
-            throw new ResponseStatusException(UNAUTHORIZED, "Authentication required");
-        }
-
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof UserEntity user) {
-            return user.getId();
-        }
-        if (principal instanceof CustomOAuth2User oauthUser) {
-            return oauthUser.getUser().getId();
-        }
-        throw new ResponseStatusException(UNAUTHORIZED, "Authentication required");
-    }
 }

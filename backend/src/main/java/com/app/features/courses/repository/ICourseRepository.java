@@ -13,6 +13,9 @@ import java.util.Optional;
 
 public interface ICourseRepository extends JpaRepository<CourseEntity,Long> {
 
+    long countByTeacherId(Long teacherId);
+    long countByTeacherIdAndStatus(Long teacherId, com.app.features.model.enums.CourseStatus status);
+
     @Override
     @EntityGraph(attributePaths = {"teacher", "category"})
     List<CourseEntity> findAll();

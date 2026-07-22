@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import StartLearningHeader from "../components/start-learning/StartLearningHeader";
-import StartLearningSidebar from "../components/start-learning/StartLearningSidebar";
+import StartLearningHeader from "../components/start-learning/header/StartLearningHeader";
+import StartLearningSidebar from "../components/start-learning/sidebar/StartLearningSidebar";
 
 export default function LearningLayout() {
     const { hash } = useLocation();

@@ -1,7 +1,9 @@
 package com.app.features.payments.service.impl;
 
+import com.app.exception.BadRequestException;
 import com.app.features.courses.repository.ICourseRepository;
 import com.app.features.coupons.repository.ICouponRepository;
+import com.app.features.learning.repository.ICourseEnrollmentRepository;
 import com.app.features.model.CourseEntity;
 import com.app.features.model.InvoiceEntity;
 import com.app.features.model.PaymentEntity;
@@ -24,8 +26,10 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class PaymentCreationServiceImplTest {
@@ -54,6 +58,7 @@ class PaymentCreationServiceImplTest {
         PaymentRepository paymentRepository = mock(PaymentRepository.class);
         ICourseRepository courseRepository = mock(ICourseRepository.class);
         PaymentUserRepository userRepository = mock(PaymentUserRepository.class);
+        ICourseEnrollmentRepository courseEnrollmentRepository = mock(ICourseEnrollmentRepository.class);
         InvoiceConverter invoiceConverter = mock(InvoiceConverter.class);
         PaymentConverter paymentConverter = mock(PaymentConverter.class);
         PaymentCreationServiceImpl service = new PaymentCreationServiceImpl(
@@ -62,6 +67,7 @@ class PaymentCreationServiceImplTest {
                 paymentRepository,
                 courseRepository,
                 userRepository,
+                courseEnrollmentRepository,
                 invoiceConverter,
                 paymentConverter
         );
@@ -111,5 +117,38 @@ class PaymentCreationServiceImplTest {
                 course
         );
         verify(paymentRepository).save(payment);
+    }
+
+    @Test
+    void paymentCreationRejectsCourseAlreadyOwnedByUser() {
+        PayOSService payOSService = mock(PayOSService.class);
+        InvoiceRepository invoiceRepository = mock(InvoiceRepository.class);
+        PaymentRepository paymentRepository = mock(PaymentRepository.class);
+        ICourseRepository courseRepository = mock(ICourseRepository.class);
+        PaymentUserRepository userRepository = mock(PaymentUserRepository.class);
+        ICourseEnrollmentRepository courseEnrollmentRepository = mock(ICourseEnrollmentRepository.class);
+        InvoiceConverter invoiceConverter = mock(InvoiceConverter.class);
+        PaymentConverter paymentConverter = mock(PaymentConverter.class);
+        PaymentCreationServiceImpl service = new PaymentCreationServiceImpl(
+                payOSService,
+                invoiceRepository,
+                paymentRepository,
+                courseRepository,
+                userRepository,
+                courseEnrollmentRepository,
+                invoiceConverter,
+                paymentConverter
+        );
+        CourseEntity course = new CourseEntity();
+        course.setId(2L);
+        UserEntity user = new UserEntity();
+        when(courseRepository.findById(2L)).thenReturn(Optional.of(course));
+        when(userRepository.findById(16L)).thenReturn(Optional.of(user));
+        when(courseEnrollmentRepository.existsByUser_IdAndCourse_Id(16L, 2L)).thenReturn(true);
+
+        assertThrows(BadRequestException.class,
+                () -> service.createPayment(new PaymentCreateRequest(2L, null), 16L));
+
+        verifyNoInteractions(invoiceConverter, payOSService, paymentRepository);
     }
 }
