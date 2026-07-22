@@ -11,7 +11,7 @@ export default function LessonRow({ lesson, lessonIndex, onEdit, onDelete, onDoc
     if (!s || s <= 0) return null;
     const mins = Math.floor(s / 60);
     const secs = s % 60;
-    return mins > 0 ? `${mins}m${secs > 0 ? ` ${secs}s` : ''}` : `${secs}s`;
+    return mins > 0 ? `${mins}p${secs > 0 ? ` ${secs}s` : ''}` : `${secs}s`;
   };
 
   const duration = formatDuration(lesson.duration_seconds);
@@ -45,7 +45,7 @@ export default function LessonRow({ lesson, lessonIndex, onEdit, onDelete, onDoc
         {hasVideo && (
           <span
             className="flex items-center gap-1 px-2 py-1 rounded-md bg-brand-accent/10 text-brand-accentSoft text-[11px] font-medium"
-            title="Has video"
+            title="Có video"
           >
             <Video className="w-3 h-3" />
             Video
@@ -54,7 +54,7 @@ export default function LessonRow({ lesson, lessonIndex, onEdit, onDelete, onDoc
         {hasDocs && (
           <span
             className="flex items-center gap-1 px-2 py-1 rounded-md bg-brand-info/10 text-brand-info text-[11px] font-medium"
-            title={`${lesson.documents.length} document(s)`}
+            title={`${lesson.documents.length} tài liệu`}
           >
             <FileText className="w-3 h-3" />
             {lesson.documents.length}
@@ -63,16 +63,16 @@ export default function LessonRow({ lesson, lessonIndex, onEdit, onDelete, onDoc
         {hasQuiz && (
           <span
             className="flex items-center gap-1 px-2 py-1 rounded-md bg-status-warningStrong/10 text-status-warningStrong text-[11px] font-medium"
-            title={`${lesson.quizzes.length} quiz(zes)`}
+            title={`${lesson.quizzes.length} bài tập`}
           >
             <HelpCircle className="w-3 h-3" />
-            Quiz
+            Bài tập
           </span>
         )}
         {duration && (
           <span
             className="flex items-center gap-1 px-2 py-1 rounded-md bg-brand-dark/40 text-brand-mutedText text-[11px] font-medium"
-            title="Duration"
+            title="Thời lượng"
           >
             <Clock className="w-3 h-3" />
             {duration}
@@ -84,21 +84,21 @@ export default function LessonRow({ lesson, lessonIndex, onEdit, onDelete, onDoc
         <button
           onClick={onEdit}
           className="p-1.5 text-brand-mutedText hover:text-brand-accentSoft hover:bg-brand-accent/10 rounded-lg transition-colors"
-          title="Edit lesson"
+          title="Sửa bài học"
         >
           <Edit2 className="w-3.5 h-3.5" />
         </button>
         <button
           onClick={onDocuments}
           className="p-1.5 text-brand-mutedText hover:text-brand-info hover:bg-brand-info/10 rounded-lg transition-colors"
-          title="Manage documents"
+          title="Quản lý tài liệu"
         >
           <FileText className="w-3.5 h-3.5" />
         </button>
         <button
           onClick={onDelete}
           className="p-1.5 text-brand-mutedText hover:text-status-danger hover:bg-status-danger/10 rounded-lg transition-colors"
-          title="Delete lesson"
+          title="Xóa bài học"
         >
           <Trash2 className="w-3.5 h-3.5" />
         </button>
@@ -124,7 +124,7 @@ export default function LessonRow({ lesson, lessonIndex, onEdit, onDelete, onDoc
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-1.5 text-brand-mutedText hover:text-brand-accent hover:bg-brand-accent/10 rounded-lg transition-colors ml-4 flex-shrink-0"
-                title="View Document"
+                title="Xem tài liệu"
               >
                 <Eye className="w-4 h-4" />
               </a>

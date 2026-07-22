@@ -42,14 +42,14 @@ export default function SingleChoiceBuilder({ isMultiple, answers, setAnswers })
               ? 'bg-status-success/10 text-status-success hover:bg-status-success/20' 
               : 'bg-brand-surface border border-brand-borderSoft text-brand-mutedText hover:border-status-success/50 hover:text-status-success/50'
             }`}
-            title="Mark as correct answer"
+            title="Đánh dấu là đáp án đúng"
           >
             {ans.isCorrect ? <CheckCircle2 className="w-5 h-5" /> : <Circle className="w-5 h-5" />}
           </button>
           
           <input
             type="text"
-            placeholder={`Option ${idx + 1}`}
+            placeholder={`Lựa chọn ${idx + 1}`}
             value={ans.content}
             onChange={(e) => updateAnswer(idx, 'content', e.target.value)}
             className={`flex-1 px-4 py-2 border rounded-lg bg-brand-dark/60 text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent transition-all ${
@@ -71,7 +71,7 @@ export default function SingleChoiceBuilder({ isMultiple, answers, setAnswers })
         onClick={addAnswer}
         className="flex items-center gap-2 mt-2 px-4 py-2 text-sm font-semibold text-brand-accent hover:bg-brand-accent/10 rounded-lg transition-colors"
       >
-        <Plus className="w-4 h-4" /> Add Option
+        <Plus className="w-4 h-4" /> Thêm Lựa Chọn
       </button>
     </div>
   );

@@ -126,10 +126,10 @@ export default function LessonModal({ isOpen, onClose, onSubmit, initialData }) 
             </div>
             <div>
               <h2 className="text-lg font-bold text-brand-textPrimary">
-                {isEditing ? 'Edit Lesson' : 'Add New Lesson'}
+                {isEditing ? 'Sửa Bài Học' : 'Thêm Bài Học Mới'}
               </h2>
               <p className="text-xs text-brand-mutedText/60 mt-0.5">
-                {isEditing ? 'Update lesson basic details' : 'Fill in lesson basic details'}
+                {isEditing ? 'Cập nhật thông tin cơ bản của bài học' : 'Điền thông tin cơ bản của bài học'}
               </p>
             </div>
           </div>
@@ -148,25 +148,25 @@ export default function LessonModal({ isOpen, onClose, onSubmit, initialData }) 
         >
           <div>
             <label className="block text-sm font-semibold text-brand-textSecondary mb-2">
-              Lesson Title <span className="text-status-danger">*</span>
+              Tiêu đề bài học <span className="text-status-danger">*</span>
             </label>
             <input
               autoFocus
               type="text"
-              placeholder="e.g. Understanding Pinyin Tones"
+              placeholder="Ví dụ: Cài đặt môi trường"
               value={form.title}
               onChange={(e) => setField('title', e.target.value)}
               className={inputCls}
             />
             <p className="mt-2 text-xs text-brand-mutedText/60">
-              A clear lesson title helps students navigate the course.
+              Tiêu đề rõ ràng giúp học viên dễ theo dõi khóa học.
             </p>
           </div>
 
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-brand-textSecondary mb-2">
               <Link2 className="w-4 h-4" />
-              Video URL
+              Đường dẫn Video
             </label>
             <input
               type="text"
@@ -176,24 +176,24 @@ export default function LessonModal({ isOpen, onClose, onSubmit, initialData }) 
               className={inputCls}
             />
             <p className="mt-2 text-xs text-brand-mutedText/60">
-              Paste a direct video link or a YouTube/Vimeo URL.
+              Dán đường dẫn video trực tiếp hoặc đường dẫn từ YouTube/Vimeo.
             </p>
           </div>
 
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-brand-textSecondary mb-2">
               <Clock className="w-4 h-4" />
-              Duration
+              Thời lượng
             </label>
             <input
               type="text"
-              placeholder="e.g. 15 or 15:30"
+              placeholder="Ví dụ: 15 hoặc 15:30"
               value={durationInput}
               onChange={(e) => setDurationInput(e.target.value)}
               className={inputCls}
             />
             <p className="mt-2 text-xs text-brand-mutedText/60">
-              Enter minutes (e.g., 15) or minutes and seconds (e.g., 15:30).
+              Nhập số phút (ví dụ: 15) hoặc phút và giây (ví dụ: 15:30).
             </p>
           </div>
 
@@ -201,7 +201,7 @@ export default function LessonModal({ isOpen, onClose, onSubmit, initialData }) 
             <div className="flex items-center justify-between mb-4">
               <label className="flex items-center gap-2 text-sm font-semibold text-brand-textSecondary">
                 <FileText className="w-4 h-4" />
-                Attached Documents
+                Tài liệu đính kèm
               </label>
               <button
                 type="button"
@@ -209,7 +209,7 @@ export default function LessonModal({ isOpen, onClose, onSubmit, initialData }) 
                 className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-brand-accent bg-brand-accent/10 hover:bg-brand-accent/20 rounded-lg transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" />
-                Add Document
+                Thêm Tài Liệu
               </button>
             </div>
 
@@ -219,14 +219,14 @@ export default function LessonModal({ isOpen, onClose, onSubmit, initialData }) 
                   <div className="flex-1 space-y-3">
                     <input
                       type="text"
-                      placeholder="Document Title (e.g. Grammar Cheat Sheet)"
+                      placeholder="Tên tài liệu (Ví dụ: Slide bài giảng)"
                       value={doc.title}
                       onChange={(e) => handleDocumentChange(idx, 'title', e.target.value)}
                       className={inputCls}
                     />
                     <input
                       type="text"
-                      placeholder="URL (e.g. https://drive.google.com/...)"
+                      placeholder="Đường dẫn (Ví dụ: https://drive.google.com/...)"
                       value={doc.fileUrl || doc.file_url || ''}
                       onChange={(e) => handleDocumentChange(idx, 'fileUrl', e.target.value)}
                       className={inputCls}
@@ -236,7 +236,7 @@ export default function LessonModal({ isOpen, onClose, onSubmit, initialData }) 
                     type="button"
                     onClick={() => handleRemoveDocument(idx)}
                     className="p-2 text-brand-mutedText hover:text-status-danger hover:bg-status-danger/10 rounded-lg transition-colors mt-1"
-                    title="Remove document"
+                    title="Xóa tài liệu"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -244,7 +244,7 @@ export default function LessonModal({ isOpen, onClose, onSubmit, initialData }) 
               ))}
               {form.documents.length === 0 && (
                 <p className="text-xs text-brand-mutedText/60 italic text-center py-4 bg-brand-dark/20 rounded-lg border border-dashed border-brand-borderSoft">
-                  No documents attached yet.
+                  Chưa có tài liệu đính kèm nào.
                 </p>
               )}
             </div>
@@ -254,7 +254,7 @@ export default function LessonModal({ isOpen, onClose, onSubmit, initialData }) 
         {/* ── Footer ───────────────────────────────────────── */}
         <div className="flex items-center justify-between px-6 py-4 border-t border-brand-borderSoft flex-shrink-0">
           <p className="text-xs text-brand-mutedText/50">
-            {form.title.trim() ? '✓ Title set' : '⚠ Title required'}
+            {form.title.trim() ? '✓ Đã có tiêu đề' : '⚠ Bắt buộc có tiêu đề'}
             {form.video_url ? ' · ✓ Video' : ''}
           </p>
           <div className="flex items-center gap-3">
@@ -263,14 +263,14 @@ export default function LessonModal({ isOpen, onClose, onSubmit, initialData }) 
               onClick={onClose}
               className="px-5 py-2.5 text-sm font-medium text-brand-textSecondary border border-brand-borderSoft rounded-lg hover:bg-brand-surface hover:text-brand-textPrimary transition-colors"
             >
-              Cancel
+              Hủy
             </button>
             <button
               onClick={handleSubmit}
               disabled={!form.title.trim()}
               className="px-6 py-2.5 text-sm font-semibold bg-brand-accent hover:bg-brand-accentHover text-brand-white rounded-lg shadow-lg shadow-brand-accent/25 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
             >
-              {isEditing ? 'Save Changes' : 'Add Lesson'}
+              {isEditing ? 'Lưu Thay Đổi' : 'Thêm Bài Học'}
             </button>
           </div>
         </div>

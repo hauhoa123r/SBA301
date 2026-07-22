@@ -2,7 +2,7 @@ import { Star, Clock, PlayCircle, Edit2, ListChecks, Users, Trash2 } from 'lucid
 import StatusBadge from '../common/StatusBadge';
 
 const formatPrice = (price) => {
-  if (!price || price === 0) return 'Free';
+  if (!price || price === 0) return 'Miễn phí';
   return new Intl.NumberFormat('vi-VN', {
     style: 'currency',
     currency: 'VND',
@@ -83,14 +83,14 @@ export default function ManageCourseCard({ course, onEdit, onDesignCurriculum, o
           className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-brand-accent hover:bg-brand-accentHover text-brand-white text-sm font-medium rounded-lg transition-colors duration-200"
         >
           <Edit2 className="w-4 h-4" />
-          Edit Info
+          Sửa TT
         </button>
         <button
           onClick={() => onDesignCurriculum(course)}
           className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-brand-surface hover:bg-brand-elevated text-brand-textSecondary hover:text-brand-textPrimary text-sm font-medium rounded-lg transition-colors duration-200"
         >
           <ListChecks className="w-4 h-4" />
-          Curriculum
+          Lộ Trình
         </button>
         {onDelete && (
           <button

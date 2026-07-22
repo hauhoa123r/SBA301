@@ -103,7 +103,7 @@ export default function QuizBuilderPage() {
           className="flex items-center gap-2 text-brand-accentSoft hover:text-brand-accent font-medium transition-colors group"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-          Back to Quiz Bank
+          Quay Lại Ngân Hàng
         </button>
 
         <button
@@ -112,7 +112,7 @@ export default function QuizBuilderPage() {
           className="flex items-center gap-2 px-6 py-2.5 bg-brand-accent hover:bg-brand-accentHover text-brand-white text-sm font-semibold rounded-lg shadow-lg shadow-brand-accent/20 hover:shadow-brand-accent/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
         >
           <Save className="w-4 h-4" />
-          {isEditing ? 'Save Changes' : 'Save Quiz'}
+          {isEditing ? 'Lưu Thay Đổi' : 'Lưu Bài Kiểm Tra'}
         </button>
       </div>
 
@@ -127,18 +127,18 @@ export default function QuizBuilderPage() {
             </div>
             <div>
               <h1 className="text-xl font-bold text-brand-textPrimary">
-                {isEditing ? 'Edit Quiz' : 'Create New Quiz'}
+                {isEditing ? 'Sửa Bài Kiểm Tra' : 'Tạo Bài Kiểm Tra Mới'}
               </h1>
               <p className="text-sm text-brand-textSecondary mt-1">
-                {form.questions.length} Questions · Total Points: {totalPoints}
+                {form.questions.length} Câu hỏi · Tổng điểm: {totalPoints}
               </p>
             </div>
           </div>
           
           <div className="text-right">
              <p className="text-xs text-brand-mutedText/60">
-              {!form.title.trim() && <span className="text-status-warning block">⚠ Title required</span>}
-              {form.title.trim() && form.questions.length === 0 && <span className="text-status-warning block">⚠ Add at least one question</span>}
+              {!form.title.trim() && <span className="text-status-warning block">⚠ Cần có tiêu đề</span>}
+              {form.title.trim() && form.questions.length === 0 && <span className="text-status-warning block">⚠ Thêm ít nhất một câu hỏi</span>}
             </p>
           </div>
         </div>
@@ -154,7 +154,7 @@ export default function QuizBuilderPage() {
             }`}
           >
             <Settings className="w-4 h-4" />
-            Quiz Settings
+            Cài Đặt Bài Kiểm Tra
           </button>
           <button
             onClick={() => setActiveTab('questions')}
@@ -165,7 +165,7 @@ export default function QuizBuilderPage() {
             }`}
           >
             <ListChecks className="w-4 h-4" />
-            Question Builder
+            Xây Dựng Câu Hỏi
           </button>
         </div>
 
