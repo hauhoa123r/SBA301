@@ -1,6 +1,7 @@
 import { BadgePercent, BookOpen, CheckCircle2, Clock3, CreditCard, FileText, Play, Signal, Trophy } from "lucide-react";
 import UserImage from "../../../../shared/components/animation/UserImage";
 import UserReveal from "../../../../shared/components/animation/UserReveal";
+import { formatCoursePrice } from "../../../../shared/utils/currency";
 
 const VOUCHER_STATUS_MESSAGES = {
     VALID: "Đã áp dụng mã giảm giá",
@@ -9,8 +10,8 @@ const VOUCHER_STATUS_MESSAGES = {
     OUT_OF_USES: "Mã giảm giá đã đạt giới hạn sử dụng",
     NOT_STARTED: "Mã giảm giá chưa bắt đầu có hiệu lực",
     DISABLED: "Mã giảm giá đã bị vô hiệu hóa",
-    empty: "Vui lòng nhập mã giảm giá.",
-    invalid: "Không thể kiểm tra mã giảm giá. Vui lòng thử lại.",
+    EMPTY: "Vui lòng nhập mã giảm giá.",
+    INVALID: "Không thể kiểm tra mã giảm giá. Vui lòng thử lại.",
 };
 
 export default function CoursePurchaseCard({
@@ -30,17 +31,16 @@ export default function CoursePurchaseCard({
     const voucherInputId = `course-voucher-${course.id}`;
     const voucherFeedbackId = `${voucherInputId}-feedback`;
     const hasVoucherError = Boolean(voucherStatus && voucherStatus !== "VALID");
-    const fmt = (n) => !n ? "Miễn phí" :
-        new Intl.NumberFormat("vi-VN", {
-            style: "currency",
-            currency: "VND",
-        }).format(n);
+    const courseTitle = course?.title || "Khóa học";
+    const courseLevel = course?.level || "Đang cập nhật";
+    const courseDuration = course?.duration || "Đang cập nhật";
+    const courseCategory = course?.category || "Chưa phân loại";
 
     return (
         <UserReveal as="aside" delay={120} distance={20} className="min-w-0 lg:sticky lg:top-28 lg:h-fit">
             <div className="rounded-3xl border border-brand-accent/10 bg-brand-cardBg p-4 shadow-2xl shadow-brand-accent/10 sm:p-6">
                 <div className="relative overflow-hidden rounded-2xl border border-brand-accent/10">
-                    <UserImage src={course.thumbnailUrl} alt={course.title} width="800" height="450" priority className="aspect-video w-full object-cover" />
+                    <UserImage src={course?.thumbnailUrl} alt={courseTitle} width="800" height="450" priority className="aspect-video w-full object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-brand-dark/20 to-brand-transparent" />
                     <button type="button" aria-label="Xem trước khóa học" className="absolute left-1/2 top-1/2 grid h-16 w-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-brand-white text-brand-accent shadow-xl transition hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-accentSoft sm:h-20 sm:w-20">
                         <Play aria-hidden="true" className="ml-1 h-7 w-7 fill-brand-accent sm:h-9 sm:w-9" />
@@ -51,9 +51,9 @@ export default function CoursePurchaseCard({
                 <div className="mt-7 text-center">
                     <p className="text-sm font-bold text-brand-textSecondary">Giá khóa học</p>
                     <div className="mt-1 text-4xl font-black text-brand-white">
-                        {fmt(finalPrice)}
+                        {formatCoursePrice(finalPrice)}
                     </div>
-                    {isVoucherValid && <p className="mt-1 text-sm text-brand-textSecondary">Giá gốc: <span className="line-through">{fmt(course.price)}</span></p>}
+                    {isVoucherValid && <p className="mt-1 text-sm text-brand-textSecondary">Giá gốc: <span className="line-through">{formatCoursePrice(course?.price)}</span></p>}
                 </div>
 
                 <div className="mt-6 rounded-2xl border border-brand-accent/10 bg-brand-light/70 p-4" aria-busy={isVerifyingVoucher}>
@@ -75,10 +75,10 @@ export default function CoursePurchaseCard({
                             {isVerifyingVoucher ? "Đang kiểm tra" : "Kiểm tra"}
                         </button>
                     </div>
-                    {voucherStatus === "VALID" && <p id={voucherFeedbackId} role="status" className="mt-2 text-sm font-semibold leading-5 text-status-success">{voucherMessage}. Bạn đã tiết kiệm {fmt(discountAmount)}.</p>}
+                    {voucherStatus === "VALID" && <p id={voucherFeedbackId} role="status" className="mt-2 text-sm font-semibold leading-5 text-status-success">{voucherMessage}. Bạn đã tiết kiệm {formatCoursePrice(discountAmount)}.</p>}
                     {voucherStatus && voucherStatus !== "VALID" && (
-                        <p id={voucherFeedbackId} role="alert" className={`mt-2 text-sm font-semibold leading-5 ${voucherStatus === "empty" ? "text-status-warning" : "text-social-google"}`}>
-                            {voucherMessage || VOUCHER_STATUS_MESSAGES.invalid}
+                        <p id={voucherFeedbackId} role="alert" className={`mt-2 text-sm font-semibold leading-5 ${voucherStatus === "EMPTY" ? "text-status-warning" : "text-social-google"}`}>
+                            {voucherMessage || VOUCHER_STATUS_MESSAGES.INVALID}
                         </p>
                     )}
                 </div>
@@ -91,12 +91,12 @@ export default function CoursePurchaseCard({
                 <div className="mt-7 border-t border-brand-accent/10 pt-6">
                     <ul className="space-y-4 text-base font-medium text-brand-textSecondary">
                         {[
-                            { icon: Signal, text: `Trình độ ${course.level}` },
+                            { icon: Signal, text: `Trình độ ${courseLevel}` },
                             { icon: BookOpen, text: `Tổng cộng ${totalLessons} bài học` },
-                            { icon: Clock3, text: `Thời lượng ${course.duration}` },
+                            { icon: Clock3, text: `Thời lượng ${courseDuration}` },
                             { icon: Trophy, text: "Chứng nhận hoàn thành" },
                             { icon: CheckCircle2, text: "Học mọi lúc, mọi nơi" },
-                            { icon: FileText, text: `Danh mục ${course.category}` },
+                            { icon: FileText, text: `Danh mục ${courseCategory}` },
                         ].map(({ icon: Icon, text }) => (
                             <li key={text} className="flex items-center gap-4">
                                 <Icon aria-hidden="true" className="h-5 w-5 shrink-0 text-brand-accentSoft" />
