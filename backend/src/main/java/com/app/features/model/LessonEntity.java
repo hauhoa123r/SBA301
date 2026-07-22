@@ -46,7 +46,7 @@ public class LessonEntity {
     private Set<AssignmentEntity> assignments = new LinkedHashSet<>();
     @Builder.Default
     @NonNull
-    @OneToMany(mappedBy = "lesson")
+    @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<LessonDocumentEntity> lessonDocuments = new LinkedHashSet<>();
     @Builder.Default
     @NonNull
@@ -60,4 +60,14 @@ public class LessonEntity {
     @NonNull
     @OneToMany(mappedBy = "lessonEntity")
     private Set<QuizEntity> quizzes = new LinkedHashSet<>();
+
+    public void addLessonDocument(LessonDocumentEntity document) {
+        lessonDocuments.add(document);
+        document.setLesson(this);
+    }
+
+    public void removeLessonDocument(LessonDocumentEntity document) {
+        lessonDocuments.remove(document);
+        document.setLesson(null);
+    }
 }
