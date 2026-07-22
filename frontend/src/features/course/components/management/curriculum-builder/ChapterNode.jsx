@@ -79,12 +79,12 @@ export default function ChapterNode({
 
           <div className="flex items-center gap-2 flex-1 min-w-0">
             <span className="font-semibold text-brand-textPrimary truncate">
-              Chapter {chapterIndex + 1}: {chapter.title}
+              Chương {chapterIndex + 1}: {chapter.title}
             </span>
           </div>
 
           <span className="ml-auto text-[11px] font-semibold text-brand-mutedText bg-brand-dark/50 px-2.5 py-1 rounded-full flex-shrink-0 ring-1 ring-brand-borderSoft/50">
-            {totalItems} {totalItems === 1 ? 'item' : 'items'}
+            {totalItems} mục
           </span>
         </button>
 
@@ -93,32 +93,32 @@ export default function ChapterNode({
           <button
             onClick={onEdit}
             className="p-2 text-brand-mutedText hover:text-brand-accentSoft hover:bg-brand-accent/10 rounded-lg transition-colors"
-            title="Edit chapter"
+            title="Sửa chương"
           >
             <Edit2 className="w-4 h-4" />
           </button>
           <button
             onClick={onDelete}
             className="p-2 text-brand-mutedText hover:text-status-danger hover:bg-status-danger/10 rounded-lg transition-colors"
-            title="Delete chapter"
+            title="Xóa chương"
           >
             <Trash2 className="w-4 h-4" />
           </button>
           <button
             onClick={onAddLesson}
             className="ml-1 flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold bg-brand-accent/15 text-brand-accentSoft hover:bg-brand-accent hover:text-brand-white rounded-lg transition-all duration-200 hover:shadow-md hover:shadow-brand-accent/20"
-            title="Add lesson to this chapter"
+            title="Thêm bài học vào chương này"
           >
             <Plus className="w-3.5 h-3.5" />
-            Add Lesson
+            Thêm Bài Học
           </button>
           <button
             onClick={onAddQuiz}
             className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold bg-brand-info/15 text-brand-info hover:bg-brand-info hover:text-brand-white rounded-lg transition-all duration-200 hover:shadow-md hover:shadow-brand-info/20"
-            title="Add quiz to this chapter"
+            title="Thêm bài kiểm tra vào chương này"
           >
             <Plus className="w-3.5 h-3.5" />
-            Add Quiz
+            Thêm Bài Tập
           </button>
         </div>
       </div>
@@ -158,22 +158,22 @@ export default function ChapterNode({
               <div className="w-12 h-12 rounded-full bg-brand-dark/40 flex items-center justify-center mb-3">
                 <BookOpen className="w-6 h-6 text-brand-mutedText/30" />
               </div>
-              <p className="text-sm font-medium mb-1">No lessons yet</p>
-              <p className="text-xs text-brand-mutedText/40 mb-3">Add your first lesson to this chapter</p>
+              <p className="text-sm font-medium mb-1">Chưa có bài học nào</p>
+              <p className="text-xs text-brand-mutedText/40 mb-3">Thêm bài học đầu tiên vào chương này</p>
               <div className="flex gap-2">
                 <button
                   onClick={onAddLesson}
                   className="flex items-center gap-1.5 text-sm font-medium text-brand-accentSoft hover:text-brand-accent px-4 py-2 rounded-lg border border-dashed border-brand-borderSoft hover:border-brand-accent transition-all"
                 >
                   <Plus className="w-4 h-4" />
-                  Add First Lesson
+                  Thêm Bài Học Đầu Tiên
                 </button>
                 <button
                   onClick={onAddQuiz}
                   className="flex items-center gap-1.5 text-sm font-medium text-brand-info hover:text-brand-info/80 px-4 py-2 rounded-lg border border-dashed border-brand-borderSoft hover:border-brand-info transition-all"
                 >
                   <Plus className="w-4 h-4" />
-                  Add First Quiz
+                  Thêm Bài Tập Đầu Tiên
                 </button>
               </div>
             </div>

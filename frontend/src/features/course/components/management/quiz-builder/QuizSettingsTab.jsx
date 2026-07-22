@@ -10,18 +10,18 @@ export default function QuizSettingsTab({ form, setField }) {
       <div>
         <label className="flex items-center gap-2 text-sm font-semibold text-brand-textSecondary mb-2">
           <FileText className="w-4 h-4" />
-          Quiz Title <span className="text-status-danger">*</span>
+          Tiêu đề bài tập <span className="text-status-danger">*</span>
         </label>
         <input
           autoFocus
           type="text"
-          placeholder="e.g. Mid-term Vocabulary Test"
+          placeholder="Ví dụ: Kiểm tra từ vựng giữa kỳ"
           value={form.title}
           onChange={(e) => setField('title', e.target.value)}
           className={inputCls}
         />
         <p className="mt-2 text-xs text-brand-mutedText/60">
-          A clear title helps students understand the purpose of the quiz.
+          Tiêu đề rõ ràng giúp học viên hiểu mục đích của bài tập.
         </p>
       </div>
 
@@ -29,7 +29,7 @@ export default function QuizSettingsTab({ form, setField }) {
         <div>
           <label className="flex items-center gap-2 text-sm font-semibold text-brand-textSecondary mb-2">
             <Percent className="w-4 h-4" />
-            Pass Score (%)
+            Điểm đạt (%)
           </label>
           <input
             type="number"
@@ -41,25 +41,25 @@ export default function QuizSettingsTab({ form, setField }) {
             className={inputCls}
           />
           <p className="mt-2 text-xs text-brand-mutedText/60">
-            Minimum percentage required to pass this quiz (e.g., 50 for 50%).
+            Phần trăm tối thiểu để đạt bài tập này (ví dụ: 50 tương đương 50%).
           </p>
         </div>
 
         <div>
           <label className="flex items-center gap-2 text-sm font-semibold text-brand-textSecondary mb-2">
             <Timer className="w-4 h-4" />
-            Time Limit (Minutes)
+            Giới hạn thời gian (Phút)
           </label>
           <input
             type="number"
             min="0"
-            placeholder="0 for unlimited"
+            placeholder="0 để không giới hạn"
             value={form.timeLimitMinutes}
             onChange={(e) => setField('timeLimitMinutes', parseInt(e.target.value) || 0)}
             className={inputCls}
           />
           <p className="mt-2 text-xs text-brand-mutedText/60">
-            Set to 0 if you don't want to enforce a time limit.
+            Đặt thành 0 nếu bạn không muốn giới hạn thời gian.
           </p>
         </div>
       </div>

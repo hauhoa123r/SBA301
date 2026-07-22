@@ -24,7 +24,7 @@ export default function ManageCoursesPage() {
       setCourses(response.data || response || []);
       setError(null);
     } catch (err) {
-      setError(err.message || 'Failed to load course list');
+      setError(err.message || 'Lỗi tải danh sách khóa học');
       setCourses([]);
     } finally {
       setLoading(false);
@@ -56,7 +56,7 @@ export default function ManageCoursesPage() {
       setError(null); // clear any previous error
       await fetchCourses(); // reload list
     } catch (err) {
-      setError(err.message || 'Error deleting course');
+      setError(err.message || 'Lỗi khi xóa khóa học');
       setLoading(false);
     }
   };
@@ -65,15 +65,15 @@ export default function ManageCoursesPage() {
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-bold text-brand-textPrimary mb-2">My Courses</h1>
-          <p className="text-brand-textSecondary">Manage and develop your courses</p>
+          <h1 className="text-4xl font-bold text-brand-textPrimary mb-2">Khóa Học Của Tôi</h1>
+          <p className="text-brand-textSecondary">Quản lý và phát triển khóa học của bạn</p>
         </div>
         <button
           onClick={handleCreateCourse}
           className="flex items-center gap-2 px-6 py-3 bg-brand-accent hover:bg-brand-accentHover text-brand-white font-medium rounded-lg transition-colors duration-200 shadow-lg shadow-brand-accent/20 hover:shadow-xl"
         >
           <Plus className="w-5 h-5" />
-          New Course
+          Tạo Khóa Học
         </button>
       </div>
 
@@ -82,7 +82,7 @@ export default function ManageCoursesPage() {
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-2 border-brand-accent border-t-transparent mb-4" />
-            <p className="text-brand-textSecondary">Loading course list...</p>
+            <p className="text-brand-textSecondary">Đang tải danh sách khóa học...</p>
           </div>
         </div>
       )}
@@ -98,9 +98,9 @@ export default function ManageCoursesPage() {
           {courses.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 px-4">
               <BookOpen className="w-16 h-16 text-brand-mutedText/30 mb-4" />
-              <p className="text-brand-textSecondary text-lg font-medium">No courses yet</p>
+              <p className="text-brand-textSecondary text-lg font-medium">Chưa có khóa học nào</p>
               <p className="text-brand-mutedText text-sm mt-2">
-                Create your first course to get started
+                Tạo khóa học đầu tiên để bắt đầu
               </p>
             </div>
           ) : (
@@ -123,8 +123,8 @@ export default function ManageCoursesPage() {
         isOpen={isDeleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={confirmDelete}
-        title="Delete Course"
-        message={`Are you sure you want to delete the course "${courseToDelete?.title}"? This action will permanently remove all related chapters and lessons.`}
+        title="Xóa Khóa Học"
+        message={`Bạn có chắc chắn muốn xóa khóa học "${courseToDelete?.title}"? Hành động này sẽ xóa vĩnh viễn tất cả các chương và bài học liên quan.`}
       />
     </div>
   );

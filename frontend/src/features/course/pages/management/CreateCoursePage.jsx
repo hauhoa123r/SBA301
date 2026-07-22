@@ -14,10 +14,10 @@ export default function CreateCoursePage() {
       setError(null);
       await teacherService.createCourse(formData);
       navigate('/management/courses', {
-        state: { message: 'Course created successfully!' },
+        state: { message: 'Tạo khóa học thành công!' },
       });
     } catch (err) {
-      setError(err.message || 'Error creating course');
+      setError(err.message || 'Lỗi khi tạo khóa học');
       setLoading(false);
     }
   };

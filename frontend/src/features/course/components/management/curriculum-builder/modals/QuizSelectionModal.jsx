@@ -56,10 +56,10 @@ export default function QuizSelectionModal({ isOpen, onClose, onSelect, courseId
             </div>
             <div>
               <h2 className="text-lg font-bold text-brand-textPrimary">
-                Attach a Quiz
+                Thêm Bài Tập
               </h2>
               <p className="text-xs text-brand-mutedText/60 mt-0.5">
-                Select a quiz from your Quiz Bank to attach to this chapter.
+                Chọn một bài tập từ Ngân Hàng Câu Hỏi để thêm vào chương này.
               </p>
             </div>
           </div>
@@ -78,7 +78,7 @@ export default function QuizSelectionModal({ isOpen, onClose, onSelect, courseId
             <input
               type="text"
               autoFocus
-              placeholder="Search your quizzes..."
+              placeholder="Tìm kiếm bài tập..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-9 pr-4 py-2.5 border border-brand-borderSoft rounded-lg bg-brand-dark/60 text-brand-textPrimary placeholder-brand-mutedText/60 text-sm focus:outline-none focus:ring-2 focus:ring-brand-info transition-all"
@@ -90,14 +90,14 @@ export default function QuizSelectionModal({ isOpen, onClose, onSelect, courseId
         <div className="flex-1 overflow-y-auto p-6 bg-brand-surface">
           {loading ? (
              <div className="flex items-center justify-center py-20 text-brand-textSecondary">
-                Loading quizzes...
+                Đang tải danh sách bài tập...
              </div>
           ) : filteredQuizzes.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center text-brand-textSecondary">
               <FileQuestion className="w-12 h-12 mb-4 opacity-50" />
-              <p>No quizzes found matching your search.</p>
+              <p>Không tìm thấy bài tập nào phù hợp với tìm kiếm của bạn.</p>
               <p className="text-sm mt-1 opacity-70">
-                You can create more quizzes in the Quiz Bank.
+                Bạn có thể tạo thêm bài tập trong Ngân Hàng Câu Hỏi.
               </p>
             </div>
           ) : (
@@ -116,7 +116,7 @@ export default function QuizSelectionModal({ isOpen, onClose, onSelect, courseId
                     {quiz.title}
                   </h4>
                   <p className="text-xs text-brand-textSecondary mt-1">
-                    {quiz.questionsCount} Questions · {quiz.timeLimitMinutes > 0 ? `${quiz.timeLimitMinutes} mins` : 'No time limit'} · Pass score: {quiz.passScore}%
+                    {quiz.questionsCount} Câu hỏi · {quiz.timeLimitMinutes > 0 ? `${quiz.timeLimitMinutes} phút` : 'Không giới hạn thời gian'} · Điểm đạt: {quiz.passScore}%
                   </p>
                 </div>
                 {selectedQuizId === quiz.id && (
@@ -133,14 +133,14 @@ export default function QuizSelectionModal({ isOpen, onClose, onSelect, courseId
             onClick={onClose}
             className="px-5 py-2.5 text-sm font-medium text-brand-textSecondary border border-brand-borderSoft rounded-lg hover:bg-brand-surface transition-colors"
           >
-            Cancel
+            Hủy
           </button>
           <button
             onClick={handleSubmit}
             disabled={!selectedQuizId}
             className="px-6 py-2.5 text-sm font-semibold bg-brand-info hover:bg-brand-info/80 text-brand-white rounded-lg shadow-lg shadow-brand-info/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Attach Quiz
+            Thêm Bài Tập
           </button>
         </div>
 
