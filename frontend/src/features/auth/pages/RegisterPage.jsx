@@ -34,6 +34,8 @@ export default function RegisterPage() {
         password: "",
     });
 
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
@@ -69,6 +71,8 @@ export default function RegisterPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (isSubmitting) return;
+
         const nextErrors = {
             fullName: formData.fullName.trim() ? "" : "Vui lòng nhập họ và tên.",
             email: validInput("email", formData.email),
@@ -80,6 +84,9 @@ export default function RegisterPage() {
         if (Object.values(nextErrors).some(Boolean)) {
             return;
         }
+
+        setIsSubmitting(true);
+
         try {
             await register({
                 fullName: formData.fullName.trim(),
@@ -90,6 +97,8 @@ export default function RegisterPage() {
             navigate("/login", { replace: true });
         } catch (error) {
             showApiErrorToast(error, "Có lỗi khi thực hiện đăng ký, vui lòng thử lại sau.");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -213,7 +222,11 @@ export default function RegisterPage() {
                                     ) : null}
                                 </div>
 
-                                <button type="submit" className={baseButtonClass}>
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className={`${baseButtonClass} disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100`}
+                                >
                                     <UserPlus className="inline-block h-4 w-4 mr-2" />
                                     Tạo tài khoản
                                 </button>
