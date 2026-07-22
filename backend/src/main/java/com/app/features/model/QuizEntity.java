@@ -57,6 +57,9 @@ public class QuizEntity {
     @Column(name = "time_limit_minutes", nullable = false)
     private Integer timeLimitMinutes = 0;
 
+    @Column(name = "order_index")
+    private Integer orderIndex;
+
     @Column(name = "created_at", insertable = false, updatable = false)
     private Instant createdAt;
     @Builder.Default

@@ -20,5 +20,5 @@ public class ChapterRequest {
     @NotNull(message = "Order index is required")
     private Integer orderIndex;
     private List<LessonRequest> lessonRequests;
-    private List<Long> quizIds;
+    private List<QuizReferenceRequest> quizzes;
 }

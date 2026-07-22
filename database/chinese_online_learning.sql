@@ -199,6 +199,7 @@ CREATE TABLE quizzes (
     chapter_id BIGINT NULL,
     time_limit_minutes INT NOT NULL DEFAULT 0,
     pass_score INT NOT NULL DEFAULT 50,
+    order_index INT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_quizzes_teacher FOREIGN KEY (teacher_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_quizzes_course FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,

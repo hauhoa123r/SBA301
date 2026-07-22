@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { X, FileQuestion, Search, CheckCircle2 } from 'lucide-react';
 import { quizService } from '../../../../services/api/quiz.services';
 
-export default function QuizSelectionModal({ isOpen, onClose, onSelect }) {
+export default function QuizSelectionModal({ isOpen, onClose, onSelect, courseId }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedQuizId, setSelectedQuizId] = useState(null);
   const [quizzes, setQuizzes] = useState([]);
@@ -19,7 +19,7 @@ export default function QuizSelectionModal({ isOpen, onClose, onSelect }) {
   const fetchQuizzes = async () => {
     setLoading(true);
     try {
-      const response = await quizService.getMyQuizzes();
+      const response = await quizService.getMyQuizzes(courseId);
       setQuizzes(response.data || []);
     } catch (error) {
       console.error("Error fetching quizzes:", error);

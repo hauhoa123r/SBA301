@@ -16,4 +16,5 @@ public class ChapterResponse {
     private String title;
     private Integer orderIndex;
     private List<LessonResponse> lessons;
+    private List<QuizResponse> quizzes;
 }
