@@ -12,7 +12,6 @@ import com.app.features.courses.repository.projection.CourseLessonStats;
 import com.app.features.courses.service.ICourseService;
 import com.app.features.model.*;
 import com.app.features.model.enums.CourseStatus;
-import com.app.features.plans.service.IPlanService;
 import com.app.features.tags.service.ITagService;
 import com.app.features.users.repository.IUserRepository;
 import com.app.features.courses.repository.IQuizRepository;
@@ -34,7 +33,6 @@ public class CourseService implements ICourseService {
     private final ICourseRepository courseRepository;
     private final CourseResponseConverter courseResponseConverter;
     private final ITagService tagService;
-    private final IPlanService planService;
     private final ICategoryService categoryService;
     private final IUserRepository userRepository;
     private final IQuizRepository quizRepository;
@@ -83,6 +81,21 @@ public class CourseService implements ICourseService {
             CourseLessonStats stats = courseRepository.getLessonStatsByCourseId(courseEntity.getId());
             return courseResponseConverter.toCourseDetailResponse(courseEntity, stats);
         }).toList();
+    }
+    @Override
+    @Transactional(readOnly = true)
+    public CourseDetailResponse getCourseByTeacher(Long courseId, Long teacherId) {
+        log.info("Loading course for teacher edit, courseId={}, teacherId={}", courseId, teacherId);
+        CourseEntity course = courseRepository.findById(courseId).orElseThrow(() ->
+                new ResourceNotFoundException("Course not found with id: " + courseId)
+        );
+
+        if (!course.getTeacher().getId().equals(teacherId)) {
+            throw new BadRequestException("You are not authorized to view this course.");
+        }
+
+        Map<Long, CourseLessonStats> lessonStatsByCourseId = getLessonStatsByCourseId(List.of(course));
+        return courseResponseConverter.toCourseDetailResponse(course, lessonStatsByCourseId.get(course.getId()));
     }
 
     @Override
@@ -151,12 +164,7 @@ public class CourseService implements ICourseService {
             }
         }
 
-        if (request.getPlanIds() != null && !request.getPlanIds().isEmpty()) {
-            List<PlanEntity> plans = planService.findAllByIds(request.getPlanIds());
-            for(PlanEntity plan : plans) {
-                course.addPlan(plan);
-            }
-        } else{
+       else{
             log.warn("Course creation rejected because no plan was selected, teacherId={}", teacherId);
             throw new BadRequestException("Please choose at least one plan.");
         }

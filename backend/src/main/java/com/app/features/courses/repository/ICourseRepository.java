@@ -25,6 +25,9 @@ public interface ICourseRepository extends JpaRepository<CourseEntity,Long> {
     @EntityGraph(attributePaths = {"teacher", "category", "courseEnrollments", "chapterEntities"})
     Optional<CourseEntity> findById(Long id);
 
+    @EntityGraph(attributePaths = {"teacher", "category"})
+    List<CourseEntity> findAllByStatusOrderByCreatedAtDesc(CourseStatus status);
+
     @Query("select c from CourseEntity c " +
             "join fetch c.category " +
             "join fetch c.teacher " +
