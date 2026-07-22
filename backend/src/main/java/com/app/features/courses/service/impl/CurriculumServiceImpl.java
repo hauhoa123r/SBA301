@@ -11,6 +11,8 @@ import com.app.features.courses.service.ICurriculumService;
 import com.app.features.model.ChapterEntity;
 import com.app.features.model.CourseEntity;
 import com.app.features.model.LessonEntity;
+import com.app.features.model.LessonDocumentEntity;
+import com.app.features.courses.dto.request.LessonDocumentRequest;
 import com.app.features.model.QuizEntity;
 import com.app.features.courses.repository.IQuizRepository;
 import lombok.RequiredArgsConstructor;
@@ -40,29 +42,58 @@ public class CurriculumServiceImpl implements ICurriculumService {
         }
 
         for (LessonRequest request : safeLessonRequest) {
+            LessonEntity lessonEntity;
             if (request.getId() != null && existingLessons.containsKey(request.getId())) {
-                LessonEntity lessonEntity = existingLessons.get(request.getId());
+                lessonEntity = existingLessons.get(request.getId());
                 lessonEntity.setTitle(request.getTitle());
                 lessonEntity.setVideoUrl(request.getVideoUrl());
-                lessonEntity
-                        .setDurationSeconds((request.getDurationSecond() != null) ? request.getDurationSecond() : 0);
+                lessonEntity.setDurationSeconds((request.getDurationSecond() != null) ? request.getDurationSecond() : 0);
                 lessonEntity.setOrderIndex(request.getOrderIndex());
 
                 existingLessons.remove(request.getId());
             } else {
-                LessonEntity newLessonEntity = new LessonEntity();
-                newLessonEntity.setTitle(request.getTitle());
-                newLessonEntity.setVideoUrl(request.getVideoUrl());
-                newLessonEntity
-                        .setDurationSeconds((request.getDurationSecond() != null) ? request.getDurationSecond() : 0);
-                newLessonEntity.setOrderIndex(request.getOrderIndex());
-
-                chapter.addLesson(newLessonEntity);
+                lessonEntity = new LessonEntity();
+                lessonEntity.setTitle(request.getTitle());
+                lessonEntity.setVideoUrl(request.getVideoUrl());
+                lessonEntity.setDurationSeconds((request.getDurationSecond() != null) ? request.getDurationSecond() : 0);
+                lessonEntity.setOrderIndex(request.getOrderIndex());
+                chapter.addLesson(lessonEntity);
             }
+
+            syncDocument(lessonEntity, request.getDocuments());
         }
 
         existingLessons.values().forEach(existingLesson -> {
             chapter.removeLesson(existingLesson);
+        });
+    }
+
+    private void syncDocument(LessonEntity lesson, List<LessonDocumentRequest> documentRequests) {
+        List<LessonDocumentRequest> safeDocumentRequest = (documentRequests != null) ? documentRequests : List.of();
+
+        Map<Long, LessonDocumentEntity> existingDocuments = new HashMap<>();
+        if (lesson.getLessonDocuments() != null) {
+            for (LessonDocumentEntity docEntity : lesson.getLessonDocuments()) {
+                existingDocuments.put(docEntity.getId(), docEntity);
+            }
+        }
+
+        for (LessonDocumentRequest request : safeDocumentRequest) {
+            if (request.getId() != null && existingDocuments.containsKey(request.getId())) {
+                LessonDocumentEntity docEntity = existingDocuments.get(request.getId());
+                docEntity.setTitle(request.getTitle());
+                docEntity.setFileUrl(request.getFileUrl());
+                existingDocuments.remove(request.getId());
+            } else {
+                LessonDocumentEntity newDocEntity = new LessonDocumentEntity();
+                newDocEntity.setTitle(request.getTitle());
+                newDocEntity.setFileUrl(request.getFileUrl());
+                lesson.addLessonDocument(newDocEntity);
+            }
+        }
+
+        existingDocuments.values().forEach(existingDoc -> {
+            lesson.removeLessonDocument(existingDoc);
         });
     }
 
@@ -75,19 +106,16 @@ public class CurriculumServiceImpl implements ICurriculumService {
                 existingQuizzes.put(quizEntity.getId(), quizEntity);
             }
         }
-
         for (Long quizId : safeQuizIds) {
             if (existingQuizzes.containsKey(quizId)) {
-                // Already attached
                 existingQuizzes.remove(quizId);
             } else {
-                // Needs to be attached
-                quizRepository.findById(quizId).ifPresent(chapter::addQuiz);
+                quizRepository.findById(quizId).ifPresent(quizEntity -> {chapter.addQuiz(quizEntity);});
             }
         }
-
-        // Remove the ones that are no longer in the payload
-        existingQuizzes.values().forEach(chapter::removeQuiz);
+        existingQuizzes.values().forEach(quizEntity -> {
+            chapter.removeQuiz(quizEntity);
+        });
     }
 
     @Override

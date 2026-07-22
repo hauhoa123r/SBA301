@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import teacherService from '@/features/course/services/api/courseManagementService';
 import CategorySelect from './CategorySelect';
 import TagSelector from './TagSelector';
+import { showErrorToast } from '@/shared/utils/toast';
 
 const getInitialFormState = (initialData) => ({
   title: initialData?.title || '',
@@ -96,12 +97,12 @@ export default function CourseForm({ initialData = null, onSubmit, loading = fal
     e.preventDefault();
 
     if (!formData.title.trim()) {
-      alert('Course title cannot be empty');
+      showErrorToast('Course title cannot be empty');
       return;
     }
 
     if (!formData.categoryId) {
-      alert('Please select a category');
+      showErrorToast('Please select a category');
       return;
     }
 

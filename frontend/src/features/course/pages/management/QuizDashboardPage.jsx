@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, FileQuestion, MoreVertical, Edit2, Trash2, Clock, CheckCircle2, ListChecks } from 'lucide-react';
 import { quizService } from '../../services/api/quiz.services';
+import { showErrorToast, showSuccessToast } from '@/shared/utils/toast';
 
 export default function QuizDashboardPage() {
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ export default function QuizDashboardPage() {
         setQuizzes(quizzes.filter(q => q.id !== quizId));
       } catch (error) {
         console.error("Error deleting quiz:", error);
-        alert('Failed to delete quiz');
+        showErrorToast('Failed to delete quiz');
       }
     }
   };
