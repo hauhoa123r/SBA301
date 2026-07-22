@@ -14,10 +14,10 @@ import org.springframework.stereotype.Component;
 public class RegisterConverter {
     private final RoleRepository roleRepository;
 
-    public UserEntity  convert(RegisterRequest request) {
+    public UserEntity convert(RegisterRequest request) {
         UserEntity userEntity = new UserEntity();
         userEntity.setFullName(request.getFullName().trim());
-        userEntity.setEmail(request.getEmail().trim());
+        userEntity.setEmail(request.getEmail().trim().toLowerCase());
         userEntity.setPasswordHash(request.getPassword());
         userEntity.setStatus(UserStatus.PENDING);
         userEntity.setTotalLearningPoints(0);

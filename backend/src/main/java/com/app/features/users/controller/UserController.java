@@ -2,6 +2,7 @@ package com.app.features.users.controller;
 
 import com.app.features.users.dto.request.ChangePasswordRequest;
 import com.app.features.users.dto.request.UpdateUserProfileRequest;
+import com.app.features.users.dto.response.InvoicesResponse;
 import com.app.features.users.dto.response.UserProfileResponse;
 import com.app.features.users.service.UserProfileService;
 import com.app.utils.ApiPath;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -28,18 +30,19 @@ public class UserController {
         return ResponseEntity.ok(userProfileService.getProfile(id));
     }
 
+    @GetMapping("/{id}/orders")
+    public ResponseEntity<List<InvoicesResponse>> getOrderHistory(@PathVariable Long id) {
+        return ResponseEntity.ok(userProfileService.getOrderHistory(id));
+    }
+
     @PatchMapping("/{id}")
     public ResponseEntity<UserProfileResponse> updateProfile(@PathVariable Long id, @Valid @RequestBody UpdateUserProfileRequest request) {
         return ResponseEntity.ok(userProfileService.updateProfile(id, request));
     }
 
     @PatchMapping("/change-password")
-    public ResponseEntity<Map<String, String>> changePassword(@RequestBody ChangePasswordRequest request) {
-        String message = userProfileService.changePassword(request);
-        if (message != null) {
-            return ResponseEntity.badRequest().body(Map.of("message", message));
-        }
-
+    public ResponseEntity<Map<String, String>> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
+        userProfileService.changePassword(request);
         return ResponseEntity.ok(Map.of("message", "Password updated successfully."));
     }
 

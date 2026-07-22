@@ -33,8 +33,16 @@ public class QuizServiceImpl implements IQuizService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<QuizResponse> getMyQuizzes(Long teacherId) {
+    public List<QuizResponse> getMyQuizzes(Long teacherId, Long courseId) {
         List<QuizEntity> quizzes = quizRepository.findByTeacherId(teacherId);
+        
+        // Filter out quizzes that belong to other courses
+        if (courseId != null) {
+            quizzes = quizzes.stream()
+                .filter(q -> q.getCourse() == null || q.getCourse().getId().equals(courseId))
+                .collect(Collectors.toList());
+        }
+
         return quizzes.stream()
                 .map(quizResponseConverter::toQuizResponse)
                 .collect(Collectors.toList());

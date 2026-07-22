@@ -5,6 +5,7 @@ import com.app.exception.ResourceNotFoundException;
 import com.app.features.courses.converter.ChapterResponseConverter;
 import com.app.features.courses.dto.request.ChapterRequest;
 import com.app.features.courses.dto.request.LessonRequest;
+import com.app.features.courses.dto.request.QuizReferenceRequest;
 import com.app.features.courses.dto.response.ChapterResponse;
 import com.app.features.courses.repository.ICourseRepository;
 import com.app.features.courses.service.ICurriculumService;
@@ -97,8 +98,8 @@ public class CurriculumServiceImpl implements ICurriculumService {
         });
     }
 
-    private void syncQuiz(ChapterEntity chapter, List<Long> quizIds) {
-        List<Long> safeQuizIds = (quizIds != null) ? quizIds : List.of();
+    private void syncQuiz(ChapterEntity chapter, List<QuizReferenceRequest> quizRequests) {
+        List<QuizReferenceRequest> safeQuizRequests = (quizRequests != null) ? quizRequests : List.of();
 
         Map<Long, QuizEntity> existingQuizzes = new HashMap<>();
         if (chapter.getQuizzes() != null) {
@@ -106,15 +107,27 @@ public class CurriculumServiceImpl implements ICurriculumService {
                 existingQuizzes.put(quizEntity.getId(), quizEntity);
             }
         }
-        for (Long quizId : safeQuizIds) {
+        for (QuizReferenceRequest req : safeQuizRequests) {
+            Long quizId = req.getQuizId();
             if (existingQuizzes.containsKey(quizId)) {
+                QuizEntity quizEntity = existingQuizzes.get(quizId);
+                quizEntity.setOrderIndex(req.getOrderIndex());
                 existingQuizzes.remove(quizId);
             } else {
-                quizRepository.findById(quizId).ifPresent(quizEntity -> {chapter.addQuiz(quizEntity);});
+                quizRepository.findById(quizId).ifPresent(quizEntity -> {
+                    if (quizEntity.getCourse() != null && !quizEntity.getCourse().getId().equals(chapter.getCourseEntity().getId())) {
+                        throw new BadRequestException("Quiz with ID " + quizId + " is already attached to another course.");
+                    }
+                    chapter.addQuiz(quizEntity);
+                    quizEntity.setCourse(chapter.getCourseEntity());
+                    quizEntity.setOrderIndex(req.getOrderIndex());
+                });
             }
         }
         existingQuizzes.values().forEach(quizEntity -> {
             chapter.removeQuiz(quizEntity);
+            quizEntity.setCourse(null);
+            quizEntity.setOrderIndex(null);
         });
     }
 
@@ -152,7 +165,7 @@ public class CurriculumServiceImpl implements ICurriculumService {
                 }
 
                 syncLesson(chapterEntity, chapterRequest.getLessonRequests());
-                syncQuiz(chapterEntity, chapterRequest.getQuizIds());
+                syncQuiz(chapterEntity, chapterRequest.getQuizzes());
             }
         }
 

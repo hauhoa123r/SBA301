@@ -21,7 +21,7 @@ public class VerificationTokenEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String token;
 
     @Column(name = "token_type", nullable = false, length = 50)

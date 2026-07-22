@@ -22,8 +22,9 @@ public class QuizController {
 
     @GetMapping("/quizzes/my-quizzes")
     @PreAuthorize("hasAnyRole('TEACHER', 'MANAGER', 'ADMIN')")
-    public ResponseEntity<List<QuizResponse>> getMyQuizzes() {
-        return ResponseEntity.ok(quizService.getMyQuizzes(SecurityUtils.getCurrentUserId()));
+    public ResponseEntity<List<QuizResponse>> getMyQuizzes(
+            @RequestParam(required = false) Long courseId) {
+        return ResponseEntity.ok(quizService.getMyQuizzes(SecurityUtils.getCurrentUserId(), courseId));
     }
 
     @GetMapping("/quizzes/{quizId}")

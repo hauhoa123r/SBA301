@@ -1,32 +1,41 @@
 package com.app.features.manager.service.impl;
 
+import com.app.features.auth.repository.UserRepository;
+import com.app.features.manager.dto.request.CouponCreateRequest;
+import com.app.features.manager.dto.request.CouponUpdateRequest;
 import com.app.features.manager.dto.request.RoleRequest;
+import com.app.features.manager.dto.request.UserCreateRequest;
 import com.app.features.manager.dto.request.UserRoleRequest;
 import com.app.features.manager.dto.request.UserStatusRequest;
 import com.app.features.manager.dto.request.UserUpdateRequest;
+import com.app.features.manager.dto.response.CouponAdminResponse;
 import com.app.features.manager.dto.response.PermissionResponse;
 import com.app.features.manager.dto.response.RoleResponse;
 import com.app.features.manager.dto.response.UserAdminResponse;
+import com.app.features.manager.repository.AdminCouponRepository;
 import com.app.features.manager.repository.AdminUserRepository;
 import com.app.features.manager.repository.PermissionRepository;
 import com.app.features.manager.repository.RolePermissionRepository;
 import com.app.features.manager.repository.RoleRepository;
 import com.app.features.manager.repository.UserRoleRepository;
+import com.app.features.manager.service.AdminAuditLogService;
 import com.app.features.manager.service.AdminService;
-import com.app.features.model.PermissionEntity;
-import com.app.features.model.RoleEntity;
-import com.app.features.model.RolePermissionEntity;
-import com.app.features.model.RolePermissionIdEntity;
-import com.app.features.model.UserEntity;
+import com.app.features.model.*;
 import com.app.features.model.enums.UserStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,13 +43,19 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AdminServiceImpl implements AdminService {
 
+    private static final String ROLE_ADMIN = "ADMIN";
+    private static final List<String> MANAGEABLE_ROLE_NAMES = List.of("MODERATOR", "TEACHER", "STUDENT");
+
     private final AdminUserRepository adminUserRepository;
+    private final AdminCouponRepository adminCouponRepository;
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
     private final RolePermissionRepository rolePermissionRepository;
     private final UserRoleRepository userRoleRepository;
+    private final UserRepository userRepository;
+    private final AdminAuditLogService adminAuditLogService;
 
-    // ===== USER MANAGEMENT =====
+    //USER MANAGEMENT
 
     @Override
     public Page<UserAdminResponse> getAllUsers(String keyword, String status, Pageable pageable) {
@@ -70,6 +85,36 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     @Transactional
+    public UserAdminResponse createUser(UserCreateRequest request) {
+        String normalizedEmail = request.getEmail().trim().toLowerCase();
+        if (adminUserRepository.existsByEmail(normalizedEmail)) {
+            throw new RuntimeException("Email đã được sử dụng: " + normalizedEmail);
+        }
+
+        RoleEntity role = roleRepository.findById(request.getRoleId())
+                .orElseThrow(() -> new RuntimeException("Role not found with id: " + request.getRoleId()));
+
+        String normalizedRoleName = role.getName() == null ? "" : role.getName().trim().toUpperCase();
+        if (!MANAGEABLE_ROLE_NAMES.contains(normalizedRoleName)) {
+            throw new RuntimeException("Vai trò phải là MODERATOR, TEACHER hoặc STUDENT");
+        }
+
+        UserEntity user = new UserEntity();
+        user.setFullName(request.getFullName().trim());
+        user.setEmail(normalizedEmail);
+        user.setPasswordHash(request.getPassword());
+        user.setStatus(UserStatus.ACTIVE);
+        user.setTotalLearningPoints(0);
+        user.getRoles().clear();
+        user.getRoles().add(role);
+
+        UserEntity savedUser = adminUserRepository.save(user);
+        log.info("Admin user created successfully, userId={}, role={}", savedUser.getId(), normalizedRoleName);
+        return toUserAdminResponse(savedUser);
+    }
+
+    @Override
+    @Transactional
     public UserAdminResponse updateUser(Long id, UserUpdateRequest request) {
         log.info("Admin user update requested, userId={}", id);
         UserEntity user = adminUserRepository.findById(id)
@@ -94,6 +139,14 @@ public class AdminServiceImpl implements AdminService {
     public UserAdminResponse changeUserStatus(Long id, UserStatusRequest request) {
         UserEntity user = adminUserRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+
+        boolean isAdminAccount = user.getRoles().stream()
+                .map(RoleEntity::getName)
+                .anyMatch(ROLE_ADMIN::equalsIgnoreCase);
+        if (isAdminAccount) {
+            throw new RuntimeException("Tài khoản ADMIN không thể bị khóa hoặc mở khóa");
+        }
+
         user.setStatus(request.getStatus());
         return toUserAdminResponse(adminUserRepository.save(user));
     }
@@ -102,12 +155,22 @@ public class AdminServiceImpl implements AdminService {
     @Transactional
     public void deleteUser(Long id) {
         log.info("Admin user deletion requested, userId={}", id);
-        if (!adminUserRepository.existsById(id)) {
-            log.warn("Admin user deletion failed because user was not found, userId={}", id);
-            throw new RuntimeException("User not found with id: " + id);
+        UserEntity user = adminUserRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.warn("Admin user deletion failed because user was not found, userId={}", id);
+                    return new RuntimeException("User not found with id: " + id);
+                });
+
+        boolean isAdminAccount = user.getRoles().stream()
+                .map(RoleEntity::getName)
+                .anyMatch(ROLE_ADMIN::equalsIgnoreCase);
+        if (isAdminAccount) {
+            throw new RuntimeException("Tài khoản ADMIN không thể bị xóa");
         }
-        adminUserRepository.deleteById(id);
-        log.info("Admin user deleted successfully, userId={}", id);
+
+        user.setStatus(UserStatus.DELETED);
+        adminUserRepository.save(user);
+        log.info("Admin user soft deleted successfully, userId={}", id);
     }
 
     @Override
@@ -116,20 +179,135 @@ public class AdminServiceImpl implements AdminService {
         UserEntity user = adminUserRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
 
-        // Clear existing roles
-        user.getRoles().clear();
-
-        // Assign new roles
-        if (request.getRoleIds() != null) {
-            for (Long roleId : request.getRoleIds()) {
-                RoleEntity role = roleRepository.findById(roleId)
-                        .orElseThrow(() -> new RuntimeException("Role not found with id: " + roleId));
-                user.getRoles().add(role);
-            }
+        List<Long> requestedRoleIds = request.getRoleIds();
+        if (requestedRoleIds == null || requestedRoleIds.size() != 1) {
+            throw new RuntimeException("Exactly one role must be selected for this account");
         }
-        
+
+        boolean isAdminAccount = user.getRoles().stream()
+                .map(RoleEntity::getName)
+                .anyMatch(ROLE_ADMIN::equalsIgnoreCase);
+        if (isAdminAccount) {
+            throw new RuntimeException("ADMIN accounts cannot be assigned to another role");
+        }
+
+        boolean hasManageableCurrentRole = user.getRoles().stream()
+                .map(RoleEntity::getName)
+                .filter(roleName -> roleName != null && !roleName.isBlank())
+                .map(roleName -> roleName.trim().toUpperCase())
+                .anyMatch(MANAGEABLE_ROLE_NAMES::contains);
+        if (!hasManageableCurrentRole) {
+            throw new RuntimeException("Only MODERATOR, TEACHER or STUDENT accounts can be reassigned");
+        }
+
+        RoleEntity targetRole = roleRepository.findById(requestedRoleIds.get(0))
+                .orElseThrow(() -> new RuntimeException("Role not found with id: " + requestedRoleIds.get(0)));
+
+        String normalizedTargetRoleName = targetRole.getName() == null ? "" : targetRole.getName().trim().toUpperCase();
+        if (!MANAGEABLE_ROLE_NAMES.contains(normalizedTargetRoleName)) {
+            throw new RuntimeException("Role must be one of MODERATOR, TEACHER or STUDENT");
+        }
+
+        user.getRoles().clear();
+        user.getRoles().add(targetRole);
         user = adminUserRepository.save(user);
         return toUserAdminResponse(user);
+    }
+
+    //COUPON MANAGEMENT
+
+    @Override
+    public Page<CouponAdminResponse> getAllCoupons(String keyword, Pageable pageable) {
+        String normalizedKeyword = normalizeKeyword(keyword);
+        return adminCouponRepository.findAllWithFilter(normalizedKeyword, pageable)
+                .map(this::toCouponAdminResponse);
+    }
+
+    @Override
+    public CouponAdminResponse getCouponById(Long id) {
+        CouponEntity coupon = adminCouponRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Coupon not found with id: " + id));
+        return toCouponAdminResponse(coupon);
+    }
+
+    @Override
+    @Transactional
+    public CouponAdminResponse createCoupon(CouponCreateRequest request) {
+        validateCouponRequest(
+                request.getCode(),
+                request.getDiscountValue(),
+                request.getMaxUses(),
+                request.getValidFrom(),
+                request.getValidUntil()
+        );
+
+        String normalizedCode = request.getCode().trim().toUpperCase();
+        if (adminCouponRepository.existsByCodeIgnoreCase(normalizedCode)) {
+            throw new RuntimeException("Mã giảm giá đã tồn tại: " + normalizedCode);
+        }
+
+        CouponEntity coupon = new CouponEntity();
+        coupon.setCode(normalizedCode);
+        coupon.setDiscountType(request.getDiscountType());
+        coupon.setDiscountValue(request.getDiscountValue());
+        coupon.setMaxUses(request.getMaxUses());
+        coupon.setUsedCount(0);
+        coupon.setValidFrom(request.getValidFrom());
+        coupon.setValidUntil(request.getValidUntil());
+        coupon.setCreatedBy(getCurrentAdminUser());
+
+        CouponEntity savedCoupon = adminCouponRepository.save(coupon);
+        logAudit("CREATE_COUPON", "POST", "/api/admin/coupons", null, buildCouponAuditData(savedCoupon));
+        return toCouponAdminResponse(savedCoupon);
+    }
+
+    @Override
+    @Transactional
+    public CouponAdminResponse updateCoupon(Long id, CouponUpdateRequest request) {
+        CouponEntity coupon = adminCouponRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Coupon not found with id: " + id));
+
+        validateCouponRequest(
+                request.getCode(),
+                request.getDiscountValue(),
+                request.getMaxUses(),
+                request.getValidFrom(),
+                request.getValidUntil()
+        );
+
+        String normalizedCode = request.getCode().trim().toUpperCase();
+        adminCouponRepository.findByCodeIgnoreCase(normalizedCode)
+                .filter(existing -> !existing.getId().equals(id))
+                .ifPresent(existing -> {
+                    throw new RuntimeException("Mã giảm giá đã tồn tại: " + normalizedCode);
+                });
+
+        coupon.setCode(normalizedCode);
+        coupon.setDiscountType(request.getDiscountType());
+        coupon.setDiscountValue(request.getDiscountValue());
+        coupon.setMaxUses(request.getMaxUses());
+        coupon.setValidFrom(request.getValidFrom());
+        coupon.setValidUntil(request.getValidUntil());
+
+        Map<String, Object> beforeData = buildCouponAuditData(coupon);
+        CouponEntity updatedCoupon = adminCouponRepository.save(coupon);
+        logAudit("UPDATE_COUPON", "PUT", "/api/admin/coupons/" + id, beforeData, buildCouponAuditData(updatedCoupon));
+        return toCouponAdminResponse(updatedCoupon);
+    }
+
+    @Override
+    @Transactional
+    public void deleteCoupon(Long id) {
+        CouponEntity coupon = adminCouponRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Coupon not found with id: " + id));
+
+        if (coupon.getUsedCount() != null && coupon.getUsedCount() > 0) {
+            throw new RuntimeException("Không thể xóa mã giảm giá đã được sử dụng");
+        }
+
+        Map<String, Object> beforeData = buildCouponAuditData(coupon);
+        adminCouponRepository.delete(coupon);
+        logAudit("DELETE_COUPON", "DELETE", "/api/admin/coupons/" + id, beforeData, null);
     }
 
     // ===== ROLE MANAGEMENT =====
@@ -206,7 +384,7 @@ public class AdminServiceImpl implements AdminService {
         log.info("Role deleted successfully, roleId={}", id);
     }
 
-    // ===== PERMISSION MANAGEMENT =====
+    //PERMISSION MANAGEMENT
 
     @Override
     public List<PermissionResponse> getAllPermissions() {
@@ -220,7 +398,7 @@ public class AdminServiceImpl implements AdminService {
                 .collect(Collectors.toList());
     }
 
-    // ===== PRIVATE HELPERS =====
+    //PRIVATE HELPERS
 
     private void assignPermissionsToRole(RoleEntity role, List<Long> permissionIds) {
         if (permissionIds == null || permissionIds.isEmpty()) return;
@@ -257,6 +435,77 @@ public class AdminServiceImpl implements AdminService {
                 .updatedAt(user.getUpdatedAt())
                 .roles(roles)
                 .build();
+    }
+
+    private CouponAdminResponse toCouponAdminResponse(CouponEntity coupon) {
+        return CouponAdminResponse.builder()
+                .id(coupon.getId())
+                .code(coupon.getCode())
+                .discountType(coupon.getDiscountType())
+                .discountValue(coupon.getDiscountValue())
+                .maxUses(coupon.getMaxUses())
+                .validFrom(coupon.getValidFrom())
+                .validUntil(coupon.getValidUntil())
+                .build();
+    }
+
+    private String normalizeKeyword(String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            return null;
+        }
+        return keyword.trim();
+    }
+
+    private void validateCouponRequest(String code, BigDecimal discountValue, Integer maxUses, Instant validFrom, Instant validUntil) {
+        if (code == null || code.isBlank()) {
+            throw new RuntimeException("Mã giảm giá là bắt buộc");
+        }
+        if (discountValue == null || discountValue.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("Giá trị giảm phải lớn hơn 0");
+        }
+        if (maxUses != null && maxUses < 1) {
+            throw new RuntimeException("Số lượt tối đa phải lớn hơn hoặc bằng 1");
+        }
+        if (validFrom != null && validUntil != null && validFrom.isAfter(validUntil)) {
+            throw new RuntimeException("Hiệu lực từ phải trước hiệu lực đến");
+        }
+    }
+
+    private UserEntity getCurrentAdminUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserEntity principalUser) {
+            return userRepository.findById(principalUser.getId())
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản admin hiện tại"));
+        }
+        throw new RuntimeException("Không thể xác định tài khoản đang đăng nhập");
+    }
+
+    private Map<String, Object> buildCouponAuditData(CouponEntity coupon) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("id", coupon.getId());
+        data.put("code", coupon.getCode());
+        data.put("discountType", coupon.getDiscountType() == null ? null : coupon.getDiscountType().name());
+        data.put("discountValue", coupon.getDiscountValue());
+        data.put("maxUses", coupon.getMaxUses());
+        data.put("validFrom", coupon.getValidFrom());
+        data.put("validUntil", coupon.getValidUntil());
+        return data;
+    }
+
+    private void logAudit(String action, String fallbackMethod, String fallbackEndpoint, Map<String, Object> beforeData, Map<String, Object> afterData) {
+        try {
+            UserEntity currentUser = getCurrentAdminUser();
+            adminAuditLogService.writeLog(
+                    currentUser.getId(),
+                    action,
+                    fallbackMethod,
+                    fallbackEndpoint,
+                    beforeData,
+                    afterData
+            );
+        } catch (Exception exception) {
+            log.warn("Audit log creation skipped for action={}", action, exception);
+        }
     }
 
     private RoleResponse toRoleResponse(RoleEntity role) {

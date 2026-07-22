@@ -1,8 +1,8 @@
 import axiosClient from '../../../../api/axios';
 
 export const quizService = {
-    getMyQuizzes: () => {
-        return axiosClient.get('/api/v1/quizzes/my-quizzes');
+    getMyQuizzes: (courseId) => {
+        return axiosClient.get('/api/v1/quizzes/my-quizzes' + (courseId ? `?courseId=${courseId}` : ''));
     },
 
     getQuizById: (quizId) => {

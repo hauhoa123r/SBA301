@@ -28,6 +28,7 @@ public class QuizResponseConverter {
                 .timeLimitMinutes(entity.getTimeLimitMinutes())
                 .questionsCount(questions.size())
                 .updatedAt(entity.getCreatedAt())
+                .orderIndex(entity.getOrderIndex())
                 .questions(questions)
                 .build();
     }

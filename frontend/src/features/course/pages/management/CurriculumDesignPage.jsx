@@ -270,7 +270,10 @@ export default function CurriculumDesignPage() {
             fileUrl: d.fileUrl || d.file_url
           }))
         })),
-        quizIds: (ch.quizzes || []).map(q => q.id)
+        quizzes: (ch.quizzes || []).map(q => ({
+          quizId: q.id,
+          orderIndex: q.orderIndex
+        }))
       }));
 
       await teacherService.updateCurriculum(courseId, payload);
@@ -433,6 +436,7 @@ export default function CurriculumDesignPage() {
         isOpen={isQuizSelectionOpen}
         onClose={() => setQuizSelectionOpen(false)}
         onSelect={handleQuizAttach}
+        courseId={courseId}
       />
 
       <ConfirmDeleteModal

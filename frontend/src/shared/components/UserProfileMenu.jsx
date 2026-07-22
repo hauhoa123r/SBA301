@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, LogOut, Settings } from "lucide-react";
+import { ChevronDown, LogOut, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import useAuth from "../../app/provider/useAuth";
 import { logout } from "../../features/auth/service/authService";
@@ -56,8 +56,8 @@ export default function UserProfileMenu({ variant = "pill" }) {
                         onClick={() => setOpen(false)}
                         className="flex items-center gap-3 px-4 py-3 text-sm text-brand-textSecondary no-underline transition-colors hover:bg-brand-accent/10 hover:text-brand-white"
                     >
-                        <Settings className="h-4 w-4" />
-                        Cài đặt
+                        <User className="h-4 w-4" />
+                        <span>Hồ sơ</span>
                     </Link>
                     <button
                         type="button"

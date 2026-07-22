@@ -6,7 +6,7 @@ import com.app.features.courses.dto.response.QuizResponse;
 import java.util.List;
 
 public interface IQuizService {
-    List<QuizResponse> getMyQuizzes(Long teacherId);
+    List<QuizResponse> getMyQuizzes(Long teacherId, Long courseId);
 
     QuizResponse getQuizById(Long quizId, Long teacherId);
 

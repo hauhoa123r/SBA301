@@ -21,5 +21,6 @@ public class QuizResponse {
     private Integer timeLimitMinutes;
     private Integer questionsCount;
     private Instant updatedAt;
+    private Integer orderIndex;
     private List<QuestionResponse> questions;
 }

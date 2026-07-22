@@ -177,17 +177,17 @@ INSERT INTO lesson_documents (id, lesson_id, title, file_url, created_at) VALUES
 (8, 29, 'Transcript nghe chu de an uong', 'https://cdn.chineselearning.vn/docs/nghe-an-uong.pdf', '2026-03-07 09:00:00');
 
 -- 16. quizzes
-INSERT INTO quizzes (id, title, teacher_id, course_id, lesson_id, chapter_id, time_limit_minutes, pass_score, created_at) VALUES
-(3, 'Dien tu vung so dem', 4, NULL, 6, NULL, 10, 70, '2026-02-12 10:00:00'),
-(4, 'Noi tu HSK 1', 4, NULL, NULL, 4, 15, 70, '2026-02-12 10:10:00'),
-(5, 'Nghe hieu HSK 2 tranh anh', 5, NULL, 11, NULL, 20, 70, '2026-02-14 10:00:00'),
-(6, 'De mo phong HSK 1', 4, NULL, NULL, 4, 35, 60, '2026-02-12 11:00:00'),
-(7, 'Quiz tu vung nha may', 5, NULL, 13, NULL, 10, 60, '2026-02-16 10:00:00'),
-(8, 'Quiz bao cao su co', 5, NULL, 15, NULL, 15, 70, '2026-02-16 10:10:00'),
-(9, 'Quiz email thuong mai', 4, NULL, 18, NULL, 15, 70, '2026-03-01 10:00:00'),
-(10, 'Noi cap thanh dieu Pinyin', 6, NULL, 23, NULL, 10, 70, '2026-03-03 10:00:00'),
-(11, 'Quiz nghe chu de an uong', 4, NULL, 29, NULL, 15, 70, '2026-03-07 10:00:00'),
-(12, 'Quiz phan xa dat mon', 4, NULL, 32, NULL, 12, 60, '2026-03-07 10:10:00');
+INSERT INTO quizzes (id, title, teacher_id, course_id, lesson_id, chapter_id, time_limit_minutes, pass_score, order_index, created_at) VALUES
+(3, 'Dien tu vung so dem', 4, NULL, 6, NULL, 10, 70, NULL, '2026-02-12 10:00:00'),
+(4, 'Noi tu HSK 1', 4, NULL, NULL, 4, 15, 70, NULL, '2026-02-12 10:10:00'),
+(5, 'Nghe hieu HSK 2 tranh anh', 5, NULL, 11, NULL, 20, 70, NULL, '2026-02-14 10:00:00'),
+(6, 'De mo phong HSK 1', 4, NULL, NULL, 4, 35, 60, NULL, '2026-02-12 11:00:00'),
+(7, 'Quiz tu vung nha may', 5, NULL, 13, NULL, 10, 60, NULL, '2026-02-16 10:00:00'),
+(8, 'Quiz bao cao su co', 5, NULL, 15, NULL, 15, 70, NULL, '2026-02-16 10:10:00'),
+(9, 'Quiz email thuong mai', 4, NULL, 18, NULL, 15, 70, NULL, '2026-03-01 10:00:00'),
+(10, 'Noi cap thanh dieu Pinyin', 6, NULL, 23, NULL, 10, 70, NULL, '2026-03-03 10:00:00'),
+(11, 'Quiz nghe chu de an uong', 4, NULL, 29, NULL, 15, 70, NULL, '2026-03-07 10:00:00'),
+(12, 'Quiz phan xa dat mon', 4, NULL, 32, NULL, 12, 60, NULL, '2026-03-07 10:10:00');
 
 -- 17. questions
 INSERT INTO questions (id, quiz_id, question_type, content, audio_url, points, order_index) VALUES
@@ -558,8 +558,8 @@ VALUES
 -- Seed Quizzes for Lesson 1
 DELETE FROM quizzes WHERE lesson_id = @lesson_1_id;
 
-INSERT INTO quizzes (title, teacher_id, lesson_id, chapter_id, time_limit_minutes, pass_score)
-VALUES ('Bài trắc nghiệm Lesson 1: Hỏi thông tin cá nhân', 4, @lesson_1_id, @chapter_3_id, 10, 50);
+INSERT INTO quizzes (title, teacher_id, course_id, lesson_id, chapter_id, time_limit_minutes, pass_score, order_index)
+VALUES ('Bài trắc nghiệm Lesson 1: Hỏi thông tin cá nhân', 4, @course_1_id, @lesson_1_id, @chapter_3_id, 10, 50, 1);
 
 SET @quiz_1_id = LAST_INSERT_ID();
 
@@ -587,7 +587,7 @@ VALUES
 (@q1_id, 'Xin hỏi công ty của anh/chị ở đâu?', FALSE, 3);
 
 
--- Question 2: Listening Choice (Nghe và chọn - "李先生是技术部の...")
+-- Question 2: Listening Choice (Nghe và chọn - "李先生是技术部的...")
 INSERT INTO questions (quiz_id, question_type, content, audio_url, points, order_index, meta_data, explanation)
 VALUES (
     @quiz_1_id,
@@ -945,8 +945,8 @@ INSERT INTO sentence_patterns (lesson_id, chinese_text, pinyin_text, vietnamese_
 (3, '他在公司担任销售经理，主要负责客户服务。', 'Tā zài gōngsī dānrèn xiāoshòu jīnglǐ, zhǔyào fùzé kèhù fúwù.', 'Anh ấy đảm nhiệm chức vụ quản lý kinh doanh tại công ty, chịu trách nhiệm chính về mảng chăm sóc khách hàng.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051197/MC2-2_vvy4no.mp3', 4);
 
 -- Quiz
-INSERT INTO quizzes (title, teacher_id, lesson_id, time_limit_minutes, pass_score) VALUES
-('Trắc nghiệm Chapter 2 Lesson 1', 4, 3, 15, 50);
+INSERT INTO quizzes (title, teacher_id, course_id, lesson_id, time_limit_minutes, pass_score, order_index) VALUES
+('Trắc nghiệm Chapter 2 Lesson 1', 4, @course_1_id, 3, 15, 50, 1);
 SET @c2_l1_quiz_id = LAST_INSERT_ID();
 
 -- Quiz Questions & Answers
@@ -1075,8 +1075,8 @@ INSERT INTO sentence_patterns (lesson_id, chinese_text, pinyin_text, vietnamese_
 (4, '我们提供人工智能学习 platform。', 'Wǒmen tígōng réngōng zhìnéng xuéxí píngtái.', 'Chúng tôi cung cấp nền tảng học tập trí tuệ nhân tạo.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051589/MC3-1_aqogd3.mp3', 4);
 
 -- Quiz
-INSERT INTO quizzes (title, teacher_id, lesson_id, time_limit_minutes, pass_score) VALUES
-('Trắc nghiệm Chapter 2 Lesson 2', 4, 4, 15, 50);
+INSERT INTO quizzes (title, teacher_id, course_id, lesson_id, time_limit_minutes, pass_score, order_index) VALUES
+('Trắc nghiệm Chapter 2 Lesson 2', 4, @course_1_id, 4, 15, 50, 1);
 SET @c2_l2_quiz_id = LAST_INSERT_ID();
 
 -- Quiz Questions & Answers
@@ -1260,8 +1260,8 @@ INSERT INTO sentence_patterns (lesson_id, chinese_text, pinyin_text, vietnamese_
 (1, '认识您，我也很高兴。', 'Rènshi nín, wǒ yě hěn gāoxìng.', 'Được làm quen với bạn, tôi cũng rất vui.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784046978/MC2-2_hnbhbd.mp3', 4);
 
 -- Quiz
-INSERT INTO quizzes (title, teacher_id, lesson_id, time_limit_minutes, pass_score) VALUES
-('Trắc nghiệm Chapter 1 Lesson 1', 4, 1, 15, 50);
+INSERT INTO quizzes (title, teacher_id, course_id, lesson_id, time_limit_minutes, pass_score, order_index) VALUES
+('Trắc nghiệm Chapter 1 Lesson 1', 4, @course_1_id, 1, 15, 50, 1);
 SET @c1_l1_quiz_id = LAST_INSERT_ID();
 
 -- Quiz Questions & Answers
@@ -1463,8 +1463,8 @@ INSERT INTO sentence_patterns (lesson_id, chinese_text, pinyin_text, vietnamese_
 (2, '欢迎加入我们的团队，现在我带你去认识一下车间的同事。', 'Huānyíng jiārù wǒmen de tuánduì, xiànzài wǒ dài nǐ qù rènshi yíxià chējiān de tóngshì.', 'Chào mừng cậu gia nhập đội ngũ chúng ta, bây giờ tôi dẫn cậu đi làm quen đồng nghiệp trong phân xưởng.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047057/MC2-2_ckgs9b.mp3', 4);
 
 -- Quiz
-INSERT INTO quizzes (title, teacher_id, lesson_id, time_limit_minutes, pass_score) VALUES
-('Trắc nghiệm Chapter 1 Lesson 2', 4, 2, 15, 50);
+INSERT INTO quizzes (title, teacher_id, course_id, lesson_id, time_limit_minutes, pass_score, order_index) VALUES
+('Trắc nghiệm Chapter 1 Lesson 2', 4, @course_1_id, 2, 15, 50, 1);
 SET @c1_l2_quiz_id = LAST_INSERT_ID();
 
 -- Question 1
@@ -1651,8 +1651,8 @@ INSERT INTO sentence_patterns (lesson_id, chinese_text, pinyin_text, vietnamese_
 (35, '刚开始不熟悉很正常，别着急，慢慢来。', 'Gāng kāishǐ bù shúxī hěn zhèngcháng, bié zháojí, mànmàn lái.', 'Mới đầu chưa quen là chuyện bình thường, đừng vội vàng, cứ từ từ làm.', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784047738/MC2-2_uey1nc.mp3', 4);
 
 -- Quiz
-INSERT INTO quizzes (title, teacher_id, lesson_id, time_limit_minutes, pass_score) VALUES
-('Trắc nghiệm Chapter 1 Lesson 3', 4, 35, 15, 50);
+INSERT INTO quizzes (title, teacher_id, course_id, lesson_id, time_limit_minutes, pass_score, order_index) VALUES
+('Trắc nghiệm Chapter 1 Lesson 3', 4, @course_1_id, 35, 15, 50, 1);
 SET @c1_l3_quiz_id = LAST_INSERT_ID();
 
 -- Question 1
