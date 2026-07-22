@@ -43,7 +43,7 @@ public class JwtTokenController {
         return AuthUserResponse.from(user);
     }
 
-    private UserEntity activeUser(Long id) {
+    private UserEntity  activeUser(Long id) {
         UserEntity user = userRepository.findByIdWithRoles(id).orElseThrow(() -> new ResponseStatusException(UNAUTHORIZED));
         if (user.getStatus() != UserStatus.ACTIVE) throw new ResponseStatusException(UNAUTHORIZED);
         return user;

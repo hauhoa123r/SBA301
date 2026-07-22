@@ -14,7 +14,6 @@ export default function LessonPanel({ lesson, isCompleted, isSaving = false, err
     return (
         <section className="grid gap-5 xl:grid-cols-[1fr_330px]">
             <div className="overflow-hidden rounded-2xl border border-brand-border bg-brand-surface">
-                {/* Tabs Selector Bar */}
                 <div role="tablist" aria-label="Nội dung bài học" className="flex flex-wrap gap-2 border-b border-brand-border bg-brand-panel p-2">
                     {tabs.map(({ id, label, icon: Icon }) => (
                         <button
@@ -37,7 +36,6 @@ export default function LessonPanel({ lesson, isCompleted, isSaving = false, err
                     ))}
                 </div>
 
-                {/* Tab Content Display */}
                 <div className="p-1">
                     {activeTab === "video" && (
                         <div id="lesson-panel-video" role="tabpanel" aria-labelledby="lesson-tab-video" className="overflow-hidden">
@@ -56,7 +54,6 @@ export default function LessonPanel({ lesson, isCompleted, isSaving = false, err
                     )}
                 </div>
 
-                {/* Lesson Info Footer */}
                 <div className="p-6 border-t border-brand-border">
                     <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-brand-quizPanel px-3 py-1 text-xs font-bold text-brand-accentSoft">
                         Chương {lesson.chapter?.orderIndex || 1}
