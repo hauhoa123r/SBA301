@@ -11,48 +11,7 @@ import {
 } from "lucide-react";
 import ModeratorLayout from "../../moderator/components/ModeratorLayout";
 
-const INITIAL_REPORTS = [
-    {
-        id: "VR-1001",
-        target: "Ethical Hacking & Penetration Testing",
-        reporter: "Anh Khoa",
-        type: "Copyright",
-        severity: "High",
-        status: "OPEN",
-        createdAt: "2026-06-18",
-        summary: "Learner reported copied lab material from an external paid course.",
-    },
-    {
-        id: "VR-1002",
-        target: "Discussion thread #842",
-        reporter: "Bich Ngoc",
-        type: "Harassment",
-        severity: "Medium",
-        status: "IN_REVIEW",
-        createdAt: "2026-06-19",
-        summary: "Comment contains personal attack and repeated off-topic replies.",
-    },
-    {
-        id: "VR-1003",
-        target: "SQL Analytics and Dashboard Reporting",
-        reporter: "Quang Phan",
-        type: "Misleading content",
-        severity: "Low",
-        status: "RESOLVED",
-        createdAt: "2026-06-20",
-        summary: "Course description promised downloadable templates that were missing.",
-    },
-    {
-        id: "VR-1004",
-        target: "Instructor profile #17",
-        reporter: "Mai Hoang",
-        type: "Identity",
-        severity: "High",
-        status: "OPEN",
-        createdAt: "2026-06-21",
-        summary: "Instructor credentials appear inconsistent with uploaded verification files.",
-    },
-];
+
 
 const STATUS_STYLES = {
     OPEN: "border-rose-200 bg-rose-50 text-rose-700",
@@ -68,7 +27,7 @@ const SEVERITY_STYLES = {
 };
 
 export default function ViolationReportsPage() {
-    const [reports, setReports] = useState(INITIAL_REPORTS);
+    const [reports, setReports] = useState([]);
     const [keyword, setKeyword] = useState("");
     const [statusFilter, setStatusFilter] = useState("ALL");
 
@@ -103,17 +62,14 @@ export default function ViolationReportsPage() {
                 <div className="grid grid-cols-3 gap-3 text-sm lg:min-w-[420px]">
                     <article className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
                         <AlertTriangle className="mb-3 h-5 w-5 text-rose-600" />
-                        <strong className="block text-2xl text-slate-950">2</strong>
                         <span className="text-slate-600">Open</span>
                     </article>
                     <article className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
                         <ClipboardList className="mb-3 h-5 w-5 text-amber-600" />
-                        <strong className="block text-2xl text-slate-950">1</strong>
                         <span className="text-slate-600">In review</span>
                     </article>
                     <article className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
                         <ShieldCheck className="mb-3 h-5 w-5 text-emerald-600" />
-                        <strong className="block text-2xl text-slate-950">1</strong>
                         <span className="text-slate-600">Resolved</span>
                     </article>
                 </div>
@@ -189,6 +145,7 @@ export default function ViolationReportsPage() {
                                 <button
                                     type="button"
                                     onClick={() => updateReportStatus(report.id, "DISMISSED")}
+                                    className="inline-flex h-10 items-center justify-center rounded-lg border border-rose-200 text-rose-700 transition hover:bg-rose-50"
                                     className="inline-flex h-10 items-center justify-center rounded-lg border border-rose-200 text-rose-700 transition hover:bg-rose-50"
                                     title="Dismiss report"
                                 >

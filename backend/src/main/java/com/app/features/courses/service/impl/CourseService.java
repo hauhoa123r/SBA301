@@ -82,21 +82,56 @@ public class CourseService implements ICourseService {
             return courseResponseConverter.toCourseDetailResponse(courseEntity, stats);
         }).toList();
     }
-
     @Override
     @Transactional(readOnly = true)
     public CourseDetailResponse getCourseByTeacher(Long courseId, Long teacherId) {
         log.info("Loading course for teacher edit, courseId={}, teacherId={}", courseId, teacherId);
-        CourseEntity course = courseRepository.findById(courseId).orElseThrow(() -> 
-            new ResourceNotFoundException("Course not found with id: " + courseId)
+        CourseEntity course = courseRepository.findById(courseId).orElseThrow(() ->
+                new ResourceNotFoundException("Course not found with id: " + courseId)
         );
-        
+
         if (!course.getTeacher().getId().equals(teacherId)) {
             throw new BadRequestException("You are not authorized to view this course.");
         }
 
         Map<Long, CourseLessonStats> lessonStatsByCourseId = getLessonStatsByCourseId(List.of(course));
         return courseResponseConverter.toCourseDetailResponse(course, lessonStatsByCourseId.get(course.getId()));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CourseDetailResponse> getPendingCourses() {
+        List<CourseEntity> courses = courseRepository.findAllByStatusOrderByCreatedAtDesc(CourseStatus.PENDING);
+        Map<Long, CourseLessonStats> lessonStatsByCourseId = getLessonStatsByCourseId(courses);
+
+        return courses.stream()
+                .map(course -> courseResponseConverter.toCourseDetailResponse(
+                        course,
+                        lessonStatsByCourseId.get(course.getId())
+                ))
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public CourseDetailResponse approvePendingCourse(Long courseId) {
+        log.info("Course approval requested, courseId={}", courseId);
+        CourseEntity course = courseRepository.findById(courseId).orElseThrow(() -> {
+            log.warn("Course approval failed because course was not found, courseId={}", courseId);
+            return new ResourceNotFoundException("Course not found with id: " + courseId);
+        });
+
+        if (course.getStatus() != CourseStatus.PENDING) {
+            log.warn("Course approval rejected because course is not pending, courseId={}, status={}", courseId, course.getStatus());
+            throw new BadRequestException("Only pending courses can be approved.");
+        }
+
+        course.setStatus(CourseStatus.PUBLISHED);
+        CourseEntity savedCourse = courseRepository.save(course);
+        CourseLessonStats stats = courseRepository.getLessonStatsByCourseId(savedCourse.getId());
+        log.info("Course approved successfully, courseId={}", savedCourse.getId());
+
+        return courseResponseConverter.toCourseDetailResponse(savedCourse, stats);
     }
 
     @Override
@@ -127,6 +162,11 @@ public class CourseService implements ICourseService {
             for(TagEntity tag :  tags) {
                 course.addTag(tag);
             }
+        }
+
+       else{
+            log.warn("Course creation rejected because no plan was selected, teacherId={}", teacherId);
+            throw new BadRequestException("Please choose at least one plan.");
         }
 
         Long courseId = courseRepository.save(course).getId();
