@@ -1,10 +1,8 @@
 import {
-  ChevronUp,
   ClipboardList,
   Eye,
   LayoutDashboard,
   LogOut,
-  Menu,
   ReceiptText,
   ShieldCheck,
   UserRoundCheck,
@@ -64,34 +62,24 @@ export default function ModeratorLayout({
               Edujar
             </span>
           </Link>
-          <button
-            type="button"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-violet-700"
-            aria-label="Toggle moderator menu"
-          >
-            <Menu className="h-6 w-6" />
-          </button>
         </div>
 
         <nav className="flex-1 overflow-y-auto px-5 py-4">
           {MENU_GROUPS.map((group) => {
-            const GroupIcon = group.icon;
+            // const GroupIcon = group.icon;
 
             return (
               <section key={group.title} className="mb-5">
                 <div className="mb-2 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-violet-50 text-violet-600">
-                      <GroupIcon className="h-4 w-4" />
-                    </span>
                     <p className="text-xs font-extrabold uppercase tracking-wider text-violet-700">
                       {group.title}
                     </p>
                   </div>
-                  <ChevronUp className="h-4 w-4 text-slate-400" />
+
                 </div>
 
-                <div className="ml-3 border-l border-dashed border-violet-300 pl-3">
+                <div className="ml-3 pl-3">
                   {group.items.map((item) => {
                     const Icon = item.icon;
                     const isActive =
