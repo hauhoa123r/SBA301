@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { CalendarDays, CheckCircle2, CircleDot, LayoutGrid, List, Route, Trophy } from "lucide-react";
-import AnimatedCard from "../../../../shared/components/animation/AnimatedCard";
-import UserStagger from "../../../../shared/components/animation/UserStagger";
+import { AnimatedCard, UserStagger } from "@/shared/ui";
 
 const quizTypeLabels = {
     SINGLE_CHOICE: "Trắc nghiệm một đáp án",

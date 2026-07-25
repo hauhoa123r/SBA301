@@ -1,7 +1,7 @@
 import useActivityHeatmap from "../../hooks/useActivityHeatmap";
 import ActivityHeatmap from "./ActivityHeatmap";
 import HeatLegend from "./HeatLegend";
-import UserReveal from "../../../../shared/components/animation/UserReveal";
+import { UserReveal } from "@/shared/ui";
 
 export default function ActivitySection() {
     const { days, values } = useActivityHeatmap();

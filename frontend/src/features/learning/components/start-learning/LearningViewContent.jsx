@@ -1,4 +1,4 @@
-import UserReveal from "../../../../shared/components/animation/UserReveal";
+import { UserReveal } from "@/shared/ui";
 import LearningProfileView from "../../pages/learning-profile-view";
 import MyCoursesView from "./MyCoursesView";
 import OverviewPanel from "./OverviewPanel";

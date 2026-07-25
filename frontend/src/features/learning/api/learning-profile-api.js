@@ -1,5 +1,4 @@
-import api from "../../../api/axios";
-import { API_LEARNING } from "../../../api/apiPath";
+import { API_LEARNING, axiosClient as api } from "@/shared/api";
 
 export async function getLearningStats(courseId) {
     const params = courseId ? { courseId } : {};

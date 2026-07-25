@@ -13,10 +13,9 @@ import com.app.features.auth.exception.InvalidLoginException;
 import com.app.features.auth.exception.RegisterException;
 import com.app.features.auth.repository.UserRepository;
 import com.app.features.auth.service.EmailVerificationService;
-import com.app.features.manager.repository.RoleRepository;
-import com.app.features.model.RoleEntity;
 import com.app.features.model.UserEntity;
 import com.app.features.model.enums.UserStatus;
+import com.app.security.role.SupportedRolePolicy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -43,6 +42,12 @@ public class AuthServiceImpl implements AuthService {
             log.warn("Login failed: invalid password, email={}", user.getEmail());
             throw new InvalidLoginException("Mật khẩu không đúng");
         }
+        if (userEntity.getStatus() != UserStatus.ACTIVE) {
+            log.warn("Login failed because account is not active, userId={}, status={}",
+                    userEntity.getId(), userEntity.getStatus());
+            throw new InvalidLoginException("User account is not active");
+        }
+        SupportedRolePolicy.requireSupported(userEntity);
         log.info("Login successful, userId={}", userEntity.getId());
         return new TokenResponse(jwtService.createAccessToken(userEntity), jwtService.createRefreshToken(userEntity),
                 AuthUserResponse.from(userEntity));

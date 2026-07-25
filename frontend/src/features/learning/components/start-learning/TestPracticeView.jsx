@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { ClipboardList } from "lucide-react";
-import AnimatedCard from "../../../../shared/components/animation/AnimatedCard";
-import UserStagger from "../../../../shared/components/animation/UserStagger";
+import { AnimatedCard, UserStagger } from "@/shared/ui";
 
 export default function TestPracticeView({ course, firstLesson }) {
     const tests = course.chapters.map((chapter) => ({

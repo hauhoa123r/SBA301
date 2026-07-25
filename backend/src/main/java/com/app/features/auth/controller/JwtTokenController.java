@@ -6,6 +6,7 @@ import com.app.features.auth.repository.UserRepository;
 import com.app.features.model.UserEntity;
 import com.app.features.model.enums.UserStatus;
 import com.app.security.jwt.JwtService;
+import com.app.security.role.SupportedRolePolicy;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import jakarta.validation.Valid;
@@ -46,6 +47,7 @@ public class JwtTokenController {
     private UserEntity  activeUser(Long id) {
         UserEntity user = userRepository.findByIdWithRoles(id).orElseThrow(() -> new ResponseStatusException(UNAUTHORIZED));
         if (user.getStatus() != UserStatus.ACTIVE) throw new ResponseStatusException(UNAUTHORIZED);
+        SupportedRolePolicy.requireSupported(user);
         return user;
     }
 

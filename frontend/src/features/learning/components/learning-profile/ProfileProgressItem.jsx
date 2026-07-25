@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import AnimatedCard from "../../../../shared/components/animation/AnimatedCard";
+import { AnimatedCard } from "@/shared/ui";
 
 export default function ProfileProgressItem({ item, firstLesson }) {
     return (

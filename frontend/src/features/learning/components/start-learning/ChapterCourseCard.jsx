@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { Trophy } from "lucide-react";
-import AnimatedCard from "../../../../shared/components/animation/AnimatedCard";
-import UserImage from "../../../../shared/components/animation/UserImage";
+import { AnimatedCard, UserImage } from "@/shared/ui";
 
 export default function ChapterCourseCard({ course, chapter }) {
     const doneLessons = Math.max(0, chapter.order_index - 1);

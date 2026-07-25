@@ -1,7 +1,5 @@
 import { BookOpenCheck, CircleDot, Flame, Lock, Route, Trophy } from "lucide-react";
-import AnimatedCard from "../../../../shared/components/animation/AnimatedCard";
-import UserReveal from "../../../../shared/components/animation/UserReveal";
-import UserStagger from "../../../../shared/components/animation/UserStagger";
+import { AnimatedCard, UserReveal, UserStagger } from "@/shared/ui";
 import ContinueLearningSection from "./continue-learning/ContinueLearningSection";
 
 const hasMetric = (value) => value !== null && value !== undefined && Number.isFinite(Number(value));

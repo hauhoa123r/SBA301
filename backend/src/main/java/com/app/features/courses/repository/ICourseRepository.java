@@ -14,26 +14,15 @@ import java.util.Optional;
 
 public interface ICourseRepository extends JpaRepository<CourseEntity,Long> {
 
-    long countByTeacherId(Long teacherId);
-    long countByTeacherIdAndStatus(Long teacherId, com.app.features.model.enums.CourseStatus status);
-
-    @Override
-    @EntityGraph(attributePaths = {"teacher", "category"})
-    List<CourseEntity> findAll();
-
     @Override
     @EntityGraph(attributePaths = {"teacher", "category", "courseEnrollments", "chapterEntities"})
     Optional<CourseEntity> findById(Long id);
 
+    @EntityGraph(attributePaths = {"teacher", "category", "courseEnrollments", "chapterEntities"})
+    Optional<CourseEntity> findByIdAndStatus(Long id, CourseStatus status);
+
     @EntityGraph(attributePaths = {"teacher", "category"})
     List<CourseEntity> findAllByStatusOrderByCreatedAtDesc(CourseStatus status);
-
-    @Query("select c from CourseEntity c " +
-            "join fetch c.category " +
-            "join fetch c.teacher " +
-            "where c.teacher.id = :teacherId " +
-            "order by c.createdAt DESC")
-    List<CourseEntity> findAllByTeacherId(Long teacherId);
 
     @Query("""
             select c.id as courseId,
@@ -47,13 +36,4 @@ public interface ICourseRepository extends JpaRepository<CourseEntity,Long> {
             """)
     List<CourseLessonStats> findLessonStatsByCourseIds(@Param("courseIds") Collection<Long> courseIds);
 
-    @Query("select c.id as courseId, " +
-            "count(l.id) as totalLessons, " +
-            "sum(l.durationSeconds) as totalDurationSeconds " +
-            "from CourseEntity c " +
-            "left join c.chapterEntities ch " +
-            "left join ch.lessonEntities l " +
-            "where c.id = :courseId " +
-            "group by c.id")
-    CourseLessonStats getLessonStatsByCourseId(@Param("courseId") Long courseId);
 }

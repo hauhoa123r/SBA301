@@ -8,12 +8,16 @@ import com.app.features.auth.dto.response.LoginResponse;
 import com.app.features.auth.dto.response.TokenResponse;
 import com.app.features.auth.service.AuthService;
 import com.app.features.auth.service.PasswordService;
+import com.app.features.model.UserEntity;
 import com.app.utils.ApiPath;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;

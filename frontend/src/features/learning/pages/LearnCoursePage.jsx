@@ -4,7 +4,7 @@ import LessonQuizPanel from "../../quiz/components/LessonQuizPanel";
 import ChapterList from "../components/learn-course/ChapterList";
 import CourseHero from "../components/learn-course/CourseHero";
 import LessonPanel from "../components/learn-course/LessonPanel";
-import UserReveal from "../../../shared/components/animation/UserReveal";
+import { UserReveal } from "@/shared/ui";
 
 export default function LearnCoursePage() {
     const {

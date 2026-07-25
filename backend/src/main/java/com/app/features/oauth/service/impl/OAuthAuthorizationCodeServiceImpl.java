@@ -1,9 +1,12 @@
 package com.app.features.oauth.service.impl;
 
 import com.app.features.model.UserEntity;
+import com.app.features.model.enums.UserStatus;
+import com.app.features.auth.exception.UnsupportedAccountRoleException;
 import com.app.features.oauth.entity.OAuthAuthorizationCodeEntity;
 import com.app.features.oauth.repository.OAuthAuthorizationCodeRepository;
 import com.app.features.oauth.service.OAuthAuthorizationCodeService;
+import com.app.security.role.SupportedRolePolicy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -54,6 +57,14 @@ public class OAuthAuthorizationCodeServiceImpl implements OAuthAuthorizationCode
         }
         UserEntity user = entity.getUser();
         user.getRoles().size();
+        if (user.getStatus() != UserStatus.ACTIVE) {
+            throw new OAuth2AuthenticationException(new OAuth2Error("account_disabled"),
+                    "User account is not active");
+        }
+        if (!SupportedRolePolicy.hasStudentRole(user)) {
+            throw new OAuth2AuthenticationException(new OAuth2Error("unsupported_account_role"),
+                    UnsupportedAccountRoleException.MESSAGE);
+        }
         return user;
     }
 

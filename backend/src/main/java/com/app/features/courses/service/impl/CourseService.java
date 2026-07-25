@@ -1,23 +1,14 @@
 package com.app.features.courses.service.impl;
 
-import com.app.exception.BadRequestException;
 import com.app.exception.ResourceNotFoundException;
-import com.app.features.categories.service.ICategoryService;
 import com.app.features.courses.converter.CourseResponseConverter;
-import com.app.features.courses.dto.request.CourseHideRequest;
-import com.app.features.courses.dto.request.CourseRejectionRequest;
-import com.app.features.courses.dto.request.CourseRequest;
 import com.app.features.courses.dto.response.CourseCatalogResponse;
 import com.app.features.courses.dto.response.CourseDetailResponse;
 import com.app.features.courses.repository.ICourseRepository;
 import com.app.features.courses.repository.projection.CourseLessonStats;
 import com.app.features.courses.service.ICourseService;
-import com.app.features.model.*;
+import com.app.features.model.CourseEntity;
 import com.app.features.model.enums.CourseStatus;
-import com.app.features.tags.service.ITagService;
-import com.app.features.users.repository.IUserRepository;
-import com.app.features.courses.repository.IQuizRepository;
-import com.app.features.courses.dto.response.DashboardStatsResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,16 +25,12 @@ import java.util.stream.Collectors;
 public class CourseService implements ICourseService {
     private final ICourseRepository courseRepository;
     private final CourseResponseConverter courseResponseConverter;
-    private final ITagService tagService;
-    private final ICategoryService categoryService;
-    private final IUserRepository userRepository;
-    private final IQuizRepository quizRepository;
 
     @Override
     @Transactional(readOnly = true)
     public List<CourseCatalogResponse> getAllCourses() {
         log.info("Loading course catalog");
-        List<CourseEntity> courses = courseRepository.findAll();
+        List<CourseEntity> courses = courseRepository.findAllByStatusOrderByCreatedAtDesc(CourseStatus.PUBLISHED);
         if (courses.isEmpty()) {
             log.warn("Course catalog is empty");
         }
@@ -61,184 +48,13 @@ public class CourseService implements ICourseService {
     @Transactional(readOnly = true)
     public CourseDetailResponse getCourseById(Long id) {
         log.info("Loading course detail, courseId={}", id);
-        CourseEntity course = courseRepository.findById(id).orElseThrow(() -> {
+        CourseEntity course = courseRepository.findByIdAndStatus(id, CourseStatus.PUBLISHED).orElseThrow(() -> {
             log.warn("Course not found, courseId={}", id);
             return new ResourceNotFoundException("Course not found with id: " + id);
         });
         Map<Long, CourseLessonStats> lessonStatsByCourseId = getLessonStatsByCourseId(List.of(course));
         return courseResponseConverter.toCourseDetailResponse(course, lessonStatsByCourseId.get(course.getId())
         );
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<CourseDetailResponse> getAllCourseByTeacherId(Long teacherId) {
-        log.info("Loading courses by teacher, teacherId={}", teacherId);
-        List<CourseEntity> courseEntities = courseRepository.findAllByTeacherId(teacherId);
-        if (courseEntities.isEmpty()) {
-            log.warn("No courses found for teacher, teacherId={}", teacherId);
-            throw new ResourceNotFoundException("No courses found for teacher, teacherId: " + teacherId);
-        }
-        return courseEntities.stream().map(courseEntity -> {
-            CourseLessonStats stats = courseRepository.getLessonStatsByCourseId(courseEntity.getId());
-            return courseResponseConverter.toCourseDetailResponse(courseEntity, stats);
-        }).toList();
-    }
-    @Override
-    @Transactional(readOnly = true)
-    public CourseDetailResponse getCourseByTeacher(Long courseId, Long teacherId) {
-        log.info("Loading course for teacher edit, courseId={}, teacherId={}", courseId, teacherId);
-        CourseEntity course = courseRepository.findById(courseId).orElseThrow(() ->
-                new ResourceNotFoundException("Course not found with id: " + courseId)
-        );
-
-        if (!course.getTeacher().getId().equals(teacherId)) {
-            throw new BadRequestException("You are not authorized to view this course.");
-        }
-
-        Map<Long, CourseLessonStats> lessonStatsByCourseId = getLessonStatsByCourseId(List.of(course));
-        return courseResponseConverter.toCourseDetailResponse(course, lessonStatsByCourseId.get(course.getId()));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<CourseDetailResponse> getPendingCourses() {
-        List<CourseEntity> courses = courseRepository.findAllByStatusOrderByCreatedAtDesc(CourseStatus.PENDING);
-        Map<Long, CourseLessonStats> lessonStatsByCourseId = getLessonStatsByCourseId(courses);
-
-        return courses.stream()
-                .map(course -> courseResponseConverter.toCourseDetailResponse(
-                        course,
-                        lessonStatsByCourseId.get(course.getId())
-                ))
-                .toList();
-    }
-
-    @Override
-    @Transactional
-    public CourseDetailResponse approvePendingCourse(Long courseId) {
-        log.info("Course approval requested, courseId={}", courseId);
-        CourseEntity course = courseRepository.findById(courseId).orElseThrow(() -> {
-            log.warn("Course approval failed because course was not found, courseId={}", courseId);
-            return new ResourceNotFoundException("Course not found with id: " + courseId);
-        });
-
-        if (course.getStatus() != CourseStatus.PENDING) {
-            log.warn("Course approval rejected because course is not pending, courseId={}, status={}", courseId, course.getStatus());
-            throw new BadRequestException("Only pending courses can be approved.");
-        }
-
-        course.setStatus(CourseStatus.PUBLISHED);
-        CourseEntity savedCourse = courseRepository.save(course);
-        CourseLessonStats stats = courseRepository.getLessonStatsByCourseId(savedCourse.getId());
-        log.info("Course approved successfully, courseId={}", savedCourse.getId());
-
-        return courseResponseConverter.toCourseDetailResponse(savedCourse, stats);
-    }
-
-    @Override
-    @Transactional
-    public Long createCourse(CourseRequest request, Long teacherId) {
-        log.info("Course creation requested, teacherId={}, categoryId={}", teacherId, request.getCategoryId());
-        UserEntity teacher = userRepository.findById(teacherId).orElseThrow(() -> {
-            log.warn("Course creation failed because teacher was not found, teacherId={}", teacherId);
-            return new ResourceNotFoundException("User not found with id: " + teacherId);
-        });
-
-        CategoryEntity category = categoryService.findCategoryById(request.getCategoryId());
-        if (category == null) {
-            log.warn("Course creation failed because category was not found, categoryId={}", request.getCategoryId());
-            throw new ResourceNotFoundException("Category not found with id: " + request.getCategoryId());
-        }
-        CourseEntity course = new  CourseEntity();
-        course.setTitle(request.getTitle());
-        course.setTeacher(teacher);
-        course.setCategory(category);
-        course.setDescription(request.getDescription());
-        course.setPrice(request.getPrice());
-        course.setThumbnailUrl(request.getThumbnailUrl());
-        course.setStatus(CourseStatus.PENDING);
-
-        if (request.getTagIds() != null && !request.getTagIds().isEmpty()) {
-            List<TagEntity> tags = tagService.findAllById(request.getTagIds());
-            for(TagEntity tag :  tags) {
-                course.addTag(tag);
-            }
-        }
-
-       else{
-            log.warn("Course creation rejected because no plan was selected, teacherId={}", teacherId);
-            throw new BadRequestException("Please choose at least one plan.");
-        }
-
-        Long courseId = courseRepository.save(course).getId();
-        log.info("Course created successfully, courseId={}, createdBy={}", courseId, teacherId);
-        return courseId;
-    }
-
-    @Override
-    @Transactional
-    public CourseDetailResponse updateCourse(Long courseId, CourseRequest request, Long teacherId) {
-        log.info("Course update requested, courseId={}, teacherId={}", courseId, teacherId);
-        CourseEntity course = courseRepository.findById(courseId).orElseThrow(() -> {
-            log.warn("Course update failed because course was not found, courseId={}", courseId);
-            return new ResourceNotFoundException("Course not found with id: " + courseId);
-        });
-
-        if (!course.getTeacher().getId().equals(teacherId)) {
-            log.warn("Course update rejected for unauthorized teacher, courseId={}, teacherId={}", courseId, teacherId);
-            throw new BadRequestException("You are not authorized to update this course.");
-        }
-
-        CategoryEntity category = categoryService.findCategoryById(request.getCategoryId());
-        if (category == null) {
-            throw new ResourceNotFoundException("Category not found with id: " + request.getCategoryId());
-        }
-
-        course.setTitle(request.getTitle());
-        course.setCategory(category);
-        course.setDescription(request.getDescription());
-        course.setPrice(request.getPrice());
-        course.setThumbnailUrl(request.getThumbnailUrl());
-        course.setUpdatedAt(new Date().toInstant());
-
-        course.getTags().clear();
-        if (request.getTagIds() != null && !request.getTagIds().isEmpty()) {
-            List<TagEntity> tags = tagService.findAllById(request.getTagIds());
-            for (TagEntity tag : tags) {
-                course.addTag(tag);
-            }
-        }
-
-        course = courseRepository.save(course);
-        log.info("Course updated successfully, courseId={}", courseId);
-        Map<Long, CourseLessonStats> lessonStatsByCourseId = getLessonStatsByCourseId(List.of(course));
-        return courseResponseConverter.toCourseDetailResponse(course, lessonStatsByCourseId.get(course.getId()));
-    }
-
-    @Override
-    @Transactional
-    public void deleteCourse(Long courseId, Long teacherId) {
-        log.info("Course deletion requested, courseId={}, teacherId={}", courseId, teacherId);
-        CourseEntity course = courseRepository.findById(courseId).orElseThrow(() -> {
-            log.warn("Course deletion failed because course was not found, courseId={}", courseId);
-            return new ResourceNotFoundException("Course not found with id: " + courseId);
-        });
-
-        if (!course.getTeacher().getId().equals(teacherId)) {
-            log.warn("Course deletion rejected for unauthorized teacher, courseId={}, teacherId={}", courseId, teacherId);
-            throw new BadRequestException("You are not authorized to delete this course.");
-        }
-
-        if (!course.getCourseEnrollments().isEmpty()) {
-            log.warn("Course deletion rejected because it has enrolled students, courseId={}", courseId);
-            throw new BadRequestException("Cannot delete course because there are students already enrolled in it.");
-        }
-
-        course.getTags().clear();
-
-        courseRepository.delete(course);
-        log.info("Course deleted successfully, courseId={}", courseId);
     }
 
     private Map<Long, CourseLessonStats> getLessonStatsByCourseId(List<CourseEntity> courses) {
@@ -250,90 +66,5 @@ public class CourseService implements ICourseService {
                 .stream()
                 .collect(Collectors.toMap(CourseLessonStats::getCourseId, Function.identity()));
     }
-
-    @Override
-    @Transactional(readOnly = true)
-    public DashboardStatsResponse getDashboardStats(Long teacherId) {
-        log.info("Loading dashboard stats for teacherId={}", teacherId);
-        long totalCourses = courseRepository.countByTeacherId(teacherId);
-        long activeCourses = courseRepository.countByTeacherIdAndStatus(teacherId, CourseStatus.PUBLISHED);
-        long totalQuizzes = quizRepository.countByTeacherId(teacherId);
-
-        return DashboardStatsResponse.builder()
-                .totalCourses(totalCourses)
-                .totalQuizzes(totalQuizzes)
-                .activeCourses(activeCourses)
-                .build();
-    }
-
-    @Override
-    @Transactional
-    public CourseDetailResponse rejectPendingCourse(Long courseId, CourseRejectionRequest request) {
-        log.info("Course rejection requested, courseId={}", courseId);
-
-        CourseEntity course = courseRepository.findById(courseId).orElseThrow(() -> {
-            log.warn("Course rejection failed because course was not found, courseId={}", courseId);
-            return new ResourceNotFoundException("Course not found with id: " + courseId);
-        });
-
-        if (course.getStatus() != CourseStatus.PENDING) {
-            log.warn("Course rejection rejected because course is not pending, courseId={}, status={}", courseId, course.getStatus());
-            throw new BadRequestException("Only pending courses can be rejected.");
-        }
-
-        String reason = request.getReason().trim();
-        log.info("Course rejected with reason, courseId={}, reason={}", courseId, reason);
-
-        course.setStatus(CourseStatus.DRAFT);
-        CourseEntity savedCourse = courseRepository.save(course);
-
-        CourseLessonStats stats = courseRepository.getLessonStatsByCourseId(savedCourse.getId());
-        log.info("Course rejected successfully, courseId={}", savedCourse.getId());
-
-        return courseResponseConverter.toCourseDetailResponse(savedCourse, stats);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<CourseDetailResponse> getPublishedCourses() {
-        List<CourseEntity> courses = courseRepository.findAllByStatusOrderByCreatedAtDesc(CourseStatus.PUBLISHED);
-        Map<Long, CourseLessonStats> lessonStatsByCourseId = getLessonStatsByCourseId(courses);
-
-        return courses.stream()
-                .map(course -> courseResponseConverter.toCourseDetailResponse(
-                        course,
-                        lessonStatsByCourseId.get(course.getId())
-                ))
-                .toList();
-    }
-
-
-    @Override
-    @Transactional
-    public CourseDetailResponse hidePublishedCourse(Long courseId, CourseHideRequest request) {
-        log.info("Course hide requested, courseId={}", courseId);
-
-        CourseEntity course = courseRepository.findById(courseId).orElseThrow(() -> {
-            log.warn("Course hide failed because course was not found, courseId={}", courseId);
-            return new ResourceNotFoundException("Course not found with id: " + courseId);
-        });
-
-        if (course.getStatus() != CourseStatus.PUBLISHED) {
-            log.warn("Course hide rejected because course is not published, courseId={}, status={}", courseId, course.getStatus());
-            throw new BadRequestException("Only published courses can be hidden.");
-        }
-
-        String reason = request.getReason().trim();
-        log.info("Course hidden with reason, courseId={}, reason={}", courseId, reason);
-
-        course.setStatus(CourseStatus.HIDDEN);
-        CourseEntity savedCourse = courseRepository.save(course);
-
-        CourseLessonStats stats = courseRepository.getLessonStatsByCourseId(savedCourse.getId());
-        log.info("Course hidden successfully, courseId={}", savedCourse.getId());
-
-        return courseResponseConverter.toCourseDetailResponse(savedCourse, stats);
-    }
-
 
 }

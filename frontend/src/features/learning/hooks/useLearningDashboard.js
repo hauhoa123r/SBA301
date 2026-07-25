@@ -15,7 +15,6 @@ export default function useLearningDashboard({
     useEffect(() => {
         let active = true;
         // Keep the existing loading transition while the selected course changes.
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setLoading(true);
         setError("");
 

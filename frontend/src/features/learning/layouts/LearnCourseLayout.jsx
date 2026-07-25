@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
-import NotFoundPage from "../../../shared/pages/NotFoundPage";
+import { NotFoundPage } from "@/pages/not-found";
 import LearnCourseHeader from "../components/learn-course/LearnCourseHeader";
 import LearnCourseSidebar from "../components/learn-course/LearnCourseSidebar";
 import { getCourseLearningDetails, getCourseProgress, updateLessonProgress } from "../api/learning-api";

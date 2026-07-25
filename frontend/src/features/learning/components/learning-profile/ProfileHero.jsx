@@ -1,6 +1,6 @@
 import { UserRound } from "lucide-react";
 import LevelItem from "./LevelItem";
-import AnimatedCard from "../../../../shared/components/animation/AnimatedCard";
+import { AnimatedCard } from "@/shared/ui";
 
 export default function ProfileHero({ studentName }) {
     return (

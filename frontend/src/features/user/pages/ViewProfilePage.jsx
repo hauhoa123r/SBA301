@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { AlertCircle } from "lucide-react";
 import { toast } from "react-toastify";
-import useAuth from "../../../app/provider/useAuth";
+import { useAuth } from "@/features/auth";
 import { changePassword, getOrderHistory, getUserProfile, updateUserProfile } from "../services/userProfileService";
 import { validateChangePassword } from "../shared/utils/validator";
 import ActivationCode from "../components/profile/ActivationCode";
@@ -9,7 +9,7 @@ import ChangePassword from "../components/profile/ChangePassword";
 import OrderHistory from "../components/profile/OrderHistory";
 import Profile from "../components/profile/Profile";
 import Sidebar from "../components/profile/Sidebar.jsx";
-import UserReveal from "../../../shared/components/animation/UserReveal";
+import { UserReveal } from "@/shared/ui";
 
 const tabTitles = {
     profile: "Hồ sơ cá nhân",

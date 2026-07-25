@@ -1,4 +1,4 @@
-import AnimatedCard from "../../../../shared/components/animation/AnimatedCard";
+import { AnimatedCard } from "@/shared/ui";
 
 export default function ProfileStat({ icon: Icon, label, value, color }) {
     return (

@@ -1,0 +1,66 @@
+interface BlogPost {
+    readonly id: number;
+    readonly category: string;
+    readonly title: string;
+    readonly excerpt: string;
+    readonly date: string;
+    readonly readTime: string;
+    readonly image: string;
+}
+
+export const BLOG_POSTS = [
+    {
+        id: 1,
+        category: "Ôn HSK",
+        title: "Cách xây dựng lịch học từ vựng HSK hằng tuần",
+        excerpt: "Kết hợp các buổi ôn ngắn, câu ví dụ và lặp lại ngắt quãng để nhớ từ tiếng Trung lâu hơn.",
+        date: "12/06/2026",
+        readTime: "5 phút đọc",
+        image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=520&fit=crop&auto=format",
+    },
+    {
+        id: 2,
+        category: "Phát âm",
+        title: "Vì sao thanh điệu quan trọng hơn việc chỉ nhớ pinyin",
+        excerpt: "Luyện thanh điệu rõ ràng giúp người nghe hiểu bạn nhanh hơn và tránh các lỗi nói thường gặp.",
+        date: "08/06/2026",
+        readTime: "7 phút đọc",
+        image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=520&fit=crop&auto=format",
+    },
+    {
+        id: 3,
+        category: "Ngữ pháp",
+        title: "Các mẫu câu tiếng Trung cơ bản người mới nên nắm chắc",
+        excerpt: "Bắt đầu với cấu trúc thực tế cho giới thiệu, nêu ý kiến, thời gian, địa điểm và câu hỏi hằng ngày.",
+        date: "28/05/2026",
+        readTime: "4 phút đọc",
+        image: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&h=520&fit=crop&auto=format",
+    },
+    {
+        id: 4,
+        category: "Giao tiếp",
+        title: "Chủ đề luyện nói cho những buổi giao tiếp tiếng Trung đầu tiên",
+        excerpt: "Chuẩn bị các cụm từ hữu ích cho chào hỏi, sở thích, ăn uống, du lịch, mua sắm và nhờ trợ giúp.",
+        date: "20/05/2026",
+        readTime: "6 phút đọc",
+        image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=800&h=520&fit=crop&auto=format",
+    },
+    {
+        id: 5,
+        category: "Luyện thi",
+        title: "Cách ôn tập trước khi làm đề mô phỏng HSK",
+        excerpt: "Tập trung vào nhóm từ vựng còn yếu, tốc độ nghe, căn thời gian đọc và các bẫy ngữ pháp thường gặp.",
+        date: "14/05/2026",
+        readTime: "3 phút đọc",
+        image: "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?w=800&h=520&fit=crop&auto=format",
+    },
+    {
+        id: 6,
+        category: "Mẹo học tập",
+        title: "Duy trì chuỗi học mà không biến việc học tiếng Trung thành áp lực",
+        excerpt: "Giữ nhịp học bằng mục tiêu nhỏ mỗi ngày, đồng thời chừa đủ thời gian để ôn lại và hồi phục.",
+        date: "03/05/2026",
+        readTime: "5 phút đọc",
+        image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=520&fit=crop&auto=format",
+    },
+] satisfies readonly BlogPost[];

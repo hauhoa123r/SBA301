@@ -1,6 +1,6 @@
 import { Search, SlidersHorizontal } from "lucide-react";
 import ChapterCourseCard from "./ChapterCourseCard";
-import UserStagger from "../../../../shared/components/animation/UserStagger";
+import { UserStagger } from "@/shared/ui";
 
 const courseFilters = ["Tất cả chương", "Đã mở", "Đang học", "Đã hoàn thành"];
 

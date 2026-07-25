@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Bell, Home, Menu } from "lucide-react";
-import UserProfileMenu from "../../../../shared/components/UserProfileMenu";
+import { UserProfileMenu } from "@/features/auth";
 
 export default function LearnCourseHeader({ sidebarOpen = false, onSidebarToggle }) {
     return (

@@ -1,6 +1,7 @@
 package com.app.security.jwt;
 
 import com.app.features.model.UserEntity;
+import com.app.security.role.SupportedRolePolicy;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -41,9 +42,7 @@ public class JwtService {
 
     private String create(UserEntity user, Duration ttl, String type) {
         Instant now = Instant.now();
-        List<String> roles = user.getRoles().stream()
-                .map(role -> role.getName())
-                .toList();
+        List<String> roles = SupportedRolePolicy.supportedRoleNames(user);
 
         return Jwts.builder()
                 .subject(user.getId().toString())

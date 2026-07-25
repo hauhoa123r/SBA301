@@ -1,5 +1,5 @@
 import { UserRound } from "lucide-react";
-import UserReveal from "../../../../shared/components/animation/UserReveal";
+import { UserReveal } from "@/shared/ui";
 
 export default function LearningGreeting({ studentName }) {
     return (

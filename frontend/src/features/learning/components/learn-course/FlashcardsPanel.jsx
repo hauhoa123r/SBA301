@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Volume2, RotateCw, Sparkles } from "lucide-react";
-import UserImage from "../../../../shared/components/animation/UserImage";
+import { UserImage } from "@/shared/ui";
 
 export default function FlashcardsPanel({ vocabularies = [] }) {
     const [currentIndex, setCurrentIndex] = useState(0);

@@ -1,6 +1,7 @@
 package com.app.security.oauth;
 
 import com.app.features.model.UserEntity;
+import com.app.security.role.SupportedRolePolicy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
@@ -18,6 +19,8 @@ public class CustomOAuth2User implements OAuth2User {
 
     public UserEntity getUser() { return user; }
     @Override public Map<String, Object> getAttributes() { return delegate.getAttributes(); }
-    @Override public Collection<? extends GrantedAuthority> getAuthorities() { return delegate.getAuthorities(); }
+    @Override public Collection<? extends GrantedAuthority> getAuthorities() {
+        return SupportedRolePolicy.supportedAuthorities(user);
+    }
     @Override public String getName() { return delegate.getName(); }
 }

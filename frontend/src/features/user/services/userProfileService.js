@@ -1,5 +1,4 @@
-import api from "../../../api/axios";
-import { API_USERS } from "../../../api/apiPath";
+import { API_USERS, axiosClient as api } from "@/shared/api";
 
 export const getUserProfile = async (userId) => {
     const response = await api.get(`${API_USERS}/${userId}`);

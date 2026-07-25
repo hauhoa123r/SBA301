@@ -1,7 +1,7 @@
 import { BookOpenCheck, ClipboardList, Clock3, Trophy } from "lucide-react";
 import ProfileProgressItem from "./ProfileProgressItem";
 import ProfileStat from "./ProfileStat";
-import UserStagger from "../../../../shared/components/animation/UserStagger";
+import { UserStagger } from "@/shared/ui";
 
 export default function ProfileProgress({ course, firstLesson, totalLessons }) {
     const progressItems = [

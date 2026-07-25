@@ -29,10 +29,14 @@ public class SecurityConfig {
     private static final String[] PUBLIC_AUTH_ENDPOINTS = {
             "/api/auth/login",
             "/api/auth/register",
-            "/api/auth/refresh-token",
+            "/api/auth/refresh",
             "/api/auth/forgot-password",
             "/api/auth/reset-password",
-            "/api/auth/verify-email"
+            "/api/auth/verify-token",
+            "/api/auth/verify-email",
+            "/api/auth/oauth/exchange",
+            "/api/oauth2/authorization/**",
+            "/login/oauth2/code/**"
     };
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -71,7 +75,7 @@ public class SecurityConfig {
                                 "/api/payments/payos-webhook"
                         ).permitAll()
                         .requestMatchers(PUBLIC_AUTH_ENDPOINTS).permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().hasRole("STUDENT")
                 )
                 .oauth2Login(oauth2SecurityConfigurer::configure)
                 .addFilterBefore(

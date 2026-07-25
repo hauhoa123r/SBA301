@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, BookOpenCheck, Clock3, Layers3, Trophy } from "lucide-react";
-import AnimatedCard from "../../../../../shared/components/animation/AnimatedCard";
-import UserImage from "../../../../../shared/components/animation/UserImage";
+import { AnimatedCard, UserImage } from "@/shared/ui";
 import ContinueLearningProgress from "./ContinueLearningProgress";
 
 function LearningMeta({ className = "", icon: Icon, label, value }) {
