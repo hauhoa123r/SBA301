@@ -1,7 +1,6 @@
 import { BookOpen, CircleDollarSign, Users } from "lucide-react";
 
 import { UserReveal } from "@/shared/ui";
-import { formatCoursePrice } from "@/shared/utils";
 
 import type { CourseDetail } from "../model/types";
 
@@ -47,7 +46,7 @@ export function CourseHeader({ course }: CourseHeaderProps) {
       >
         <span className="inline-flex items-center gap-2 rounded-xl border border-brand-accent/20 bg-brand-accent/10 px-4 py-2 text-brand-accentSoft">
           <CircleDollarSign aria-hidden="true" className="h-5 w-5" />
-          {formatCoursePrice(course.price)}
+          Có trong mọi gói học
         </span>
         <span className="inline-flex items-center gap-2">
           <Users aria-hidden="true" className="h-5 w-5 text-brand-accentSoft" />

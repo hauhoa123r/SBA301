@@ -26,10 +26,15 @@ public class InvoiceEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "course_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "course_id")
     private CourseEntity course;
+
+    @Column(name = "subscription_plan_code", length = 30)
+    private String subscriptionPlanCode;
+
+    @Column(name = "subscription_duration_days")
+    private Integer subscriptionDurationDays;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.SET_NULL)

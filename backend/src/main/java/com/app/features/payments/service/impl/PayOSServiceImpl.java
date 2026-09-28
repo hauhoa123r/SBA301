@@ -90,7 +90,7 @@ public class PayOSServiceImpl implements PayOSService {
         requestBody.put("signature", sign(signaturePayload, resolvedChecksumKey));
         requestBody.put("items", new Object[]{
                 Map.of(
-                        "name", "Course " + request.courseId(),
+                        "name", "Edujar " + invoice.getSubscriptionPlanCode() + " - " + invoice.getSubscriptionDurationDays() + " days",
                         "quantity", 1,
                         "price", amount
                 )

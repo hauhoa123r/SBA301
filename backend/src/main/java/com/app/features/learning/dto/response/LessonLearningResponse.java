@@ -18,6 +18,7 @@ public class LessonLearningResponse {
     private Long chapterId;
     private String title;
     private String videoUrl;
+    private String content;
     private Integer durationSeconds;
     private Integer orderIndex;
     private String summary;

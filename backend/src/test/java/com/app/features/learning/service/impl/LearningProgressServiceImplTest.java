@@ -5,6 +5,7 @@ import com.app.features.learning.converter.LearningProgressResponseConverter;
 import com.app.features.learning.dto.request.UpdateLessonProgressRequest;
 import com.app.features.learning.dto.response.CourseProgressResponse;
 import com.app.features.learning.repository.ICourseEnrollmentRepository;
+import com.app.features.learning.service.CourseAccessService;
 import com.app.features.learning.repository.ILessonProgressRepository;
 import com.app.features.learning.repository.ILessonRepository;
 import com.app.features.learning.repository.IUserChapterProgressRepository;
@@ -49,13 +50,15 @@ class LearningProgressServiceImplTest {
     private IUserRepository userRepository;
     @Mock
     private LearningProgressResponseConverter responseConverter;
+    @Mock
+    private CourseAccessService courseAccessService;
 
     @InjectMocks
     private LearningProgressServiceImpl progressService;
 
     @Test
     void updateRejectsUserWithoutCourseEnrollment() {
-        when(courseEnrollmentRepository.findByUser_IdAndCourse_Id(16L, 3L)).thenReturn(Optional.empty());
+        when(courseAccessService.ensureProgressEnrollment(16L, 3L)).thenThrow(new AccessDeniedException("Gói đã hết hạn"));
 
         assertThrows(AccessDeniedException.class, () -> progressService.updateLessonProgress(
                 16L, 3L, 20L, new UpdateLessonProgressRequest(true)));
@@ -110,8 +113,7 @@ class LearningProgressServiceImplTest {
                             List<Long> completedLessonIds,
                             List<Long> completedChapterIds,
                             CourseProgressResponse expected) {
-        when(courseEnrollmentRepository.findByUser_IdAndCourse_Id(16L, 3L))
-                .thenReturn(Optional.of(fixture.enrollment()));
+        when(courseAccessService.ensureProgressEnrollment(16L, 3L)).thenReturn(fixture.enrollment());
         when(lessonRepository.findByIdAndChapter_CourseEntity_Id(20L, 3L))
                 .thenReturn(Optional.of(fixture.lesson()));
         when(userRepository.findById(16L)).thenReturn(Optional.of(fixture.user()));

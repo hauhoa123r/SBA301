@@ -8,7 +8,7 @@ import type {
 import { mapCreatePaymentResponse } from "../lib/paymentMapper";
 
 export interface CreatePaymentRequest {
-  courseId: number;
+  planCode: string;
   couponCode?: string;
 }
 

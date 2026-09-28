@@ -66,6 +66,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/subscriptions/plans").permitAll()
                         .requestMatchers(request ->
                                 HttpMethod.GET.matches(request.getMethod()) &&
                                         PUBLIC_COURSE_PATH.matcher(request.getServletPath()).matches()

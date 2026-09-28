@@ -10,6 +10,7 @@ import com.app.features.learning.repository.ILessonProgressRepository;
 import com.app.features.learning.repository.ILessonRepository;
 import com.app.features.learning.repository.IUserChapterProgressRepository;
 import com.app.features.learning.service.ILearningProgressService;
+import com.app.features.learning.service.CourseAccessService;
 import com.app.features.model.CourseEnrollmentEntity;
 import com.app.features.model.LessonEntity;
 import com.app.features.model.LessonProgressEntity;
@@ -35,19 +36,22 @@ public class LearningProgressServiceImpl implements ILearningProgressService {
     private final IUserChapterProgressRepository chapterProgressRepository;
     private final IUserRepository userRepository;
     private final LearningProgressResponseConverter responseConverter;
+    private final CourseAccessService courseAccessService;
 
     @Override
     @Transactional(readOnly = true)
     public CourseProgressResponse getCourseProgress(Long userId, Long courseId) {
-        CourseEnrollmentEntity enrollment = requireEnrollment(userId, courseId);
-        return buildResponse(userId, courseId, enrollment.getCompletedAt() != null);
+        courseAccessService.requireAccess(userId, courseId);
+        boolean completed = courseEnrollmentRepository.findByUser_IdAndCourse_Id(userId, courseId)
+                .map(enrollment -> enrollment.getCompletedAt() != null).orElse(false);
+        return buildResponse(userId, courseId, completed);
     }
 
     @Override
     @Transactional
     public CourseProgressResponse updateLessonProgress(Long userId, Long courseId, Long lessonId,
                                                        UpdateLessonProgressRequest request) {
-        CourseEnrollmentEntity enrollment = requireEnrollment(userId, courseId);
+        CourseEnrollmentEntity enrollment = courseAccessService.ensureProgressEnrollment(userId, courseId);
         LessonEntity lesson = lessonRepository.findByIdAndChapter_CourseEntity_Id(lessonId, courseId)
                 .orElseThrow(() -> new ResourceNotFoundException("Lesson not found in this course: " + lessonId));
         UserEntity user = userRepository.findById(userId)
@@ -65,11 +69,6 @@ public class LearningProgressServiceImpl implements ILearningProgressService {
                 userId, courseId, lessonId, request.completed(), chapterCompleted, courseCompleted);
 
         return buildResponse(userId, courseId, courseCompleted);
-    }
-
-    private CourseEnrollmentEntity requireEnrollment(Long userId, Long courseId) {
-        return courseEnrollmentRepository.findByUser_IdAndCourse_Id(userId, courseId)
-                .orElseThrow(() -> new AccessDeniedException("You do not own this course"));
     }
 
     private LessonProgressEntity newLessonProgress(UserEntity user, LessonEntity lesson) {

@@ -6,6 +6,7 @@ import com.app.features.model.CouponEntity;
 import com.app.features.model.CourseEntity;
 import com.app.features.model.InvoiceEntity;
 import com.app.features.model.UserEntity;
+import com.app.features.model.SubscriptionPlanEntity;
 import com.app.features.model.enums.DiscountType;
 import com.app.features.model.enums.InvoiceStatus;
 import org.modelmapper.ModelMapper;
@@ -40,6 +41,18 @@ public class InvoiceConverter {
 
     public void applyPaymentResult(InvoiceEntity invoice, boolean success) {
         invoice.setStatus(success ? InvoiceStatus.PAID : InvoiceStatus.FAILED);
+    }
+
+    public InvoiceEntity toPendingSubscriptionInvoice(UserEntity user, SubscriptionPlanEntity plan) {
+        InvoiceEntity invoice = new InvoiceEntity();
+        invoice.setUser(user);
+        invoice.setSubscriptionPlanCode(plan.getCode());
+        invoice.setSubscriptionDurationDays(plan.getDurationDays());
+        invoice.setOriginalAmount(plan.getPrice());
+        invoice.setDiscountAmount(BigDecimal.ZERO);
+        invoice.setAmount(plan.getPrice());
+        invoice.setStatus(InvoiceStatus.PENDING);
+        return invoice;
     }
 
     public void applyCoupon(InvoiceEntity invoice, String couponCode) {

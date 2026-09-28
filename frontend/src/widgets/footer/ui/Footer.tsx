@@ -33,7 +33,7 @@ export function Footer() {
                             <ul className="flex flex-col gap-2.5">
                                 {links.map((link) => (
                                     <li key={link}>
-                                        <a href="#" className="text-brand-textSecondary hover:text-brand-accentSoft text-sm no-underline transition-colors" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
+                                        <a href={link === "Bảng giá" ? "/subscriptions" : link === "Khám phá khóa học" ? "/courses" : "#"} className="text-brand-textSecondary hover:text-brand-accentSoft text-sm no-underline transition-colors" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
                                             {link}
                                         </a>
                                     </li>

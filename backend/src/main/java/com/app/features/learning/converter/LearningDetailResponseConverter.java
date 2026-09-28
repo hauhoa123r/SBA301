@@ -93,6 +93,7 @@ public class LearningDetailResponseConverter {
         builder.chapterId(lesson.getChapter().getId());
         builder.title(lesson.getTitle());
         builder.videoUrl(lesson.getVideoUrl());
+        builder.content(lesson.getContent());
         builder.durationSeconds(lesson.getDurationSeconds());
         builder.orderIndex(lesson.getOrderIndex());
         builder.summary(null);

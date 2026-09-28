@@ -2,22 +2,17 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 
 import { getCourses, type CourseCatalogItem } from "@/entities/course";
-import { hasRole } from "@/entities/user";
-import { useAuth } from "@/features/auth";
 import { CourseSearchSection, useCourseSearch } from "@/features/course-search";
-import { getEnrollmentStats } from "@/features/enrollment";
 import { getApiErrorMessage } from "@/shared/api";
 import { UserReveal } from "@/shared/ui";
 
 import { CourseList } from "./CourseList";
 
 export function CourseCatalog() {
-  const { user } = useAuth();
   const [courses, setCourses] = useState<CourseCatalogItem[]>([]);
-  const [ownedCourseIds, setOwnedCourseIds] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
-  const search = useCourseSearch(courses, ownedCourseIds);
+  const search = useCourseSearch(courses, []);
   const resetSearchPage = search.resetPage;
 
   useEffect(() => {
@@ -26,22 +21,10 @@ export function CourseCatalog() {
     const fetchCourses = async (): Promise<void> => {
       try {
         setIsLoading(true);
-        const isStudent = hasRole(user, "STUDENT");
-        const enrollmentPromise = isStudent
-          ? getEnrollmentStats()
-          : Promise.resolve(null);
-        const [data, enrollmentStats] = await Promise.all([
-          getCourses(),
-          enrollmentPromise,
-        ]);
+        const data = await getCourses();
 
         if (isMounted) {
           setCourses(data);
-          setOwnedCourseIds(
-            Array.isArray(enrollmentStats?.enrolledCourses)
-              ? enrollmentStats.enrolledCourses.map((course) => String(course.id))
-              : [],
-          );
           resetSearchPage();
           setErrorMessage("");
         }
@@ -64,7 +47,7 @@ export function CourseCatalog() {
     return () => {
       isMounted = false;
     };
-  }, [resetSearchPage, user]);
+  }, [resetSearchPage]);
 
   const handleSearch = (event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
@@ -107,13 +90,6 @@ export function CourseCatalog() {
         <CourseList
           courses={search.visibleCourses}
           isLoading={isLoading}
-          emptyMessage={
-            !search.hasSubmittedKeyword &&
-            courses.length > 0 &&
-            ownedCourseIds.length > 0
-              ? "Bạn đã sở hữu tất cả khóa học hiện có."
-              : undefined
-          }
         />
       )}
 

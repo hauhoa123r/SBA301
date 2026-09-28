@@ -17,6 +17,10 @@ export const NAV_LINKS = [
         path: "/courses",
     },
     {
+        label: "Gói học",
+        path: "/subscriptions",
+    },
+    {
         label: "Bài viết",
         path: "/blog",
     },

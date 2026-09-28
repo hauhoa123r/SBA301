@@ -9,6 +9,7 @@ export interface Payment {
   qrCode: string;
   qrCodeUrl?: string;
   accountName?: string;
+  accountNumber?: string;
   accountHolder?: string;
   beneficiaryName?: string;
   receiverName?: string;

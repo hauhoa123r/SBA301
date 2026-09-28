@@ -12,6 +12,7 @@ import { CourseDetailPage } from "@/pages/course-detail";
 import { CourseListPage } from "@/pages/course-list";
 import { ForgotPasswordPage } from "@/pages/forgot-password";
 import { HomePage } from "@/pages/home";
+import { SubscriptionsPage } from "@/pages/subscriptions/SubscriptionsPage";
 import { LoginPage } from "@/pages/login";
 import { NotFoundPage } from "@/pages/not-found";
 import { OAuthCallbackPage } from "@/pages/oauth-callback";
@@ -31,6 +32,7 @@ export function AppRouter() {
         <Route element={<MainLayout />}>
           <Route index element={<HomePage />} />
           <Route path="courses" element={<CourseListPage />} />
+          <Route path="subscriptions" element={<SubscriptionsPage />} />
           <Route path="courses/:id" element={<CourseDetailPage />} />
           <Route path="about" element={<AboutPage />} />
           <Route path="blog" element={<BlogPage />} />

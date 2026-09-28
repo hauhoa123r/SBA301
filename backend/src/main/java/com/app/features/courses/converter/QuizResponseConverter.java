@@ -17,19 +17,15 @@ public class QuizResponseConverter {
     public QuizResponse toQuizResponse(QuizEntity entity) {
         if (entity == null) return null;
         
-        List<QuestionResponse> questions = entity.getQuestionEntities() != null 
-            ? entity.getQuestionEntities().stream().map(this::toQuestionResponse).collect(Collectors.toList())
-            : List.of();
-
         return QuizResponse.builder()
                 .id(entity.getId())
                 .title(entity.getTitle())
                 .passScore(entity.getPassScore())
                 .timeLimitMinutes(entity.getTimeLimitMinutes())
-                .questionsCount(questions.size())
+                .questionsCount(entity.getQuestionEntities() == null ? 0 : entity.getQuestionEntities().size())
                 .updatedAt(entity.getCreatedAt())
                 .orderIndex(entity.getOrderIndex())
-                .questions(questions)
+                .questions(List.of())
                 .build();
     }
 

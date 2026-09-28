@@ -52,6 +52,7 @@ public class PaymentStatusServiceImpl implements PaymentStatusService {
 
         if (gatewayStatus.paid()) {
             Map<String, Object> details = new LinkedHashMap<>(gatewayStatus.rawResponse());
+            details.put("amountPaid", gatewayStatus.amountPaid());
             details.put("source", "status_sync");
             PaymentVerifyResponse verified = new PaymentVerifyResponse(
                     true,
@@ -87,7 +88,7 @@ public class PaymentStatusServiceImpl implements PaymentStatusService {
         return new PaymentSyncResponse(
                 invoice.getId(),
                 "INV-" + invoice.getId(),
-                invoice.getCourse().getId(),
+                invoice.getCourse() == null ? null : invoice.getCourse().getId(),
                 payment.getProvider(),
                 invoice.getStatus(),
                 payment.getStatus(),

@@ -57,7 +57,7 @@ export function PaymentResultPanel() {
   const Icon = view.icon;
   const learningUrl = result.courseId
     ? `/learning/courses/${result.courseId}`
-    : "/courses";
+    : "/learning";
 
   return (
     <section
@@ -102,10 +102,10 @@ export function PaymentResultPanel() {
               </button>
             ) : null}
             <Link
-              to={result.state === "SUCCESS" ? learningUrl : "/courses"}
+              to={result.state === "SUCCESS" ? learningUrl : "/subscriptions"}
               className="inline-flex min-h-12 items-center justify-center rounded-full bg-brand-accent px-6 py-3 font-black text-brand-white transition hover:bg-brand-accentHover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accentSoft"
             >
-              {result.state === "SUCCESS" ? "Vào học" : "Xem khóa học"}
+              {result.state === "SUCCESS" ? "Vào học" : "Xem gói học"}
             </Link>
           </div>
         </AnimatedCard>

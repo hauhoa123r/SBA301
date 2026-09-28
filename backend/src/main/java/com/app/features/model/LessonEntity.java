@@ -34,6 +34,9 @@ public class LessonEntity {
     @Column(name = "video_url", length = 500)
     private String videoUrl;
 
+    @Column(name = "content", columnDefinition = "TEXT")
+    private String content;
+
     @Builder.Default
     @Column(name = "duration_seconds")
     private Integer durationSeconds = 0;

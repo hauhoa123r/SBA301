@@ -13,12 +13,14 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ICourseRepository extends JpaRepository<CourseEntity,Long> {
+    boolean existsByIdAndStatus(Long id, CourseStatus status);
 
     @Override
-    @EntityGraph(attributePaths = {"teacher", "category", "courseEnrollments", "chapterEntities"})
+    // Fetch chapters separately from enrollments to avoid multiplying list entries.
+    @EntityGraph(attributePaths = {"teacher", "category", "chapterEntities"})
     Optional<CourseEntity> findById(Long id);
 
-    @EntityGraph(attributePaths = {"teacher", "category", "courseEnrollments", "chapterEntities"})
+    @EntityGraph(attributePaths = {"teacher", "category", "chapterEntities"})
     Optional<CourseEntity> findByIdAndStatus(Long id, CourseStatus status);
 
     @EntityGraph(attributePaths = {"teacher", "category"})

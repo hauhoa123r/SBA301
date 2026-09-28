@@ -102,8 +102,10 @@ public class UserProfileServiceImpl implements UserProfileService {
                 .stream()
                 .map(invoice -> new InvoicesResponse(
                         invoice.getId(),
-                        invoice.getCourse().getId(),
-                        invoice.getCourse().getTitle(),
+                        invoice.getCourse() == null ? null : invoice.getCourse().getId(),
+                        invoice.getSubscriptionPlanCode() != null
+                                ? "Gói " + invoice.getSubscriptionPlanCode() + " · " + invoice.getSubscriptionDurationDays() + " ngày"
+                                : invoice.getCourse().getTitle(),
                         invoice.getOriginalAmount(),
                         invoice.getDiscountAmount(),
                         invoice.getAmount(),

@@ -107,6 +107,27 @@ CREATE TABLE role_permissions (
 -- 3. COURSE & LEARNING LOGIC
 -- ==========================================
 
+CREATE TABLE subscription_plans (
+    code VARCHAR(30) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    price DECIMAL(15, 2) NOT NULL,
+    duration_days INT NOT NULL,
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    CONSTRAINT chk_plan_duration CHECK (duration_days > 0),
+    CONSTRAINT chk_plan_price CHECK (price >= 0)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE user_subscriptions (
+    user_id BIGINT PRIMARY KEY,
+    plan_code VARCHAR(30) NOT NULL,
+    started_at TIMESTAMP NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    trial_used BOOLEAN NOT NULL DEFAULT TRUE,
+    CONSTRAINT fk_subscription_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_subscription_plan FOREIGN KEY (plan_code) REFERENCES subscription_plans(code),
+    CONSTRAINT chk_subscription_period CHECK (expires_at > started_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE courses (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     teacher_id BIGINT NOT NULL,
@@ -145,6 +166,7 @@ CREATE TABLE lessons (
     chapter_id BIGINT NOT NULL,
     title VARCHAR(255) NOT NULL,
     video_url VARCHAR(500),
+    content TEXT NULL,
     duration_seconds INT DEFAULT 0,
     order_index INT NOT NULL,
     CONSTRAINT uk_chapter_lesson_order UNIQUE (chapter_id, order_index),
@@ -250,6 +272,7 @@ CREATE TABLE course_enrollments (
     course_id BIGINT NOT NULL,
     enrolled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     completed_at TIMESTAMP NULL,
+    legacy_access BOOLEAN NOT NULL DEFAULT FALSE,
     CONSTRAINT uk_user_course UNIQUE (user_id, course_id),
     CONSTRAINT fk_enrollments_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_enrollments_course FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
@@ -376,7 +399,9 @@ CREATE TABLE coupons (
 CREATE TABLE invoices (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT NOT NULL,
-    course_id BIGINT NOT NULL,
+    course_id BIGINT NULL,
+    subscription_plan_code VARCHAR(30) NULL,
+    subscription_duration_days INT NULL,
     coupon_id BIGINT NULL, -- NEW: Liên kết mã giảm giá
     original_amount DECIMAL(15, 2) NOT NULL, -- Giá gốc tại thời điểm mua
     discount_amount DECIMAL(15, 2) DEFAULT 0, -- Số tiền được giảm

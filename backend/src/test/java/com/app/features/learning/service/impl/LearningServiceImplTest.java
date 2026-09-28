@@ -12,6 +12,7 @@ import com.app.features.learning.loader.CourseSelector;
 import com.app.features.learning.loader.LearningDetailLoader;
 import com.app.features.learning.loader.LearningStatsLoader;
 import com.app.features.learning.repository.ICourseEnrollmentRepository;
+import com.app.features.learning.service.CourseAccessService;
 import com.app.features.model.CourseEnrollmentEntity;
 import com.app.features.model.CourseEntity;
 import com.app.features.model.UserEntity;
@@ -30,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doThrow;
 
 @ExtendWith(MockitoExtension.class)
 class LearningServiceImplTest {
@@ -49,7 +51,7 @@ class LearningServiceImplTest {
     @Mock
     private LearningDetailResponseConverter learningDetailResponseConverter;
     @Mock
-    private ICourseEnrollmentRepository courseEnrollmentRepository;
+    private CourseAccessService courseAccessService;
 
     @InjectMocks
     private LearningServiceImpl learningService;
@@ -71,7 +73,7 @@ class LearningServiceImplTest {
 
     @Test
     void courseDetailsRejectUserWithoutEnrollment() {
-        when(courseEnrollmentRepository.findByUser_IdAndCourse_Id(16L, 9L)).thenReturn(Optional.empty());
+        doThrow(new AccessDeniedException("Gói đã hết hạn")).when(courseAccessService).requireAccess(16L, 9L);
 
         assertThrows(AccessDeniedException.class,
                 () -> learningService.getCourseLearningDetails(16L, 9L));
@@ -85,8 +87,6 @@ class LearningServiceImplTest {
         CourseEnrollmentEntity enrollment = new CourseEnrollmentEntity();
         LearningDetailData data = new LearningDetailData(course, Map.of(), Map.of());
         CourseLearningDetailResponse expected = new CourseLearningDetailResponse();
-        when(courseEnrollmentRepository.findByUser_IdAndCourse_Id(16L, 9L))
-                .thenReturn(Optional.of(enrollment));
         when(learningDetailLoader.load(9L)).thenReturn(data);
         when(learningDetailResponseConverter.toResponse(data)).thenReturn(expected);
 

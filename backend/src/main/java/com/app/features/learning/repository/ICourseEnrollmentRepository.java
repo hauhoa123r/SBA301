@@ -22,6 +22,10 @@ public interface ICourseEnrollmentRepository extends JpaRepository<CourseEnrollm
     boolean existsByUser_IdAndCourse_Id(Long userId, Long courseId);
 
     @Modifying
+    @Query("update CourseEnrollmentEntity e set e.legacyAccess = true where e.user.id = :userId and e.course.id = :courseId")
+    int grantLegacyAccess(@Param("userId") Long userId, @Param("courseId") Long courseId);
+
+    @Modifying
     @Query(value = """
             INSERT INTO course_enrollments (user_id, course_id, enrolled_at)
             VALUES (:userId, :courseId, :enrolledAt)

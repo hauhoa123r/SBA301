@@ -41,5 +41,8 @@ public class CourseEnrollmentEntity {
     @Column(name = "completed_at")
     private Instant completedAt;
 
+    @Column(name = "legacy_access", nullable = false)
+    private boolean legacyAccess;
+
 
 }

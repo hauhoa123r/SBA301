@@ -20,6 +20,20 @@ public class PaymentConverter {
         this.modelMapper = modelMapper;
     }
 
+    public PaymentEntity toSubscriptionPayment(InvoiceEntity invoice, String transactionId, String invoiceCode) {
+        PaymentEntity payment = new PaymentEntity();
+        payment.setInvoice(invoice);
+        payment.setProvider(PaymentProvider.PAYOS);
+        payment.setTransactionId(transactionId);
+        payment.setAmount(invoice.getAmount());
+        payment.setStatus(PaymentStatus.CREATED);
+        payment.setRawResponse(new HashMap<>(Map.of(
+                "planCode", invoice.getSubscriptionPlanCode(),
+                "durationDays", invoice.getSubscriptionDurationDays(),
+                "invoiceCode", invoiceCode)));
+        return payment;
+    }
+
     public PaymentEntity toCreatedPayment(InvoiceEntity invoice, PaymentProvider provider, String transactionId,
                                           String invoiceCode, CourseEntity course) {
         PaymentEntity source = new PaymentEntity();

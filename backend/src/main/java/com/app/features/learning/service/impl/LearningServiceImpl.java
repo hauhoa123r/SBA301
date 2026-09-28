@@ -15,6 +15,7 @@ import com.app.features.learning.loader.LearningDetailLoader;
 import com.app.features.learning.loader.LearningStatsLoader;
 import com.app.features.learning.repository.ICourseEnrollmentRepository;
 import com.app.features.learning.service.ILearningService;
+import com.app.features.learning.service.CourseAccessService;
 import com.app.features.model.UserEntity;
 import com.app.features.users.repository.IUserRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class LearningServiceImpl implements ILearningService {
     private final LearningStatsResponseConverter learningStatsResponseConverter;
     private final LearningDetailLoader learningDetailLoader;
     private final LearningDetailResponseConverter learningDetailResponseConverter;
-    private final ICourseEnrollmentRepository courseEnrollmentRepository;
+    private final CourseAccessService courseAccessService;
 
     @Override
     public LearningStatsResponse getLearningStats(Long userId, Long courseId) {
@@ -56,10 +57,7 @@ public class LearningServiceImpl implements ILearningService {
     @Override
     public CourseLearningDetailResponse getCourseLearningDetails(Long userId, Long courseId) {
         log.info("Learning course detail load started, userId={}, courseId={}", userId, courseId);
-        if (courseEnrollmentRepository.findByUser_IdAndCourse_Id(userId, courseId).isEmpty()) {
-            log.warn("Learning course access denied, userId={}, courseId={}", userId, courseId);
-            throw new AccessDeniedException("You do not own this course");
-        }
+        courseAccessService.requireAccess(userId, courseId);
         LearningDetailData data = learningDetailLoader.load(courseId);
         CourseLearningDetailResponse response = learningDetailResponseConverter.toResponse(data);
         log.info("Learning course detail loaded successfully, courseId={}", courseId);

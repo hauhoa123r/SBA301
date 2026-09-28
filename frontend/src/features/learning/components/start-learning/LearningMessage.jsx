@@ -10,8 +10,8 @@ export default function LearningMessage({ title, message, showCatalogLink = fals
             <h2 className="mt-5 text-xl font-black text-brand-white">{title}</h2>
             <p className="mt-2 text-sm text-brand-textSecondary">{message}</p>
             {showCatalogLink && (
-                <Link to="/courses" className="mt-6 rounded-lg bg-brand-accent px-5 py-3 text-sm font-black text-brand-white no-underline hover:bg-brand-accentHover">
-                    Xem danh sách khóa học
+                <Link to="/subscriptions" className="mt-6 rounded-lg bg-brand-accent px-5 py-3 text-sm font-black text-brand-white no-underline hover:bg-brand-accentHover">
+                    Xem gói học
                 </Link>
             )}
         </section>

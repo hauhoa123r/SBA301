@@ -1,9 +1,9 @@
 package com.app.features.payments.dto;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 
 public record PaymentCreateRequest(
-        @NotNull Long courseId,
+        @NotBlank String planCode,
         String couponCode
 ) {
 }

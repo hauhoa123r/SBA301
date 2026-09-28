@@ -13,6 +13,7 @@ import com.app.features.payments.dto.PaymentVerifyResponse;
 import com.app.features.payments.repository.InvoiceRepository;
 import com.app.features.payments.repository.PaymentRepository;
 import com.app.features.payments.service.PayOSService;
+import com.app.features.subscriptions.service.SubscriptionService;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 
@@ -20,12 +21,80 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
+import java.math.BigDecimal;
+import com.app.exception.BadRequestException;
+import com.app.features.coupons.repository.ICouponRepository;
+import org.modelmapper.ModelMapper;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class PaymentCallbackServiceImplTest {
+
+    @Test
+    void subscriptionPaymentActivatesOnlyOnceEvenWhenCallbacksRepeatOrArriveOutOfOrder() {
+        var fixture = new SubscriptionCallbackFixture();
+        fixture.service.applyVerifiedResult(PaymentProvider.PAYOS, fixture.result(true, true), Map.of("amount", 699000));
+        fixture.service.applyVerifiedResult(PaymentProvider.PAYOS, fixture.result(true, true), Map.of("amountPaid", 699000));
+        fixture.service.applyVerifiedResult(PaymentProvider.PAYOS, fixture.result(true, false), Map.of());
+        verify(fixture.subscriptions, times(1)).activatePaidInvoice(fixture.invoice);
+        verifyNoInteractions(fixture.enrollments);
+        assertEquals(InvoiceStatus.PAID, fixture.invoice.getStatus());
+    }
+
+    @Test
+    void incorrectOrMissingAmountCannotActivateSubscription() {
+        var fixture = new SubscriptionCallbackFixture();
+        for (Map<String, ?> details : java.util.List.<Map<String, ?>>of(Map.of(), Map.of("amount", 1), Map.of("amount", "invalid"))) {
+            assertThrows(BadRequestException.class, () -> fixture.service.applyVerifiedResult(
+                    PaymentProvider.PAYOS, fixture.result(true, true), details));
+        }
+        verifyNoInteractions(fixture.subscriptions);
+        assertEquals(InvoiceStatus.PENDING, fixture.invoice.getStatus());
+    }
+
+    @Test
+    void invalidOrFailedPaymentCannotActivateSubscription() {
+        var fixture = new SubscriptionCallbackFixture();
+        assertThrows(BadRequestException.class, () -> fixture.service.applyVerifiedResult(
+                PaymentProvider.PAYOS, fixture.result(false, true), Map.of("amount", 699000)));
+        fixture.service.applyVerifiedResult(PaymentProvider.PAYOS, fixture.result(true, false), Map.of());
+        verifyNoInteractions(fixture.subscriptions);
+        assertEquals(InvoiceStatus.FAILED, fixture.invoice.getStatus());
+    }
+
+    private static class SubscriptionCallbackFixture {
+        final SubscriptionService subscriptions = mock(SubscriptionService.class);
+        final ICourseEnrollmentRepository enrollments = mock(ICourseEnrollmentRepository.class);
+        final InvoiceEntity invoice = new InvoiceEntity();
+        final PaymentCallbackServiceImpl service;
+
+        SubscriptionCallbackFixture() {
+            var invoices = mock(InvoiceRepository.class);
+            var payments = mock(PaymentRepository.class);
+            invoice.setId(100L);
+            invoice.setSubscriptionPlanCode("STANDARD");
+            invoice.setSubscriptionDurationDays(30);
+            invoice.setStatus(InvoiceStatus.PENDING);
+            PaymentEntity payment = new PaymentEntity();
+            payment.setInvoice(invoice);
+            payment.setAmount(new BigDecimal("699000"));
+            when(payments.findFirstByProviderAndTransactionIdOrderByIdDesc(PaymentProvider.PAYOS, "123"))
+                    .thenReturn(Optional.of(payment));
+            when(invoices.findByIdForUpdate(100L)).thenReturn(Optional.of(invoice));
+            service = new PaymentCallbackServiceImpl(mock(PayOSService.class), invoices, payments, enrollments,
+                    new InvoiceConverter(new ModelMapper(), mock(ICouponRepository.class)),
+                    mock(PaymentConverter.class), mock(EntityManager.class), subscriptions);
+        }
+
+        PaymentVerifyResponse result(boolean valid, boolean success) {
+            return new PaymentVerifyResponse(valid, success, "123", "bank-ref", "test");
+        }
+    }
 
     @Test
     void callbackFindsPaymentByProviderAndGatewayOrderCode() {
@@ -43,7 +112,8 @@ class PaymentCallbackServiceImplTest {
                 courseEnrollmentRepository,
                 invoiceConverter,
                 paymentConverter,
-                entityManager
+                entityManager,
+                mock(SubscriptionService.class)
         );
 
         Map<String, String> params = Map.of("orderCode", "175000000000008");
@@ -92,7 +162,8 @@ class PaymentCallbackServiceImplTest {
                 courseEnrollmentRepository,
                 invoiceConverter,
                 paymentConverter,
-                entityManager
+                entityManager,
+                mock(SubscriptionService.class)
         );
 
         Map<String, String> params = Map.of("orderCode", "175000000000009");

@@ -36,8 +36,8 @@ export default function StartLearningPage() {
             <>
                 <LearningGreeting studentName={stats?.studentName || "bạn"} />
                 <LearningMessage
-                    title="Bạn chưa sở hữu khóa học nào"
-                    message="Các khóa học đã thanh toán thành công sẽ xuất hiện tại đây."
+                    title="Bắt đầu hành trình học tiếng Trung"
+                    message="Đăng ký gói học hoặc kích hoạt học thử để truy cập toàn bộ khóa học. Nếu gói đã hết hạn, hãy gia hạn để tiếp tục tiến độ đã lưu."
                     showCatalogLink
                 />
             </>

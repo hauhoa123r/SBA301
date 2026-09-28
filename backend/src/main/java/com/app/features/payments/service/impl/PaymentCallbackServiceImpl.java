@@ -1,6 +1,7 @@
 package com.app.features.payments.service.impl;
 
 import com.app.exception.ResourceNotFoundException;
+import com.app.exception.BadRequestException;
 import com.app.features.learning.repository.ICourseEnrollmentRepository;
 import com.app.features.model.CouponEntity;
 import com.app.features.model.CourseEntity;
@@ -15,6 +16,7 @@ import com.app.features.payments.repository.InvoiceRepository;
 import com.app.features.payments.repository.PaymentRepository;
 import com.app.features.payments.service.PaymentCallbackService;
 import com.app.features.payments.service.PayOSService;
+import com.app.features.subscriptions.service.SubscriptionService;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.math.BigDecimal;
 import java.util.Map;
 
 @Service
@@ -35,6 +38,7 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
     private final InvoiceConverter invoiceConverter;
     private final PaymentConverter paymentConverter;
     private final EntityManager entityManager;
+    private final SubscriptionService subscriptions;
 
     @Override
     @Transactional
@@ -73,13 +77,31 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
             return verifyResponse;
         }
 
+        if (!verifyResponse.valid()) {
+            throw new BadRequestException("Kết quả thanh toán chưa được xác thực.");
+        }
+        if (verifyResponse.success() && invoice.getSubscriptionPlanCode() != null) {
+            Object amount = details.containsKey("amountPaid") ? details.get("amountPaid") : details.get("amount");
+            try {
+                if (amount == null || new BigDecimal(amount.toString()).compareTo(payment.getAmount()) != 0) {
+                    throw new BadRequestException("Số tiền thanh toán không khớp hóa đơn.");
+                }
+            } catch (NumberFormatException exception) {
+                throw new BadRequestException("Số tiền thanh toán không hợp lệ.");
+            }
+        }
+
         paymentConverter.applyCallback(payment, provider, verifyResponse, details);
         paymentRepository.save(payment);
 
         invoiceConverter.applyPaymentResult(invoice, verifyResponse.success());
         if (verifyResponse.success()) {
             increaseCouponUsage(invoice);
-            enrollStudent(invoice);
+            if (invoice.getSubscriptionPlanCode() != null) {
+                subscriptions.activatePaidInvoice(invoice);
+            } else {
+                enrollStudent(invoice);
+            }
         }
         invoiceRepository.save(invoice);
 
@@ -106,6 +128,7 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
         Long userId = invoice.getUser().getId();
         Long courseId = course.getId();
         int inserted = courseEnrollmentRepository.insertIfAbsent(userId, courseId, Instant.now());
+        courseEnrollmentRepository.grantLegacyAccess(userId, courseId);
         if (inserted == 0) {
             log.info("Course enrollment already exists, userId={}, courseId={}", userId, courseId);
             return;

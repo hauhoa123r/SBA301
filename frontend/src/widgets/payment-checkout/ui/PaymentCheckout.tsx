@@ -4,12 +4,15 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import type { CourseDetail } from "@/entities/course";
 import type { Payment } from "@/entities/payment";
+import type { SubscriptionPlan } from "@/features/subscription/api";
+import { usePaymentResult } from "@/features/payment";
 import { AnimatedCard, UserImage, UserReveal, UserStagger } from "@/shared/ui";
 import { formatVndCurrency } from "@/shared/utils";
 
 interface PaymentCheckoutState {
   payment: Payment;
   course?: CourseDetail;
+  plan?: SubscriptionPlan;
   couponCode?: string;
 }
 
@@ -35,6 +38,7 @@ function getCheckoutState(value: unknown): PaymentCheckoutState | null {
   return {
     payment: value.payment,
     course: isCourseDetail(value.course) ? value.course : undefined,
+    plan: isRecord(value.plan) && typeof value.plan.name === "string" && typeof value.plan.durationDays === "number" ? value.plan as unknown as SubscriptionPlan : undefined,
     couponCode: typeof value.couponCode === "string" ? value.couponCode : undefined,
   };
 }
@@ -107,27 +111,27 @@ export function PaymentCheckout() {
           Không tìm thấy thông tin thanh toán
         </h1>
         <p className="mt-3 text-brand-textSecondary">
-          Vui lòng quay lại trang khóa học và tạo giao dịch thanh toán mới.
+          Vui lòng quay lại trang gói học và tạo giao dịch thanh toán mới.
         </p>
         <Link
-          to="/courses"
+          to="/subscriptions"
           className="mt-6 inline-flex h-12 items-center justify-center rounded-full bg-brand-accent px-6 font-black text-brand-white transition hover:bg-brand-accentHover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accentSoft"
         >
-          Xem khóa học
+          Xem gói học
         </Link>
       </UserReveal>
     );
   }
 
-  const { payment, course } = checkoutState;
+  const { payment, course, plan } = checkoutState;
   const amount = formatVndCurrency(payment.amount);
   const accountHolder =
     payment.accountName ||
     payment.accountHolder ||
     payment.beneficiaryName ||
     payment.receiverName ||
-    "NGOC THUY NGUYEN";
-  const accountNumber = "0392004902";
+    "";
+  const accountNumber = payment.accountNumber || "";
   const transferContent =
     payment.transferContent || payment.description || payment.invoiceCode || "";
   const qrPayload = payment.qrCode || payment.paymentLink || "";
@@ -228,12 +232,13 @@ export function PaymentCheckout() {
               </h2>
             </div>
             <UserStagger className="mt-6 grid gap-4 sm:mt-8" step={55} distance={16}>
-              <PaymentInfoRow label="Khóa học" value={course?.title || "Đang cập nhật"} onCopy={copyText} />
+              <PaymentInfoRow label={plan ? "Gói đăng ký" : "Khóa học"} value={plan ? `${plan.name} · ${plan.durationDays} ngày · Toàn bộ khóa học` : course?.title || "Gói học Edujar"} onCopy={copyText} />
               <PaymentInfoRow label="Số tiền" value={amount} onCopy={copyText} />
-              <PaymentInfoRow label="Chủ tài khoản" value={accountHolder} copyValue={accountHolder} onCopy={copyText} />
-              <PaymentInfoRow label="Số tài khoản" value={accountNumber} copyValue={accountNumber} onCopy={copyText} />
+              {accountHolder && <PaymentInfoRow label="Chủ tài khoản" value={accountHolder} copyValue={accountHolder} onCopy={copyText} />}
+              {accountNumber && <PaymentInfoRow label="Số tài khoản" value={accountNumber} copyValue={accountNumber} onCopy={copyText} />}
               <PaymentInfoRow label="Nội dung chuyển khoản" value={transferContent} copyValue={transferContent} onCopy={copyText} highlight />
             </UserStagger>
+            {payment.invoiceId && <CheckoutStatus invoiceId={payment.invoiceId} />}
             {payment.paymentLink && (
               <a
                 href={payment.paymentLink}
@@ -250,4 +255,13 @@ export function PaymentCheckout() {
       </div>
     </section>
   );
+}
+
+function CheckoutStatus({ invoiceId }: { invoiceId: number }) {
+  const { result, retry } = usePaymentResult(invoiceId);
+  return <div className="mt-6 rounded-xl border border-brand-border p-4 text-sm" aria-live="polite">
+    <p>{result.message}</p>
+    {result.state === "SUCCESS" ? <Link to="/learning" className="mt-3 inline-block font-bold text-brand-accentSoft">Gói đã được kích hoạt — Vào học</Link> :
+      <button type="button" onClick={retry} className="mt-3 font-bold text-brand-accentSoft">Kiểm tra thanh toán</button>}
+  </div>;
 }
