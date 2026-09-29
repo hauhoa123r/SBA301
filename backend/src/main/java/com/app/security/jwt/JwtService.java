@@ -22,8 +22,8 @@ public class JwtService {
     private final Duration refreshTtl;
 
     public JwtService(@Value("${app.jwt.secret}") String base64Secret,
-                      @Value("${app.jwt.access-ttl:PT15M}") Duration accessTtl,
-                      @Value("${app.jwt.refresh-ttl:P30D}") Duration refreshTtl) {
+                      @Value("${app.jwt.access-ttl}") Duration accessTtl,
+                      @Value("${app.jwt.refresh-ttl}") Duration refreshTtl) {
         this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(base64Secret));
         this.accessTtl = accessTtl;
         this.refreshTtl = refreshTtl;

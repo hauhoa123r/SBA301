@@ -1,0 +1,18 @@
+{
+  "compose_http": "passed with synthetic env",
+  "compose_https": "passed with synthetic env",
+  "explicit_backend_env_mappings": "32/32",
+  "existing_tests": {
+    "passed": 62,
+    "skipped_mysql_integration": 4,
+    "failed": 0
+  },
+  "new_configuration_tests": {
+    "passed": 2,
+    "failed": 0
+  },
+  "frontend_production_build": "passed; bundle size warning",
+  "docker_daemon": "not available",
+  "ubuntu_runtime_dns_ssl_oauth_payos": "not verified",
+  "supplied_env": "requires MYSQL_USER correction and 4 missing URL/origin keys"
+}

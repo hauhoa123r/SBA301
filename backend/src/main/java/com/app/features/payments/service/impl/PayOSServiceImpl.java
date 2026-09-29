@@ -55,7 +55,7 @@ public class PayOSServiceImpl implements PayOSService {
     @Value("${payos.payment-request-url:https://api-merchant.payos.vn/v2/payment-requests}")
     private String paymentRequestUrl;
 
-    @Value("${app.frontend.payment-result-url:http://localhost:5173/payment/result}")
+    @Value("${app.frontend.payment-result-url}")
     private String paymentResultUrl;
 
     public PayOSServiceImpl() {

@@ -21,3 +21,15 @@ out/
 .package-lock.json
 package-lock.json
 .vscode
+
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
+**/secrets/
+deployment/acme/
+.deployment-check/
+!frontend/package-lock.json
+__pycache__/

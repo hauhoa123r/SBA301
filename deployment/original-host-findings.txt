@@ -1,0 +1,20 @@
+Jenkinsfile:10: SERVER_IP = "18.143.179.208"
+backend/src/main/java/com/app/features/auth/service/impl/EmailVerificationServiceImpl.java:30: @Value("${app.frontend.verify-email-url:http://localhost:5173/verify-email}")
+backend/src/main/java/com/app/features/payments/service/impl/PayOSServiceImpl.java:58: @Value("${app.frontend.payment-result-url:http://localhost:5173/payment/result}")
+backend/src/main/resources/application.properties:5: spring.datasource.url=${DB_URL:jdbc:mysql://localhost:3306/chinese_online_learning}
+backend/src/main/resources/application.properties:18: app.frontend.payment-result-url=${FRONTEND_PAYMENT_RESULT_URL:http://localhost:5173/payment/result}
+backend/src/main/resources/application.properties:19: app.frontend.verify-email-url=${FRONTEND_VERIFY_EMAIL_URL:http://localhost:5173/verify-email}
+backend/src/main/resources/application.properties:39: app.cors.allowed-origins=https://edujar.site,https://www.edujar.site,http://localhost:5173
+backend/src/main/resources/application.properties:44: app.oauth2.frontend-redirect-uri=${OAUTH2_FRONTEND_REDIRECT_URI:http://localhost:5173/oauth/callback}
+docker-compose.yml:28: "mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD --silent"
+docker-compose.yml:56: OAUTH2_FRONTEND_REDIRECT_URI: ${OAUTH2_FRONTEND_REDIRECT_URI:-https://edujar.site/oauth/callback}
+docker-compose.yml:74: FRONTEND_PAYMENT_RESULT_URL: ${FRONTEND_PAYMENT_RESULT_URL:-https://edujar.site/payment/result}
+frontend/index.html:8: <link rel="canonical" href="https://edujar.site/" />
+frontend/nginx.conf:27: ssl_certificate /etc/letsencrypt/live/edujar.site/fullchain.pem;
+frontend/nginx.conf:28: ssl_certificate_key /etc/letsencrypt/live/edujar.site/privkey.pem;
+frontend/nginx.conf:38: server_name edujar.site www.edujar.site;
+frontend/nginx.conf:43: return 301 https://edujar.site$request_uri;
+frontend/nginx.conf:48: server_name edujar.site www.edujar.site;
+frontend/nginx.conf:50: ssl_certificate /etc/letsencrypt/live/edujar.site/fullchain.pem;
+frontend/nginx.conf:51: ssl_certificate_key /etc/letsencrypt/live/edujar.site/privkey.pem;
+frontend/vite.config.ts:12: target: "http://localhost:8081",

@@ -27,7 +27,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     private final UserRepository userRepository;
     private final MailService mailService;
 
-    @Value("${app.frontend.verify-email-url:http://localhost:5173/verify-email}")
+    @Value("${app.frontend.verify-email-url}")
     private String verifyEmailUrl;
 
     @Override
