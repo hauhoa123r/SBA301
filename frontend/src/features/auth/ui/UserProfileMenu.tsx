@@ -3,6 +3,7 @@ import { ChevronDown, LogOut, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { logout } from "../api/authApi";
 import { useAuth } from "../model/useAuth";
+import { hasRole } from "@/entities/user";
 
 interface UserProfileMenuProps {
     variant?: "pill" | "icon";
@@ -56,12 +57,12 @@ export default function UserProfileMenu({ variant = "pill" }: UserProfileMenuPro
                         </div>
                     </div>
                     <Link
-                        to="/user/profile"
+                        to={hasRole(user, "ADMIN") ? "/admin/dashboard" : "/user/profile"}
                         onClick={() => setOpen(false)}
                         className="flex items-center gap-3 px-4 py-3 text-sm text-brand-textSecondary no-underline transition-colors hover:bg-brand-accent/10 hover:text-brand-white"
                     >
                         <User className="h-4 w-4" />
-                        <span>Hồ sơ</span>
+                        <span>{hasRole(user, "ADMIN") ? "Admin Dashboard" : "Hồ sơ"}</span>
                     </Link>
                     <button
                         type="button"

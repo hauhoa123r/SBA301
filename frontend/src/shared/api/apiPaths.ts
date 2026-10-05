@@ -1,5 +1,6 @@
 export const API_BASE_URL = "/api";
 export const API_AUTH = `${API_BASE_URL}/auth`;
+export const API_ADMIN_DASHBOARD = `${API_BASE_URL}/admin/dashboard`;
 export const API_COURSES = `${API_BASE_URL}/courses`;
 export const API_USERS = `${API_BASE_URL}/users`;
 export const API_CATEGORIES = `${API_BASE_URL}/categories`;

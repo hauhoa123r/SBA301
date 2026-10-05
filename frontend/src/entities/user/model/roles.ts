@@ -1,5 +1,6 @@
 import type {
   StudentUser,
+  SupportedUser,
   User,
   UserRole,
   UserRoleCollection,
@@ -13,8 +14,6 @@ const ROLE_SOURCE_KEYS = [
   "roles",
   "authority",
   "authorities",
-  "permission",
-  "permissions",
 ] as const;
 
 function isRoleDescriptor(value: unknown): value is UserRoleDescriptor {
@@ -96,4 +95,16 @@ export function toStudentUser(value: unknown): StudentUser | null {
   delete studentUser.permissions;
 
   return studentUser;
+}
+
+export function toSupportedUser(value: unknown): SupportedUser | null {
+  if (!isUser(value)) return null;
+  const roles = [...new Set(extractRoles(value))].map((role) => role.toUpperCase() as UserRole);
+  if (!roles.length) return null;
+  const user: SupportedUser = { ...value, role: roles.includes("ADMIN") ? "ADMIN" : "STUDENT", roles };
+  delete user.authority;
+  delete user.authorities;
+  delete user.permission;
+  delete user.permissions;
+  return user;
 }

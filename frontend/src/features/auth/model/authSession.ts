@@ -1,4 +1,4 @@
-import { isUser, toStudentUser, type StudentUser } from "@/entities/user";
+import { isUser, toSupportedUser, type SupportedUser } from "@/entities/user";
 import type { AuthMessageResponse, AuthSession, OAuthSession } from "./auth.types";
 
 export const AUTH_STORAGE_KEYS = {
@@ -20,13 +20,13 @@ function firstTruthy(values: readonly unknown[]): unknown {
   return values.find(Boolean);
 }
 
-function requireStudentUser(value: unknown): StudentUser {
+function requireSupportedUser(value: unknown): SupportedUser {
   if (!isUser(value)) throw new Error("Login response does not contain a user");
 
-  const user = toStudentUser(value);
+  const user = toSupportedUser(value);
   if (!user) {
     throw new Error(
-      "Tài khoản này không còn được hỗ trợ. Chỉ tài khoản STUDENT có thể đăng nhập.",
+      "Tài khoản này không còn được hỗ trợ. Chỉ tài khoản STUDENT hoặc ADMIN có thể đăng nhập.",
     );
   }
 
@@ -38,7 +38,7 @@ export function parseLoginResponse(value: unknown): AuthSession {
 
   const data = isRecord(value.data) ? value.data : undefined;
   const userCandidate = firstTruthy([value.user, data?.user, data, value]);
-  const user = requireStudentUser(userCandidate);
+  const user = requireSupportedUser(userCandidate);
 
   return {
     user,
@@ -56,7 +56,7 @@ export function parseOAuthResponse(value: unknown): OAuthSession {
     throw new Error("OAuth response does not contain a complete session");
   }
 
-  const user = requireStudentUser(value.user);
+  const user = requireSupportedUser(value.user);
   return { accessToken, refreshToken, user };
 }
 
@@ -65,7 +65,7 @@ export function readMessageResponse(value: unknown): AuthMessageResponse {
   return { message: typeof value.message === "string" ? value.message : undefined };
 }
 
-export function getStoredUser(): StudentUser | null {
+export function getStoredUser(): SupportedUser | null {
   const savedUser = localStorage.getItem(AUTH_STORAGE_KEYS.user);
   const accessToken = localStorage.getItem(AUTH_STORAGE_KEYS.accessToken);
   const refreshToken = localStorage.getItem(AUTH_STORAGE_KEYS.refreshToken);
@@ -78,7 +78,7 @@ export function getStoredUser(): StudentUser | null {
 
   try {
     const parsed: unknown = JSON.parse(savedUser);
-    const user = toStudentUser(parsed);
+    const user = toSupportedUser(parsed);
     if (user) {
       persistUser(user);
       return user;
@@ -91,7 +91,7 @@ export function getStoredUser(): StudentUser | null {
   return null;
 }
 
-export function persistUser(user: StudentUser | null): void {
+export function persistUser(user: SupportedUser | null): void {
   if (user) {
     localStorage.setItem(AUTH_STORAGE_KEYS.user, JSON.stringify(user));
   } else {

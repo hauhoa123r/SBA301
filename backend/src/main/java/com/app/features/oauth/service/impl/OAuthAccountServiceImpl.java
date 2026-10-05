@@ -76,7 +76,7 @@ public class OAuthAccountServiceImpl implements OAuthAccountService {
         if (user.getStatus() != UserStatus.ACTIVE) {
             throw oauthError("account_disabled", "User account is not active");
         }
-        if (!SupportedRolePolicy.hasStudentRole(user)) {
+        if (!SupportedRolePolicy.hasSupportedRole(user)) {
             throw oauthError("unsupported_account_role", UnsupportedAccountRoleException.MESSAGE);
         }
     }

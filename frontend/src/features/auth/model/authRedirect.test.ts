@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { getPostLoginPath, getRequestedPath, getRoleHomePath } from "./authRedirect";
 
+it("sends an admin to the dashboard after login", () => {
+  expect(getPostLoginPath("", { roles: ["ADMIN"] })).toBe("/admin/dashboard");
+  expect(getRoleHomePath({ roles: ["STUDENT"] })).toBe("/");
+});
+
 describe("auth redirect policy", () => {
   it("uses the public home page for supported sessions", () => {
     expect(getRoleHomePath()).toBe("/");

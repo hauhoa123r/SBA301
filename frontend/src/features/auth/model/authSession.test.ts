@@ -45,7 +45,7 @@ describe("supported authentication sessions", () => {
     vi.unstubAllGlobals();
   });
 
-  it.each(["ADMIN", "MODERATOR", "TEACHER", "INSTRUCTOR", "USER"])(
+  it.each(["MODERATOR", "TEACHER", "INSTRUCTOR", "USER"])(
     "rejects a legacy-only %s login",
     (role) => {
       expect(() => parseLoginResponse({ user: { roles: [role] } })).toThrow(
@@ -54,7 +54,7 @@ describe("supported authentication sessions", () => {
     },
   );
 
-  it("keeps only STUDENT authorization for a mixed-role login", () => {
+  it("preserves both supported roles for a mixed-role login", () => {
     const session = parseLoginResponse({
       user: {
         id: 7,
@@ -66,8 +66,8 @@ describe("supported authentication sessions", () => {
 
     expect(session.user).toMatchObject({
       id: 7,
-      role: "STUDENT",
-      roles: ["STUDENT"],
+      role: "ADMIN",
+      roles: ["ADMIN", "STUDENT"],
     });
     expect(session.user).not.toHaveProperty("authorities");
   });
@@ -85,7 +85,7 @@ describe("supported authentication sessions", () => {
   it("clears a persisted legacy-only session including its tokens", () => {
     localStorage.setItem(
       AUTH_STORAGE_KEYS.user,
-      JSON.stringify({ roles: ["ROLE_ADMIN"] }),
+      JSON.stringify({ roles: ["ROLE_TEACHER"] }),
     );
     localStorage.setItem(AUTH_STORAGE_KEYS.accessToken, "access-token");
     localStorage.setItem(AUTH_STORAGE_KEYS.refreshToken, "refresh-token");
@@ -94,5 +94,12 @@ describe("supported authentication sessions", () => {
     expect(localStorage.getItem(AUTH_STORAGE_KEYS.user)).toBeNull();
     expect(localStorage.getItem(AUTH_STORAGE_KEYS.accessToken)).toBeNull();
     expect(localStorage.getItem(AUTH_STORAGE_KEYS.refreshToken)).toBeNull();
+  });
+
+  it("restores an admin session and accepts admin OAuth responses", () => {
+    localStorage.setItem(AUTH_STORAGE_KEYS.user, JSON.stringify({ id: 1, roles: ["ROLE_ADMIN"] }));
+    localStorage.setItem(AUTH_STORAGE_KEYS.accessToken, "access-token");
+    expect(getStoredUser()).toMatchObject({ id: 1, role: "ADMIN", roles: ["ADMIN"] });
+    expect(parseOAuthResponse({ accessToken: "access", refreshToken: "refresh", user: { roles: ["ADMIN"] } }).user.roles).toEqual(["ADMIN"]);
   });
 });

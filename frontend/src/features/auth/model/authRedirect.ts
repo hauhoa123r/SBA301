@@ -1,4 +1,5 @@
 import type { AuthRedirectLocation } from "./auth.types";
+import { hasRole, type User } from "@/entities/user";
 import { isRecord } from "./authSession";
 
 const AUTH_PATHS = ["/login", "/register", "/oauth/callback"] as const;
@@ -17,12 +18,12 @@ export function getRequestedPath(location: AuthRedirectLocation): string {
   return requestedPath.startsWith("/") && !requestedPath.startsWith("//") ? requestedPath : "";
 }
 
-export function getRoleHomePath(): string {
-  return "/";
+export function getRoleHomePath(user?: User | null): string {
+  return hasRole(user, "ADMIN") ? "/admin/dashboard" : "/";
 }
 
-export function getPostLoginPath(requestedPath = ""): string {
-  const fallback = getRoleHomePath();
+export function getPostLoginPath(requestedPath = "", user?: User | null): string {
+  const fallback = getRoleHomePath(user);
   if (!requestedPath.startsWith("/") || requestedPath.startsWith("//")) return fallback;
 
   const pathname = requestedPath.split(/[?#]/, 1)[0] ?? "";

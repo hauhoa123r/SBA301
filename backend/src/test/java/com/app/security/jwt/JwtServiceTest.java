@@ -21,14 +21,14 @@ class JwtServiceTest {
     );
 
     @Test
-    void mixedAccountTokenContainsOnlyStudentRole() {
+    void mixedAccountTokenContainsOnlySupportedRoles() {
         UserEntity user = userWithRoles("ADMIN", "STUDENT", "TEACHER");
         user.setId(7L);
         user.setEmail("student@example.com");
 
         Claims claims = jwtService.parse(jwtService.createAccessToken(user));
 
-        assertEquals(List.of("STUDENT"), claims.get("roles", List.class));
+        assertEquals(List.of("ADMIN", "STUDENT"), claims.get("roles", List.class));
         assertEquals("access", claims.get("type", String.class));
     }
 

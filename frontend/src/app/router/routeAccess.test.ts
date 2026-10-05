@@ -2,6 +2,12 @@ import { describe, expect, it } from "vitest";
 import { resolveRouteAccess } from "./routeAccess";
 
 describe("resolveRouteAccess", () => {
+    it("restricts the dashboard to admins and keeps student routes restricted", () => {
+        expect(resolveRouteAccess(null, "ADMIN")).toBe("login");
+        expect(resolveRouteAccess({ roles: ["STUDENT"] }, "ADMIN")).toBe("forbidden");
+        expect(resolveRouteAccess({ roles: ["ROLE_ADMIN"] }, "ADMIN")).toBe("allow");
+        expect(resolveRouteAccess({ roles: ["ADMIN"] }, "STUDENT")).toBe("forbidden");
+    });
     it("redirects anonymous visitors to login", () => {
         expect(resolveRouteAccess(null)).toBe("login");
     });

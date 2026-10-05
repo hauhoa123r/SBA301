@@ -1,4 +1,4 @@
-export const USER_ROLES = ["STUDENT"] as const;
+export const USER_ROLES = ["STUDENT", "ADMIN"] as const;
 
 export type UserRole = (typeof USER_ROLES)[number];
 
@@ -41,6 +41,11 @@ export interface User {
 export interface StudentUser extends User {
   role: "STUDENT";
   roles: readonly ["STUDENT"];
+}
+
+export interface SupportedUser extends User {
+  role: UserRole;
+  roles: readonly UserRole[];
 }
 
 export function isUser(value: unknown): value is User {

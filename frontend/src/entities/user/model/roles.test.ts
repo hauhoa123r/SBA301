@@ -6,6 +6,7 @@ import {
   hasRole,
   normalizeRole,
   toStudentUser,
+  toSupportedUser,
 } from "./roles";
 
 describe("user role helpers", () => {
@@ -47,5 +48,11 @@ describe("user role helpers", () => {
     expect(hasAnyRole(user)).toBe(true);
     expect(hasAnyRole(user, [])).toBe(false);
     expect(hasAnyRole(null)).toBe(false);
+  });
+
+  it("accepts admin roles without interpreting permission names as roles", () => {
+    expect(toSupportedUser({ roles: ["ROLE_ADMIN", "TEACHER"] })).toMatchObject({ role: "ADMIN", roles: ["ADMIN"] });
+    expect(hasRole({ permissions: [{ name: "ADMIN" }] }, "ADMIN")).toBe(false);
+    expect(hasRole({ roles: ["STUDENT"] }, "ADMIN")).toBe(false);
   });
 });

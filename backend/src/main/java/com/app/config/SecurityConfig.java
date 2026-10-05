@@ -78,6 +78,8 @@ public class SecurityConfig {
                                 "/api/payments/payos-webhook"
                         ).permitAll()
                         .requestMatchers(PUBLIC_AUTH_ENDPOINTS).permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/auth/me").hasAnyRole("STUDENT", "ADMIN")
                         .anyRequest().hasRole("STUDENT")
                 )
                 .oauth2Login(oauth2SecurityConfigurer::configure)

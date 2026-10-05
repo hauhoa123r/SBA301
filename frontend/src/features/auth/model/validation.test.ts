@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   validateEmail,
+  validateLoginField,
   validatePassword,
   validateResetPassword,
   validateResetPasswordToken,
@@ -8,6 +9,11 @@ import {
 } from "./validation";
 
 describe("auth validation", () => {
+  it("lets the server verify existing passwords without changing new-password rules", () => {
+    expect(validateLoginField("password", "123456")).toBe("");
+    expect(validateLoginField("password", "")).not.toBe("");
+    expect(validatePassword("123456")).not.toBe("");
+  });
   it("keeps the existing email, password and token constraints", () => {
     expect(validateEmail(" learner@example.com ")).toBe("");
     expect(validateEmail("invalid")).not.toBe("");

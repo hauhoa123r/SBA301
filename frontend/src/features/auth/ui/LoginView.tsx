@@ -8,7 +8,7 @@ import { showApiErrorToast } from "@/shared/utils";
 import { UserReveal } from "@/shared/ui/animation";
 import { getPostLoginPath, getRequestedPath } from "../model/authRedirect";
 import { AUTH_STORAGE_KEYS, parseLoginResponse, persistLoginSession } from "../model/authSession";
-import { validateAuthField, type AuthFieldName } from "../model/validation";
+import { validateLoginField, type AuthFieldName } from "../model/validation";
 
 interface LoginFormData {
     email: string;
@@ -62,15 +62,15 @@ const LoginView = () => {
         if (!isAuthFieldName(name)) return;
         setErrors((prev) => ({
             ...prev,
-            [name]: validateAuthField(name, value),
+            [name]: validateLoginField(name, value),
         }));
     };
 
     const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
         const nextErrors = {
-            email: validateAuthField("email", formData.email),
-            password: validateAuthField("password", formData.password),
+            email: validateLoginField("email", formData.email),
+            password: validateLoginField("password", formData.password),
         };
 
         setErrors(nextErrors);
@@ -86,7 +86,7 @@ const LoginView = () => {
             const session = parseLoginResponse(response);
             persistLoginSession(session);
             setUser(session.user);
-            void navigate(getPostLoginPath(getRequestedPath(location)), { replace: true });
+            void navigate(getPostLoginPath(getRequestedPath(location), session.user), { replace: true });
         } catch (err) {
             showApiErrorToast(err, "Đăng nhập thất bại. Vui lòng kiểm tra email hoặc mật khẩu.");
         }

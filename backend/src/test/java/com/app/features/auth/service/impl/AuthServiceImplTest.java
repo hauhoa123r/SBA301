@@ -15,6 +15,7 @@ import com.app.security.jwt.JwtService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +29,18 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class AuthServiceImplTest {
+
+    @Test
+    void bcryptAdminLoginAcceptsPasswordAndRejectsWrongPasswordAndHashAsPassword() {
+        UserEntity admin = userWithRoles(UserStatus.ACTIVE, "ADMIN");
+        admin.setPasswordHash(new BCryptPasswordEncoder().encode("123456"));
+        TestContext context = contextFor(admin);
+        when(context.jwtService().createAccessToken(admin)).thenReturn("access-token");
+        when(context.jwtService().createRefreshToken(admin)).thenReturn("refresh-token");
+        assertEquals(List.of("ADMIN"), context.service().login(new LoginRequest("student@example.com", "123456")).user().roles());
+        assertThrows(InvalidLoginException.class, () -> context.service().login(new LoginRequest("student@example.com", "wrong")));
+        assertThrows(InvalidLoginException.class, () -> context.service().login(new LoginRequest("student@example.com", admin.getPasswordHash())));
+    }
 
     @Test
     void studentLoginSucceeds() {
@@ -45,7 +58,7 @@ class AuthServiceImplTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"ADMIN", "MODERATOR", "TEACHER"})
+    @ValueSource(strings = {"MODERATOR", "TEACHER"})
     void legacyOnlyAccountIsRejectedWithoutIssuingTokens(String legacyRole) {
         TestContext context = contextFor(userWithRoles(UserStatus.ACTIVE, legacyRole));
 
@@ -72,7 +85,7 @@ class AuthServiceImplTest {
 
         TokenResponse response = context.service().login(loginRequest());
 
-        assertEquals(List.of("STUDENT"), response.user().roles());
+        assertEquals(List.of("ADMIN", "STUDENT"), response.user().roles());
         verify(context.jwtService()).createAccessToken(context.user());
         verify(context.jwtService()).createRefreshToken(context.user());
     }

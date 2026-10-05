@@ -40,7 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (jwtService.isType(claims, "access")) {
                     UserEntity user = userRepository.findByIdWithRoles(Long.valueOf(claims.getSubject())).orElse(null);
                     if (user != null && user.getStatus() == UserStatus.ACTIVE) {
-                        if (!SupportedRolePolicy.hasStudentRole(user)) {
+                        if (!SupportedRolePolicy.hasSupportedRole(user)) {
                             SecurityContextHolder.clearContext();
                             responseWriter.write(request, response, HttpStatus.UNAUTHORIZED,
                                     UnsupportedAccountRoleException.MESSAGE);

@@ -2,6 +2,7 @@ package com.app.utils;
 
 public final class ApiPath {
     private static final String BASE = "/api";
+    public static final String API_ADMIN_DASHBOARD = BASE + "/admin/dashboard";
     public static final String API_AUTH = BASE + "/auth";
     public static final String API_CATEGORIES = BASE + "/categories";
     public static final String API_COUPON = BASE + "/coupon";

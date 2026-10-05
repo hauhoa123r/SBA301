@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState, type ReactNode, type SetStateAction } from "react";
-import { toStudentUser, type StudentUser } from "@/entities/user";
+import { toSupportedUser, type SupportedUser } from "@/entities/user";
 import { AuthContext } from "./AuthContext";
 import { getStoredUser, persistUser } from "./authSession";
 
@@ -8,12 +8,12 @@ export interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setStoredUser] = useState<StudentUser | null>(getStoredUser);
+  const [user, setStoredUser] = useState<SupportedUser | null>(getStoredUser);
 
-  const setUser = useCallback((nextUser: SetStateAction<StudentUser | null>) => {
+  const setUser = useCallback((nextUser: SetStateAction<SupportedUser | null>) => {
     setStoredUser((currentUser) => {
       const resolvedUser = typeof nextUser === "function" ? nextUser(currentUser) : nextUser;
-      const supportedUser = toStudentUser(resolvedUser);
+      const supportedUser = toSupportedUser(resolvedUser);
       persistUser(supportedUser);
       return supportedUser;
     });

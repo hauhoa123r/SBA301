@@ -1,5 +1,5 @@
 import type { Dispatch, SetStateAction } from "react";
-import type { StudentUser } from "@/entities/user";
+import type { SupportedUser } from "@/entities/user";
 
 export interface LoginRequest {
   email: string;
@@ -30,20 +30,20 @@ export interface AuthMessageResponse {
 }
 
 export interface AuthSession {
-  user: StudentUser;
+  user: SupportedUser;
   accessToken?: string;
   refreshToken?: string;
 }
 
 export interface OAuthSession {
-  user: StudentUser;
+  user: SupportedUser;
   accessToken: string;
   refreshToken: string;
 }
 
 export interface AuthContextValue {
-  user: StudentUser | null;
-  setUser: Dispatch<SetStateAction<StudentUser | null>>;
+  user: SupportedUser | null;
+  setUser: Dispatch<SetStateAction<SupportedUser | null>>;
 }
 
 export interface AuthRedirectLocation {

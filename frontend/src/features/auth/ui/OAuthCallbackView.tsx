@@ -51,7 +51,7 @@ export default function OAuthCallbackView() {
         setUser(session.user);
         const requestedPath = sessionStorage.getItem(AUTH_STORAGE_KEYS.oauthReturnTo) ?? "";
         sessionStorage.removeItem(AUTH_STORAGE_KEYS.oauthReturnTo);
-        if (active) void navigate(getPostLoginPath(requestedPath), { replace: true });
+        if (active) void navigate(getPostLoginPath(requestedPath, session.user), { replace: true });
       })
       .catch((requestError: unknown) => {
         exchanges.delete(code);

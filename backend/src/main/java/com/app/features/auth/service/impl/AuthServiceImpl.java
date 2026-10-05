@@ -20,11 +20,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class AuthServiceImpl implements AuthService {
+    private static final BCryptPasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
 
     private final UserRepository userRepositoryImpl;
     private final LoginConverter loginConverter;
@@ -38,7 +40,7 @@ public class AuthServiceImpl implements AuthService {
                     log.warn("Login failed because email does not exist, email={}", user.getEmail());
                     return new InvalidLoginException("Email không tồn tại");
                 });
-        if (!userEntity.getPasswordHash().equals(user.getPassword())) {
+        if (!matchesPassword(user.getPassword(), userEntity.getPasswordHash())) {
             log.warn("Login failed: invalid password, email={}", user.getEmail());
             throw new InvalidLoginException("Mật khẩu không đúng");
         }
@@ -51,6 +53,16 @@ public class AuthServiceImpl implements AuthService {
         log.info("Login successful, userId={}", userEntity.getId());
         return new TokenResponse(jwtService.createAccessToken(userEntity), jwtService.createRefreshToken(userEntity),
                 AuthUserResponse.from(userEntity));
+    }
+
+    private boolean matchesPassword(String password, String storedPassword) {
+        if (storedPassword == null || password == null) return false;
+        if (storedPassword.startsWith("$2a$") || storedPassword.startsWith("$2b$") || storedPassword.startsWith("$2y$")) {
+            try { return PASSWORD_ENCODER.matches(password, storedPassword); }
+            catch (IllegalArgumentException exception) { return false; }
+        }
+        // Existing registration/reset flows store plaintext. Preserve those accounts for this change.
+        return storedPassword.equals(password);
     }
 
     @Override

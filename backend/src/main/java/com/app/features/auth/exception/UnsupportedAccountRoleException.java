@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 
 public class UnsupportedAccountRoleException extends BaseException {
     public static final String MESSAGE =
-            "UNSUPPORTED_ACCOUNT_ROLE: This account does not have the supported STUDENT role";
+            "UNSUPPORTED_ACCOUNT_ROLE: This account does not have a supported STUDENT or ADMIN role";
 
     public UnsupportedAccountRoleException() {
         super(HttpStatus.UNAUTHORIZED, MESSAGE);

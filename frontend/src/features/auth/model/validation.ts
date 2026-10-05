@@ -48,3 +48,7 @@ export const validateResetPassword = (newPassword: string, confirmPassword: stri
 
 export const validateAuthField = (name: AuthFieldName, value: string): string =>
   name === "email" ? validateEmail(value) : validatePassword(value);
+
+// Existing credentials may predate the current registration policy.
+export const validateLoginField = (name: AuthFieldName, value: string): string =>
+  name === "email" ? validateEmail(value) : value ? "" : ERROR_MESSAGES.PASSWORD_REQUIRED;

@@ -61,7 +61,7 @@ public class OAuthAuthorizationCodeServiceImpl implements OAuthAuthorizationCode
             throw new OAuth2AuthenticationException(new OAuth2Error("account_disabled"),
                     "User account is not active");
         }
-        if (!SupportedRolePolicy.hasStudentRole(user)) {
+        if (!SupportedRolePolicy.hasSupportedRole(user)) {
             throw new OAuth2AuthenticationException(new OAuth2Error("unsupported_account_role"),
                     UnsupportedAccountRoleException.MESSAGE);
         }

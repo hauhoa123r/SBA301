@@ -1,6 +1,7 @@
 import { LogOut, Settings } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import type { User } from "@/entities/user";
+import { hasRole } from "@/entities/user";
 import { NAV_LINKS } from "../model/navigation";
 
 interface MobileMenuProps {
@@ -47,12 +48,12 @@ export default function MobileMenu({ user, onClose, onLogout }: MobileMenuProps)
                             {email && <p className="mt-0.5 truncate text-xs text-brand-textSecondary">{email}</p>}
                         </div>
                     </div>
-                    <NavLink to="/user/profile" onClick={onClose} className="flex items-center gap-2 text-sm text-brand-textSecondary no-underline">
+                    <NavLink to={hasRole(user, "ADMIN") ? "/admin/dashboard" : "/user/profile"} onClick={onClose} className="flex items-center gap-2 text-sm text-brand-textSecondary no-underline">
                         <Settings className="h-4 w-4" />
-                        Cài đặt
+                        {hasRole(user, "ADMIN") ? "Admin Dashboard" : "Cài đặt"}
                     </NavLink>
-                    <NavLink to="/learning" onClick={onClose} className="w-fit rounded-full bg-brand-accent px-4 py-2 text-sm font-medium text-brand-white no-underline">
-                        Bắt đầu học
+                    <NavLink to={hasRole(user, "ADMIN") ? "/admin/dashboard" : "/learning"} onClick={onClose} className="w-fit rounded-full bg-brand-accent px-4 py-2 text-sm font-medium text-brand-white no-underline">
+                        {hasRole(user, "ADMIN") ? "Quản trị hệ thống" : "Bắt đầu học"}
                     </NavLink>
                     <button type="button" onClick={() => {
                         void onLogout();

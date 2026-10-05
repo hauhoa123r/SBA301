@@ -16,22 +16,31 @@ class SupportedRolePolicyTest {
 
     @Test
     void legacyOnlyAccountIsRejected() {
-        UserEntity user = userWithRoles("ADMIN", "MODERATOR", "TEACHER");
+        UserEntity user = userWithRoles("MODERATOR", "TEACHER");
 
         assertThrows(UnsupportedAccountRoleException.class,
                 () -> SupportedRolePolicy.requireSupported(user));
     }
 
     @Test
-    void mixedAccountOnlyExposesStudentRoleAndAuthority() {
+    void mixedAccountExposesOnlySupportedRolesAndAuthorities() {
         UserEntity user = userWithRoles("ADMIN", "STUDENT", "TEACHER");
 
         assertTrue(SupportedRolePolicy.hasStudentRole(user));
-        assertEquals(List.of("STUDENT"), SupportedRolePolicy.supportedRoleNames(user));
-        assertEquals(List.of("ROLE_STUDENT"), SupportedRolePolicy.supportedAuthorities(user).stream()
+        assertEquals(List.of("ADMIN", "STUDENT"), SupportedRolePolicy.supportedRoleNames(user));
+        assertEquals(List.of("ROLE_ADMIN", "ROLE_STUDENT"), SupportedRolePolicy.supportedAuthorities(user).stream()
                 .map(authority -> authority.getAuthority())
                 .toList());
-        assertEquals(List.of("STUDENT"), AuthUserResponse.from(user).roles());
+        assertEquals(List.of("ADMIN", "STUDENT"), AuthUserResponse.from(user).roles());
+    }
+
+    @Test
+    void adminCanAuthenticateWithoutReceivingStudentAccess() {
+        UserEntity user = userWithRoles(" admin ");
+        assertEquals(List.of("ADMIN"), SupportedRolePolicy.supportedRoleNames(user));
+        assertEquals(List.of("ROLE_ADMIN"), SupportedRolePolicy.supportedAuthorities(user).stream()
+                .map(authority -> authority.getAuthority()).toList());
+        assertTrue(!SupportedRolePolicy.hasStudentRole(user));
     }
 
     @Test

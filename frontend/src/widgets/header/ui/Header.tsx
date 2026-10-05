@@ -4,6 +4,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { logout, useAuth, UserProfileMenu } from "@/features/auth";
 import { BrandLogo } from "@/shared/ui";
 import { NAV_LINKS } from "../model/navigation";
+import { hasRole } from "@/entities/user";
 import MobileMenu from "./MobileMenu";
 
 export function Header() {
@@ -44,8 +45,8 @@ export function Header() {
                 </nav>
                 {user ? (
                     <div className="hidden md:flex items-center gap-3">
-                        <NavLink to="/learning" className="bg-brand-accent hover:bg-brand-accentHover text-brand-white px-6 py-2 rounded-full text-sm font-medium no-underline transition-colors shadow-md shadow-brand-accent/25">
-                            Bắt đầu học
+                        <NavLink to={hasRole(user, "ADMIN") ? "/admin/dashboard" : "/learning"} className="bg-brand-accent hover:bg-brand-accentHover text-brand-white px-6 py-2 rounded-full text-sm font-medium no-underline transition-colors shadow-md shadow-brand-accent/25">
+                            {hasRole(user, "ADMIN") ? "Admin Dashboard" : "Bắt đầu học"}
                         </NavLink>
                         <UserProfileMenu />
                     </div>

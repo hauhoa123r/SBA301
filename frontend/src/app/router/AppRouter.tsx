@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { lazy, Suspense } from "react";
 
 import LearnCourseLayout from "@/features/learning/layouts/LearnCourseLayout.jsx";
 import LearningLayout from "@/features/learning/layouts/LearningLayout.jsx";
@@ -24,11 +25,14 @@ import { VerifyEmailPage } from "@/pages/verify-email";
 
 import { MainLayout } from "./MainLayout";
 import { RoleRoute } from "./RoleRoute";
+const AdminDashboardPage = lazy(() => import("@/pages/admin-dashboard/AdminDashboardPage")
+  .then((module) => ({ default: module.AdminDashboardPage })));
 
 export function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="admin/dashboard" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải Dashboard…</div>}><AdminDashboardPage /></Suspense></RoleRoute>} />
         <Route element={<MainLayout />}>
           <Route index element={<HomePage />} />
           <Route path="courses" element={<CourseListPage />} />
