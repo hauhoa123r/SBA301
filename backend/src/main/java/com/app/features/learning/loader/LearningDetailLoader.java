@@ -63,6 +63,7 @@ public class LearningDetailLoader {
 
     private void initializeChapter(ChapterEntity chapter) {
         chapter.getLessonEntities().forEach(this::initializeLesson);
+        chapter.getQuizzes().forEach(this::initializeQuiz);
     }
 
     private void initializeLesson(LessonEntity lesson) {

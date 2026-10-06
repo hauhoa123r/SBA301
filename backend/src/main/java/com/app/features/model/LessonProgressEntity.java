@@ -39,6 +39,9 @@ public class LessonProgressEntity {
     @Column(name = "watch_seconds")
     private Integer watchSeconds;
 
+    @Column(name = "position_seconds", nullable = false)
+    private Integer positionSeconds = 0;
+
     @ColumnDefault("0")
     @Column(name = "is_completed")
     private Boolean isCompleted;

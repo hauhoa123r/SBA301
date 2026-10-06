@@ -20,4 +20,6 @@ public class ChapterLearningResponse {
     private Integer orderIndex;
     private List<LessonLearningResponse> lessons;
     private AssignmentResponse assignment;
+    private List<AssignmentResponse> assignments;
+    private List<QuizResponse> quizzes;
 }

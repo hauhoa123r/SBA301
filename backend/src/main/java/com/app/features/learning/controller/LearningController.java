@@ -6,6 +6,12 @@ import com.app.features.learning.dto.response.CourseProgressResponse;
 import com.app.features.learning.dto.response.LearningStatsResponse;
 import com.app.features.learning.service.ILearningService;
 import com.app.features.learning.service.ILearningProgressService;
+import com.app.features.learning.service.LearningActivityService;
+import com.app.features.learning.dto.request.SavePlaybackRequest;
+import com.app.features.learning.dto.request.SubmitQuizRequest;
+import com.app.features.learning.dto.request.SubmitAssignmentRequest;
+import com.app.features.learning.dto.response.LessonPlaybackResponse;
+import org.springframework.web.bind.annotation.PostMapping;
 import com.app.features.model.UserEntity;
 import com.app.security.oauth.CustomOAuth2User;
 import com.app.utils.ApiPath;
@@ -33,6 +39,30 @@ public class LearningController {
 
     private final ILearningService learningService;
     private final ILearningProgressService learningProgressService;
+    private final LearningActivityService learningActivityService;
+
+    @PutMapping("/courses/{courseId}/lessons/{lessonId}/playback")
+    public LessonPlaybackResponse savePlayback(@PathVariable Long courseId, @PathVariable Long lessonId,
+            @Valid @RequestBody SavePlaybackRequest request, Authentication authentication) {
+        return learningActivityService.savePlayback(authenticatedUserId(authentication), courseId, lessonId, request);
+    }
+
+    @PostMapping("/courses/{courseId}/quizzes/{quizId}/submissions")
+    public CourseProgressResponse submitQuiz(@PathVariable Long courseId, @PathVariable Long quizId,
+            @Valid @RequestBody SubmitQuizRequest request, Authentication authentication) {
+        return learningActivityService.submitQuiz(authenticatedUserId(authentication), courseId, quizId, request);
+    }
+
+    @PutMapping("/courses/{courseId}/assignments/{assignmentId}/submission")
+    public CourseProgressResponse submitAssignment(@PathVariable Long courseId, @PathVariable Long assignmentId,
+            @Valid @RequestBody SubmitAssignmentRequest request, Authentication authentication) {
+        return learningActivityService.submitAssignment(authenticatedUserId(authentication), courseId, assignmentId, request);
+    }
+
+    @GetMapping("/activity")
+    public java.util.List<LearningActivityService.ActivityDay> activity(Authentication authentication) {
+        return learningActivityService.activity(authenticatedUserId(authentication));
+    }
 
     @GetMapping("/stats")
     public ResponseEntity<LearningStatsResponse> getStats(@RequestParam(required = false) Long courseId,

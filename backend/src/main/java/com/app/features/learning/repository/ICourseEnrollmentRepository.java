@@ -19,6 +19,10 @@ public interface ICourseEnrollmentRepository extends JpaRepository<CourseEnrollm
 
     Optional<CourseEnrollmentEntity> findByUser_IdAndCourse_Id(Long userId, Long courseId);
 
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @Query("select e from CourseEnrollmentEntity e where e.user.id = :userId and e.course.id = :courseId")
+    Optional<CourseEnrollmentEntity> lockForProgress(@Param("userId") Long userId, @Param("courseId") Long courseId);
+
     boolean existsByUser_IdAndCourse_Id(Long userId, Long courseId);
 
     @Modifying

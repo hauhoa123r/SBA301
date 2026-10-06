@@ -35,13 +35,13 @@ export function AdminDashboardPage() {
     <aside className="admin-sidebar">
       <Link to="/" className="admin-brand"><BookOpen /><span>Chinese Learning<small>Quản trị hệ thống</small></span></Link>
       <nav aria-label="Điều hướng quản trị"><a href="#overview"><LayoutDashboard size={18} /> Tổng quan</a>
-        <a href="#subscriptions"><Wallet size={18} /> Gói đăng ký</a><a href="#courses"><BookOpen size={18} /> Khóa học</a></nav>
+        <a href="#subscriptions"><Wallet size={18} /> Thống kê gói</a><Link to="/admin/students"><Users size={18} /> Học viên</Link><Link to="/admin/subscription-plans"><Wallet size={18} /> Quản lý gói học</Link><a href="#courses"><BookOpen size={18} /> Khóa học</a><Link to="/admin/assignments"><BookOpen size={18} /> Chấm bài tập</Link></nav>
       <p className="admin-sidebar-note">Thống kê từ dữ liệu hệ thống</p>
     </aside>
     <main className="admin-main" id="overview">
       <header className="admin-header"><div><p className="admin-eyebrow">QUẢN TRỊ HỆ THỐNG</p><h1>Admin Dashboard</h1>
         <p>Theo dõi người dùng, doanh thu và hoạt động học tập.</p></div>
-        <div className="admin-header-actions"><button className="admin-button" onClick={refresh} disabled={resource.loading}>
+        <div className="admin-header-actions"><Link className="admin-button" to="/admin/students">Học viên</Link><Link className="admin-button" to="/admin/subscription-plans">Gói học</Link><Link className="admin-button" to="/admin/assignments">Chấm bài tập</Link><button className="admin-button" onClick={refresh} disabled={resource.loading}>
           <RefreshCw size={16} /> Làm mới</button><UserProfileMenu /></div></header>
       {resource.loading && <Loading />}
       {error && <ErrorState message={error} retry={refresh} />}

@@ -4,147 +4,105 @@ import com.app.exception.AccessDeniedException;
 import com.app.features.learning.converter.LearningProgressResponseConverter;
 import com.app.features.learning.dto.request.UpdateLessonProgressRequest;
 import com.app.features.learning.dto.response.CourseProgressResponse;
-import com.app.features.learning.repository.ICourseEnrollmentRepository;
+import com.app.features.learning.loader.LearningProgressDetailsLoader;
+import com.app.features.learning.repository.*;
 import com.app.features.learning.service.CourseAccessService;
-import com.app.features.learning.repository.ILessonProgressRepository;
-import com.app.features.learning.repository.ILessonRepository;
-import com.app.features.learning.repository.IUserChapterProgressRepository;
-import com.app.features.model.ChapterEntity;
-import com.app.features.model.CourseEnrollmentEntity;
-import com.app.features.model.LessonEntity;
-import com.app.features.model.LessonProgressEntity;
-import com.app.features.model.UserChapterProgressEntity;
-import com.app.features.model.UserEntity;
+import com.app.features.model.*;
 import com.app.features.users.repository.IUserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
+import java.time.Instant;
+import java.util.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class LearningProgressServiceImplTest {
+    @Mock ICourseEnrollmentRepository courseEnrollmentRepository;
+    @Mock ILessonRepository lessonRepository;
+    @Mock ILessonProgressRepository lessonProgressRepository;
+    @Mock IUserChapterProgressRepository chapterProgressRepository;
+    @Mock IUserRepository userRepository;
+    @Mock LearningProgressResponseConverter responseConverter;
+    @Mock CourseAccessService courseAccessService;
+    @Mock IActivityCompletionRepository activityCompletionRepository;
+    @Mock ILearningActivityDailyRepository dailyRepository;
+    @Mock LearningProgressDetailsLoader detailsLoader;
+    @InjectMocks LearningProgressServiceImpl progressService;
 
-    @Mock
-    private ICourseEnrollmentRepository courseEnrollmentRepository;
-    @Mock
-    private ILessonRepository lessonRepository;
-    @Mock
-    private ILessonProgressRepository lessonProgressRepository;
-    @Mock
-    private IUserChapterProgressRepository chapterProgressRepository;
-    @Mock
-    private IUserRepository userRepository;
-    @Mock
-    private LearningProgressResponseConverter responseConverter;
-    @Mock
-    private CourseAccessService courseAccessService;
-
-    @InjectMocks
-    private LearningProgressServiceImpl progressService;
-
-    @Test
-    void updateRejectsUserWithoutCourseEnrollment() {
+    @Test void expiredAccessCannotChangeProgress() {
         when(courseAccessService.ensureProgressEnrollment(16L, 3L)).thenThrow(new AccessDeniedException("Gói đã hết hạn"));
-
-        assertThrows(AccessDeniedException.class, () -> progressService.updateLessonProgress(
-                16L, 3L, 20L, new UpdateLessonProgressRequest(true)));
-
-        verifyNoInteractions(lessonRepository, lessonProgressRepository, chapterProgressRepository, userRepository);
+        assertThrows(AccessDeniedException.class, () -> progressService.updateLessonProgress(16L, 3L, 20L, new UpdateLessonProgressRequest(true)));
+        verifyNoInteractions(lessonRepository, lessonProgressRepository, chapterProgressRepository, dailyRepository);
     }
-
-    @Test
-    void updateKeepsChapterAndCourseIncompleteWhenLessonsRemain() {
-        ProgressFixture fixture = fixture();
-        CourseProgressResponse expected = new CourseProgressResponse();
-        stubUpdate(fixture, 3, 1, 5, 1, List.of(20L), List.of(), expected);
-
-        CourseProgressResponse actual = progressService.updateLessonProgress(
-                16L, 3L, 20L, new UpdateLessonProgressRequest(true));
-
-        assertSame(expected, actual);
-        ArgumentCaptor<UserChapterProgressEntity> chapterCaptor = ArgumentCaptor.forClass(UserChapterProgressEntity.class);
-        verify(chapterProgressRepository).save(chapterCaptor.capture());
-        assertFalse(chapterCaptor.getValue().getIsCompleted());
-        assertFalse(fixture.enrollment().getCompletedAt() != null);
+    @Test void remainingQuizOrAssignmentKeepsCourseIncomplete() {
+        Fixture fixture = setup(3, 2);
+        progressService.updateLessonProgress(16L, 3L, 20L, new UpdateLessonProgressRequest(true));
+        assertTrue(fixture.lessonProgress.getIsCompleted());
+        assertNull(fixture.enrollment.getCompletedAt());
+        ArgumentCaptor<UserChapterProgressEntity> chapter = ArgumentCaptor.forClass(UserChapterProgressEntity.class);
+        verify(chapterProgressRepository).save(chapter.capture());
+        assertFalse(chapter.getValue().getIsCompleted());
     }
-
-    @Test
-    void finalLessonCompletesChapterAndCourse() {
-        ProgressFixture fixture = fixture();
-        CourseProgressResponse expected = new CourseProgressResponse();
-        stubUpdate(fixture, 2, 2, 2, 2, List.of(19L, 20L), List.of(7L), expected);
-
-        CourseProgressResponse actual = progressService.updateLessonProgress(
-                16L, 3L, 20L, new UpdateLessonProgressRequest(true));
-
-        assertSame(expected, actual);
-        ArgumentCaptor<LessonProgressEntity> lessonCaptor = ArgumentCaptor.forClass(LessonProgressEntity.class);
-        verify(lessonProgressRepository).save(lessonCaptor.capture());
-        assertTrue(lessonCaptor.getValue().getIsCompleted());
-        assertSame(fixture.user(), lessonCaptor.getValue().getUser());
-        assertSame(fixture.lesson(), lessonCaptor.getValue().getLesson());
-
-        ArgumentCaptor<UserChapterProgressEntity> chapterCaptor = ArgumentCaptor.forClass(UserChapterProgressEntity.class);
-        verify(chapterProgressRepository).save(chapterCaptor.capture());
-        assertTrue(chapterCaptor.getValue().getIsCompleted());
-        assertNotNull(chapterCaptor.getValue().getCompletedAt());
-        assertNotNull(fixture.enrollment().getCompletedAt());
+    @Test void lastRequiredActivityCompletesChapterAndCourse() {
+        Fixture fixture = setup(3, 3);
+        progressService.updateLessonProgress(16L, 3L, 20L, new UpdateLessonProgressRequest(true));
+        assertNotNull(fixture.enrollment.getCompletedAt());
+        ArgumentCaptor<UserChapterProgressEntity> chapter = ArgumentCaptor.forClass(UserChapterProgressEntity.class);
+        verify(chapterProgressRepository).save(chapter.capture());
+        assertTrue(chapter.getValue().getIsCompleted());
+        assertNotNull(chapter.getValue().getCompletedAt());
     }
-
-    private void stubUpdate(ProgressFixture fixture,
-                            long chapterLessonCount,
-                            long completedChapterLessonCount,
-                            long courseLessonCount,
-                            long completedCourseLessonCount,
-                            List<Long> completedLessonIds,
-                            List<Long> completedChapterIds,
-                            CourseProgressResponse expected) {
-        when(courseAccessService.ensureProgressEnrollment(16L, 3L)).thenReturn(fixture.enrollment());
-        when(lessonRepository.findByIdAndChapter_CourseEntity_Id(20L, 3L))
-                .thenReturn(Optional.of(fixture.lesson()));
-        when(userRepository.findById(16L)).thenReturn(Optional.of(fixture.user()));
-        when(lessonProgressRepository.findByUser_IdAndLesson_Id(16L, 20L)).thenReturn(Optional.empty());
-        when(lessonRepository.countByChapter_Id(7L)).thenReturn(chapterLessonCount);
-        when(lessonProgressRepository.countByUser_IdAndLesson_Chapter_IdAndIsCompletedTrue(16L, 7L))
-                .thenReturn(completedChapterLessonCount);
-        when(chapterProgressRepository.findByUserEntity_IdAndChapterEntity_Id(16L, 7L))
-                .thenReturn(Optional.empty());
-        when(lessonRepository.countByChapter_CourseEntity_Id(3L)).thenReturn(courseLessonCount);
-        when(lessonProgressRepository.countByUser_IdAndLesson_Chapter_CourseEntity_IdAndIsCompletedTrue(16L, 3L))
-                .thenReturn(completedCourseLessonCount);
-        when(lessonProgressRepository.findCompletedLessonIds(16L, 3L)).thenReturn(completedLessonIds);
-        when(chapterProgressRepository.findCompletedChapterIds(16L, 3L)).thenReturn(completedChapterIds);
-        when(responseConverter.toResponse(3L, completedLessonIds, completedChapterIds,
-                courseLessonCount == completedCourseLessonCount)).thenReturn(expected);
+    @Test void markingIncompleteClearsCompletionAndPreservesVideoHistory() {
+        Fixture fixture = setup(3, 2);
+        fixture.enrollment.setCompletedAt(Instant.now());
+        fixture.lessonProgress.setIsCompleted(true);
+        fixture.lessonProgress.setWatchSeconds(45);
+        fixture.lessonProgress.setPositionSeconds(30);
+        progressService.updateLessonProgress(16L, 3L, 20L, new UpdateLessonProgressRequest(false));
+        assertFalse(fixture.lessonProgress.getIsCompleted());
+        assertEquals(45, fixture.lessonProgress.getWatchSeconds());
+        assertEquals(30, fixture.lessonProgress.getPositionSeconds());
+        assertNull(fixture.enrollment.getCompletedAt());
+        ArgumentCaptor<UserChapterProgressEntity> chapter = ArgumentCaptor.forClass(UserChapterProgressEntity.class);
+        verify(chapterProgressRepository).save(chapter.capture());
+        assertFalse(chapter.getValue().getIsCompleted());
+        assertNull(chapter.getValue().getCompletedAt());
     }
-
-    private ProgressFixture fixture() {
-        UserEntity user = new UserEntity();
-        user.setId(16L);
-        ChapterEntity chapter = new ChapterEntity();
-        chapter.setId(7L);
-        LessonEntity lesson = new LessonEntity();
-        lesson.setId(20L);
-        lesson.setChapter(chapter);
-        CourseEnrollmentEntity enrollment = new CourseEnrollmentEntity();
-        enrollment.setUser(user);
-        return new ProgressFixture(user, lesson, enrollment);
+    @Test void readUsesActualActivitiesInsteadOfStaleEnrollmentFlag() {
+        when(activityCompletionRepository.countActivities(16L, 3L, null)).thenReturn(counts(3, 2));
+        when(lessonProgressRepository.findCompletedLessonIds(16L, 3L)).thenReturn(List.of(20L));
+        when(chapterProgressRepository.findCompletedChapterIds(16L, 3L)).thenReturn(List.of());
+        var expected = new CourseProgressResponse();
+        when(responseConverter.toResponse(3L, List.of(20L), List.of(), false)).thenReturn(expected);
+        assertSame(expected, progressService.getCourseProgress(16L, 3L));
+        verify(courseAccessService).requireAccess(16L, 3L);
     }
-
-    private record ProgressFixture(UserEntity user, LessonEntity lesson, CourseEnrollmentEntity enrollment) {
+    private Fixture setup(long total, long completed) {
+        var user = new UserEntity(); user.setId(16L);
+        var course = new CourseEntity(); course.setId(3L);
+        var chapter = new ChapterEntity(); chapter.setId(7L); chapter.setCourseEntity(course);
+        var lesson = new LessonEntity(); lesson.setId(20L); lesson.setChapter(chapter);
+        var lp = new LessonProgressEntity(); lp.setUser(user); lp.setLesson(lesson); lp.setWatchSeconds(0);
+        var enrollment = new CourseEnrollmentEntity(); enrollment.setUser(user); enrollment.setCourse(course);
+        when(courseAccessService.ensureProgressEnrollment(16L, 3L)).thenReturn(enrollment);
+        when(lessonRepository.findByIdAndChapter_CourseEntity_Id(20L, 3L)).thenReturn(Optional.of(lesson));
+        when(userRepository.findById(16L)).thenReturn(Optional.of(user));
+        when(lessonProgressRepository.findByUser_IdAndLesson_Id(16L, 20L)).thenReturn(Optional.of(lp));
+        when(activityCompletionRepository.countActivities(16L, 3L, 7L)).thenReturn(counts(total, completed));
+        when(activityCompletionRepository.countActivities(16L, 3L, null)).thenReturn(counts(total, completed));
+        when(lessonProgressRepository.findCompletedLessonIds(16L, 3L)).thenReturn(List.of(20L));
+        when(chapterProgressRepository.findCompletedChapterIds(16L, 3L)).thenReturn(List.of());
+        when(responseConverter.toResponse(3L, List.of(20L), List.of(), total == completed)).thenReturn(new CourseProgressResponse());
+        return new Fixture(enrollment, lp);
     }
+    private IActivityCompletionRepository.Counts counts(long total, long completed) {
+        return new IActivityCompletionRepository.Counts() {
+            public long getTotal() { return total; }
+            public long getCompleted() { return completed; }
+        };
+    }
+    private record Fixture(CourseEnrollmentEntity enrollment, LessonProgressEntity lessonProgress) { }
 }

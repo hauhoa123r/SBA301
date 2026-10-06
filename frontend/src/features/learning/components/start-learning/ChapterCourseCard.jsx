@@ -1,14 +1,15 @@
 import { Link } from "react-router-dom";
-import { Trophy } from "lucide-react";
+import { getChapterStats, progressSets } from "../../shared/learnCourseUtils";
 import { AnimatedCard, UserImage } from "@/shared/ui";
 
 export default function ChapterCourseCard({ course, chapter }) {
-    const doneLessons = Math.max(0, chapter.order_index - 1);
-    const firstLesson = chapter.lessons[0];
-    const progress = Math.round((doneLessons / chapter.lessons.length) * 100);
+    const stats = getChapterStats({ course, ...progressSets(course.progress) })[chapter.id];
+    const completed = new Set(course.progress?.completedLessonIds || []);
+    const firstLesson = chapter.lessons.find(lesson => !completed.has(lesson.id)) || chapter.lessons[0];
+    const progress = stats.total ? Math.floor(stats.done / stats.total * 100) : 0;
 
     return (
-        <AnimatedCard as={Link} to={`/learning/courses/${course.id}/lessons/${firstLesson.id}`} className="block h-full overflow-hidden rounded-2xl border border-brand-accent/20 bg-brand-light no-underline hover:border-brand-accentSoft/70">
+        <AnimatedCard as={Link} to={firstLesson ? `/learning/courses/${course.id}/lessons/${firstLesson.id}` : `/learning/courses/${course.id}`} className="block h-full overflow-hidden rounded-2xl border border-brand-accent/20 bg-brand-light no-underline hover:border-brand-accentSoft/70">
             <div className="relative aspect-[16/9] bg-brand-menu">
                 <div className="absolute inset-0 opacity-55">
                     <UserImage src={course.thumbnail_url} alt={chapter.title} className="h-full w-full object-cover" />
@@ -22,10 +23,9 @@ export default function ChapterCourseCard({ course, chapter }) {
                 <h4 className="line-clamp-2 min-h-10 text-base font-black text-brand-white">{chapter.title}</h4>
                 <p className="mt-2 line-clamp-2 min-h-10 text-sm text-brand-textSecondary">{chapter.description}</p>
                 <div className="mt-4 flex items-center justify-between text-sm">
-                    <span className="text-brand-textMutedLight">{doneLessons}/{chapter.lessons.length} bài học</span>
+                    <span className="text-brand-textMutedLight">{stats.done}/{stats.total} hoạt động</span>
                     <span className="inline-flex items-center gap-1 text-status-warningSoft">
-                        <Trophy className="h-4 w-4" />
-                        {chapter.order_index * 8}/{chapter.lessons.length * 12}
+                        {progress}%
                     </span>
                 </div>
                 <div className="mt-3 h-2 overflow-hidden rounded-full bg-brand-borderSoft" role="progressbar" aria-label={`Tiến độ chương ${chapter.order_index}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}>

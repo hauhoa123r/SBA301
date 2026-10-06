@@ -22,11 +22,11 @@ class ActivityStatsCalculatorTest {
     }
 
     @Test
-    void calculateUsesDefaultTotalWhenNoActivitiesExist() {
+    void calculateReturnsZeroWhenNoActivitiesExist() {
         LearningStatsData data = new LearningStatsData(0, 0, 0, 0, 0, List.of(), 0);
 
         ActivityStats result = calculator.calculate(data);
 
-        assertEquals(new ActivityStats(0, 10, 0), result);
+        assertEquals(new ActivityStats(0, 0, 0), result);
     }
 }

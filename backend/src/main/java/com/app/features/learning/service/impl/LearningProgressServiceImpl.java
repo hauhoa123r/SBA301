@@ -1,6 +1,5 @@
 package com.app.features.learning.service.impl;
 
-import com.app.exception.AccessDeniedException;
 import com.app.exception.ResourceNotFoundException;
 import com.app.features.learning.converter.LearningProgressResponseConverter;
 import com.app.features.learning.dto.request.UpdateLessonProgressRequest;
@@ -11,6 +10,9 @@ import com.app.features.learning.repository.ILessonRepository;
 import com.app.features.learning.repository.IUserChapterProgressRepository;
 import com.app.features.learning.service.ILearningProgressService;
 import com.app.features.learning.service.CourseAccessService;
+import com.app.features.learning.repository.IActivityCompletionRepository;
+import com.app.features.learning.repository.ILearningActivityDailyRepository;
+import com.app.features.learning.loader.LearningProgressDetailsLoader;
 import com.app.features.model.CourseEnrollmentEntity;
 import com.app.features.model.LessonEntity;
 import com.app.features.model.LessonProgressEntity;
@@ -37,13 +39,15 @@ public class LearningProgressServiceImpl implements ILearningProgressService {
     private final IUserRepository userRepository;
     private final LearningProgressResponseConverter responseConverter;
     private final CourseAccessService courseAccessService;
+    private final IActivityCompletionRepository activityCompletionRepository;
+    private final ILearningActivityDailyRepository dailyRepository;
+    private final LearningProgressDetailsLoader detailsLoader;
 
     @Override
     @Transactional(readOnly = true)
     public CourseProgressResponse getCourseProgress(Long userId, Long courseId) {
         courseAccessService.requireAccess(userId, courseId);
-        boolean completed = courseEnrollmentRepository.findByUser_IdAndCourse_Id(userId, courseId)
-                .map(enrollment -> enrollment.getCompletedAt() != null).orElse(false);
+        boolean completed = isComplete(activityCompletionRepository.countActivities(userId, courseId, null));
         return buildResponse(userId, courseId, completed);
     }
 
@@ -62,6 +66,7 @@ public class LearningProgressServiceImpl implements ILearningProgressService {
         lessonProgress.setIsCompleted(request.completed());
         lessonProgress.setUpdatedAt(Instant.now());
         lessonProgressRepository.save(lessonProgress);
+        dailyRepository.record(userId, java.time.LocalDate.now(java.time.ZoneId.of("Asia/Ho_Chi_Minh")), 0, 1);
 
         boolean chapterCompleted = synchronizeChapterProgress(user, lesson);
         boolean courseCompleted = synchronizeCourseProgress(userId, courseId, enrollment);
@@ -82,10 +87,8 @@ public class LearningProgressServiceImpl implements ILearningProgressService {
 
     private boolean synchronizeChapterProgress(UserEntity user, LessonEntity lesson) {
         Long chapterId = lesson.getChapter().getId();
-        long lessonCount = lessonRepository.countByChapter_Id(chapterId);
-        long completedLessonCount = lessonProgressRepository
-                .countByUser_IdAndLesson_Chapter_IdAndIsCompletedTrue(user.getId(), chapterId);
-        boolean completed = lessonCount > 0 && completedLessonCount == lessonCount;
+        boolean completed = isComplete(activityCompletionRepository.countActivities(user.getId(),
+                lesson.getChapter().getCourseEntity().getId(), chapterId));
 
         UserChapterProgressEntity chapterProgress = chapterProgressRepository
                 .findByUserEntity_IdAndChapterEntity_Id(user.getId(), chapterId)
@@ -105,10 +108,7 @@ public class LearningProgressServiceImpl implements ILearningProgressService {
     }
 
     private boolean synchronizeCourseProgress(Long userId, Long courseId, CourseEnrollmentEntity enrollment) {
-        long lessonCount = lessonRepository.countByChapter_CourseEntity_Id(courseId);
-        long completedLessonCount = lessonProgressRepository
-                .countByUser_IdAndLesson_Chapter_CourseEntity_IdAndIsCompletedTrue(userId, courseId);
-        boolean completed = lessonCount > 0 && completedLessonCount == lessonCount;
+        boolean completed = isComplete(activityCompletionRepository.countActivities(userId, courseId, null));
         if (completed && enrollment.getCompletedAt() == null) {
             enrollment.setCompletedAt(Instant.now());
         } else if (!completed) {
@@ -119,11 +119,38 @@ public class LearningProgressServiceImpl implements ILearningProgressService {
     }
 
     private CourseProgressResponse buildResponse(Long userId, Long courseId, boolean courseCompleted) {
-        return responseConverter.toResponse(
+        CourseProgressResponse response = responseConverter.toResponse(
                 courseId,
                 lessonProgressRepository.findCompletedLessonIds(userId, courseId),
                 chapterProgressRepository.findCompletedChapterIds(userId, courseId),
                 courseCompleted
         );
+        detailsLoader.enrich(response, userId, courseId);
+        return response;
+    }
+
+    private boolean isComplete(IActivityCompletionRepository.Counts counts) {
+        return counts.getTotal() > 0 && counts.getTotal() == counts.getCompleted();
+    }
+
+    @Transactional
+    public CourseProgressResponse synchronizeActivities(Long userId, Long courseId, com.app.features.model.ChapterEntity chapter) {
+        CourseEnrollmentEntity enrollment = courseAccessService.ensureProgressEnrollment(userId, courseId);
+        UserEntity user = userRepository.findById(userId).orElseThrow();
+        // Reuse chapter synchronization for both lesson and chapter activities, including empty chapters.
+        LessonEntity chapterLesson = new LessonEntity();
+        chapterLesson.setChapter(chapter);
+        synchronizeChapterProgress(user, chapterLesson);
+        return buildResponse(userId, courseId, synchronizeCourseProgress(userId, courseId, enrollment));
+    }
+
+    @Transactional
+    public void recalculateRecordedActivities(Long userId, Long courseId, com.app.features.model.ChapterEntity chapter) {
+        // Used after an authorized reviewer grades a submission, even if student access has expired.
+        courseEnrollmentRepository.findByUser_IdAndCourse_Id(userId, courseId).ifPresent(enrollment -> {
+            LessonEntity chapterLesson = new LessonEntity(); chapterLesson.setChapter(chapter);
+            synchronizeChapterProgress(enrollment.getUser(), chapterLesson);
+            synchronizeCourseProgress(userId, courseId, enrollment);
+        });
     }
 }

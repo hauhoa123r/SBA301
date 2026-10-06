@@ -13,6 +13,8 @@ import java.util.Optional;
 public interface ILessonProgressRepository extends JpaRepository<LessonProgressEntity, Long> {
     Optional<LessonProgressEntity> findByUser_IdAndLesson_Id(Long userId, Long lessonId);
 
+    List<LessonProgressEntity> findByUser_IdAndLesson_Chapter_CourseEntity_Id(Long userId, Long courseId);
+
     long countByUser_IdAndLesson_Chapter_IdAndIsCompletedTrue(Long userId, Long chapterId);
 
     long countByUser_IdAndLesson_Chapter_CourseEntity_IdAndIsCompletedTrue(Long userId, Long courseId);

@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Check, CheckCircle2, ClipboardList, FileText, Play, BookOpen, Loader2, MessageCircle } from "lucide-react";
 import FlashcardsPanel from "./FlashcardsPanel";
 import SentencePatternsPanel from "./SentencePatternsPanel";
+import TrackedVideo from "./TrackedVideo";
 
-export default function LessonPanel({ lesson, isCompleted, isSaving = false, errorMessage = "", onComplete, onQuiz }) {
+export default function LessonPanel({ lesson, isCompleted, isSaving = false, errorMessage = "", onComplete, onQuiz, playback, onPlayback }) {
     const [selectedTab, setSelectedTab] = useState(null);
     const tabs = [
         ...(lesson.videoUrl ? [{ id: "video", label: "Video bài học", icon: Play }] : []),
@@ -46,7 +47,7 @@ export default function LessonPanel({ lesson, isCompleted, isSaving = false, err
                     )}
                     {activeTab === "video" && (
                         <div id="lesson-panel-video" role="tabpanel" aria-labelledby="lesson-tab-video" className="overflow-hidden">
-                            <video controls poster={lesson.chapter?.thumbnailUrl} src={lesson.videoUrl} className="aspect-video w-full bg-brand-black object-cover" aria-label={`Video bài học ${lesson.title}`} />
+                            <TrackedVideo key={lesson.id} lesson={lesson} playback={playback} onSave={onPlayback} onComplete={() => { if (!isCompleted && !isSaving) onComplete(); }} />
                         </div>
                     )}
                     {activeTab === "vocabulary" && (
@@ -71,11 +72,12 @@ export default function LessonPanel({ lesson, isCompleted, isSaving = false, err
                         <button
                             type="button"
                             onClick={onComplete}
-                            disabled={isCompleted || isSaving}
+                            disabled={isSaving}
+                            aria-pressed={isCompleted}
                             className="inline-flex items-center gap-2 rounded-xl bg-brand-accent px-5 py-3 text-sm font-bold transition hover:bg-brand-accentHover disabled:cursor-not-allowed disabled:opacity-70"
                         >
                             {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : isCompleted ? <CheckCircle2 className="h-4 w-4" /> : <Check className="h-4 w-4" />}
-                            {isSaving ? "Đang lưu..." : isCompleted ? "Đã hoàn thành bài học" : "Đánh dấu hoàn thành"}
+                            {isSaving ? "Đang lưu..." : isCompleted ? "Đánh dấu chưa hoàn thành" : "Đánh dấu hoàn thành"}
                         </button>
                         {lesson.quiz && (
                             <button

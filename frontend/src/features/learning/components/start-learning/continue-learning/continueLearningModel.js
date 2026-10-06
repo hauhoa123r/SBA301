@@ -28,6 +28,11 @@ const getFirstCourseContent = (course) => {
     const withLesson = chapters.find((item) => Array.isArray(item?.lessons) && item.lessons.length > 0);
     const chapter = withLesson || chapters[0] || null;
     const lessons = Array.isArray(chapter?.lessons) ? chapter.lessons : [];
+    const completed = new Set((course?.progress?.completedLessonIds || []).map(Number));
+    for (const item of chapters) {
+        const next = (item.lessons || []).find(lesson => !completed.has(Number(lesson.id)));
+        if (next) return { chapter: item, lesson: next };
+    }
     return { chapter, lesson: lessons[0] || null };
 };
 
@@ -105,7 +110,7 @@ export function buildContinueLearningModel({
             available: total > 0,
             completed: boundedCompleted,
             total,
-            value: total > 0 ? Math.min(100, Math.round((boundedCompleted / total) * 100)) : 0,
+            value: total > 0 ? Math.min(100, Math.floor((boundedCompleted / total) * 100)) : 0,
         },
         thumbnailUrl: isCourseMismatch
             ? null

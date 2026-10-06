@@ -81,8 +81,12 @@ class LearningDetailResponseConverterTest {
         assertNull(mappedSecondLesson.getSentencePatterns().get(0).getVocabularyId());
 
         assertEquals(301L, mappedFirstLesson.getQuiz().getId());
+        assertEquals(List.of(301L, 302L), mappedFirstLesson.getQuizzes().stream().map(com.app.features.learning.dto.response.QuizResponse::getId).toList());
+        assertEquals(List.of(201L, 202L), chapter.getAssignments().stream().map(com.app.features.learning.dto.response.AssignmentResponse::getId).toList());
         assertEquals(List.of(401L, 402L), mappedFirstLesson.getQuiz().getQuestions().stream().map(QuestionResponse::getId).toList());
         assertEquals(List.of(501L, 502L), mappedFirstLesson.getQuiz().getQuestions().get(0).getAnswers().stream().map(AnswerResponse::getId).toList());
+        assertNull(mappedFirstLesson.getQuiz().getQuestions().get(0).getAnswers().get(0).getIsCorrect());
+        assertNull(mappedFirstLesson.getQuiz().getQuestions().get(0).getExplanation());
     }
 
     private CourseEntity course(Long id) {

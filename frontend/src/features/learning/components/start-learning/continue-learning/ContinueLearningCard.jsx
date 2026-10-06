@@ -55,7 +55,7 @@ export default function ContinueLearningCard({ model }) {
     const learningMeta = [
         lessonDuration && { icon: Clock3, label: "Thời lượng bài", value: lessonDuration },
         openLessonsText && { icon: BookOpenCheck, label: "Bài học trong khóa", value: openLessonsText },
-        cupsText && { icon: Trophy, label: "Cúp đã đạt", value: cupsText },
+        cupsText && { icon: Trophy, label: "Điểm quiz đã đạt", value: cupsText },
     ].filter(Boolean);
 
     return (

@@ -41,6 +41,8 @@ class DeploymentConfigurationTest {
                 .withUserConfiguration(JwtService.class, SmtpMailService.class,
                         ResendMailService.class, MailTemplateService.class)
                 .withInitializer(context -> {
+                    // Simulate only the supplied environment, including relaxed mail.provider lookup.
+                    context.getEnvironment().getPropertySources().remove("systemEnvironment");
                     // ApplicationContextRunner does not install SpringApplication's converters.
                     context.getBeanFactory().setConversionService(ApplicationConversionService.getSharedInstance());
                     context.getEnvironment().getPropertySources().addFirst(new MapPropertySource("test-env", env));

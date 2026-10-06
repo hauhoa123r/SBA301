@@ -26,6 +26,7 @@ public class LearningStatsLoader {
         long totalQuizQuestionPoints = learningStatsRepository.sumQuizQuestionPoints(courseId);
 
         log.debug("Learning statistics data loaded, userId={}, courseId={}, lessonCount={}, quizCount={}, assignmentCount={}, completedLessonCount={}", userId, courseId, lessonCount, quizCount, assignmentCount, completedLessonCount);
-        return new LearningStatsData(lessonCount, quizCount, assignmentCount, completedLessonCount, assignmentSubmissionCount, highestPassedQuizScores, totalQuizQuestionPoints);
+        return new LearningStatsData(lessonCount, quizCount, assignmentCount, completedLessonCount, assignmentSubmissionCount,
+            highestPassedQuizScores, totalQuizQuestionPoints, learningStatsRepository.sumEarnedQuizQuestionPoints(userId, courseId));
     }
 }

@@ -63,7 +63,8 @@ public class SubscriptionService {
             throw new BadRequestException("Bạn đã sử dụng quyền học thử hoặc đã đăng ký gói trả phí.");
         }
         SubscriptionPlanEntity plan = requirePlan(FREE_TRIAL);
-        Instant now = clock.instant();
+        // MySQL TIMESTAMP columns store whole seconds; never round a start into the future.
+        Instant now = clock.instant().truncatedTo(ChronoUnit.SECONDS);
         UserSubscriptionEntity subscription = new UserSubscriptionEntity();
         subscription.setUserId(userId);
         subscription.setPlanCode(plan.getCode());
@@ -88,7 +89,7 @@ public class SubscriptionService {
             created.setUserId(userId);
             return created;
         });
-        Instant now = clock.instant();
+        Instant now = clock.instant().truncatedTo(ChronoUnit.SECONDS);
         boolean extend = subscription.getExpiresAt() != null && subscription.getExpiresAt().isAfter(now)
                 && !FREE_TRIAL.equals(subscription.getPlanCode());
         Instant base = extend ? subscription.getExpiresAt() : now;

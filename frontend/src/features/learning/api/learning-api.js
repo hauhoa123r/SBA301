@@ -1,69 +1,62 @@
 import { API_LEARNING, axiosClient as api } from "@/shared/api";
 
 export async function getCourseLearningDetails(courseId) {
-    const response = await api.get(`${API_LEARNING}/courses/${courseId}`);
-    return normalizeLearningCourse(response.data);
+    const { data } = await api.get(`${API_LEARNING}/courses/${courseId}`);
+    return normalizeLearningCourse(data);
 }
-
 export async function getCourseProgress(courseId) {
-    const response = await api.get(`${API_LEARNING}/courses/${courseId}/progress`);
-    return normalizeCourseProgress(response.data);
+    const { data } = await api.get(`${API_LEARNING}/courses/${courseId}/progress`);
+    return normalizeCourseProgress(data);
 }
-
 export async function updateLessonProgress(courseId, lessonId, completed = true) {
-    const response = await api.put(
-        `${API_LEARNING}/courses/${courseId}/lessons/${lessonId}/progress`,
-        { completed }
-    );
-    return normalizeCourseProgress(response.data);
+    const { data } = await api.put(`${API_LEARNING}/courses/${courseId}/lessons/${lessonId}/progress`, { completed });
+    return normalizeCourseProgress(data);
+}
+export async function saveLessonPlayback(courseId, lessonId, payload) {
+    const { data } = await api.put(`${API_LEARNING}/courses/${courseId}/lessons/${lessonId}/playback`, payload);
+    return data;
+}
+export async function submitQuiz(courseId, quizId, payload) {
+    const { data } = await api.post(`${API_LEARNING}/courses/${courseId}/quizzes/${quizId}/submissions`, payload);
+    return normalizeCourseProgress(data);
+}
+export async function submitAssignment(courseId, assignmentId, text) {
+    const { data } = await api.put(`${API_LEARNING}/courses/${courseId}/assignments/${assignmentId}/submission`, { text });
+    return normalizeCourseProgress(data);
+}
+export async function getLearningActivity() {
+    const { data } = await api.get(`${API_LEARNING}/activity`);
+    return Array.isArray(data) ? data : [];
 }
 
 const normalizeCourseProgress = (progress) => ({
-    courseId: progress?.courseId ?? null,
-    completedLessonIds: Array.isArray(progress?.completedLessonIds) ? progress.completedLessonIds : [],
-    completedChapterIds: Array.isArray(progress?.completedChapterIds) ? progress.completedChapterIds : [],
-    courseCompleted: Boolean(progress?.courseCompleted),
+    ...progress,
+    completedLessonIds: progress?.completedLessonIds || [],
+    completedChapterIds: progress?.completedChapterIds || [],
+    passedQuizIds: progress?.passedQuizIds || [],
+    submittedAssignmentIds: progress?.submittedAssignmentIds || [],
+    lessonPlayback: progress?.lessonPlayback || [],
+    quizResults: progress?.quizResults || [],
+    assignmentSubmissions: progress?.assignmentSubmissions || [],
 });
-
-const normalizeLearningCourse = (course) => {
-    if (!course) return null;
-
-    return {
-        ...course,
-        displayTitle: course.displayTitle || course.title,
-        thumbnail_url: course.thumbnail_url || course.thumbnailUrl,
-        chapters: (course.chapters || []).map((chapter) => ({
-            ...chapter,
-            course_id: chapter.course_id || chapter.courseId,
-            order_index: chapter.order_index ?? chapter.orderIndex,
-            description: chapter.description || "",
-            lessons: (chapter.lessons || []).map((lesson) => ({
-                ...lesson,
-                chapter_id: lesson.chapter_id || lesson.chapterId,
-                video_url: lesson.video_url || lesson.videoUrl,
-                duration_seconds: lesson.duration_seconds ?? lesson.durationSeconds,
-                order_index: lesson.order_index ?? lesson.orderIndex,
-                quiz: normalizeQuiz(lesson.quiz),
-            })),
+const normalizeAssignment = (assignment) => ({
+    ...assignment, deadline_days: assignment.deadlineDays, attachment_url: assignment.attachmentUrl,
+});
+const normalizeQuiz = (quiz) => quiz ? ({
+    ...quiz, time_limit_minutes: quiz.timeLimitMinutes, pass_score: quiz.passScore,
+    questions: (quiz.questions || []).map(question => ({ ...question, answers: question.answers || [] })),
+}) : null;
+const normalizeLearningCourse = (course) => course ? ({
+    ...course, displayTitle: course.title, thumbnail_url: course.thumbnailUrl,
+    chapters: (course.chapters || []).map(chapter => ({
+        ...chapter, course_id: chapter.courseId, order_index: chapter.orderIndex, description: chapter.description || "",
+        assignments: (chapter.assignments ?? (chapter.assignment ? [chapter.assignment] : [])).map(normalizeAssignment),
+        quizzes: (chapter.quizzes || []).map(normalizeQuiz),
+        lessons: (chapter.lessons || []).map(lesson => ({
+            ...lesson, chapter_id: lesson.chapterId, video_url: lesson.videoUrl,
+            duration_seconds: lesson.durationSeconds, order_index: lesson.orderIndex,
+            quiz: normalizeQuiz(lesson.quiz),
+            quizzes: (lesson.quizzes ?? (lesson.quiz ? [lesson.quiz] : [])).map(normalizeQuiz),
         })),
-    };
-};
-
-const normalizeQuiz = (quiz) => {
-    if (!quiz) return null;
-    return {
-        ...quiz,
-        type: quiz.type || "SINGLE_CHOICE",
-        time_limit_minutes: quiz.time_limit_minutes ?? quiz.timeLimitMinutes,
-        pass_score: quiz.pass_score ?? quiz.passScore,
-        questions: (quiz.questions || []).map((question) => ({
-            ...question,
-            order_index: question.order_index ?? question.orderIndex,
-            question_type: question.question_type || question.questionType,
-            answers: (question.answers || []).map((answer) => ({
-                ...answer,
-                is_correct: answer.is_correct ?? answer.isCorrect,
-            })),
-        })),
-    };
-};
+    })),
+}) : null;

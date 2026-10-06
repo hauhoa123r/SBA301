@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getCourseLearningDetails } from "../api/learning-api";
+import { getCourseLearningDetails, getCourseProgress } from "../api/learning-api";
 import { getLearningStats } from "../api/learning-profile-api";
 
 export default function useLearningDashboard({
@@ -44,8 +44,13 @@ export default function useLearningDashboard({
                     setSelectedCourseId(targetCourseId);
                 }
 
-                const courseDetails = await getCourseLearningDetails(targetCourseId);
-                if (active) setCourse(courseDetails);
+                const [courseDetails, progress] = await Promise.all([
+                    getCourseLearningDetails(targetCourseId), getCourseProgress(targetCourseId),
+                ]);
+                if (active) {
+                    setCourse({ ...courseDetails, progress });
+                    setStats(previous => ({ ...previous, completedActivities: progress.completedActivities, totalActivities: progress.totalActivities }));
+                }
             } catch (requestError) {
                 console.error("Error fetching owned learning courses", requestError);
                 if (active) {

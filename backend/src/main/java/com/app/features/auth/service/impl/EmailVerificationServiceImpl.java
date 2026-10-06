@@ -61,8 +61,11 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
 
     private boolean activateUser(VerificationTokenEntity verificationToken) {
         UserEntity user = verificationToken.getUser();
-        user.setStatus(UserStatus.ACTIVE);
-        userRepository.save(user);
+        // A previously issued verification link cannot undo an Admin account lock.
+        int activated = userRepository.activatePending(user.getId());
+        if (activated == 0 && userRepository.findById(user.getId()).map(current -> current.getStatus() != UserStatus.ACTIVE).orElse(true)) {
+            return false;
+        }
         verificationTokenService.markUsed(verificationToken);
         log.info("Email verified successfully, userId={}", user.getId());
         return true;

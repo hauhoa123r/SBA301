@@ -37,6 +37,7 @@ export default function LearningViewContent({ activeView, course, stats, isRefre
                     course={course}
                     totalLessons={totalLessons}
                     firstLesson={firstLesson}
+                    stats={stats}
                 />
             )}
         </UserReveal>

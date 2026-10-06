@@ -89,3 +89,13 @@
 @media (max-width: 650px) { .admin-grid { grid-template-columns: 1fr; } .admin-header { align-items: start; flex-direction: column; gap: 12px; } .admin-header-actions { width: 100%; justify-content: space-between; } .admin-card, .admin-panel { padding: 17px; } .admin-cards { gap: 12px; } .admin-card-value { font-size: 23px; } .admin-distribution { justify-content: center; } .admin-pagination { flex-wrap: wrap; } }
 @media (max-width: 380px) { .admin-cards { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .admin-spin { animation: none; } }
+.admin-secondary { display: block; color: #b7c9dd; margin-top: 5px; }
+.admin-management-form input, .admin-management-form textarea { display: block; color: #f8fafc; background: #08213b; border: 1px solid #2f80b7; border-radius: 8px; padding: 10px; margin-top: 5px; max-width: 100%; }
+.admin-management-form textarea { width: 100%; }
+.admin-management-form fieldset { border: 0; padding: 0; min-width: 0; }
+.admin-management-form input:disabled { opacity: .7; }
+.admin-action-summary, .admin-success { padding: 15px; margin: 15px 0; border-radius: 8px; background: #0c394b; color: #c2f5df; line-height: 1.7; }
+.admin-student-summary { display: grid; gap: 10px; margin-top: 18px; color: #b7c9dd; }
+.admin-shell td.admin-history-text { white-space: normal; min-width: 200px; max-width: 400px; overflow-wrap: anywhere; }
+.admin-sidebar nav a.active { background: #15395f; }
+.admin-header-actions { flex-wrap: wrap; }

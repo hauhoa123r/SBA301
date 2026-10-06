@@ -9,6 +9,17 @@ import java.util.List;
 
 public interface ILearningStatsRepository extends Repository<CourseEntity, Long> {
 
+    @Query(value = """
+        SELECT COALESCE(ROUND(SUM(best.score * points.total / 100)), 0)
+        FROM quizzes q LEFT JOIN lessons l ON l.id = q.lesson_id
+        JOIN chapters c ON c.id = COALESCE(l.chapter_id, q.chapter_id)
+        JOIN (SELECT quiz_id, MAX(score) score FROM quiz_attempts
+              WHERE user_id = :userId AND is_passed = 1 GROUP BY quiz_id) best ON best.quiz_id = q.id
+        JOIN (SELECT quiz_id, SUM(COALESCE(points, 10)) total FROM questions GROUP BY quiz_id) points ON points.quiz_id = q.id
+        WHERE c.course_id = :courseId
+        """, nativeQuery = true)
+    long sumEarnedQuizQuestionPoints(@Param("userId") Long userId, @Param("courseId") Long courseId);
+
     @Query("""
             SELECT COUNT(lesson)
             FROM LessonEntity lesson
@@ -24,7 +35,7 @@ public interface ILearningStatsRepository extends Repository<CourseEntity, Long>
             LEFT JOIN quiz.lessonEntity lesson
             LEFT JOIN lesson.chapter lessonChapter
             LEFT JOIN lessonChapter.courseEntity lessonCourse
-            WHERE chapterCourse.id = :courseId OR lessonCourse.id = :courseId
+            WHERE lessonCourse.id = :courseId OR (lesson.id IS NULL AND chapterCourse.id = :courseId)
             """)
     long countQuizzes(@Param("courseId") Long courseId);
 
@@ -45,18 +56,23 @@ public interface ILearningStatsRepository extends Repository<CourseEntity, Long>
     long countCompletedLessons(@Param("userId") Long userId, @Param("courseId") Long courseId);
 
     @Query("""
-            SELECT COUNT(submission)
+            SELECT COUNT(DISTINCT submission.assignment.id)
             FROM AssignmentSubmissionEntity submission
             WHERE submission.user.id = :userId
               AND submission.assignment.lesson.chapter.courseEntity.id = :courseId
+              AND submission.status <> com.app.features.model.enums.AssignmentSubmissionStatus.NEEDS_REVISION
             """)
     long countAssignmentSubmissions(@Param("userId") Long userId, @Param("courseId") Long courseId);
 
     @Query("""
             SELECT MAX(attempt.score)
             FROM QuizAttemptEntity attempt
+            JOIN attempt.quiz quiz
+            LEFT JOIN quiz.lessonEntity lesson
+            LEFT JOIN lesson.chapter lessonChapter
+            LEFT JOIN quiz.chapter chapter
             WHERE attempt.user.id = :userId
-              AND (attempt.quiz.lessonEntity.chapter.courseEntity.id = :courseId OR attempt.quiz.chapter.courseEntity.id = :courseId)
+              AND (lessonChapter.courseEntity.id = :courseId OR (lesson.id IS NULL AND chapter.courseEntity.id = :courseId))
               AND attempt.isPassed = true
             GROUP BY attempt.quiz.id
             """)
@@ -71,7 +87,7 @@ public interface ILearningStatsRepository extends Repository<CourseEntity, Long>
             LEFT JOIN quiz.lessonEntity lesson
             LEFT JOIN lesson.chapter lessonChapter
             LEFT JOIN lessonChapter.courseEntity lessonCourse
-            WHERE chapterCourse.id = :courseId OR lessonCourse.id = :courseId
+            WHERE lessonCourse.id = :courseId OR (lesson.id IS NULL AND chapterCourse.id = :courseId)
             """)
     long sumQuizQuestionPoints(@Param("courseId") Long courseId);
 }

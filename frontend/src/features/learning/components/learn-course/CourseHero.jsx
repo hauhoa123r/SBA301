@@ -23,10 +23,11 @@ export default function CourseHero({ course, progress, completedCount, totalActi
                         {progress}%
                     </div>
                 </div>
+                {totalActivities > 0 && completedCount === totalActivities && <p role="status" className="mt-5 font-bold text-status-successSoft">Bạn đã hoàn thành toàn bộ hoạt động của khóa học.</p>}
             </section>
 
             <section className="my-7 grid gap-4 md:grid-cols-3">
-                <StatCard icon={BookOpen} label="Bài hoàn thành" value={`${completedCount}/${totalActivities}`} />
+                <StatCard icon={BookOpen} label="Hoạt động hoàn thành" value={`${completedCount}/${totalActivities}`} />
                 <StatCard icon={Trophy} label="Chương đã xong" value={`${completedChapters}/${course.chapters.length}`} amber />
                 <StatCard icon={Target} label="Tiến độ chung" value={`${progress}%`} cyan />
             </section>

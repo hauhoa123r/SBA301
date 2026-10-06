@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ActivityStatsCalculator {
 
-    private static final int DEFAULT_TOTAL_ACTIVITIES = 10;
 
     public ActivityStats calculate(LearningStatsData data) {
         int openLessons = (int) data.lessonCount();
@@ -23,10 +22,6 @@ public class ActivityStatsCalculator {
         int completedActivities = (int) (completedLessons + completedQuizzes + completedAssignments);
 
         log.debug("Activity statistics calculated, completedActivities={}, totalActivities={}, openLessons={}", completedActivities, totalActivities, openLessons);
-        return new ActivityStats(completedActivities, applyTotalFallback(totalActivities), openLessons);
-    }
-
-    private int applyTotalFallback(int totalActivities) {
-        return totalActivities == 0 ? DEFAULT_TOTAL_ACTIVITIES : totalActivities;
+        return new ActivityStats(Math.min(completedActivities, totalActivities), totalActivities, openLessons);
     }
 }

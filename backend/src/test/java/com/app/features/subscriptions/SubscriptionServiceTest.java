@@ -88,4 +88,15 @@ class SubscriptionServiceTest {
         invoice.setSubscriptionPlanCode(code); invoice.setSubscriptionDurationDays(30);
         return invoice;
     }
+
+    @Test
+    void activationDoesNotRoundStartIntoFutureAtMysqlSecondPrecision() {
+        var fractionalClock = Clock.fixed(now.plusNanos(850_000_000), ZoneOffset.UTC);
+        var fractionalService = new SubscriptionService(plans, repository, users, enrollments, fractionalClock);
+        assertTrue(fractionalService.startTrial(7L).active());
+        assertEquals(now, stored.get(7L).getStartedAt());
+        fractionalService.activatePaidInvoice(invoice("STANDARD"));
+        assertEquals(now, stored.get(7L).getStartedAt());
+        assertTrue(fractionalService.hasActiveAccess(7L));
+    }
 }

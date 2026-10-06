@@ -1,23 +1,22 @@
 import { ChevronRight, Lock } from "lucide-react";
 import ProgressBar from "./ProgressBar";
 
-export default function ChapterList({ course, activeChapter, chapterStats, completedChapterIds, onLessonSelect }) {
+export default function ChapterList({ course, activeChapter, chapterStats, onLessonSelect, onQuizSelect }) {
     return (
         <section className="mt-8">
             <h2 className="mb-4 text-base font-bold text-brand-learningLight">Danh sách chương học</h2>
             <div className="space-y-4">
                 {course.chapters.map((chapter) => {
                     const stats = chapterStats[chapter.id];
-                    const percent = stats.total ? Math.round((stats.done / stats.total) * 100) : 0;
-                    const previousChapter = course.chapters[chapter.order_index - 2];
-                    const locked = chapter.order_index > 1 && !completedChapterIds.has(previousChapter.id);
+                    const percent = stats.total ? Math.floor((stats.done / stats.total) * 100) : 0;
+                    const locked = !chapter.lessons.length && !chapter.quizzes?.length;
 
                     return (
                         <button
                             key={chapter.id}
                             type="button"
                             disabled={locked}
-                            onClick={() => onLessonSelect(chapter.lessons[0].id)}
+                            onClick={() => chapter.lessons[0] ? onLessonSelect(chapter.lessons[0].id) : onQuizSelect(chapter.quizzes[0].id)}
                             className={`flex w-full items-center gap-4 rounded-2xl border p-4 text-left transition ${
                                 locked
                                     ? "cursor-not-allowed border-brand-mutedPanel bg-brand-panelAlt opacity-50"

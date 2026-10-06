@@ -1,4 +1,4 @@
-import { BookOpenCheck, CircleDot, Flame, Lock, Route, Trophy } from "lucide-react";
+import { BookOpenCheck, CircleDot, Flame, Route, Trophy } from "lucide-react";
 import { AnimatedCard, UserReveal, UserStagger } from "@/shared/ui";
 import ContinueLearningSection from "./continue-learning/ContinueLearningSection";
 
@@ -36,7 +36,7 @@ export default function OverviewPanel({
             <UserStagger as="section" aria-label="Tổng quan tiến độ học tập" className="grid gap-4 md:grid-cols-3" itemClassName="h-full" distance={18} step={65}>
                 <OverviewStat icon={Route} label="Hoạt động đã hoàn thành" value={formatRatio(completedActivities, totalActivities)} />
                 <OverviewStat icon={BookOpenCheck} label="Bài học trong khóa" value={formatMetric(openLessons)} green />
-                <OverviewStat icon={Trophy} label="Cúp đã đạt" value={formatRatio(earnedCups, totalCups)} amber />
+                <OverviewStat icon={Trophy} label="Điểm quiz đã đạt" value={formatRatio(earnedCups, totalCups)} amber />
             </UserStagger>
         </div>
     );
@@ -53,20 +53,20 @@ function TodayGoalCard({ course, statsCourseTitle }) {
                         <Flame aria-hidden="true" className="h-6 w-6" />
                     </span>
                     <div className="min-w-0">
-                        <p className="text-xs font-black uppercase tracking-[0.16em] text-status-warningSoft">Mục tiêu hôm nay</p>
-                        <h2 id="today-goal-title" className="mt-1 text-lg font-black text-brand-white">Hoàn thành 2 hoạt động</h2>
+                        <p className="text-xs font-black uppercase tracking-[0.16em] text-status-warningSoft">Gợi ý học hôm nay</p>
+                        <h2 id="today-goal-title" className="mt-1 text-lg font-black text-brand-white">Ôn lại bài và làm quiz tiếp theo</h2>
                     </div>
                 </div>
                 <div className="grid min-w-0 flex-1 gap-3 sm:grid-cols-2">
                     <div className="flex items-center gap-3 rounded-xl border border-brand-accentBright/35 bg-brand-menu px-4 py-3">
                         <CircleDot aria-hidden="true" className="h-5 w-5 shrink-0 text-brand-accentSoft" />
                         <p className="min-w-0 text-sm font-semibold text-brand-textSecondary">
-                            Hoàn thành trong <span className="font-black text-brand-white">{courseTitle}</span>
+                            Tiếp tục học trong <span className="font-black text-brand-white">{courseTitle}</span>
                         </p>
                     </div>
                     <div className="flex items-center gap-3 rounded-xl border border-brand-accent/10 bg-brand-light/70 px-4 py-3">
-                        <Lock aria-hidden="true" className="h-5 w-5 shrink-0 text-brand-meterMuted" />
-                        <p className="text-sm font-semibold text-brand-mutedText">Nhiệm vụ tự chọn mở sau mục tiêu chính</p>
+                        <BookOpenCheck aria-hidden="true" className="h-5 w-5 shrink-0 text-brand-meterMuted" />
+                        <p className="text-sm font-semibold text-brand-mutedText">Tiến độ của bạn được lưu để tiếp tục lần sau</p>
                     </div>
                 </div>
             </div>

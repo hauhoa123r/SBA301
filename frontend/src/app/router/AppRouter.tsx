@@ -27,12 +27,24 @@ import { MainLayout } from "./MainLayout";
 import { RoleRoute } from "./RoleRoute";
 const AdminDashboardPage = lazy(() => import("@/pages/admin-dashboard/AdminDashboardPage")
   .then((module) => ({ default: module.AdminDashboardPage })));
+const AssignmentReviewPage = lazy(() => import("@/pages/admin-dashboard/AssignmentReviewPage")
+  .then((module) => ({ default: module.AssignmentReviewPage })));
+const StudentManagementPage = lazy(() => import("@/pages/admin-dashboard/StudentManagementPage")
+  .then((module) => ({ default: module.StudentManagementPage })));
+const StudentDetailPage = lazy(() => import("@/pages/admin-dashboard/StudentManagementPage")
+  .then((module) => ({ default: module.StudentDetailPage })));
+const SubscriptionPlanManagementPage = lazy(() => import("@/pages/admin-dashboard/SubscriptionPlanManagementPage")
+  .then((module) => ({ default: module.SubscriptionPlanManagementPage })));
 
 export function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="admin/dashboard" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải Dashboard…</div>}><AdminDashboardPage /></Suspense></RoleRoute>} />
+        <Route path="admin/assignments" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải bài nộp…</div>}><AssignmentReviewPage /></Suspense></RoleRoute>} />
+        <Route path="admin/students" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải học viên…</div>}><StudentManagementPage /></Suspense></RoleRoute>} />
+        <Route path="admin/students/:id" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải học viên…</div>}><StudentDetailPage /></Suspense></RoleRoute>} />
+        <Route path="admin/subscription-plans" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải gói học…</div>}><SubscriptionPlanManagementPage /></Suspense></RoleRoute>} />
         <Route element={<MainLayout />}>
           <Route index element={<HomePage />} />
           <Route path="courses" element={<CourseListPage />} />
@@ -99,6 +111,7 @@ export function AppRouter() {
           <Route index element={<LearnCoursePage />} />
           <Route path="lessons/:lessonId" element={<LearnCoursePage />} />
           <Route path="quizzes/:quizId" element={<LearnCoursePage />} />
+          <Route path="assignments/:assignmentId" element={<LearnCoursePage />} />
           <Route
             path="chapters/:chapterId/assignment"
             element={<LearnCoursePage />}

@@ -1,4 +1,5 @@
 import { Award, Check, ChevronRight, CirclePlay, ClipboardList, Clock3, X } from "lucide-react";
+import { chapterAssignments, lessonQuizzes } from "../../shared/learnCourseUtils";
 
 const formatDuration = (seconds) => `${Math.max(1, Math.round(seconds / 60))} phút`;
 
@@ -65,13 +66,13 @@ export default function LearnCourseSidebar({
             <nav className="space-y-2 px-3 pb-6">
                 {course.chapters.map((chapter) => {
                     const stats = chapterStats[chapter.id];
-                    const isActiveChapter = chapter.id === activeChapter.id;
+                    const isActiveChapter = chapter.id === activeChapter?.id;
 
                     return (
                         <div key={chapter.id} className="border-t border-brand-border pt-3 first:border-t-0 first:pt-0">
                             <button
                                 type="button"
-                                onClick={() => selectLesson(chapter.lessons[0].id)}
+                                onClick={() => chapter.lessons[0] ? selectLesson(chapter.lessons[0].id) : chapter.quizzes?.[0] && selectQuiz(chapter.quizzes[0].id)}
                                 className="flex w-full items-center gap-3 overflow-hidden rounded-xl px-2 py-3 text-left transition hover:bg-brand-cardBg max-lg:pr-12 lg:px-3"
                                 title={`Chương ${chapter.orderIndex || chapter.order_index}: ${chapter.title}`}
                             >
@@ -92,36 +93,41 @@ export default function LearnCourseSidebar({
                                     {chapter.lessons.map((lesson) => (
                                         <div key={lesson.id} className="space-y-1">
                                             <SidebarItem
-                                                active={mode === "lesson" && activeLesson.id === lesson.id}
+                                                active={mode === "lesson" && activeLesson?.id === lesson.id}
                                                 done={completedLessons.has(lesson.id)}
                                                 icon={CirclePlay}
                                                 label={`Bài ${lesson.orderIndex || lesson.order_index}: ${lesson.title}`}
                                                 sub={formatDuration(lesson.durationSeconds || lesson.duration_seconds)}
                                                 onClick={() => selectLesson(lesson.id)}
                                             />
-                                            {lesson.quiz && (
+                                            {lessonQuizzes(lesson).map(quiz => (
                                                 <SidebarItem
-                                                    active={mode === "quiz" && activeQuiz?.id === lesson.quiz.id}
-                                                    done={passedQuizzes.has(lesson.quiz.id)}
+                                                    key={quiz.id}
+                                                    active={mode === "quiz" && activeQuiz?.id === quiz.id}
+                                                    done={passedQuizzes.has(quiz.id)}
                                                     icon={ClipboardList}
-                                                    label={lesson.quiz.title}
-                                                    sub={`${lesson.quiz.time_limit_minutes || lesson.quiz.timeLimitMinutes || 5} phút`}
-                                                    onClick={() => selectQuiz(lesson.quiz.id)}
+                                                    label={quiz.title}
+                                                    sub={quiz.timeLimitMinutes ? `${quiz.timeLimitMinutes} phút` : "Không giới hạn"}
+                                                    onClick={() => selectQuiz(quiz.id)}
                                                 />
-                                            )}
+                                            ))}
                                         </div>
                                     ))}
-                                    {chapter.assignment && (
+                                    {(chapter.quizzes || []).map(quiz => <SidebarItem key={quiz.id} active={activeQuiz?.id === quiz.id}
+                                        done={passedQuizzes.has(quiz.id)} icon={ClipboardList} label={quiz.title}
+                                        sub="Kiểm tra chương" onClick={() => selectQuiz(quiz.id)} />)}
+                                    {chapterAssignments(chapter).map(assignment => (
                                         <SidebarItem
-                                            active={mode === "assignment" && activeAssignment?.id === chapter.assignment.id}
-                                            done={submittedAssignments.has(chapter.assignment.id)}
+                                            key={assignment.id}
+                                            active={mode === "assignment" && activeAssignment?.id === assignment.id}
+                                            done={submittedAssignments.has(assignment.id)}
                                             icon={Award}
-                                            label={chapter.assignment.title}
-                                            sub={chapterStats[chapter.id]?.done >= chapter.lessons.length ? "Sẵn sàng" : "Hoàn thành bài học trước"}
+                                            label={assignment.title}
+                                            sub={submittedAssignments.has(assignment.id) ? "Đã nộp" : "Chưa nộp"}
                                             highlight
-                                            onClick={() => selectAssignment(chapter.id)}
+                                            onClick={() => selectAssignment(assignment.id)}
                                         />
-                                    )}
+                                    ))}
                                 </div>
                             )}
                         </div>

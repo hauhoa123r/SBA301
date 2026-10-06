@@ -69,6 +69,12 @@ public class LearningDetailResponseConverter {
         builder.orderIndex(chapter.getOrderIndex());
         builder.lessons(lessons);
         builder.assignment(toAssignmentResponse(assignment));
+        builder.assignments(chapter.getLessonEntities().stream()
+                .sorted(Comparator.comparingInt(LessonEntity::getOrderIndex))
+                .flatMap(lesson -> lesson.getAssignments().stream().sorted(Comparator.comparing(AssignmentEntity::getId)))
+                .map(this::toAssignmentResponse).toList());
+        builder.quizzes(chapter.getQuizzes().stream().filter(quiz -> quiz.getLessonEntity() == null)
+                .sorted(Comparator.comparing(QuizEntity::getId)).map(quizResponseConverter::toResponse).toList());
 
         return builder.build();
     }
@@ -101,6 +107,8 @@ public class LearningDetailResponseConverter {
         builder.vocabularies(vocabularies);
         builder.sentencePatterns(sentencePatterns);
         builder.quiz(quizResponseConverter.toResponse(quiz));
+        builder.quizzes(lesson.getQuizzes().stream().sorted(Comparator.comparing(QuizEntity::getId))
+                .map(quizResponseConverter::toResponse).toList());
 
         return builder.build();
     }

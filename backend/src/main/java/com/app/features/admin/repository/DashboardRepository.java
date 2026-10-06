@@ -114,11 +114,18 @@ public class DashboardRepository {
                 FROM courses c
                 LEFT JOIN (SELECT en.course_id, COUNT(*) AS students,
                   SUM(en.completed_at IS NOT NULL) AS completed,
-                  SUM(en.completed_at IS NULL AND EXISTS (
+                  SUM(en.completed_at IS NULL AND (EXISTS (
                     SELECT 1 FROM lesson_progress lp JOIN lessons l ON l.id = lp.lesson_id
                     JOIN chapters ch ON ch.id = l.chapter_id
                     WHERE lp.user_id = en.user_id AND ch.course_id = en.course_id
-                      AND (lp.watch_seconds > 0 OR lp.is_completed = TRUE))) AS learning
+                      AND (lp.watch_seconds > 0 OR lp.is_completed = TRUE))
+                    OR EXISTS (SELECT 1 FROM quiz_attempts qa JOIN quizzes q ON q.id = qa.quiz_id
+                      LEFT JOIN lessons ql ON ql.id = q.lesson_id
+                      JOIN chapters qc ON qc.id = COALESCE(ql.chapter_id, q.chapter_id)
+                      WHERE qa.user_id = en.user_id AND qc.course_id = en.course_id AND qa.status = 'SUBMITTED')
+                    OR EXISTS (SELECT 1 FROM assignment_submissions s JOIN assignments a ON a.id = s.assignment_id
+                      JOIN lessons al ON al.id = a.lesson_id JOIN chapters ac ON ac.id = al.chapter_id
+                      WHERE s.user_id = en.user_id AND ac.course_id = en.course_id))) AS learning
                   FROM course_enrollments en GROUP BY en.course_id) e ON e.course_id = c.id
                 LEFT JOIN (SELECT course_id, SUM(amount) AS revenue FROM invoices
                   WHERE status = 'PAID' AND subscription_plan_code IS NULL GROUP BY course_id) i ON i.course_id = c.id

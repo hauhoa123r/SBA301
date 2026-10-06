@@ -51,9 +51,17 @@ public class QuizResponseConverter {
         builder.orderIndex(question.getOrderIndex());
         builder.audioUrl(question.getAudioUrl());
         builder.questionType(question.getQuestionType() != null ? question.getQuestionType().name() : null);
-        builder.metaData(question.getMetaData());
-        builder.explanation(question.getExplanation());
-        builder.answers(answers);
+        java.util.Map<String, Object> metadata = new java.util.HashMap<>();
+        if (question.getMetaData() != null) {
+            for (String key : List.of("speaking_target", "pinyin"))
+                if (question.getMetaData().containsKey(key)) metadata.put(key, question.getMetaData().get(key));
+        }
+        if (question.getQuestionType() == com.app.features.model.enums.QuestionType.MATCHING)
+            metadata.put("matchingOptions", question.getAnswerEntities().stream().map(AnswerEntity::getMatchingPair)
+                .filter(java.util.Objects::nonNull).distinct().sorted().toList());
+        builder.metaData(metadata);
+        builder.explanation(null);
+        builder.answers(question.getQuestionType() == com.app.features.model.enums.QuestionType.FILL_IN_BLANK ? List.of() : answers);
 
         return builder.build();
     }
@@ -63,8 +71,8 @@ public class QuizResponseConverter {
 
         builder.id(answer.getId());
         builder.content(answer.getContent());
-        builder.isCorrect(answer.getIsCorrect());
-        builder.matchingPair(answer.getMatchingPair());
+        builder.isCorrect(null);
+        builder.matchingPair(null);
         builder.orderIndex(answer.getOrderIndex());
 
         return builder.build();

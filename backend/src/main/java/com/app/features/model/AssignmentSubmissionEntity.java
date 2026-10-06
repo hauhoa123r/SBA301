@@ -53,7 +53,7 @@ public class AssignmentSubmissionEntity {
     @Column(name = "teacher_feedback")
     private String teacherFeedback;
 
-    @Column(name = "submitted_at", insertable = false, updatable = false)
+    @Column(name = "submitted_at")
     private Instant submittedAt;
 
     @Column(name = "graded_at")

@@ -10,23 +10,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CupStatsCalculator {
 
-    private static final int DEFAULT_TOTAL_CUPS = 195;
-    private static final int DEFAULT_EARNED_CUPS = 76;
 
     public CupStats calculate(UserEntity user, LearningStatsData data) {
         int totalCups = (int) data.totalQuizQuestionPoints();
-        int earnedCups = data.highestPassedQuizScores().stream().mapToInt(Integer::intValue).sum();
+        int earnedCups = (int) Math.min(totalCups, Math.max(0, data.earnedQuizQuestionPoints()));
 
-        if (totalCups == 0) {
-            log.debug("Using fallback cup statistics, userId={}", user.getId());
-            return fallbackStats(user.getTotalLearningPoints());
-        }
         log.debug("Cup statistics calculated, userId={}, earnedCups={}, totalCups={}", user.getId(), earnedCups, totalCups);
         return new CupStats(earnedCups, totalCups);
     }
 
-    private CupStats fallbackStats(Integer totalLearningPoints) {
-        int earnedCups = totalLearningPoints != null && totalLearningPoints > 0 ? totalLearningPoints % DEFAULT_TOTAL_CUPS : DEFAULT_EARNED_CUPS;
-        return new CupStats(earnedCups, DEFAULT_TOTAL_CUPS);
-    }
 }

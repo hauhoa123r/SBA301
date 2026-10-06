@@ -26,4 +26,5 @@ public class LessonLearningResponse {
     private List<VocabularyResponse> vocabularies;
     private List<SentencePatternResponse> sentencePatterns;
     private QuizResponse quiz;
+    private List<QuizResponse> quizzes;
 }
