@@ -4,6 +4,7 @@ import type {
   EmailRequest,
   LoginRequest,
   RegisterRequest,
+  RegisterResponse,
   ResetPasswordRequest,
   TokenVerificationRequest,
 } from "../model/auth.types";
@@ -41,8 +42,10 @@ async function postMessage(path: string, data: unknown): Promise<AuthMessageResp
   return readMessageResponse(response.data);
 }
 
-export const register = (data: RegisterRequest): Promise<AuthMessageResponse> =>
-  postMessage("/register", data);
+export const register = async (data: RegisterRequest): Promise<RegisterResponse> => {
+  const response = await axiosClient.post<RegisterResponse>(`${API_AUTH}/register`, data);
+  return response.data;
+};
 
 export const forgotPassword = (data: EmailRequest): Promise<AuthMessageResponse> =>
   postMessage("/forgot-password", data);

@@ -11,6 +11,12 @@ export interface RegisterRequest {
   email: string;
   password: string;
 }
+export interface RegisterResponse {
+  id: number;
+  fullName: string;
+  email: string;
+  emailVerificationRequired: boolean;
+}
 
 export interface EmailRequest {
   email: string;

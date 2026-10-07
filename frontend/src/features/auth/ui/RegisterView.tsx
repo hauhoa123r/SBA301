@@ -105,12 +105,14 @@ export default function RegisterView() {
         setIsSubmitting(true);
 
         try {
-            await register({
+            const response = await register({
                 fullName: formData.fullName.trim(),
                 email: formData.email.trim(),
                 password: formData.password,
             });
-            showSuccessToast("Tạo tài khoản thành công. Vui lòng kích hoạt tài khoản qua mail.");
+            showSuccessToast(response.emailVerificationRequired === false
+                ? "Tạo tài khoản thành công. Bạn có thể đăng nhập ngay."
+                : "Tạo tài khoản thành công. Vui lòng xác minh email để kích hoạt tài khoản.");
             void navigate("/login", { replace: true });
         } catch (error) {
             showApiErrorToast(error, "Có lỗi khi thực hiện đăng ký, vui lòng thử lại sau.");

@@ -63,7 +63,7 @@ export function AssignmentReviewPage() {
   }, [filter, page, revision]);
   return <div className="admin-shell">
     <aside className="admin-sidebar"><Link to="/admin/dashboard" className="admin-brand">Chinese Learning</Link>
-      <nav><Link to="/admin/dashboard">Dashboard</Link><Link to="/admin/students">Học viên</Link><Link to="/admin/subscription-plans">Gói học</Link><Link to="/admin/assignments">Chấm bài tập</Link></nav></aside>
+      <nav><Link to="/admin/dashboard">Dashboard</Link><Link to="/admin/students">Học viên</Link><Link to="/admin/subscription-plans">Gói học</Link><Link to="/admin/assignments">Chấm bài tập</Link><Link to="/admin/auth-settings">Cài đặt đăng ký</Link></nav></aside>
     <main className="admin-main">
       <header className="admin-header"><div><p className="admin-eyebrow">QUẢN TRỊ HỆ THỐNG</p><h1>Chấm bài tập</h1></div><Link className="admin-button" to="/admin/dashboard">Về Dashboard</Link></header>
       <div className="admin-filters"><label>Trạng thái<select value={filter} onChange={(event) => { setFilter(event.target.value); setPage(0); setSelected(null); setLoading(true); }}>

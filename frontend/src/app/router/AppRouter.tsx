@@ -35,6 +35,8 @@ const StudentDetailPage = lazy(() => import("@/pages/admin-dashboard/StudentMana
   .then((module) => ({ default: module.StudentDetailPage })));
 const SubscriptionPlanManagementPage = lazy(() => import("@/pages/admin-dashboard/SubscriptionPlanManagementPage")
   .then((module) => ({ default: module.SubscriptionPlanManagementPage })));
+const AuthenticationSettingsPage = lazy(() => import("@/pages/admin-dashboard/AuthenticationSettingsPage")
+  .then((module) => ({ default: module.AuthenticationSettingsPage })));
 
 export function AppRouter() {
   return (
@@ -45,6 +47,7 @@ export function AppRouter() {
         <Route path="admin/students" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải học viên…</div>}><StudentManagementPage /></Suspense></RoleRoute>} />
         <Route path="admin/students/:id" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải học viên…</div>}><StudentDetailPage /></Suspense></RoleRoute>} />
         <Route path="admin/subscription-plans" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải gói học…</div>}><SubscriptionPlanManagementPage /></Suspense></RoleRoute>} />
+        <Route path="admin/auth-settings" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải cài đặt…</div>}><AuthenticationSettingsPage /></Suspense></RoleRoute>} />
         <Route element={<MainLayout />}>
           <Route index element={<HomePage />} />
           <Route path="courses" element={<CourseListPage />} />

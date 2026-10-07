@@ -12,6 +12,7 @@ public class LoginConverter {
         loginResponse.setId(userEntity.getId());
         loginResponse.setFullName(userEntity.getFullName());
         loginResponse.setEmail(userEntity.getEmail());
+        loginResponse.setEmailVerificationRequired(userEntity.getStatus() == com.app.features.model.enums.UserStatus.PENDING);
         return loginResponse;
     }
 

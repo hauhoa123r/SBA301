@@ -108,7 +108,8 @@ class AuthServiceImplTest {
                 mock(LoginConverter.class),
                 mock(EmailVerificationService.class),
                 jwtService,
-                mock(RegisterConverter.class)
+                mock(RegisterConverter.class),
+                mock(com.app.features.auth.service.AuthenticationSettingsService.class)
         );
         return new TestContext(service, user, jwtService);
     }

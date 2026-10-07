@@ -25,4 +25,12 @@ public interface UserRepository
     @org.springframework.data.jpa.repository.Modifying(flushAutomatically = true, clearAutomatically = true)
     @org.springframework.data.jpa.repository.Query("update UserEntity u set u.status = com.app.features.model.enums.UserStatus.ACTIVE where u.id = :id and u.status in (com.app.features.model.enums.UserStatus.PENDING, com.app.features.model.enums.UserStatus.INACTIVE)")
     int activatePending(Long id);
+
+    @org.springframework.data.jpa.repository.Modifying(flushAutomatically = true, clearAutomatically = true)
+    @org.springframework.data.jpa.repository.Query(value = """
+        UPDATE users u SET u.status = 'ACTIVE' WHERE u.id = :id AND u.status = 'PENDING'
+          AND EXISTS (SELECT 1 FROM user_roles ur JOIN roles r ON r.id = ur.role_id WHERE ur.user_id = u.id AND r.name = 'STUDENT')
+          AND NOT EXISTS (SELECT 1 FROM user_roles ur JOIN roles r ON r.id = ur.role_id WHERE ur.user_id = u.id AND r.name = 'ADMIN')
+        """, nativeQuery = true)
+    int activatePendingStudent(Long id);
 }

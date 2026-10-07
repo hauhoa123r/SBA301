@@ -36,6 +36,7 @@ export function AdminDashboardPage() {
       <Link to="/" className="admin-brand"><BookOpen /><span>Chinese Learning<small>Quản trị hệ thống</small></span></Link>
       <nav aria-label="Điều hướng quản trị"><a href="#overview"><LayoutDashboard size={18} /> Tổng quan</a>
         <a href="#subscriptions"><Wallet size={18} /> Thống kê gói</a><Link to="/admin/students"><Users size={18} /> Học viên</Link><Link to="/admin/subscription-plans"><Wallet size={18} /> Quản lý gói học</Link><a href="#courses"><BookOpen size={18} /> Khóa học</a><Link to="/admin/assignments"><BookOpen size={18} /> Chấm bài tập</Link></nav>
+      <Link className="admin-button mt-4" to="/admin/auth-settings">Cài đặt đăng ký</Link>
       <p className="admin-sidebar-note">Thống kê từ dữ liệu hệ thống</p>
     </aside>
     <main className="admin-main" id="overview">

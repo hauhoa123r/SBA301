@@ -99,3 +99,5 @@
 .admin-shell td.admin-history-text { white-space: normal; min-width: 200px; max-width: 400px; overflow-wrap: anywhere; }
 .admin-sidebar nav a.active { background: #15395f; }
 .admin-header-actions { flex-wrap: wrap; }
+.admin-management-form label.admin-toggle { display: flex; align-items: center; gap: 12px; margin: 20px 0; font-size: 15px; }
+.admin-management-form .admin-toggle input { margin: 0; width: 20px; height: 20px; accent-color: #2f80b7; }

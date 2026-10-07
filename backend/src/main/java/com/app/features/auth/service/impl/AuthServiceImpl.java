@@ -13,6 +13,7 @@ import com.app.features.auth.exception.InvalidLoginException;
 import com.app.features.auth.exception.RegisterException;
 import com.app.features.auth.repository.UserRepository;
 import com.app.features.auth.service.EmailVerificationService;
+import com.app.features.auth.service.AuthenticationSettingsService;
 import com.app.features.model.UserEntity;
 import com.app.features.model.enums.UserStatus;
 import com.app.security.role.SupportedRolePolicy;
@@ -33,7 +34,9 @@ public class AuthServiceImpl implements AuthService {
     private final EmailVerificationService emailVerificationServiceImpl;
     private final JwtService jwtService;
     private final RegisterConverter registerConverter;
+    private final AuthenticationSettingsService authenticationSettings;
     @Override
+    @Transactional
     public TokenResponse login(LoginRequest user) {
         UserEntity userEntity = userRepositoryImpl.findByEmailWithRoles(user.getEmail())
                 .orElseThrow(() -> {
@@ -43,6 +46,14 @@ public class AuthServiceImpl implements AuthService {
         if (!matchesPassword(user.getPassword(), userEntity.getPasswordHash())) {
             log.warn("Login failed: invalid password, email={}", user.getEmail());
             throw new InvalidLoginException("Mật khẩu không đúng");
+        }
+        if (userEntity.getStatus() == UserStatus.PENDING && SupportedRolePolicy.hasStudentRole(userEntity)
+                && SupportedRolePolicy.supportedRoleNames(userEntity).stream().noneMatch(SupportedRolePolicy.ADMIN_ROLE::equals)
+                && !authenticationSettings.requiresVerification()) {
+            // Conditional update cannot reactivate an account locked concurrently by Admin.
+            userRepositoryImpl.activatePendingStudent(userEntity.getId());
+            userEntity = userRepositoryImpl.findByIdWithRoles(userEntity.getId())
+                .orElseThrow(() -> new InvalidLoginException("Email không tồn tại"));
         }
         if (userEntity.getStatus() != UserStatus.ACTIVE) {
             log.warn("Login failed because account is not active, userId={}, status={}",
@@ -73,8 +84,11 @@ public class AuthServiceImpl implements AuthService {
             log.warn("Register failed because email already exists, email={}", email);
             throw new RegisterException("Email đã được sử dụng");
         }
-        UserEntity savedUser = userRepositoryImpl.save(registerConverter.convert(request));
-        emailVerificationServiceImpl.sendVerificationEmail(savedUser);
+        boolean verificationRequired = authenticationSettings.requiresVerification();
+        UserEntity newUser = registerConverter.convert(request);
+        newUser.setStatus(verificationRequired ? UserStatus.PENDING : UserStatus.ACTIVE);
+        UserEntity savedUser = userRepositoryImpl.save(newUser);
+        if (verificationRequired) emailVerificationServiceImpl.sendVerificationEmail(savedUser);
         log.info("Register successful, userId={}", savedUser.getId());
         return loginConverter.loginConverter(savedUser);
     }
