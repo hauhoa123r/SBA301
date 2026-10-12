@@ -1,6 +1,6 @@
-# Cập nhật database bằng một file
+# Cập nhật database
 
-File dùng để cập nhật database hiện hữu: **`20261012_deploy_update.sql`**. File chứa SQL trực tiếp, không dùng `SOURCE` để phụ thuộc các file migration khác.
+Baseline dùng để cập nhật database hiện hữu: **`20261012_deploy_update.sql`**. File chứa SQL trực tiếp, không dùng `SOURCE` để phụ thuộc các file migration khác. Tính năng Feedback có migration bổ sung `20261013_feedback.sql`, xem hướng dẫn bên dưới.
 
 ## Nội dung và thứ tự
 
@@ -41,9 +41,20 @@ Cuối file có kết quả `deploy_update_complete`, số khóa đọc (dự ki
 
 Không chạy lại `chinese_online_learning.sql` hoặc `DataChinese.sql` trên database đang dùng. File schema gốc xóa/tạo lại database. Không xóa volume MySQL để cập nhật. Docker init chỉ tự chạy khi volume trống.
 
+## Feedback (13/10/2026)
+
+Sau baseline `20261012_deploy_update.sql`, chạy thêm **`20261013_feedback.sql`** trước khi deploy backend có feedback. Migration này tạo các bảng feedback và khóa cho một đợt công khai, không chứa dữ liệu khảo sát mẫu và giữ dữ liệu khi chạy lại.
+
+```bash
+docker compose cp ./database/20261013_feedback.sql mysql:/tmp/20261013_feedback.sql
+docker compose exec mysql mysql --default-character-set=utf8mb4 -u root -p --execute="SOURCE /tmp/20261013_feedback.sql" chinese_online_learning
+```
+
+Database đã chạy baseline chỉ cần migration feedback. Chi tiết API, cách dùng, quy tắc bảo toàn dữ liệu và kết quả kiểm thử: [docs/feedback/IMPLEMENTATION.md](../docs/feedback/IMPLEMENTATION.md).
+
 ## Khởi tạo database mới
 
-`database/Dockerfile` chạy theo thứ tự: schema → `DataChinese.sql` → `20261012_deploy_update.sql`. File gộp thay các bước migration riêng trước đây, đồng thời dọn dữ liệu mẫu khớp điều kiện.
+`database/Dockerfile` chạy theo thứ tự: schema → `DataChinese.sql` → `20261012_deploy_update.sql` → `20261013_feedback.sql`. File gộp thay các bước migration riêng trước đây, đồng thời dọn dữ liệu mẫu khớp điều kiện.
 
 ## Kiểm tra
 

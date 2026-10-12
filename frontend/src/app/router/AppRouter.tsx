@@ -37,11 +37,19 @@ const SubscriptionPlanManagementPage = lazy(() => import("@/pages/admin-dashboar
   .then((module) => ({ default: module.SubscriptionPlanManagementPage })));
 const AuthenticationSettingsPage = lazy(() => import("@/pages/admin-dashboard/AuthenticationSettingsPage")
   .then((module) => ({ default: module.AuthenticationSettingsPage })));
+const FeedbackManagementPage = lazy(() => import("@/pages/admin-dashboard/FeedbackManagementPage")
+  .then((module) => ({ default: module.FeedbackManagementPage })));
+const FeedbackStatisticsPage = lazy(() => import("@/pages/admin-dashboard/FeedbackStatisticsPage")
+  .then((module) => ({ default: module.FeedbackStatisticsPage })));
+const FeedbackPage = lazy(() => import("@/pages/feedback/FeedbackPage")
+  .then((module) => ({ default: module.FeedbackPage })));
 
 export function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="admin/feedback" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải feedback…</div>}><FeedbackManagementPage /></Suspense></RoleRoute>} />
+        <Route path="admin/feedback/statistics" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải thống kê…</div>}><FeedbackStatisticsPage /></Suspense></RoleRoute>} />
         <Route path="admin/dashboard" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải Dashboard…</div>}><AdminDashboardPage /></Suspense></RoleRoute>} />
         <Route path="admin/assignments" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải bài nộp…</div>}><AssignmentReviewPage /></Suspense></RoleRoute>} />
         <Route path="admin/students" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải học viên…</div>}><StudentManagementPage /></Suspense></RoleRoute>} />
@@ -50,6 +58,7 @@ export function AppRouter() {
         <Route path="admin/auth-settings" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải cài đặt…</div>}><AuthenticationSettingsPage /></Suspense></RoleRoute>} />
         <Route element={<MainLayout />}>
           <Route index element={<HomePage />} />
+          <Route path="feedback" element={<Suspense fallback={<div role="status" className="p-8">Đang tải khảo sát…</div>}><FeedbackPage /></Suspense>} />
           <Route path="courses" element={<CourseListPage />} />
           <Route path="subscriptions" element={<SubscriptionsPage />} />
           <Route path="courses/:id" element={<CourseDetailPage />} />
