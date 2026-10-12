@@ -8,7 +8,7 @@ pipeline {
     environment {
     IMAGE_TAG = "${BUILD_NUMBER}"
     SERVER_IP = "16.178.47.5"
-    DEPLOY_PATH = "/apps/SBA301"
+    DEPLOY_PATH = "apps/SBA301"
 }
 
     stages {
