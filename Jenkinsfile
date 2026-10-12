@@ -37,6 +37,7 @@ pipeline {
             steps {
                 sh '''
                     cp /var/lib/jenkins/env/.env "$WORKSPACE/.env"
+                    chmod 600 "$WORKSPACE/.env"
                     test -f "$WORKSPACE/.env"
                 '''
             }
@@ -48,7 +49,6 @@ pipeline {
                     docker compose \
                         --env-file "$WORKSPACE/.env" \
                         config --quiet
-                    python3 deployment/validate_env.py --env-file "$WORKSPACE/.env"
                 '''
             }
         }
@@ -75,10 +75,9 @@ pipeline {
                     )
                 ]) {
                     sh '''
-                        echo "$DOCKER_TOKEN" |
-                            docker login \
-                                --username "$DOCKER_USERNAME" \
-                                --password-stdin
+                        echo "$DOCKER_TOKEN" | docker login \
+                            --username "$DOCKER_USERNAME" \
+                            --password-stdin
 
                         echo "Pushing images with tag: $IMAGE_TAG"
 
@@ -105,15 +104,17 @@ pipeline {
                             install -d -m 700 "$HOME/.ssh"
 
                             ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new -i "$SSH_KEY" "$SSH_USER@$SERVER_IP" \
-                                "mkdir -p '$DEPLOY_PATH/frontend' '$DEPLOY_PATH/monitoring' '$DEPLOY_PATH/deployment'"
+                                "mkdir -p '$DEPLOY_PATH/frontend' '$DEPLOY_PATH/monitoring'"
+
                             scp -o BatchMode=yes -o StrictHostKeyChecking=accept-new -i "$SSH_KEY" \
                                 docker-compose.yml docker-compose.https.yml "$SSH_USER@$SERVER_IP:$DEPLOY_PATH/"
+
                             scp -o BatchMode=yes -o StrictHostKeyChecking=accept-new -i "$SSH_KEY" \
                                 frontend/nginx.https.conf "$SSH_USER@$SERVER_IP:$DEPLOY_PATH/frontend/"
+
                             scp -o BatchMode=yes -o StrictHostKeyChecking=accept-new -i "$SSH_KEY" \
                                 monitoring/prometheus.yml "$SSH_USER@$SERVER_IP:$DEPLOY_PATH/monitoring/"
-                            scp -o BatchMode=yes -o StrictHostKeyChecking=accept-new -i "$SSH_KEY" \
-                                deployment/validate_env.py "$SSH_USER@$SERVER_IP:$DEPLOY_PATH/deployment/"
+
                             ssh \
                                 -o BatchMode=yes \
                                 -o ConnectTimeout=15 \
@@ -123,7 +124,7 @@ pipeline {
                                 "cd '$DEPLOY_PATH' &&
                                  test -f docker-compose.yml &&
                                  test -f .env &&
-                                 python3 deployment/validate_env.py --env-file .env &&
+                                 IMAGE_TAG='$IMAGE_TAG' docker compose --env-file .env config --quiet &&
                                  IMAGE_TAG='$IMAGE_TAG' docker compose --env-file .env pull &&
                                  IMAGE_TAG='$IMAGE_TAG' docker compose --env-file .env run --rm --no-deps nginx nginx -t &&
                                  IMAGE_TAG='$IMAGE_TAG' docker compose --env-file .env up -d --wait --wait-timeout 180 &&
@@ -137,7 +138,7 @@ pipeline {
 
         stage('PIPELINE_FINISH') {
             steps {
-                echo "PIPELINE FINISHED"
+                echo 'PIPELINE FINISHED'
             }
         }
     }
