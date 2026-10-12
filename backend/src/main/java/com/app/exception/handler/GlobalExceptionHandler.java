@@ -15,6 +15,45 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<Response<?>> denied(org.springframework.security.access.AccessDeniedException ex) {
+        return error(HttpStatus.FORBIDDEN, "You do not have permission to access this resource.");
+    }
+
+    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
+    public ResponseEntity<Response<?>> unauthenticated(org.springframework.security.core.AuthenticationException ex) {
+        return error(HttpStatus.UNAUTHORIZED, "Authentication is invalid or expired.");
+    }
+
+    @ExceptionHandler(org.springframework.web.server.ResponseStatusException.class)
+    public ResponseEntity<Response<?>> status(org.springframework.web.server.ResponseStatusException ex) {
+        Response<?> body = Response.builder().status(ex.getStatusCode().value())
+                .message(ex.getReason() == null ? "Request rejected." : ex.getReason()).build();
+        return ResponseEntity.status(ex.getStatusCode()).body(body);
+    }
+
+    @ExceptionHandler({org.springframework.http.converter.HttpMessageNotReadableException.class,
+            org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class,
+            IllegalArgumentException.class})
+    public ResponseEntity<Response<?>> invalid(Exception ex) {
+        return error(HttpStatus.BAD_REQUEST, "Invalid request.");
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Response<?>> unexpected(Exception ex) {
+        if (ex instanceof org.springframework.web.ErrorResponse error) {
+            return ResponseEntity.status(error.getStatusCode()).body(Response.builder()
+                    .status(error.getStatusCode().value()).message("Request rejected.").build());
+        }
+        org.slf4j.LoggerFactory.getLogger(GlobalExceptionHandler.class)
+                .error("Unhandled backend error, type={}", ex.getClass().getSimpleName());
+        return error(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to process this request.");
+    }
+
+    private ResponseEntity<Response<?>> error(HttpStatus status, String message) {
+        return ResponseEntity.status(status).body(Response.builder().status(status.value()).message(message).build());
+    }
+
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<Response<?>> handle(BaseException ex) {
         Response<?> response = Response.builder()

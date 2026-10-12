@@ -10,8 +10,8 @@ public record ResetPasswordDto(String email, String token, String newPassword) {
 
         String email = normalize(request.getEmail()).toLowerCase();
         String token = normalize(request.getToken());
-        String newPassword = normalize(request.getNewPassword());
-        String confirmPassword = normalize(request.getConfirmPassword());
+        String newPassword = request.getNewPassword() == null ? "" : request.getNewPassword();
+        String confirmPassword = request.getConfirmPassword() == null ? "" : request.getConfirmPassword();
 
         if (!newPassword.equals(confirmPassword)) {
             throw new IllegalArgumentException("Mật khẩu mới và xác nhận mật khẩu không khớp.");

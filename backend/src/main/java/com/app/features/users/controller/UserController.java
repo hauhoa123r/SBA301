@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ import java.util.Map;
 @RestController
 @RequestMapping(ApiPath.API_USERS)
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('STUDENT')")
 public class UserController {
     private final UserProfileService userProfileService;
 

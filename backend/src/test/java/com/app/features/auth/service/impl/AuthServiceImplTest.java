@@ -109,7 +109,8 @@ class AuthServiceImplTest {
                 mock(EmailVerificationService.class),
                 jwtService,
                 mock(RegisterConverter.class),
-                mock(com.app.features.auth.service.AuthenticationSettingsService.class)
+                mock(com.app.features.auth.service.AuthenticationSettingsService.class),
+                new com.app.security.ratelimit.AuthenticationAttemptLimiter()
         );
         return new TestContext(service, user, jwtService);
     }

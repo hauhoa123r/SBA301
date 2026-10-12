@@ -29,7 +29,8 @@ import static org.mockito.Mockito.*;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @EnabledIfEnvironmentVariable(named = "RUN_MYSQL_INTEGRATION_TESTS", matches = "true")
 @Import({AuthenticationSettingsService.class, AuthServiceImpl.class, RegisterConverter.class, LoginConverter.class,
-    AdminAuditRepository.class, AuthenticationSettingsIntegrationTest.Config.class})
+    AdminAuditRepository.class, com.app.security.ratelimit.AuthenticationAttemptLimiter.class,
+    AuthenticationSettingsIntegrationTest.Config.class})
 class AuthenticationSettingsIntegrationTest {
     @TestConfiguration static class Config { @Bean ObjectMapper mapper() { return new ObjectMapper().findAndRegisterModules(); } }
     @Autowired TestEntityManager em;

@@ -9,7 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class SecurityUtils {
     public static UserEntity getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || "anonymousUser".equals(authentication.getPrincipal())) {
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
             throw new AuthenticationCredentialsNotFoundException("Authentication object is null");
         }
         if (authentication.getPrincipal() instanceof UserEntity user) return user;

@@ -21,31 +21,33 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import com.app.security.password.PasswordHashing;
+import com.app.security.ratelimit.AuthenticationAttemptLimiter;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class AuthServiceImpl implements AuthService {
-    private static final BCryptPasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
-
     private final UserRepository userRepositoryImpl;
     private final LoginConverter loginConverter;
     private final EmailVerificationService emailVerificationServiceImpl;
     private final JwtService jwtService;
     private final RegisterConverter registerConverter;
     private final AuthenticationSettingsService authenticationSettings;
+    private final AuthenticationAttemptLimiter attempts;
     @Override
     @Transactional
     public TokenResponse login(LoginRequest user) {
-        UserEntity userEntity = userRepositoryImpl.findByEmailWithRoles(user.getEmail())
+        String email = user.getEmail().trim().toLowerCase(java.util.Locale.ROOT);
+        attempts.check("login", email, 10, java.time.Duration.ofMinutes(1));
+        UserEntity userEntity = userRepositoryImpl.findByEmailWithRoles(email)
                 .orElseThrow(() -> {
                     log.warn("Login failed because email does not exist, email={}", user.getEmail());
-                    return new InvalidLoginException("Email không tồn tại");
+                    return new InvalidLoginException("Invalid email or password.");
                 });
         if (!matchesPassword(user.getPassword(), userEntity.getPasswordHash())) {
             log.warn("Login failed: invalid password, email={}", user.getEmail());
-            throw new InvalidLoginException("Mật khẩu không đúng");
+            throw new InvalidLoginException("Invalid email or password.");
         }
         if (userEntity.getStatus() == UserStatus.PENDING && SupportedRolePolicy.hasStudentRole(userEntity)
                 && SupportedRolePolicy.supportedRoleNames(userEntity).stream().noneMatch(SupportedRolePolicy.ADMIN_ROLE::equals)
@@ -61,19 +63,17 @@ public class AuthServiceImpl implements AuthService {
             throw new InvalidLoginException("User account is not active");
         }
         SupportedRolePolicy.requireSupported(userEntity);
+        if (!PasswordHashing.isBcrypt(userEntity.getPasswordHash())) {
+            userEntity.setPasswordHash(PasswordHashing.encode(user.getPassword()));
+            userRepositoryImpl.save(userEntity);
+        }
         log.info("Login successful, userId={}", userEntity.getId());
         return new TokenResponse(jwtService.createAccessToken(userEntity), jwtService.createRefreshToken(userEntity),
                 AuthUserResponse.from(userEntity));
     }
 
     private boolean matchesPassword(String password, String storedPassword) {
-        if (storedPassword == null || password == null) return false;
-        if (storedPassword.startsWith("$2a$") || storedPassword.startsWith("$2b$") || storedPassword.startsWith("$2y$")) {
-            try { return PASSWORD_ENCODER.matches(password, storedPassword); }
-            catch (IllegalArgumentException exception) { return false; }
-        }
-        // Existing registration/reset flows store plaintext. Preserve those accounts for this change.
-        return storedPassword.equals(password);
+        return PasswordHashing.matches(password, storedPassword);
     }
 
     @Override

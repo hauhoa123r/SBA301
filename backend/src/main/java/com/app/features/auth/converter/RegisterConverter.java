@@ -8,6 +8,7 @@ import com.app.features.model.UserEntity;
 import com.app.features.model.enums.UserStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import com.app.security.password.PasswordHashing;
 
 @Component
 @RequiredArgsConstructor
@@ -18,7 +19,7 @@ public class RegisterConverter {
         UserEntity userEntity = new UserEntity();
         userEntity.setFullName(request.getFullName().trim());
         userEntity.setEmail(request.getEmail().trim().toLowerCase());
-        userEntity.setPasswordHash(request.getPassword());
+        userEntity.setPasswordHash(PasswordHashing.encode(request.getPassword()));
         userEntity.setStatus(UserStatus.PENDING);
         userEntity.setTotalLearningPoints(0);
         RoleEntity studentRole = roleRepository.findByName("STUDENT")

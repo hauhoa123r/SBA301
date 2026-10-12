@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.util.Optional;
+import com.app.security.password.PasswordHashing;
+import com.app.security.ratelimit.AuthenticationAttemptLimiter;
 
 @Service
 @RequiredArgsConstructor
@@ -23,23 +25,22 @@ public class PasswordServiceImpl implements PasswordService {
     private final MailService mailService;
     private final PasswordChangeRepository passwordChangeRepository;
     private final VerificationTokenService verificationTokenService;
+    private final AuthenticationAttemptLimiter attempts;
     private final SecureRandom secureRandom = new SecureRandom();
 
     @Override
     @Transactional
     public void processForgotPassword(String email) {
         String normalizedEmail = normalize(email).toLowerCase();
+        attempts.check("forgot-password", normalizedEmail, 3, java.time.Duration.ofMinutes(15));
         log.info("Password reset requested, email={}", normalizedEmail);
         if (normalizedEmail.isBlank()) {
             log.warn("Password reset rejected because email is blank");
             throw new IllegalArgumentException("Vui lòng nhập email.");
         }
 
-        UserEntity user = passwordChangeRepository.findByEmail(normalizedEmail)
-                .orElseThrow(() -> {
-                    log.warn("Password reset requested for unknown email, email={}", normalizedEmail);
-                    return new IllegalArgumentException("Email không tồn tại.");
-                });
+        UserEntity user = passwordChangeRepository.findByEmail(normalizedEmail).orElse(null);
+        if (user == null) return;
 
         String token = String.format("%06d", secureRandom.nextInt(1_000_000));
         verificationTokenService.createPasswordResetToken(user, token);
@@ -66,12 +67,12 @@ public class PasswordServiceImpl implements PasswordService {
                 });
 
         UserEntity user = resetToken.getUser();
-        if (resetPassword.newPassword().equals(user.getPasswordHash())) {
+        if (PasswordHashing.matches(resetPassword.newPassword(), user.getPasswordHash())) {
             log.warn("Password reset rejected because new password matches current password, userId={}", user.getId());
             throw new IllegalArgumentException("Mật khẩu mới phải khác mật khẩu hiện tại.");
         }
 
-        user.setPasswordHash(resetPassword.newPassword());
+        user.setPasswordHash(PasswordHashing.encode(resetPassword.newPassword()));
         passwordChangeRepository.save(user);
         verificationTokenService.markUsed(resetToken);
         log.info("Password reset successfully, userId={}", user.getId());

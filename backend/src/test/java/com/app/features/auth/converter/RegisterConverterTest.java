@@ -37,7 +37,9 @@ class RegisterConverterTest {
 
         assertEquals("Student User", user.getFullName());
         assertEquals("student@example.com", user.getEmail());
-        assertEquals("Password1", user.getPasswordHash());
+        org.junit.jupiter.api.Assertions.assertNotEquals("Password1", user.getPasswordHash());
+        org.junit.jupiter.api.Assertions.assertTrue(new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder()
+                .matches("Password1", user.getPasswordHash()));
         assertEquals(UserStatus.PENDING, user.getStatus());
         assertEquals(0, user.getTotalLearningPoints());
         assertEquals(1, user.getRoles().size());

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface VerificationTokenRepository extends JpaRepository<VerificationTokenEntity, Long> {
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
     Optional<VerificationTokenEntity> findByTokenAndTokenTypeAndUsedFalseAndUserEmail(String token, String tokenType, String email);
     List<VerificationTokenEntity> findAllByUserAndTokenTypeAndUsedFalse(UserEntity user, String tokenType);
 }

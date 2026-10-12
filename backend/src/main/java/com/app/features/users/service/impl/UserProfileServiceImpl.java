@@ -8,6 +8,10 @@ import com.app.features.users.dto.response.InvoicesResponse;
 import com.app.features.users.dto.response.UserProfileResponse;
 import com.app.features.users.repository.ProfileUserRepository;
 import com.app.features.users.service.UserProfileService;
+import com.app.utils.SecurityUtils;
+import com.app.security.password.PasswordHashing;
+import com.app.exception.BadRequestException;
+import org.springframework.security.access.AccessDeniedException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +46,9 @@ public class UserProfileServiceImpl implements UserProfileService {
     }
 
     private UserEntity findUser(Long id) {
+        if (!java.util.Objects.equals(id, SecurityUtils.getCurrentUserId())) {
+            throw new AccessDeniedException("You cannot access another user's profile.");
+        }
         return profileUserRepository.findById(id)
                 .orElseThrow(() -> {
                     log.warn("User profile not found, userId={}", id);
@@ -70,26 +76,25 @@ public class UserProfileServiceImpl implements UserProfileService {
         String validationMessage = validateChangePassword(request);
         if (validationMessage != null) {
             log.warn("User password change rejected by request validation");
-            return validationMessage;
+            throw new BadRequestException(validationMessage);
         }
 
         String email = normalize(request.getEmail()).trim().toLowerCase();
-        String currentPassword = normalize(request.getCurrentPassword());
-        String newPassword = normalize(request.getNewPassword());
-
-        Optional<UserEntity> userOptional = profileUserRepository.findByEmail(email);
-        if (userOptional.isEmpty()) {
-            log.warn("User password change requested for unknown email, email={}", email);
-            return "Email does not exist.";
+        String currentPassword = request.getCurrentPassword();
+        String newPassword = request.getNewPassword();
+        UserEntity user = findUser(SecurityUtils.getCurrentUserId());
+        if (!email.isBlank() && !email.equalsIgnoreCase(user.getEmail())) {
+            throw new AccessDeniedException("You cannot change another user's password.");
         }
-
-        UserEntity user = userOptional.get();
-        if (!user.getPasswordHash().equals(currentPassword)) {
+        if (!PasswordHashing.matches(currentPassword, user.getPasswordHash())) {
             log.warn("User password change rejected due to invalid current password, userId={}", user.getId());
-            return "Current password is incorrect.";
+            throw new BadRequestException("Current password is incorrect.");
         }
 
-        user.setPasswordHash(newPassword);
+        if (PasswordHashing.matches(newPassword, user.getPasswordHash())) {
+            throw new BadRequestException("New password must be different from the current password.");
+        }
+        user.setPasswordHash(PasswordHashing.encode(newPassword));
         profileUserRepository.save(user);
         log.info("User password changed successfully, userId={}", user.getId());
         return null;
@@ -120,14 +125,9 @@ public class UserProfileServiceImpl implements UserProfileService {
             return "Request body is required.";
         }
 
-        String email = normalize(request.getEmail()).toLowerCase();
-        String currentPassword = normalize(request.getCurrentPassword());
-        String newPassword = normalize(request.getNewPassword());
-        String confirmPassword = normalize(request.getConfirmPassword());
-
-        if (isBlank(email)) {
-            return "Login session is required.";
-        }
+        String currentPassword = request.getCurrentPassword();
+        String newPassword = request.getNewPassword();
+        String confirmPassword = request.getConfirmPassword();
         if (isBlank(currentPassword)) {
             return "Current password is required.";
         }

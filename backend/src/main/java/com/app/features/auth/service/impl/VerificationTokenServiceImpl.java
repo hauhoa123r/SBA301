@@ -13,12 +13,14 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import com.app.security.ratelimit.AuthenticationAttemptLimiter;
 
 @Service
 @RequiredArgsConstructor
 public class VerificationTokenServiceImpl implements VerificationTokenService {
     private static final String TOKEN_TYPE_PASSWORD_RESET = "PASSWORD_RESET";
     private final VerificationTokenRepository verificationTokenRepository;
+    private final AuthenticationAttemptLimiter attempts;
 
     @Override
     @Transactional
@@ -55,6 +57,9 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
         if (normalizedToken.isEmpty() || normalizedTokenType.isBlank() || normalizedEmail.isBlank()) {
             return Optional.empty();
         }
+        if (TOKEN_TYPE_PASSWORD_RESET.equals(normalizedTokenType)) {
+            attempts.check("password-reset", normalizedEmail, 5, Duration.ofMinutes(15));
+        }
 
         Optional<VerificationTokenEntity> tokenOTP = verificationTokenRepository
                 .findByTokenAndTokenTypeAndUsedFalseAndUserEmail(normalizedToken, normalizedTokenType, normalizedEmail);
@@ -68,7 +73,6 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
             return tokenOTP;
         }
 
-        markUsed(verificationToken);
         return Optional.empty();
     }
 

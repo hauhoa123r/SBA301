@@ -42,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Claims claims = jwtService.parse(header.substring(7));
                 if (jwtService.isType(claims, "access")) {
                     UserEntity user = userRepository.findByIdWithRoles(Long.valueOf(claims.getSubject())).orElse(null);
-                    if (user != null && user.getStatus() == UserStatus.ACTIVE) {
+                    if (user != null && user.getStatus() == UserStatus.ACTIVE && jwtService.matchesCredentials(claims, user)) {
                         if (!SupportedRolePolicy.hasSupportedRole(user)) {
                             SecurityContextHolder.clearContext();
                             responseWriter.write(request, response, HttpStatus.UNAUTHORIZED,

@@ -31,6 +31,7 @@ public class JwtTokenController {
             Claims claims = jwtService.parse(request.refreshToken());
             if (!jwtService.isType(claims, "refresh")) throw new ResponseStatusException(UNAUTHORIZED);
             UserEntity user = activeUser(Long.valueOf(claims.getSubject()));
+            if (!jwtService.matchesCredentials(claims, user)) throw new ResponseStatusException(UNAUTHORIZED);
             return new TokenResponse(jwtService.createAccessToken(user), jwtService.createRefreshToken(user),
                     AuthUserResponse.from(user));
         } catch (JwtException | IllegalArgumentException exception) {
