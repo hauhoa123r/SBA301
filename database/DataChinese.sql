@@ -60,11 +60,11 @@ INSERT INTO users (id, full_name, email, password_hash, status, total_learning_p
 (4, 'Phạm Linh Chi', 'teacher.chi@chineselearning.vn', '$2a$10$gkT/LMKGX1C.qF7WtYYUPO1QLh.APSzK2TRRpKygBWbk6ku5IRvu6', 'ACTIVE', 900, 'REFTEA004', '2026-01-05 10:00:00', '2026-06-21 10:00:00'),
 (5, 'Hoàng Đức Huy', 'teacher.huy@chineselearning.vn', '$2a$10$gkT/LMKGX1C.qF7WtYYUPO1QLh.APSzK2TRRpKygBWbk6ku5IRvu6', 'ACTIVE', 760, 'REFTEA005', '2026-01-06 10:30:00', '2026-06-21 10:30:00'),
 (6, 'Đặng Ngọc Mai', 'teacher.mai@chineselearning.vn', '$2a$10$gkT/LMKGX1C.qF7WtYYUPO1QLh.APSzK2TRRpKygBWbk6ku5IRvu6', 'DELETED', 450, 'REFTEA006', '2026-01-07 11:00:00', '2026-06-10 11:00:00'),
-(7, 'Bùi Khánh Linh', 'linh.bui@example.com', '$2a$10$gkT/LMKGX1C.qF7WtYYUPO1QLh.APSzK2TRRpKygBWbk6ku5IRvu6', 'ACTIVE', 1450, 'REFSTU007', '2026-02-01 08:00:00', '2026-06-27 08:00:00'),
-(8, 'Võ Thành Nam', 'nam.vo@example.com', 'Namvo123', 'ACTIVE', 980, 'REFSTU008', '2026-02-02 08:10:00', '2026-06-26 08:10:00'),
-(9, 'Đỗ Mỹ Duyên', 'duyen.do@example.com', '$2a$10$gkT/LMKGX1C.qF7WtYYUPO1QLh.APSzK2TRRpKygBWbk6ku5IRvu6', 'ACTIVE', 640, 'REFSTU009', '2026-02-03 08:20:00', '2026-06-26 08:20:00'),
-(10, 'Mai Quốc Bảo', 'bao.mai@example.com', '$2a$10$gkT/LMKGX1C.qF7WtYYUPO1QLh.APSzK2TRRpKygBWbk6ku5IRvu6', 'LOCKED', 310, 'REFSTU010', '2026-02-04 08:30:00', '2026-06-15 08:30:00'),
-(11, 'Phan Tường Vy', 'vy.phan@example.com', '$2a$10$gkT/LMKGX1C.qF7WtYYUPO1QLh.APSzK2TRRpKygBWbk6ku5IRvu6', 'ACTIVE', 1200, 'REFSTU011', '2026-02-05 08:40:00', '2026-06-28 08:40:00'),
+(7, 'Bùi Khánh Linh', 'linh.bui@gmail.com', '$2a$10$gkT/LMKGX1C.qF7WtYYUPO1QLh.APSzK2TRRpKygBWbk6ku5IRvu6', 'ACTIVE', 1450, 'REFSTU007', '2026-02-01 08:00:00', '2026-06-27 08:00:00'),
+(8, 'Võ Thành Nam', 'nam.vo@gmail.com', 'Namvo123', 'ACTIVE', 980, 'REFSTU008', '2026-02-02 08:10:00', '2026-06-26 08:10:00'),
+(9, 'Đỗ Mỹ Duyên', 'duyen.do@gmail.com', '$2a$10$gkT/LMKGX1C.qF7WtYYUPO1QLh.APSzK2TRRpKygBWbk6ku5IRvu6', 'ACTIVE', 640, 'REFSTU009', '2026-02-03 08:20:00', '2026-06-26 08:20:00'),
+(10, 'Mai Quốc Bảo', 'bao.mai@gmail.com', '$2a$10$gkT/LMKGX1C.qF7WtYYUPO1QLh.APSzK2TRRpKygBWbk6ku5IRvu6', 'LOCKED', 310, 'REFSTU010', '2026-02-04 08:30:00', '2026-06-15 08:30:00'),
+(11, 'Phan Tường Vy', 'vy.phan@gmail.com', '$2a$10$gkT/LMKGX1C.qF7WtYYUPO1QLh.APSzK2TRRpKygBWbk6ku5IRvu6', 'ACTIVE', 1200, 'REFSTU011', '2026-02-05 08:40:00', '2026-06-28 08:40:00'),
 (12, 'Ngô Gia Phúc', 'phuc.ngo@example.com', '$2a$10$gkT/LMKGX1C.qF7WtYYUPO1QLh.APSzK2TRRpKygBWbk6ku5IRvu6', 'ACTIVE', 530, 'REFSTU012', '2026-02-06 08:50:00', '2026-06-24 08:50:00'),
 (13, 'Trịnh Minh Anh', 'minhanh.trinh@example.com', '$2a$10$gkT/LMKGX1C.qF7WtYYUPO1QLh.APSzK2TRRpKygBWbk6ku5IRvu6', 'DELETED', 90, 'REFSTU013', '2026-02-07 09:00:00', '2026-06-01 09:00:00'),
 (14, 'Cao Hoài An', 'an.cao@example.com', '$2a$10$gkT/LMKGX1C.qF7WtYYUPO1QLh.APSzK2TRRpKygBWbk6ku5IRvu6', 'ACTIVE', 720, 'REFSTU014', '2026-02-08 09:10:00', '2026-06-25 09:10:00'),
@@ -113,9 +113,9 @@ INSERT INTO chapters (id, course_id, title, order_index) VALUES
 
 -- 14. lessons
 INSERT INTO lessons (id, chapter_id, title, video_url, duration_seconds, order_index) VALUES
-(1, 1, 'Gặp lễ tân', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784137456/B%E1%BB%91i_c%E1%BA%A3nh_H%C3%B4m_nay_l%C3%A0_ng%C3%A0y_%C4%91%E1%BA%A7u_qqe6xj.mp4', 720, 1),
-(2, 1, 'Gặp trưởng nhóm', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784174625/phi%C3%AAn_%C3%A2m_ti%E1%BA%BFng_vi%E1%BB%87t_n%E1%BB%AFa_gvmbku.mp4', 840, 2),
-(35, 1, 'Gặp đồng nghiệp', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784174679/ti%C3%AAng_trung_pinyin_v%E1%BB%9Bi_phi_eexi8e.mp4', 900, 3),
+(1, 1, 'Gặp lễ tân', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1791816899/B%E1%BB%91i_c%E1%BA%A3nh_H%C3%B4m_nay_l%C3%A0_ng%C3%A0y_%C4%91%E1%BA%A7u_qqe6xj.mp4', 720, 1),
+(2, 1, 'Gặp trưởng nhóm', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1791818172/phi%C3%AAn_%C3%A2m_ti%E1%BA%BFng_vi%E1%BB%87t_n%E1%BB%AFa_gvmbku.mp4', 840, 2),
+(35, 1, 'Gặp đồng nghiệp', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1791818261/ti%C3%AAng_trung_pinyin_v%E1%BB%9Bi_phi_eexi8e.mp4', 900, 3),
 (3, 2, 'Giới thiệu tên, vị trí, công việc', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051322/c%C3%A1i_ph%E1%BA%A7n_phi%C3%AAn_%C3%A2m_ti%E1%BA%BFng_vi%E1%BB%87t_b_mgsgze.mp4', 900, 1),
 (4, 2, 'Giới thiệu công ty', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784136039/B%E1%BB%91i_c%E1%BA%A3nh_Sau_khi_gi%E1%BB%9Bi_thi%E1%BB%87u_b_rknava.mp4', 960, 2),
 (5, 3, 'Hỏi thông tin cá nhân của khách hàng', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1783833897/video1_r1i65s.mp4', 780, 1);
