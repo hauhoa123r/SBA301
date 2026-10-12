@@ -33,3 +33,8 @@ deployment/acme/
 .deployment-check/
 !frontend/package-lock.json
 __pycache__/
+
+.env
+.env.*
+!.env.example.env.example
+.env
