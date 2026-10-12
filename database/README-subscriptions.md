@@ -4,17 +4,11 @@ Standard: 699.000đ/30 ngày. Premium: 899.000đ/30 ngày, hiện có cùng quy�
 
 ## Database đang có dữ liệu
 
-Sao lưu trước khi chạy. Chạy bằng MySQL với UTF-8 theo thứ tự:
-
-1. `20260928_subscription_plans.sql`
-2. `20260928_add_reading_courses.sql`
-3. Khởi động lại backend và frontend.
-
-Hai script có thể chạy lại mà không tạo trùng. Không chạy `chinese_online_learning.sql` trên database đang sử dụng: file này xóa và tạo lại database.
+Từ bản cập nhật 12/10/2026, dùng một file `20261012_deploy_update.sql` để cập nhật subscription, khóa đọc, dọn dữ liệu mẫu và các migration backend mới. Xem `README-deploy-update.md` để biết thứ tự, điều kiện xóa và cách chạy. Sao lưu trước khi chạy; không chạy `chinese_online_learning.sql` trên database đang sử dụng vì file này xóa và tạo lại database.
 
 ## Khởi tạo mới
 
-Dockerfile tự chạy schema, `DataChinese.sql` rồi `20260928_add_reading_courses.sql`. Nếu khởi tạo thủ công, chạy cùng thứ tự đó. Schema mới đã có các bảng/cột đăng ký.
+Dockerfile tự chạy schema, `DataChinese.sql` rồi `20261012_deploy_update.sql`. Nếu khởi tạo thủ công, chạy cùng thứ tự đó.
 
 ## Quyền học
 
