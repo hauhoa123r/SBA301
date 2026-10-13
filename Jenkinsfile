@@ -1,44 +1,28 @@
-
 pipeline {
     agent any
-
     options {
         skipDefaultCheckout(true)
         timestamps()
         disableConcurrentBuilds()
     }
-
-    triggers {
-        pollSCM('H/5 * * * *')
-    }
-
+    triggers { pollSCM('H/5 * * * *') }
     parameters {
         booleanParam(name: 'NGINX_ONLY', defaultValue: false,
-            description: 'Emergency Nginx-only release; normal releases deploy backend and Nginx.')
+            description: 'Deploy only Nginx; otherwise deploy backend and Nginx using the EC2 .env IMAGE_TAG.')
         booleanParam(name: 'BUILD_MYSQL_IMAGE', defaultValue: false,
-            description: 'Build, validate on an isolated database, and push the MySQL image. Does not reset or redeploy the EC2 database.')
-        booleanParam(name: 'DEPLOY_MYSQL_IMAGE', defaultValue: false,
-            description: 'Request a separate approved MySQL image upgrade. Requires BUILD_MYSQL_IMAGE, backup, reviewed migrations and an interactive DB approval.')
+            description: 'Build, verify and push MySQL only. Never upgrade or reset MySQL on EC2.')
     }
-
     environment {
         IMAGE_TAG = "${BUILD_NUMBER}"
-        BACKEND_IMAGE_TAG = "${BUILD_NUMBER}"
-        NGINX_IMAGE_TAG = "${BUILD_NUMBER}"
         MYSQL_IMAGE_TAG = 'ci-validation-only'
-        DB_APPROVERS = 'sba301-db-admins'
         SERVER_IP = '16.178.47.5'
         DEPLOY_PATH = 'apps/SBA301'
         APP_SERVICES = "${params.NGINX_ONLY == false ? 'backend nginx' : 'nginx'}"
     }
-
     stages {
         stage('CHECKOUT_SOURCE') {
-            steps {
-                checkout scm
-            }
+            steps { checkout scm }
         }
-
         stage('CHECK_ENVIRONMENT') {
             steps {
                 sh '''
@@ -46,48 +30,24 @@ pipeline {
                     docker --version
                     docker compose version
                     python3 --version
-                    if [ "${DEPLOY_MYSQL_IMAGE:-false}" = true ]; then
-                        test "${BUILD_MYSQL_IMAGE:-false}" = true
-                    fi
-                    echo "BUILD_NUMBER=$BUILD_NUMBER"
-                    echo "IMAGE_TAG=$IMAGE_TAG"
-                    whoami
-                    pwd
+                    echo "Building tag $IMAGE_TAG; EC2 deployment uses its manually configured .env tag"
                 '''
             }
         }
-
         stage('TAKE_ENV_FILE') {
             steps {
                 sh '''
                     set -eu
                     cp /var/lib/jenkins/env/.env "$WORKSPACE/.env"
                     chmod 600 "$WORKSPACE/.env"
-                    test -s "$WORKSPACE/.env"
                 '''
             }
         }
-
-        stage('VALIDATE_COMPOSE') {
+        stage('BUILD_AND_TEST') {
             steps {
                 sh '''
                     set -eu
-                    test -f frontend/nginx.conf
-                    test -f deployment/verify-nginx-https.sh
-                    test -f monitoring/prometheus.yml
-
-                    docker compose \
-                        --env-file "$WORKSPACE/.env" \
-                        -f docker-compose.yml \
-                        config --quiet
-                '''
-            }
-        }
-
-        stage('TEST_BEFORE_RELEASE') {
-            steps {
-                sh '''
-                    set -eu
+                    docker compose --env-file "$WORKSPACE/.env" -f docker-compose.yml config --quiet
                     python3 -m unittest discover -s deployment/tests -v
                     python3 -m unittest discover -s database/tests -v
                     python3 database/generate-schema-check.py --check
@@ -100,34 +60,18 @@ pipeline {
                 '''
             }
         }
-
         stage('BUILD_IMAGE') {
             steps {
                 sh '''
                     set -eu
                     rm -f "$WORKSPACE/.mysql-schema-verified"
-                    rm -f "$WORKSPACE/.release/db-approval.json"
-                    mkdir -p "$WORKSPACE/.release"
-                    echo "Building image tag: $IMAGE_TAG"
-
-                    docker compose \
-                        --env-file "$WORKSPACE/.env" \
-                        -f docker-compose.yml \
-                        build $APP_SERVICES
-
-                    if [ "${BUILD_MYSQL_IMAGE:-false}" = 'true' ]; then
+                    docker compose --env-file "$WORKSPACE/.env" -f docker-compose.yml build $APP_SERVICES
+                    if [ "${BUILD_MYSQL_IMAGE:-false}" = true ]; then
                         MYSQL_IMAGE_TAG="$IMAGE_TAG" docker compose --env-file "$WORKSPACE/.env" -f docker-compose.yml build mysql
-                        docker image inspect "devhoa/chinese-mysql:$IMAGE_TAG" --format '{{.Id}}'
                     fi
-
-                    record_services="$APP_SERVICES"
-                    if [ "${BUILD_MYSQL_IMAGE:-false}" = true ]; then record_services="$record_services mysql"; fi
-                    python3 deployment/release.py record-build --tag "$IMAGE_TAG" \
-                        --services $record_services --out "$WORKSPACE/.release/built-images.json"
                 '''
             }
         }
-
         stage('VERIFY_FRESH_MYSQL_SCHEMA') {
             when { expression { params.BUILD_MYSQL_IMAGE == true } }
             steps {
@@ -187,30 +131,14 @@ pipeline {
 
         stage('PUSH_IMAGE') {
             steps {
-                withCredentials([
-                    usernamePassword(
-                        credentialsId: 'dockerhub-credentials',
-                        usernameVariable: 'DOCKER_USERNAME',
-                        passwordVariable: 'DOCKER_TOKEN'
-                    )
-                ]) {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_TOKEN')]) {
                     sh '''
                         set -eu
                         set +x
-
-                        printf '%s' "$DOCKER_TOKEN" |
-                            docker login \
-                                --username "$DOCKER_USERNAME" \
-                                --password-stdin
-
-                        echo "Pushing image tag: $IMAGE_TAG"
-
-                        docker compose \
-                            --env-file "$WORKSPACE/.env" \
-                            -f docker-compose.yml \
-                            push $APP_SERVICES
-
-                        if [ "${BUILD_MYSQL_IMAGE:-false}" = 'true' ]; then
+                        printf '%s' "$DOCKER_TOKEN" | docker login --username "$DOCKER_USERNAME" --password-stdin
+                        docker compose --env-file "$WORKSPACE/.env" -f docker-compose.yml push $APP_SERVICES
+                        if [ "${BUILD_MYSQL_IMAGE:-false}" = true ]; then
                             test -s "$WORKSPACE/.mysql-schema-verified"
                             verified_mysql_id=$(cat "$WORKSPACE/.mysql-schema-verified")
                             actual_mysql_id=$(docker image inspect "devhoa/chinese-mysql:$IMAGE_TAG" --format '{{.Id}}')
@@ -221,144 +149,51 @@ pipeline {
                 }
             }
         }
-
-        stage('PREPARE_RELEASE') {
-            steps {
-                sh '''
-                    set -eu
-                    python3 deployment/release.py prepare-release \
-                        --build-record "$WORKSPACE/.release/built-images.json" \
-                        --out "$WORKSPACE/.release/release.json"
-                '''
-                archiveArtifacts artifacts: '.release/release.json', fingerprint: true
-            }
-        }
-
-        stage('APPROVE_DATABASE_UPGRADE') {
-            when { expression { params.DEPLOY_MYSQL_IMAGE == true } }
-            steps {
-                timeout(time: 1, unit: 'HOURS') {
-                    script {
-                        def approval = input(
-                            message: "Upgrade MySQL image to ${env.IMAGE_TAG} on its EXISTING volume? Confirm backup, tested reviewed migrations and maintenance window. Init SQL will NOT migrate it.",
-                            ok: 'Approve database upgrade',
-                            submitter: env.DB_APPROVERS,
-                            submitterParameter: 'APPROVED_BY',
-                            parameters: [string(name: 'BACKUP_REFERENCE', defaultValue: '', description: 'Verified backup reference (for example s3://bucket/key); no credentials.')]
-                        )
-                        if (!(approval.BACKUP_REFERENCE ==~ /[A-Za-z0-9_:\/.-]{1,256}/)) {
-                            error('A valid verified backup reference is required')
-                        }
-                        writeFile file: '.release/db-approval.json', text: groovy.json.JsonOutput.toJson([
-                            release_tag: env.IMAGE_TAG,
-                            approved_by: approval.APPROVED_BY,
-                            backup_reference: approval.BACKUP_REFERENCE
-                        ])
-                        archiveArtifacts artifacts: '.release/db-approval.json', fingerprint: true
-                    }
-                }
-            }
-        }
-
         stage('CONNECT_SERVER') {
             steps {
-                timeout(time: 20, unit: 'MINUTES') {
-                    withCredentials([
-                        sshUserPrivateKey(
-                            credentialsId: 'azure-server-ssh',
-                            keyFileVariable: 'SSH_KEY',
-                            usernameVariable: 'SSH_USER'
-                        )
-                    ]) {
+                timeout(time: 10, unit: 'MINUTES') {
+                    withCredentials([sshUserPrivateKey(credentialsId: 'azure-server-ssh',
+                        keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
                         sh '''
                             set -eu
-
-                            deployed=false
-                            rollback_after_external_failure() {
-                                status=$?
-                                trap - EXIT
-                                if [ "$status" -ne 0 ] && [ "$deployed" = true ]; then
-                                    ssh -o BatchMode=yes -o ConnectTimeout=15 -o StrictHostKeyChecking=yes \
-                                        -i "$SSH_KEY" "$SSH_USER@$SERVER_IP" \
-                                        "cd '$DEPLOY_PATH' && python3 deployment/releases/$IMAGE_TAG/release.py rollback --root . --payload deployment/releases/$IMAGE_TAG --expected-tag '$IMAGE_TAG' $nginx_only_arg" \
-                                        || echo 'Application rollback failed; operator intervention required' >&2
-                                fi
-                                exit "$status"
-                            }
-                            trap rollback_after_external_failure EXIT
-                            trap 'exit 1' HUP INT TERM
-
-                            ssh \
-                                -o BatchMode=yes \
-                                -o ConnectTimeout=15 \
-                                -o StrictHostKeyChecking=yes \
-                                -i "$SSH_KEY" \
-                                "$SSH_USER@$SERVER_IP" \
-                                "mkdir -p '$DEPLOY_PATH/deployment/releases/$IMAGE_TAG'"
-
-                            scp \
-                                -o BatchMode=yes \
-                                -o ConnectTimeout=15 \
-                                -o StrictHostKeyChecking=yes \
-                                -i "$SSH_KEY" \
-                                "$WORKSPACE/.release/release.json" \
-                                deployment/release.py \
-                                deployment/compose.production.yml \
-                                deployment/verify-nginx-https.sh \
-                                database/check-schema.sql \
-                                "$SSH_USER@$SERVER_IP:$DEPLOY_PATH/deployment/releases/$IMAGE_TAG/"
-
-                            if [ "${DEPLOY_MYSQL_IMAGE:-false}" = true ]; then
-                                scp -o BatchMode=yes -o ConnectTimeout=15 -o StrictHostKeyChecking=yes \
-                                    -i "$SSH_KEY" "$WORKSPACE/.release/db-approval.json" \
-                                    "$SSH_USER@$SERVER_IP:$DEPLOY_PATH/deployment/releases/$IMAGE_TAG/"
-                            fi
-                            nginx_only_arg=''
-                            if [ "${NGINX_ONLY:-false}" = true ]; then nginx_only_arg='--nginx-only'; fi
-
-                            ssh \
-                                -o BatchMode=yes \
-                                -o ConnectTimeout=15 \
-                                -o StrictHostKeyChecking=yes \
-                                -i "$SSH_KEY" \
-                                "$SSH_USER@$SERVER_IP" \
-                                "set -eu;
-                                 cd '$DEPLOY_PATH';
-                                 if [ '${DEPLOY_MYSQL_IMAGE:-false}' = 'true' ]; then
-                                     python3 deployment/releases/$IMAGE_TAG/release.py deploy-database --root . --payload deployment/releases/$IMAGE_TAG --manifest deployment/releases/$IMAGE_TAG/release.json --approval deployment/releases/$IMAGE_TAG/db-approval.json;
-                                 fi;
-                                 python3 deployment/releases/$IMAGE_TAG/release.py deploy --root . --payload deployment/releases/$IMAGE_TAG --manifest deployment/releases/$IMAGE_TAG/release.json $nginx_only_arg"
-                            deployed=true
-                            python3 deployment/release.py smoke-public
+                            ssh -o BatchMode=yes -o ConnectTimeout=15 -o StrictHostKeyChecking=yes \
+                                -i "$SSH_KEY" "$SSH_USER@$SERVER_IP" "mkdir -p '$DEPLOY_PATH/deployment'"
+                            scp -o BatchMode=yes -o ConnectTimeout=15 -o StrictHostKeyChecking=yes \
+                                -i "$SSH_KEY" deployment/deploy-app.sh deployment/verify-mysql-schema.sh \
+                                deployment/verify-nginx-https.sh database/check-schema.sql \
+                                "$SSH_USER@$SERVER_IP:$DEPLOY_PATH/deployment/"
+                            ssh -o BatchMode=yes -o ConnectTimeout=15 -o StrictHostKeyChecking=yes \
+                                -i "$SSH_KEY" "$SSH_USER@$SERVER_IP" \
+                                "cd '$DEPLOY_PATH' && sh deployment/deploy-app.sh '$APP_SERVICES'"
                         '''
                     }
                 }
             }
         }
-
-        stage('PIPELINE_FINISH') {
+        stage('VERIFY_PUBLIC_HTTPS') {
             steps {
-                echo 'PIPELINE FINISHED'
+                sh '''
+                    set -eu
+                    for route in learning subscriptions api/actuator/health api/subscriptions/plans; do
+                        result=$(curl --fail --silent --show-error --noproxy '*' --connect-timeout 5 --max-time 15 \
+                            --retry 3 --retry-connrefused --output /dev/null --write-out '%{http_code} %{content_type}' \
+                            "https://edujar.site/$route")
+                        case "$route:$result" in
+                            learning:200\\ text/html*|subscriptions:200\\ text/html*|api/*:200\\ application/json*) ;;
+                            *) echo "Public HTTPS smoke failed: $route $result" >&2; exit 1 ;;
+                        esac
+                    done
+                '''
             }
         }
     }
-
     post {
-        failure {
-            echo 'PIPELINE FAILED'
-        }
-
-        success {
-            echo 'BUILD, PUSH AND HTTPS DEPLOY SUCCESSFULLY'
-        }
-
+        success { echo 'BUILD, TEST, PUSH AND COMPOSE DEPLOY PASSED' }
+        failure { echo 'PIPELINE FAILED; inspect the failed check and restore application tags manually if needed' }
         always {
             sh '''
                 docker logout || true
-                rm -f "$WORKSPACE/.env"
-                rm -f "$WORKSPACE/.nginx-config-sha256" "$WORKSPACE/.nginx-image-id"
-                rm -f "$WORKSPACE/.mysql-schema-verified"
-                rm -f "$WORKSPACE/.release/built-images.json" "$WORKSPACE/.release/release.json" "$WORKSPACE/.release/db-approval.json"
+                rm -f "$WORKSPACE/.env" "$WORKSPACE/.mysql-schema-verified"
             '''
         }
     }

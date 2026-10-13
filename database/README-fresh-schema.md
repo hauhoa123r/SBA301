@@ -135,16 +135,16 @@ Ghi nhận image ID/digest để đối chiếu sau pull. MYSQL_IMAGE_TAG phải
 
 ## Jenkins
 
-Quản lý release hiện tại dùng version file không có secret, digest pin và DB approval riêng; xem [RELEASES.md](../docs/deployment/RELEASES.md). Không cần sửa image tags trong `.env` EC2 khi Jenkins deploy ứng dụng.
+CI/CD hiện tại dùng Compose và tag thủ công trong `.env` EC2; xem [SIMPLE_CICD.md](../docs/deployment/SIMPLE_CICD.md). Jenkins không sửa env hoặc quản lý release manifest/version JSON/digest pinning. BUILD_NUMBER là tag build/push; IMAGE_TAG EC2 do operator chọn để deploy.
 
 1. Đưa thay đổi vào branch/build nguồn theo quy trình của bạn; agent không tự push.
-2. Build với **BUILD_MYSQL_IMAGE=true**, **NGINX_ONLY=true**. MySQL build/push dùng BUILD_NUMBER, override pin của env Jenkins rõ ràng.
-3. VERIFY_FRESH_MYSQL_SCHEMA tạo network/container mới riêng, không publish MySQL host port hoặc mount production volume. Chờ app-user TCP healthy sau init, chạy verifier độc lập rồi JpaSchemaContractTest trong Maven/Java 17 build image. Sau đó chạy fresh-mysql-regression.sh: xác nhận init-complete/healthy/không restart/không init shell script; kiểm tra verifier từ chối thiếu bảng và thiếu cột trên chính DB test. Database contract mount read-only. Chỉ push DB image khi tất cả checks đạt và image ID khớp container đã kiểm chứng; cleanup chỉ test container có label/token khớp và anonymous volume của nó.
-4. Jenkins mặc định **không pull/up/reset MySQL EC2**. BUILD_MYSQL_IMAGE chỉ build/test/push; DB rollout cần DEPLOY_MYSQL_IMAGE=true và approval riêng sau backup/migrations review. Pipeline không reset volume.
-5. Deployer giữ MySQL pin trong `deployment/versions.json` trên EC2, chỉ cập nhật DB entry khi upgrade đã được approval và healthy/schema checks đạt. Không ghi đè `.env` hoặc yêu cầu sửa secret file để đổi image version.
-6. Normal app release dùng NGINX_ONLY=false, BUILD_MYSQL_IMAGE=false, DEPLOY_MYSQL_IMAGE=false. App tag có thể khác DB tag; app rollout --no-deps không recreate MySQL và sẽ chặn nếu schema hiện hữu không tương thích backend mới.
+2. Build với **BUILD_MYSQL_IMAGE=true**, **NGINX_ONLY=true** nếu cần build/verify/push MySQL mới và chỉ deploy Nginx. MySQL build/push dùng BUILD_NUMBER, override tag của env Jenkins rõ ràng.
+3. VERIFY_FRESH_MYSQL_SCHEMA tạo network/container mới riêng, không publish MySQL host port hoặc mount production volume. Chờ app-user TCP healthy sau init, chạy verifier độc lập rồi JpaSchemaContractTest trong Maven/Java 17 build image. Contract đọc từ classpath, không mount /database. Sau đó chạy fresh-mysql-regression.sh: xác nhận init-complete/healthy/không restart/không init shell script; kiểm tra verifier từ chối thiếu bảng và thiếu cột trên DB test. Chỉ push DB image khi tất cả checks đạt và image ID khớp container đã kiểm chứng; cleanup chỉ test container có label/token khớp và anonymous volume của nó.
+4. Jenkins **không pull/up/reset MySQL EC2**. BUILD_MYSQL_IMAGE chỉ build/test/push. Không còn DEPLOY_MYSQL_IMAGE hoặc approval form trong pipeline. Operator nâng MySQL riêng sau backup/migrations review; init SQL không migrate volume hiện hữu.
+5. Operator sửa **MYSQL_IMAGE_TAG** trong `.env` EC2 khi chủ động nâng DB; tag này độc lập với IMAGE_TAG. Normal app deployment không dùng tag MySQL mới vừa build để thay container đang chạy.
+6. Normal app deployment dùng NGINX_ONLY=false, BUILD_MYSQL_IMAGE=false. Operator đặt IMAGE_TAG EC2 mong muốn trước deploy. Rollout --no-deps chỉ recreate backend/nginx; SQL guard read-only chặn backend deployment nếu schema hiện hữu thiếu bảng/cột/keys. NGINX_ONLY=true không recreate backend và không chạy schema gate của backend.
 
-Backend vẫn ddl-auto=none; không bật update/create để che image/schema cũ.
+Backend vẫn ddl-auto=none; không bật update/create để che image/schema cũ. Các hướng dẫn reset test volume phía dưới là thao tác operator riêng từ nhiệm vụ schema trước; pipeline đơn giản không gọi chúng.
 
 ## Regression cho lỗi entrypoint shell state
 

@@ -33,7 +33,7 @@ services:
       start_period: 30s
 
   backend:
-    image: devhoa/chinese-backend:${BACKEND_IMAGE_TAG:-${IMAGE_TAG:?IMAGE_TAG is required}}
+    image: devhoa/chinese-backend:${IMAGE_TAG:?IMAGE_TAG is required}
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -100,7 +100,7 @@ services:
       start_period: 40s
 
   nginx:
-    image: devhoa/chinese-nginx:${NGINX_IMAGE_TAG:-${IMAGE_TAG:?IMAGE_TAG is required}}
+    image: devhoa/chinese-nginx:${IMAGE_TAG:?IMAGE_TAG is required}
     build:
       context: ./frontend
       dockerfile: Dockerfile

@@ -14,13 +14,13 @@ expected_image_id=$2
 expected_config_sha=$3
 
 actual_image_id=$(docker image inspect "$image_ref" --format '{{.Id}}')
-[ "$actual_image_id" = "$expected_image_id" ] || fail 'pulled image ID differs from the image built by Jenkins'
+[ "$actual_image_id" = "$expected_image_id" ] || fail 'pulled image ID differs from the selected image'
 running_image_id=$(docker inspect chinese-nginx --format '{{.Image}}')
 [ "$running_image_id" = "$expected_image_id" ] || fail 'running Nginx container uses a different image'
 
 actual_config_sha=$(docker exec chinese-nginx sha256sum /etc/nginx/conf.d/default.conf)
 actual_config_sha=${actual_config_sha%% *}
-[ "$actual_config_sha" = "$expected_config_sha" ] || fail 'container default.conf differs from frontend/nginx.conf in this release'
+[ "$actual_config_sha" = "$expected_config_sha" ] || fail 'container default.conf differs from the selected image configuration'
 
 config_dump=$(mktemp)
 trap 'rm -f "$config_dump"' EXIT

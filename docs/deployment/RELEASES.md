@@ -1,5 +1,9 @@
 # SBA301 production releases
 
+> Tài liệu lịch sử của cơ chế release đã ngừng sử dụng. Quy trình hiện tại dùng
+> tag thủ công trong `.env` EC2, không dùng release.py, manifest, versions.json,
+> digest pinning hoặc automatic rollback. Xem [SIMPLE_CICD.md](SIMPLE_CICD.md).
+
 Thay đổi chỉ ở repository; chưa push, deploy hoặc sửa database/volume production.
 
 ## Audit
