@@ -38,7 +38,7 @@ public class RefundEntity {
 
     @NotNull
     @Lob
-    @Column(name = "reason", nullable = false)
+    @Column(name = "reason", nullable = false, columnDefinition = "TEXT")
     private String reason;
 
     @Enumerated(EnumType.STRING)

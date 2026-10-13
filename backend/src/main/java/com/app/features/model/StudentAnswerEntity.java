@@ -42,7 +42,7 @@ public class StudentAnswerEntity {
     private AnswerEntity selectedAnswer;
 
     @Lob
-    @Column(name = "input_text")
+    @Column(name = "input_text", columnDefinition = "TEXT")
     private String inputText;
 
     @ColumnDefault("0")

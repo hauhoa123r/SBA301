@@ -1,4 +1,5 @@
 -- Run on the existing database before starting the updated backend.
+USE chinese_online_learning;
 CREATE TABLE IF NOT EXISTS authentication_settings (
     id INT PRIMARY KEY,
     email_verification_enabled BOOLEAN NOT NULL DEFAULT TRUE,

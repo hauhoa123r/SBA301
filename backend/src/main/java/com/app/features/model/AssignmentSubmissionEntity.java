@@ -35,7 +35,7 @@ public class AssignmentSubmissionEntity {
     private UserEntity user;
 
     @Lob
-    @Column(name = "submission_text")
+    @Column(name = "submission_text", columnDefinition = "TEXT")
     private String submissionText;
 
     @Size(max = 500)
@@ -50,7 +50,7 @@ public class AssignmentSubmissionEntity {
     private Integer score;
 
     @Lob
-    @Column(name = "teacher_feedback")
+    @Column(name = "teacher_feedback", columnDefinition = "TEXT")
     private String teacherFeedback;
 
     @Column(name = "submitted_at")

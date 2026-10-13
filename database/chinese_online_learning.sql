@@ -1,3 +1,4 @@
+-- Fresh initialization only. Never import this file into an existing application database.
 DROP DATABASE IF EXISTS chinese_online_learning;
 CREATE DATABASE chinese_online_learning CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE chinese_online_learning;
@@ -45,7 +46,7 @@ CREATE TABLE users (
     avatar_url VARCHAR(2048) NULL,
     email VARCHAR(255) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-    status ENUM('ACTIVE', 'LOCKED', 'DELETED', 'INACTIVE', 'PENDING', 'SUSPENDED', 'BANNED', 'DISABLE') DEFAULT 'ACTIVE',
+    status ENUM('ACTIVE', 'LOCKED', 'DELETED', 'INACTIVE', 'PENDING', 'SUSPENDED', 'BANNED', 'DISABLE') NOT NULL DEFAULT 'ACTIVE',
     total_learning_points INT DEFAULT 0, -- NEW: Điểm tích lũy cho Leaderboard
     referral_code VARCHAR(50) UNIQUE NULL, -- NEW: Mã giới thiệu Affiliate
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -68,7 +69,7 @@ CREATE TABLE oauth_accounts (
 
 CREATE TABLE oauth_authorization_codes (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    code_hash CHAR(64) NOT NULL,
+    code_hash VARCHAR(64) NOT NULL,
     user_id BIGINT NOT NULL,
     expires_at TIMESTAMP(6) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -87,6 +88,14 @@ CREATE TABLE verification_tokens (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_verification_tokens_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE authentication_settings (
+    id INT PRIMARY KEY,
+    email_verification_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+    CONSTRAINT chk_auth_settings_singleton CHECK (id = 1)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO authentication_settings (id, email_verification_enabled) VALUES (1, TRUE);
 CREATE TABLE user_roles (
     user_id BIGINT NOT NULL,
     role_id BIGINT NOT NULL,
@@ -109,7 +118,7 @@ CREATE TABLE role_permissions (
 
 CREATE TABLE subscription_plans (
     code VARCHAR(30) PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
+    name VARCHAR(255) NOT NULL,
     price DECIMAL(15, 2) NOT NULL,
     duration_days INT NOT NULL,
     active BOOLEAN NOT NULL DEFAULT TRUE,
@@ -136,7 +145,7 @@ CREATE TABLE courses (
     description TEXT,
     price DECIMAL(15, 2) NOT NULL DEFAULT 0,
     thumbnail_url VARCHAR(500),
-    status ENUM('DRAFT', 'PENDING', 'PUBLISHED', 'HIDDEN') DEFAULT 'DRAFT',
+    status ENUM('DRAFT', 'PENDING', 'PUBLISHED', 'HIDDEN') NOT NULL DEFAULT 'DRAFT',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_courses_teacher FOREIGN KEY (teacher_id) REFERENCES users(id),
@@ -246,7 +255,7 @@ CREATE TABLE answers (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     question_id BIGINT NOT NULL,
     content TEXT NOT NULL,
-    is_correct BOOLEAN DEFAULT FALSE,
+    is_correct BOOLEAN NOT NULL DEFAULT FALSE,
     matching_pair TEXT NULL,
     order_index INT NOT NULL DEFAULT 0,
     CONSTRAINT fk_answers_question FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE
@@ -283,11 +292,24 @@ CREATE TABLE lesson_progress (
     user_id BIGINT NOT NULL,
     lesson_id BIGINT NOT NULL,
     watch_seconds INT DEFAULT 0,
+    -- Resume position is distinct from cumulative watch_seconds; new playback starts at zero.
+    position_seconds INT NOT NULL DEFAULT 0,
     is_completed BOOLEAN DEFAULT FALSE,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT uk_user_lesson UNIQUE (user_id, lesson_id),
     CONSTRAINT fk_lp_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    CONSTRAINT fk_lp_lesson FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE CASCADE
+    CONSTRAINT fk_lp_lesson FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE CASCADE,
+    CONSTRAINT chk_lp_position_nonnegative CHECK (position_seconds >= 0)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE learning_activity_daily (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    activity_date DATE NOT NULL,
+    watch_seconds BIGINT NOT NULL DEFAULT 0,
+    activity_count BIGINT NOT NULL DEFAULT 0,
+    CONSTRAINT uk_learning_activity_day UNIQUE (user_id, activity_date),
+    CONSTRAINT fk_learning_activity_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE quiz_attempts (
@@ -298,7 +320,7 @@ CREATE TABLE quiz_attempts (
     is_passed BOOLEAN DEFAULT FALSE,
     started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     submitted_at TIMESTAMP NULL,
-    status ENUM('DOING', 'SUBMITTED', 'CHEATING_SUSPECTED') DEFAULT 'DOING',
+    status ENUM('DOING', 'SUBMITTED', 'CHEATING_SUSPECTED') NOT NULL DEFAULT 'DOING',
     CONSTRAINT fk_qa_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_qa_quiz FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -355,7 +377,7 @@ CREATE TABLE assignment_submissions (
     user_id BIGINT NOT NULL,
     submission_text TEXT NULL,
     file_url VARCHAR(500) NULL,
-    status ENUM('SUBMITTED', 'GRADED', 'NEEDS_REVISION') DEFAULT 'SUBMITTED',
+    status ENUM('SUBMITTED', 'GRADED', 'NEEDS_REVISION') NOT NULL DEFAULT 'SUBMITTED',
     score INT NULL,
     teacher_feedback TEXT NULL,
     submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -406,7 +428,7 @@ CREATE TABLE invoices (
     original_amount DECIMAL(15, 2) NOT NULL, -- Giá gốc tại thời điểm mua
     discount_amount DECIMAL(15, 2) DEFAULT 0, -- Số tiền được giảm
     amount DECIMAL(15, 2) NOT NULL, -- Giá cuối cùng phải thanh toán
-    status ENUM('PENDING', 'PAID', 'FAILED', 'CANCELLED', 'REFUNDED') DEFAULT 'PENDING',
+    status ENUM('PENDING', 'PAID', 'FAILED', 'CANCELLED', 'REFUNDED') NOT NULL DEFAULT 'PENDING',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_invoices_user FOREIGN KEY (user_id) REFERENCES users(id),
@@ -433,7 +455,7 @@ CREATE TABLE refunds (
     user_id BIGINT NOT NULL,
     amount DECIMAL(15, 2) NOT NULL,
     reason TEXT NOT NULL,
-    status ENUM('PENDING', 'APPROVED', 'REJECTED', 'PROCESSED') DEFAULT 'PENDING',
+    status ENUM('PENDING', 'APPROVED', 'REJECTED', 'PROCESSED') NOT NULL DEFAULT 'PENDING',
     processed_by BIGINT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     processed_at TIMESTAMP NULL,
@@ -450,11 +472,11 @@ CREATE TABLE audit_logs (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT NULL,
     action VARCHAR(100) NOT NULL,
-    method VARCHAR(10) NOT NULL,
-    endpoint VARCHAR(255) NOT NULL,
+    method VARCHAR(10) NOT NULL DEFAULT 'SYSTEM',
+    endpoint VARCHAR(255) NOT NULL DEFAULT '',
     before_data JSON NULL,
     after_data JSON NULL,
-    ip_address VARCHAR(45) NOT NULL,
+    ip_address VARCHAR(45) NOT NULL DEFAULT '',
     user_agent VARCHAR(500),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -476,7 +498,7 @@ CREATE TABLE reports (
     target_type ENUM('COURSE', 'USER', 'COMMENT', 'REVIEW') NOT NULL,
     target_id BIGINT NOT NULL,
     reason TEXT NOT NULL,
-    status ENUM('PENDING', 'INVESTIGATING', 'RESOLVED', 'DISMISSED') DEFAULT 'PENDING',
+    status ENUM('PENDING', 'INVESTIGATING', 'RESOLVED', 'DISMISSED') NOT NULL DEFAULT 'PENDING',
     resolved_by BIGINT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     resolved_at TIMESTAMP NULL,
@@ -570,7 +592,7 @@ CREATE TABLE referrals (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     referrer_id BIGINT NOT NULL, -- Người gửi link
     referred_user_id BIGINT NOT NULL, -- Người đăng ký qua link
-    status ENUM('REGISTERED', 'PURCHASED') DEFAULT 'REGISTERED',
+    status ENUM('REGISTERED', 'PURCHASED') NOT NULL DEFAULT 'REGISTERED',
     reward_granted BOOLEAN DEFAULT FALSE, -- Cờ đánh dấu đã trả hoa hồng/tặng tháng học chưa
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT uk_referred_user UNIQUE (referred_user_id),
@@ -578,7 +600,112 @@ CREATE TABLE referrals (
     CONSTRAINT fk_referrals_referred FOREIGN KEY (referred_user_id) REFERENCES users(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 -- ==========================================
--- 11. INDEXING TỐI ƯU TRUY VẤN
+-- 11. FEEDBACK (complete before seed/migration scripts run)
+-- ==========================================
+
+CREATE TABLE feedback_publication_lock (
+    id INT PRIMARY KEY,
+    CONSTRAINT chk_feedback_lock_singleton CHECK (id = 1)
+) ENGINE=InnoDB;
+INSERT IGNORE INTO feedback_publication_lock (id) VALUES (1);
+
+CREATE TABLE feedback_forms (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(200) NOT NULL,
+    description VARCHAR(4000) NOT NULL DEFAULT '',
+    status VARCHAR(20) NOT NULL DEFAULT 'DRAFT',
+    active_slot INT NULL,
+    one_per_user BOOLEAN NOT NULL DEFAULT TRUE,
+    starts_at DATETIME(6) NULL,
+    ends_at DATETIME(6) NULL,
+    published_at DATETIME(6) NULL,
+    closed_at DATETIME(6) NULL,
+    created_at DATETIME(6) NOT NULL,
+    revision BIGINT NOT NULL DEFAULT 0,
+    CONSTRAINT uk_feedback_active_slot UNIQUE (active_slot),
+    CONSTRAINT chk_feedback_status CHECK (status IN ('DRAFT','PUBLISHED','PAUSED','CLOSED')),
+    CONSTRAINT chk_feedback_active CHECK (
+        (status = 'PUBLISHED' AND active_slot IS NOT NULL AND active_slot = 1)
+        OR (status <> 'PUBLISHED' AND active_slot IS NULL)
+    ),
+    CONSTRAINT chk_feedback_dates CHECK (starts_at IS NULL OR ends_at IS NULL OR starts_at < ends_at),
+    INDEX idx_feedback_created (created_at, id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE feedback_questions (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    form_id BIGINT NOT NULL,
+    title VARCHAR(500) NOT NULL,
+    description VARCHAR(2000) NOT NULL DEFAULT '',
+    type VARCHAR(30) NOT NULL,
+    required BOOLEAN NOT NULL DEFAULT FALSE,
+    position INT NOT NULL,
+    min_value DECIMAL(18,4) NULL,
+    max_value DECIMAL(18,4) NULL,
+    max_length INT NULL,
+    min_selections INT NULL,
+    max_selections INT NULL,
+    CONSTRAINT fk_feedback_question_form FOREIGN KEY (form_id) REFERENCES feedback_forms(id),
+    CONSTRAINT chk_feedback_question_type CHECK (type IN ('SHORT_TEXT','LONG_TEXT','NUMBER','SINGLE_CHOICE','MULTIPLE_CHOICE','DROPDOWN','LIKERT','RATING','YES_NO')),
+    INDEX idx_feedback_question_order (form_id, position)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE feedback_options (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    question_id BIGINT NOT NULL,
+    label VARCHAR(300) NOT NULL,
+    position INT NOT NULL,
+    CONSTRAINT fk_feedback_option_question FOREIGN KEY (question_id) REFERENCES feedback_questions(id),
+    INDEX idx_feedback_option_order (question_id, position)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE feedback_visits (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    form_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    started_at DATETIME(6) NOT NULL,
+    CONSTRAINT uk_feedback_visit UNIQUE (form_id, user_id),
+    CONSTRAINT fk_feedback_visit_form FOREIGN KEY (form_id) REFERENCES feedback_forms(id),
+    CONSTRAINT fk_feedback_visit_user FOREIGN KEY (user_id) REFERENCES users(id)
+) ENGINE=InnoDB;
+
+CREATE TABLE feedback_submissions (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    form_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    single_user_id BIGINT NULL,
+    submitted_at DATETIME(6) NOT NULL,
+    CONSTRAINT uk_feedback_single_submission UNIQUE (form_id, single_user_id),
+    CONSTRAINT chk_feedback_single_user CHECK (single_user_id IS NULL OR single_user_id = user_id),
+    CONSTRAINT fk_feedback_submission_form FOREIGN KEY (form_id) REFERENCES feedback_forms(id),
+    CONSTRAINT fk_feedback_submission_user FOREIGN KEY (user_id) REFERENCES users(id),
+    INDEX idx_feedback_submission_user (form_id, user_id),
+    INDEX idx_feedback_submission_date (form_id, submitted_at)
+) ENGINE=InnoDB;
+
+CREATE TABLE feedback_answers (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    submission_id BIGINT NOT NULL,
+    question_id BIGINT NOT NULL,
+    text_value TEXT NULL,
+    number_value DECIMAL(18,4) NULL,
+    CONSTRAINT uk_feedback_answer_question UNIQUE (submission_id, question_id),
+    CONSTRAINT fk_feedback_answer_submission FOREIGN KEY (submission_id) REFERENCES feedback_submissions(id),
+    CONSTRAINT fk_feedback_answer_question FOREIGN KEY (question_id) REFERENCES feedback_questions(id),
+    INDEX idx_feedback_answer_numeric (question_id, number_value)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE feedback_answer_options (
+    answer_id BIGINT NOT NULL,
+    option_id BIGINT NOT NULL,
+    PRIMARY KEY (answer_id, option_id),
+    CONSTRAINT fk_feedback_selected_answer FOREIGN KEY (answer_id) REFERENCES feedback_answers(id),
+    CONSTRAINT fk_feedback_selected_option FOREIGN KEY (option_id) REFERENCES feedback_options(id),
+    INDEX idx_feedback_selected_option (option_id, answer_id)
+) ENGINE=InnoDB;
+
+-- ==========================================
+-- 12. INDEXING TỐI ƯU TRUY VẤN
 -- ==========================================
 
 CREATE INDEX idx_users_status ON users(status);

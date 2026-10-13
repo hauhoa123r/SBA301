@@ -26,7 +26,7 @@ public class AnswerEntity {
     @Column(name = "is_correct", nullable = false)
     private Boolean isCorrect = false;
     @Lob
-    @Column(name = "matching_pair")
+    @Column(name = "matching_pair", columnDefinition = "TEXT")
     private String matchingPair;
 
     @Builder.Default

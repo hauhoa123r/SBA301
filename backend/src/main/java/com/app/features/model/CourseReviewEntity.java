@@ -38,7 +38,7 @@ public class CourseReviewEntity {
     private Integer rating;
 
     @Lob
-    @Column(name = "comment")
+    @Column(name = "comment", columnDefinition = "TEXT")
     private String comment;
 
     @Column(name = "created_at", insertable = false, updatable = false)

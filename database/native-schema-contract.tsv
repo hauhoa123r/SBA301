@@ -1,0 +1,33 @@
+COLUMN	audit_logs	after_data	json	true
+COLUMN	audit_logs	before_data	json	true
+COLUMN	audit_logs	created_at	timestamp	true
+COLUMN	audit_logs	endpoint	varchar(255)	false
+COLUMN	audit_logs	ip_address	varchar(45)	false
+COLUMN	audit_logs	method	varchar(10)	false
+COLUMN	audit_logs	user_agent	varchar(500)	true
+FOREIGN_KEY	feedback_submissions	user_id	users	id
+FOREIGN_KEY	feedback_visits	form_id	feedback_forms	id
+FOREIGN_KEY	feedback_visits	user_id	users	id
+FOREIGN_KEY	learning_activity_daily	user_id	users	id
+FOREIGN_KEY	user_subscriptions	plan_code	subscription_plans	code
+FOREIGN_KEY	user_subscriptions	user_id	users	id
+UNIQUE	assignment_submissions	assignment_id,user_id
+UNIQUE	badges	name
+UNIQUE	categories	slug
+UNIQUE	certificates	certificate_code
+UNIQUE	certificates	course_id,user_id
+UNIQUE	chapters	course_id,order_index
+UNIQUE	coupons	code
+UNIQUE	course_enrollments	course_id,user_id
+UNIQUE	course_reviews	course_id,user_id
+UNIQUE	lessons	chapter_id,order_index
+UNIQUE	oauth_authorization_codes	code_hash
+UNIQUE	payments	provider,transaction_id
+UNIQUE	permissions	code
+UNIQUE	referrals	referred_user_id
+UNIQUE	roles	name
+UNIQUE	tags	name
+UNIQUE	tags	slug
+UNIQUE	users	email
+UNIQUE	users	referral_code
+UNIQUE	verification_tokens	token

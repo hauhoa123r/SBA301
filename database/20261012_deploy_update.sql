@@ -643,7 +643,7 @@ DROP TEMPORARY TABLE cleanup_course_ids;
 
 CREATE TABLE IF NOT EXISTS subscription_plans (
     code VARCHAR(30) PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
+    name VARCHAR(255) NOT NULL,
     price DECIMAL(15, 2) NOT NULL,
     duration_days INT NOT NULL,
     active BOOLEAN NOT NULL DEFAULT TRUE,
