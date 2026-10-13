@@ -93,31 +93,31 @@ pipeline {
             }
         }
 
-        stage('Deploy EC2') {
-            steps {
-                withCredentials([
-                    sshUserPrivateKey(
-                        credentialsId: 'azure-server-ssh',
-                        keyFileVariable: 'SSH_KEY',
-                        usernameVariable: 'SSH_USER'
-                    )
-                ]) {
-                    sh '''
-                        set -e
+        
+stage('Deploy EC2') {
+    steps {
+        withCredentials([
+            sshUserPrivateKey(
+                credentialsId: 'azure-server-ssh',
+                keyFileVariable: 'SSH_KEY',
+                usernameVariable: 'SSH_USER'
+            )
+        ]) {
+            sh '''
+                set -e
 
-                        ssh -o BatchMode=yes \
-                            -o StrictHostKeyChecking=yes \
-                            -i "$SSH_KEY" \
-                            "$SSH_USER@$SERVER_IP" \
-                            "cd '$DEPLOY_PATH' && \
-                             docker compose --env-file .env pull \
-                             $([ '$NGINX_ONLY' = 'true' ] && echo nginx || echo 'backend nginx') && \
-                             docker compose --env-file .env up -d --no-deps \
-                             $([ '$NGINX_ONLY' = 'true' ] && echo nginx || echo 'backend nginx')"
-                    '''
-                }
-            }
+                ssh -o BatchMode=yes \
+                    -o StrictHostKeyChecking=yes \
+                    -i "$SSH_KEY" \
+                    "$SSH_USER@$SERVER_IP" \
+                    "cd '$DEPLOY_PATH' && \
+                     IMAGE_TAG='$IMAGE_TAG' docker compose --env-file .env pull backend nginx && \
+                     IMAGE_TAG='$IMAGE_TAG' docker compose --env-file .env up -d --no-deps --force-recreate backend nginx"
+            '''
         }
+    }
+}
+
     }
 
     post {
