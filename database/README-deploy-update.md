@@ -54,7 +54,7 @@ Database đã chạy baseline chỉ cần migration feedback. Chi tiết API, c�
 
 ## Khởi tạo database mới
 
-`database/Dockerfile` chạy theo thứ tự: schema → `DataChinese.sql` → `20261012_deploy_update.sql` → `20261013_feedback.sql` → read-only schema verification. Schema gốc chứa đầy đủ 55 bảng/343 cột cho 54 JPA Entity và native audit queries, gồm position_seconds/daily activity/authentication/feedback; không cần ALTER thủ công để DB mới hỗ trợ backend. Baseline vẫn dọn dữ liệu mẫu khớp điều kiện.
+`database/Dockerfile` chạy theo thứ tự: schema → `DataChinese.sql` → `20261012_deploy_update.sql` → `20261013_feedback.sql`. Thư mục init chỉ có SQL; sau khi MySQL healthy, Jenkins gọi verifier độc lập `/usr/local/bin/verify-edujar-schema`, JPA tests và fresh-container regression trước push. Schema gốc chứa đầy đủ 55 bảng/343 cột cho 54 JPA Entity và native audit queries, gồm position_seconds/daily activity/authentication/feedback; không cần ALTER thủ công để DB mới hỗ trợ backend. Baseline vẫn dọn dữ liệu mẫu khớp điều kiện.
 
 Xem [README-fresh-schema.md](README-fresh-schema.md) để biết schema contract, kiểm thử MySQL/JPA, tùy chọn Jenkins build image DB, pin MYSQL_IMAGE_TAG, reset đúng test volume và lệnh verify sau deploy.
 

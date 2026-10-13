@@ -45,14 +45,15 @@ Schema subscription/enrollment/invoice snapshot/OAuth đã có trong base và đ
 | 02 | 02-data.sql | Seed hiện hữu, có user 4 cho reading courses, plans và legacy enrollments; lesson progress bỏ position sẽ nhận 0 |
 | 03 | 03-deploy-update.sql | Baseline giữ hành vi Việt hóa/dọn demo/thêm khóa đọc/index và chuẩn hóa seed progress; không cần nó để bù column thiếu trong base mới |
 | 04 | 04-feedback.sql | Migration additive hiện hữu, re-runnable, không tạo survey demo |
-| 05 | 05-verify-schema.sh | Read-only contract guard, fail init khi schema không tương thích |
+
+Thư mục init chỉ chứa 4 SQL files. Verifier độc lập `/usr/local/bin/verify-edujar-schema` được gọi sau khi MySQL hoàn tất initialization và app-user TCP health check đạt; không được copy `.sh` vào thư mục init.
 
 Baseline bước 03 có cleanup demo và DDL auto-commit. Nó chỉ tự chạy trên volume trống. Không import schema gốc vào DB cần giữ dữ liệu vì đầu file DROP DATABASE. Thay image trên volume cũ không tự migrate; dùng migration review riêng hoặc reset test volume có chủ đích.
 
 ## File sửa/thêm
 
 - `database/chinese_online_learning.sql`: schema/defaults/constraints đầy đủ.
-- `database/Dockerfile`: guard cuối init, cài `/usr/local/bin/verify-edujar-schema` và SQL check trong image.
+- `database/Dockerfile`: init chỉ có SQL; cài `/usr/local/bin/verify-edujar-schema` và SQL check để kiểm chứng sau startup.
 - `database/20260928_subscription_plans.sql`, `20261012_deploy_update.sql`: CREATE subscription name đúng capacity; `20261007_auth_settings.sql`: USE DB.
 - `database/jpa-schema-contract.tsv`, `native-schema-contract.tsv`: mapping JPA và phần SQL/native bổ sung.
 - `database/generate-schema-check.py`, `check-schema.sql`, `verify-schema.sh`: generated read-only check cho toàn bộ columns/keys và position default.
@@ -133,12 +134,33 @@ Ghi nhận image ID/digest để đối chiếu sau pull. MYSQL_IMAGE_TAG phải
 
 1. Đưa thay đổi vào branch/build nguồn theo quy trình của bạn; agent không tự push.
 2. Build với **BUILD_MYSQL_IMAGE=true**, **NGINX_ONLY=true**. MySQL build/push dùng BUILD_NUMBER, override pin của env Jenkins rõ ràng.
-3. VERIFY_FRESH_MYSQL_SCHEMA tạo network/container mới riêng, không publish MySQL host port hoặc mount production volume. Chờ app-user TCP healthy sau init, chạy guard rồi JpaSchemaContractTest trong Maven/Java 17 build image. Database contract mount read-only. Chỉ push DB image khi tests đạt; cleanup chỉ test container có label/token khớp và anonymous volume của nó.
+3. VERIFY_FRESH_MYSQL_SCHEMA tạo network/container mới riêng, không publish MySQL host port hoặc mount production volume. Chờ app-user TCP healthy sau init, chạy verifier độc lập rồi JpaSchemaContractTest trong Maven/Java 17 build image. Sau đó chạy fresh-mysql-regression.sh: xác nhận init-complete/healthy/không restart/không init shell script; kiểm tra verifier từ chối thiếu bảng và thiếu cột trên chính DB test. Database contract mount read-only. Chỉ push DB image khi tất cả checks đạt và image ID khớp container đã kiểm chứng; cleanup chỉ test container có label/token khớp và anonymous volume của nó.
 4. Jenkins **không pull/up/reset MySQL EC2**. Dùng BUILD_NUMBER/image ID mới và reset **chỉ test volume** khi bạn quyết định bỏ dữ liệu thử nghiệm.
 5. Lưu `MYSQL_IMAGE_TAG=<BUILD_NUMBER_DB_DA_KIEM_CHUNG>` trong `.env` EC2, giữ credentials/public URLs; không in toàn `.env`.
 6. Sau DB verification, chạy Jenkins NGINX_ONLY=false, BUILD_MYSQL_IMAGE=false để deploy backend/nginx. App tag có thể khác DB tag; app rollout --no-deps không recreate MySQL.
 
 Backend vẫn ddl-auto=none; không bật update/create để che image/schema cũ.
+
+## Regression cho lỗi entrypoint shell state
+
+`05-verify-schema.sh` trước đây được copy với quyền `644`, nên official MySQL entrypoint source nó thay vì chạy process riêng. `set -eu` ở top level bật nounset trên entrypoint; sau khi verifier báo thành công, `mysql_expire_root_user` đọc `$MYSQL_ONETIME_PASSWORD` chưa khai báo và làm init thất bại. Không sửa entrypoint hoặc khai báo biến giả để che lỗi.
+
+Verifier đã được bỏ khỏi init và bọc trong subshell: shell options, variables và `exit` không thoát sang caller ngay cả khi bị source nhầm. Kiểm tra schema vẫn chạy độc lập sau healthy, trước JPA tests và push. Receipt `.mysql-schema-verified` chứa image ID từ container thực sự đã kiểm chứng; receipt được xóa trước build và sau pipeline, và tag phải khớp ID này trước push MySQL.
+
+Chạy local regression từ repo root (Python 3 + Bash/Git Bash):
+
+```bash
+python -m unittest discover -s database/tests -v
+python database/generate-schema-check.py --check
+```
+
+17 shell tests đã đạt: tái hiện nounset leak cũ, giữ options/variables/IFS/traps khi source, exit codes cho schema thiếu bảng/cột, mysql CLI error/missing password (kể cả source trong điều kiện if), chạy PUSH_IMAGE với Docker stub để xác nhận missing/mismatched receipt chặn push, và kiểm tra trình tự/owner/healthy của fresh-container regression bằng stub. Các shell tests không kết nối DB hoặc registry.
+
+Ngoài các stub tests, đã khởi tạo base schema trên MySQL 8.0.45 native với data directory mới/port riêng 33087: verifier thực trả 0 cho schema hợp lệ, trả 1 khi thiếu authentication_settings, trả 0 sau khôi phục bảng, và trả 1 khi thiếu lesson_progress.position_seconds. SQL của cả hai negative fixtures đã chạy thành công; instance test đã shutdown. Đây là kiểm chứng SQL/verifier thật, không thay cho kiểm chứng official Docker entrypoint.
+
+Fresh-container regression thực chạy trong Jenkins với `BUILD_MYSQL_IMAGE=true`, trên container `edujar-schema-<token>` do stage tạo. `fresh-mysql-regression.sh` kiểm tra name/owner label trước các negative fixtures, tạm rename bảng authentication_settings rồi khôi phục, và cuối cùng bỏ position_seconds chỉ trong DB test sẽ được cleanup. Không chạy script này trên database production. Nếu bất kỳ check nào thất bại, stage trả nonzero và PUSH_IMAGE bị bỏ qua.
+
+Docker daemon local chưa khả dụng, nên fresh Linux container và pipeline Jenkins end-to-end chưa được chạy trong lượt sửa lỗi shell này. Kết quả MySQL/JPA ở phần tests phía trên thuộc lượt kiểm chứng schema trước đó.
 
 ## Reset riêng test volume MySQL
 
@@ -164,7 +186,7 @@ docker volume inspect sba301_mysql_data --format '{{json .Labels}}'
 docker compose --env-file .env -p sba301 -f docker-compose.yml pull mysql
 docker image inspect "devhoa/chinese-mysql:$MYSQL_IMAGE_TAG" --format '{{.Id}} {{json .RepoDigests}}'
 docker run --rm --entrypoint sh "devhoa/chinese-mysql:$MYSQL_IMAGE_TAG" -c \
-  'test -r /docker-entrypoint-initdb.d/05-verify-schema.sh; grep -n position_seconds /docker-entrypoint-initdb.d/01-schema.sql'
+  'test -x /usr/local/bin/verify-edujar-schema; test -z "$(find /docker-entrypoint-initdb.d -name "*.sh" -print -quit)"; grep -n position_seconds /docker-entrypoint-initdb.d/01-schema.sql'
 
 docker compose --env-file .env -p sba301 -f docker-compose.yml stop nginx backend mysql
 docker compose --env-file .env -p sba301 -f docker-compose.yml rm -f mysql
@@ -194,6 +216,6 @@ docker logs --tail 200 chinese-mysql 2>&1 | grep -E 'docker-entrypoint-initdb.d|
 docker exec chinese-mysql sh -c 'MYSQL_PWD="$MYSQL_PASSWORD" mysql -uchinese_app -Dchinese_online_learning --batch --execute="SHOW COLUMNS FROM lesson_progress LIKE \"position_seconds\"; SELECT COUNT(*) AS table_count FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE(); SELECT code,duration_days,active FROM subscription_plans; SELECT id,email_verification_enabled FROM authentication_settings; SELECT id FROM feedback_publication_lock;"'
 ```
 
-Expected: image/tag mới, healthy, guard exit 0; position_seconds int/Null=NO/Default=0; 55 bảng; 3 plans nếu admin chưa thay; auth singleton và feedback lock id=1. Log có 01-schema/02-data/03-deploy-update/04-feedback/05-verify-schema, không chỉ 03-reading-courses.
+Expected: image/tag mới, healthy, guard exit 0; position_seconds int/Null=NO/Default=0; 55 bảng; 3 plans nếu admin chưa thay; auth singleton và feedback lock id=1. Log có 01-schema/02-data/03-deploy-update/04-feedback và `MySQL init process done. Ready for start up.`, không có sourcing 05-verify-schema. Verifier success xuất hiện ở output docker exec/Jenkins, không phải initialization log.
 
 Nghiệm thu API: plans 200 JSON; STUDENT có quyền gọi stats/detail/progress 200; save playback lưu/resume đúng vị trí; user không có quyền nhận empty state/403 đúng nghiệp vụ. Không còn Unknown column trong backend logs. Health 200 không thay schema guard và kiểm tra functional API.

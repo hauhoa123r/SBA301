@@ -73,6 +73,7 @@ pipeline {
             steps {
                 sh '''
                     set -eu
+                    rm -f "$WORKSPACE/.mysql-schema-verified"
                     echo "Building image tag: $IMAGE_TAG"
 
                     docker compose \
@@ -146,6 +147,8 @@ pipeline {
                             -e RUN_FRESH_SCHEMA_TESTS=true -e FRESH_SCHEMA_USER=chinese_app -e FRESH_SCHEMA_PASSWORD \
                             -e 'FRESH_SCHEMA_JDBC_URL=jdbc:mysql://mysql-schema-test:3306/chinese_online_learning?serverTimezone=UTC' \
                             "edujar-schema-tests:$IMAGE_TAG" mvn -Dtest=JpaSchemaContractTest test
+                        sh database/tests/fresh-mysql-regression.sh "$test_container" "$test_id"
+                        docker inspect "$test_container" --format '{{.Image}}' > "$WORKSPACE/.mysql-schema-verified"
                     '''
                 }
             }
@@ -177,6 +180,10 @@ pipeline {
                             push $APP_SERVICES
 
                         if [ "${BUILD_MYSQL_IMAGE:-false}" = 'true' ]; then
+                            test -s "$WORKSPACE/.mysql-schema-verified"
+                            verified_mysql_id=$(cat "$WORKSPACE/.mysql-schema-verified")
+                            actual_mysql_id=$(docker image inspect "devhoa/chinese-mysql:$IMAGE_TAG" --format '{{.Id}}')
+                            test "$actual_mysql_id" = "$verified_mysql_id"
                             MYSQL_IMAGE_TAG="$IMAGE_TAG" docker compose --env-file "$WORKSPACE/.env" -f docker-compose.yml push mysql
                         fi
                     '''
@@ -305,6 +312,7 @@ pipeline {
                 docker logout || true
                 rm -f "$WORKSPACE/.env"
                 rm -f "$WORKSPACE/.nginx-config-sha256" "$WORKSPACE/.nginx-image-id"
+                rm -f "$WORKSPACE/.mysql-schema-verified"
             '''
         }
     }
