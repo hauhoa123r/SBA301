@@ -56,7 +56,7 @@ Baseline bước 03 có cleanup demo và DDL auto-commit. Nó chỉ tự chạy 
 - `database/Dockerfile`: init chỉ có SQL; cài `/usr/local/bin/verify-edujar-schema` và SQL check để kiểm chứng sau startup.
 - `database/20260928_subscription_plans.sql`, `20261012_deploy_update.sql`: CREATE subscription name đúng capacity; `20261007_auth_settings.sql`: USE DB.
 - `database/jpa-schema-contract.tsv`, `native-schema-contract.tsv`: mapping JPA và phần SQL/native bổ sung.
-- `database/generate-schema-check.py`, `check-schema.sql`, `verify-schema.sh`: generated read-only check cho toàn bộ columns/keys và position default.
+- `database/generate-schema-check.py`, `check-schema.sql`, `verify-schema.sh`: generated read-only check cho toàn bộ columns/keys và position default. Generator đồng bộ thêm `backend/src/test/resources/schema/jpa-schema-contract.tsv`; --check từ chối resource thiếu/lệch bản gốc.
 - `backend/src/test/java/com/app/schema/JpaSchemaContractTest.java`: contract regression, real MySQL validate/SELECT/keys/default/negative-value tests; fixture rollback.
 - 9 files dưới `backend/src/main/java/com/app/features/model`: `AnswerEntity`, `AssignmentEntity`, `AssignmentSubmissionEntity`, `CourseReviewEntity`, `LessonQaEntity`, `NotificationEntity`, `RefundEntity`, `ReportEntity`, `StudentAnswerEntity`. Chỉ thêm explicit TEXT cho 10 @Lob fields, không đổi service/API logic.
 - `Jenkinsfile`: opt-in build/test/push MySQL qua database/network/container cô lập, Hibernate validation trước push.
@@ -102,12 +102,15 @@ Khi JPA đổi, review SQL rồi mới regenerate; không ghi đè contract đ�
 
 ```bash
 cd backend
-mvn -Dtest=JpaSchemaContractTest -Dschema.contract.output=target/jpa-schema-contract.tsv test
+mvn '-Dtest=JpaSchemaContractTest#committedContractMatchesEveryEntityAndJoinTable' \
+  "-Dschema.contract.output=$PWD/target/jpa-schema-contract.tsv" test
 cp target/jpa-schema-contract.tsv ../database/jpa-schema-contract.tsv
 cd ..
 python database/generate-schema-check.py
 python database/generate-schema-check.py --check
 ```
+
+Contract gốc vẫn nằm ở database và được Git theo dõi. Test đọc `/schema/jpa-schema-contract.tsv` bằng classpath, không đọc `../database` hoặc cần bind mount `/database`. Maven đóng gói bản sao test resource vào target/test-classes ngay trong backend-only build context. Commit cả resource đã đồng bộ khi cập nhật contract. Chi tiết fix packaging, regression và kiểm thử: [JPA_CONTRACT_CLASSPATH.md](../docs/deployment/JPA_CONTRACT_CLASSPATH.md).
 
 Review native-schema-contract.tsv khi native columns/constraints thay đổi.
 

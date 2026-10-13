@@ -13,7 +13,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
+import org.opentest4j.AssertionFailedError;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -33,7 +37,21 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /** All mapped entities, including implicit join tables; no application context or production credentials. */
 class JpaSchemaContractTest {
-    private static final Path DATABASE = Path.of("..", "database");
+    private static final String CONTRACT_RESOURCE = "/schema/jpa-schema-contract.tsv";
+
+    private static List<String> committedContract() throws Exception {
+        var stream = JpaSchemaContractTest.class.getResourceAsStream(CONTRACT_RESOURCE);
+        assertNotNull(stream, "Missing classpath test resource " + CONTRACT_RESOURCE
+                + "; sync it with database/generate-schema-check.py before building the test image.");
+        try (var reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
+            return reader.lines().toList();
+        }
+    }
+
+    private static void assertContractMatches(List<String> expected, List<String> actual) {
+        assertEquals(expected, actual,
+                "JPA changed: review fresh schema and explicitly regenerate its contract.");
+    }
 
     private static StandardServiceRegistry registry(String url) {
         var builder = new StandardServiceRegistryBuilder()
@@ -105,14 +123,43 @@ class JpaSchemaContractTest {
             List<String> expected = contract(metadata);
             String output = System.getProperty("schema.contract.output");
             if (output != null) {
-                Files.write(Path.of(output), expected);
+                Path outputPath = Path.of(output);
+                assertTrue(outputPath.isAbsolute(), "schema.contract.output must be an explicit absolute path");
+                Files.write(outputPath, expected, StandardCharsets.UTF_8);
             } else {
-                assertEquals(expected, Files.readAllLines(DATABASE.resolve("jpa-schema-contract.tsv")),
-                        "JPA changed: review fresh schema and explicitly regenerate its contract.");
+                assertContractMatches(expected, committedContract());
             }
             System.out.printf("JPA contract: %d entities, %d tables, %d columns%n",
                     metadata.getEntityBindings().size(), tables(metadata).size(),
                     expected.stream().filter(row -> row.startsWith("COLUMN\t")).count());
+        } finally {
+            StandardServiceRegistryBuilder.destroy(registry);
+        }
+    }
+
+    @Test
+    void committedContractRejectsMissingTable() throws Exception {
+        var registry = registry(null);
+        try {
+            List<String> expected = contract(mappings(registry));
+            List<String> actual = new ArrayList<>(committedContract());
+            assertContractMatches(expected, actual);
+            assertTrue(actual.removeIf(row -> row.split("\t")[1].equals("authentication_settings")));
+            assertThrows(AssertionFailedError.class, () -> assertContractMatches(expected, actual));
+        } finally {
+            StandardServiceRegistryBuilder.destroy(registry);
+        }
+    }
+
+    @Test
+    void committedContractRejectsMissingColumn() throws Exception {
+        var registry = registry(null);
+        try {
+            List<String> expected = contract(mappings(registry));
+            List<String> actual = new ArrayList<>(committedContract());
+            assertContractMatches(expected, actual);
+            assertTrue(actual.removeIf(row -> row.startsWith("COLUMN\tlesson_progress\tposition_seconds\t")));
+            assertThrows(AssertionFailedError.class, () -> assertContractMatches(expected, actual));
         } finally {
             StandardServiceRegistryBuilder.destroy(registry);
         }

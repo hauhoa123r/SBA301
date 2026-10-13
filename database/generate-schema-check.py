@@ -1,4 +1,4 @@
-"""Generate a read-only MySQL schema check from the reviewed Hibernate contract.
+"""Generate the SQL guard and classpath copy of the reviewed Hibernate contract.
 
 Run from any directory. Use --check in CI to reject a stale generated SQL file.
 """
@@ -8,6 +8,7 @@ import re
 import sys
 
 ROOT = Path(__file__).resolve().parent
+TEST_CONTRACT = ROOT.parent / "backend/src/test/resources/schema/jpa-schema-contract.tsv"
 
 
 def literal(value):
@@ -91,7 +92,12 @@ if __name__ == "__main__":
     output = ROOT / "check-schema.sql"
     content = generate()
     if "--check" in sys.argv:
-        if output.read_text(encoding="utf-8") != content:
+        if not output.is_file() or output.read_text(encoding="utf-8") != content:
             raise SystemExit("check-schema.sql is stale; regenerate after reviewing the JPA contract")
+        if not TEST_CONTRACT.is_file() or TEST_CONTRACT.read_bytes() != (ROOT / "jpa-schema-contract.tsv").read_bytes():
+            raise SystemExit("Classpath JPA contract is missing or stale; run database/generate-schema-check.py to sync it")
     else:
-        output.write_text(content, encoding="utf-8", newline="\n")
+        if not output.is_file() or output.read_text(encoding="utf-8") != content:
+            output.write_text(content, encoding="utf-8", newline="\n")
+        TEST_CONTRACT.parent.mkdir(parents=True, exist_ok=True)
+        TEST_CONTRACT.write_bytes((ROOT / "jpa-schema-contract.tsv").read_bytes())

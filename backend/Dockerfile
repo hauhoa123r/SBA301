@@ -3,7 +3,8 @@ FROM maven:3.9.9-eclipse-temurin-17-alpine AS build
 
 WORKDIR /backend
 COPY . .
-RUN mvn clean package -DskipTests
+RUN mvn clean package -DskipTests \
+    && test -s /backend/target/test-classes/schema/jpa-schema-contract.tsv
 
 # stage2
 FROM eclipse-temurin:17-jre-alpine

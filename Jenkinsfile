@@ -92,7 +92,9 @@ pipeline {
                     python3 -m unittest discover -s database/tests -v
                     python3 database/generate-schema-check.py --check
                     docker build --target build -t "edujar-backend-tests:$IMAGE_TAG" backend
-                    docker run --rm "edujar-backend-tests:$IMAGE_TAG" mvn test
+                    docker run --rm --workdir /backend --entrypoint test \
+                        "edujar-backend-tests:$IMAGE_TAG" -s /backend/target/test-classes/schema/jpa-schema-contract.tsv
+                    docker run --rm --workdir /backend "edujar-backend-tests:$IMAGE_TAG" mvn test
                     docker build --target build -t "edujar-frontend-tests:$IMAGE_TAG" frontend
                     docker run --rm "edujar-frontend-tests:$IMAGE_TAG" npm test
                 '''
@@ -172,8 +174,7 @@ pipeline {
                         docker exec "$test_container" sh /usr/local/bin/verify-edujar-schema
                         docker build --target build -t "edujar-schema-tests:$IMAGE_TAG" backend
                         export FRESH_SCHEMA_PASSWORD="$MYSQL_PASSWORD"
-                        docker run --rm --network "$test_network" \
-                            -v "$WORKSPACE/database:/database:ro" \
+                        docker run --rm --workdir /backend --network "$test_network" \
                             -e RUN_FRESH_SCHEMA_TESTS=true -e FRESH_SCHEMA_USER=chinese_app -e FRESH_SCHEMA_PASSWORD \
                             -e 'FRESH_SCHEMA_JDBC_URL=jdbc:mysql://mysql-schema-test:3306/chinese_online_learning?serverTimezone=UTC' \
                             "edujar-schema-tests:$IMAGE_TAG" mvn -Dtest=JpaSchemaContractTest test

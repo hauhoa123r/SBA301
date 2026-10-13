@@ -1,0 +1,472 @@
+COLUMN	answers	content	TEXT	false
+COLUMN	answers	id	bigint	false
+COLUMN	answers	is_correct	bit	false
+COLUMN	answers	matching_pair	TEXT	true
+COLUMN	answers	order_index	integer	false
+COLUMN	answers	question_id	bigint	false
+COLUMN	assignment_submissions	assignment_id	bigint	false
+COLUMN	assignment_submissions	file_url	varchar(500)	true
+COLUMN	assignment_submissions	graded_at	datetime(6)	true
+COLUMN	assignment_submissions	id	bigint	false
+COLUMN	assignment_submissions	score	integer	true
+COLUMN	assignment_submissions	status	enum ('GRADED','NEEDS_REVISION','SUBMITTED')	false
+COLUMN	assignment_submissions	submission_text	TEXT	true
+COLUMN	assignment_submissions	submitted_at	datetime(6)	true
+COLUMN	assignment_submissions	teacher_feedback	TEXT	true
+COLUMN	assignment_submissions	user_id	bigint	false
+COLUMN	assignments	attachment_url	varchar(500)	true
+COLUMN	assignments	deadline_days	integer	true
+COLUMN	assignments	description	TEXT	false
+COLUMN	assignments	id	bigint	false
+COLUMN	assignments	lesson_id	bigint	false
+COLUMN	assignments	title	varchar(255)	false
+COLUMN	audit_logs	action	varchar(100)	false
+COLUMN	audit_logs	id	bigint	false
+COLUMN	audit_logs	user_id	bigint	true
+COLUMN	authentication_settings	email_verification_enabled	bit	false
+COLUMN	authentication_settings	id	integer	false
+COLUMN	badges	description	varchar(255)	false
+COLUMN	badges	icon_url	varchar(500)	false
+COLUMN	badges	id	bigint	false
+COLUMN	badges	name	varchar(100)	false
+COLUMN	badges	requirement_type	enum ('HSK_PASSED','LESSON_COMPLETED','QUIZ_PASSED','STREAK_DAYS')	false
+COLUMN	badges	requirement_value	integer	false
+COLUMN	categories	id	bigint	false
+COLUMN	categories	name	varchar(255)	false
+COLUMN	categories	order_index	integer	true
+COLUMN	categories	parent_id	bigint	true
+COLUMN	categories	slug	varchar(255)	false
+COLUMN	certificates	certificate_code	varchar(100)	false
+COLUMN	certificates	course_id	bigint	false
+COLUMN	certificates	id	bigint	false
+COLUMN	certificates	issued_at	datetime(6)	true
+COLUMN	certificates	pdf_url	varchar(500)	false
+COLUMN	certificates	user_id	bigint	false
+COLUMN	chapters	course_id	bigint	false
+COLUMN	chapters	id	bigint	false
+COLUMN	chapters	order_index	integer	false
+COLUMN	chapters	title	varchar(255)	false
+COLUMN	coupons	code	varchar(50)	false
+COLUMN	coupons	created_at	datetime(6)	true
+COLUMN	coupons	created_by	bigint	false
+COLUMN	coupons	discount_type	enum ('FIXED_AMOUNT','PERCENTAGE')	false
+COLUMN	coupons	discount_value	decimal(12,2)	false
+COLUMN	coupons	id	bigint	false
+COLUMN	coupons	max_uses	integer	true
+COLUMN	coupons	used_count	integer	true
+COLUMN	coupons	valid_from	datetime(6)	true
+COLUMN	coupons	valid_until	datetime(6)	true
+COLUMN	course_enrollments	completed_at	datetime(6)	true
+COLUMN	course_enrollments	course_id	bigint	false
+COLUMN	course_enrollments	enrolled_at	datetime(6)	true
+COLUMN	course_enrollments	id	bigint	false
+COLUMN	course_enrollments	legacy_access	bit	false
+COLUMN	course_enrollments	user_id	bigint	false
+COLUMN	course_reviews	comment	TEXT	true
+COLUMN	course_reviews	course_id	bigint	false
+COLUMN	course_reviews	created_at	datetime(6)	true
+COLUMN	course_reviews	id	bigint	false
+COLUMN	course_reviews	rating	integer	false
+COLUMN	course_reviews	updated_at	datetime(6)	true
+COLUMN	course_reviews	user_id	bigint	false
+COLUMN	course_tags	course_id	bigint	false
+COLUMN	course_tags	tag_id	bigint	false
+COLUMN	courses	category_id	bigint	true
+COLUMN	courses	created_at	datetime(6)	true
+COLUMN	courses	description	TEXT	true
+COLUMN	courses	id	bigint	false
+COLUMN	courses	price	decimal(15,2)	false
+COLUMN	courses	status	enum ('DRAFT','HIDDEN','PENDING','PUBLISHED')	false
+COLUMN	courses	teacher_id	bigint	false
+COLUMN	courses	thumbnail_url	varchar(500)	true
+COLUMN	courses	title	varchar(255)	false
+COLUMN	courses	updated_at	datetime(6)	true
+COLUMN	feedback_answer_options	answer_id	bigint	false
+COLUMN	feedback_answer_options	option_id	bigint	false
+COLUMN	feedback_answers	id	bigint	false
+COLUMN	feedback_answers	number_value	decimal(18,4)	true
+COLUMN	feedback_answers	question_id	bigint	false
+COLUMN	feedback_answers	submission_id	bigint	false
+COLUMN	feedback_answers	text_value	varchar(10000)	true
+COLUMN	feedback_forms	active_slot	integer	true
+COLUMN	feedback_forms	closed_at	datetime(6)	true
+COLUMN	feedback_forms	created_at	datetime(6)	false
+COLUMN	feedback_forms	description	varchar(4000)	false
+COLUMN	feedback_forms	ends_at	datetime(6)	true
+COLUMN	feedback_forms	id	bigint	false
+COLUMN	feedback_forms	one_per_user	bit	false
+COLUMN	feedback_forms	published_at	datetime(6)	true
+COLUMN	feedback_forms	revision	bigint	false
+COLUMN	feedback_forms	starts_at	datetime(6)	true
+COLUMN	feedback_forms	status	varchar(20)	false
+COLUMN	feedback_forms	title	varchar(200)	false
+COLUMN	feedback_options	id	bigint	false
+COLUMN	feedback_options	label	varchar(300)	false
+COLUMN	feedback_options	position	integer	false
+COLUMN	feedback_options	question_id	bigint	false
+COLUMN	feedback_publication_lock	id	integer	false
+COLUMN	feedback_questions	description	varchar(2000)	false
+COLUMN	feedback_questions	form_id	bigint	false
+COLUMN	feedback_questions	id	bigint	false
+COLUMN	feedback_questions	max_length	integer	true
+COLUMN	feedback_questions	max_selections	integer	true
+COLUMN	feedback_questions	max_value	decimal(18,4)	true
+COLUMN	feedback_questions	min_selections	integer	true
+COLUMN	feedback_questions	min_value	decimal(18,4)	true
+COLUMN	feedback_questions	position	integer	false
+COLUMN	feedback_questions	required	bit	false
+COLUMN	feedback_questions	title	varchar(500)	false
+COLUMN	feedback_questions	type	enum ('DROPDOWN','LIKERT','LONG_TEXT','MULTIPLE_CHOICE','NUMBER','RATING','SHORT_TEXT','SINGLE_CHOICE','YES_NO')	false
+COLUMN	feedback_submissions	form_id	bigint	false
+COLUMN	feedback_submissions	id	bigint	false
+COLUMN	feedback_submissions	single_user_id	bigint	true
+COLUMN	feedback_submissions	submitted_at	datetime(6)	false
+COLUMN	feedback_submissions	user_id	bigint	false
+COLUMN	feedback_visits	form_id	bigint	false
+COLUMN	feedback_visits	id	bigint	false
+COLUMN	feedback_visits	started_at	datetime(6)	false
+COLUMN	feedback_visits	user_id	bigint	false
+COLUMN	invoices	amount	decimal(15,2)	false
+COLUMN	invoices	coupon_id	bigint	true
+COLUMN	invoices	course_id	bigint	true
+COLUMN	invoices	created_at	datetime(6)	true
+COLUMN	invoices	discount_amount	decimal(15,2)	true
+COLUMN	invoices	id	bigint	false
+COLUMN	invoices	original_amount	decimal(15,2)	false
+COLUMN	invoices	status	enum ('CANCELLED','FAILED','PAID','PENDING','REFUNDED')	false
+COLUMN	invoices	subscription_duration_days	integer	true
+COLUMN	invoices	subscription_plan_code	varchar(30)	true
+COLUMN	invoices	updated_at	datetime(6)	true
+COLUMN	invoices	user_id	bigint	false
+COLUMN	learning_activity_daily	activity_count	bigint	false
+COLUMN	learning_activity_daily	activity_date	date	false
+COLUMN	learning_activity_daily	id	bigint	false
+COLUMN	learning_activity_daily	user_id	bigint	false
+COLUMN	learning_activity_daily	watch_seconds	bigint	false
+COLUMN	lesson_documents	created_at	datetime(6)	true
+COLUMN	lesson_documents	file_url	varchar(500)	false
+COLUMN	lesson_documents	id	bigint	false
+COLUMN	lesson_documents	lesson_id	bigint	false
+COLUMN	lesson_documents	title	varchar(255)	false
+COLUMN	lesson_progress	id	bigint	false
+COLUMN	lesson_progress	is_completed	bit	true
+COLUMN	lesson_progress	lesson_id	bigint	false
+COLUMN	lesson_progress	position_seconds	integer	false
+COLUMN	lesson_progress	updated_at	datetime(6)	true
+COLUMN	lesson_progress	user_id	bigint	false
+COLUMN	lesson_progress	watch_seconds	integer	true
+COLUMN	lesson_qa	content	TEXT	false
+COLUMN	lesson_qa	created_at	datetime(6)	true
+COLUMN	lesson_qa	id	bigint	false
+COLUMN	lesson_qa	is_resolved	bit	true
+COLUMN	lesson_qa	lesson_id	bigint	false
+COLUMN	lesson_qa	parent_id	bigint	true
+COLUMN	lesson_qa	user_id	bigint	false
+COLUMN	lessons	chapter_id	bigint	false
+COLUMN	lessons	content	TEXT	true
+COLUMN	lessons	duration_seconds	integer	true
+COLUMN	lessons	id	bigint	false
+COLUMN	lessons	order_index	integer	false
+COLUMN	lessons	title	varchar(255)	false
+COLUMN	lessons	video_url	varchar(500)	true
+COLUMN	notifications	content	TEXT	false
+COLUMN	notifications	created_at	datetime(6)	true
+COLUMN	notifications	id	bigint	false
+COLUMN	notifications	is_read	bit	true
+COLUMN	notifications	title	varchar(255)	false
+COLUMN	notifications	type	varchar(50)	false
+COLUMN	notifications	user_id	bigint	false
+COLUMN	oauth_accounts	created_at	datetime(6)	true
+COLUMN	oauth_accounts	id	bigint	false
+COLUMN	oauth_accounts	provider	enum ('FACEBOOK','GOOGLE')	false
+COLUMN	oauth_accounts	provider_email	varchar(320)	true
+COLUMN	oauth_accounts	provider_user_id	varchar(255)	false
+COLUMN	oauth_accounts	updated_at	datetime(6)	true
+COLUMN	oauth_accounts	user_id	bigint	false
+COLUMN	oauth_authorization_codes	code_hash	varchar(64)	false
+COLUMN	oauth_authorization_codes	created_at	datetime(6)	true
+COLUMN	oauth_authorization_codes	expires_at	datetime(6)	false
+COLUMN	oauth_authorization_codes	id	bigint	false
+COLUMN	oauth_authorization_codes	user_id	bigint	false
+COLUMN	payments	amount	decimal(15,2)	false
+COLUMN	payments	created_at	datetime(6)	true
+COLUMN	payments	id	bigint	false
+COLUMN	payments	invoice_id	bigint	false
+COLUMN	payments	provider	enum ('MOMO','PAYOS','STRIPE','VNPAY','ZALOPAY')	false
+COLUMN	payments	raw_response	json	true
+COLUMN	payments	status	enum ('CANCELLED','CREATED','FAILED','SUCCESS')	false
+COLUMN	payments	transaction_id	varchar(150)	false
+COLUMN	permissions	code	varchar(100)	false
+COLUMN	permissions	id	bigint	false
+COLUMN	permissions	name	varchar(150)	false
+COLUMN	questions	audio_url	varchar(500)	true
+COLUMN	questions	content	TEXT	false
+COLUMN	questions	explanation	TEXT	true
+COLUMN	questions	id	bigint	false
+COLUMN	questions	meta_data	json	true
+COLUMN	questions	order_index	integer	false
+COLUMN	questions	points	integer	false
+COLUMN	questions	question_type	enum ('FILL_IN_BLANK','LISTENING_CHOICE','MATCHING','MULTIPLE_CHOICE','SINGLE_CHOICE','SPEAKING')	false
+COLUMN	questions	quiz_id	bigint	false
+COLUMN	quiz_attempts	id	bigint	false
+COLUMN	quiz_attempts	is_passed	bit	true
+COLUMN	quiz_attempts	quiz_id	bigint	false
+COLUMN	quiz_attempts	score	integer	false
+COLUMN	quiz_attempts	started_at	datetime(6)	true
+COLUMN	quiz_attempts	status	enum ('CHEATING_SUSPECTED','DOING','SUBMITTED')	false
+COLUMN	quiz_attempts	submitted_at	datetime(6)	true
+COLUMN	quiz_attempts	user_id	bigint	false
+COLUMN	quizzes	chapter_id	bigint	true
+COLUMN	quizzes	course_id	bigint	true
+COLUMN	quizzes	created_at	datetime(6)	true
+COLUMN	quizzes	id	bigint	false
+COLUMN	quizzes	lesson_id	bigint	true
+COLUMN	quizzes	order_index	integer	true
+COLUMN	quizzes	pass_score	integer	false
+COLUMN	quizzes	teacher_id	bigint	false
+COLUMN	quizzes	time_limit_minutes	integer	false
+COLUMN	quizzes	title	varchar(255)	false
+COLUMN	referrals	created_at	datetime(6)	true
+COLUMN	referrals	id	bigint	false
+COLUMN	referrals	referred_user_id	bigint	false
+COLUMN	referrals	referrer_id	bigint	false
+COLUMN	referrals	reward_granted	bit	true
+COLUMN	referrals	status	enum ('PURCHASED','REGISTERED')	false
+COLUMN	refunds	amount	decimal(15,2)	false
+COLUMN	refunds	created_at	datetime(6)	true
+COLUMN	refunds	id	bigint	false
+COLUMN	refunds	payment_id	bigint	false
+COLUMN	refunds	processed_at	datetime(6)	true
+COLUMN	refunds	processed_by	bigint	true
+COLUMN	refunds	reason	TEXT	false
+COLUMN	refunds	status	enum ('APPROVED','PENDING','PROCESSED','REJECTED')	false
+COLUMN	refunds	user_id	bigint	false
+COLUMN	reports	created_at	datetime(6)	true
+COLUMN	reports	id	bigint	false
+COLUMN	reports	reason	TEXT	false
+COLUMN	reports	reporter_id	bigint	false
+COLUMN	reports	resolved_at	datetime(6)	true
+COLUMN	reports	resolved_by	bigint	true
+COLUMN	reports	status	enum ('DISMISSED','INVESTIGATING','PENDING','RESOLVED')	false
+COLUMN	reports	target_id	bigint	false
+COLUMN	reports	target_type	enum ('COMMENT','COURSE','REVIEW','USER')	false
+COLUMN	role_permissions	permission_id	bigint	false
+COLUMN	role_permissions	role_id	bigint	false
+COLUMN	roles	description	varchar(255)	true
+COLUMN	roles	id	bigint	false
+COLUMN	roles	name	varchar(50)	false
+COLUMN	sentence_patterns	audio_url	varchar(500)	true
+COLUMN	sentence_patterns	chinese_text	varchar(500)	false
+COLUMN	sentence_patterns	id	bigint	false
+COLUMN	sentence_patterns	lesson_id	bigint	false
+COLUMN	sentence_patterns	order_index	integer	false
+COLUMN	sentence_patterns	pinyin_text	varchar(500)	false
+COLUMN	sentence_patterns	vietnamese_meaning	varchar(500)	false
+COLUMN	sentence_patterns	vocabulary_id	bigint	true
+COLUMN	student_answers	attempt_id	bigint	false
+COLUMN	student_answers	id	bigint	false
+COLUMN	student_answers	input_text	TEXT	true
+COLUMN	student_answers	is_correct	bit	true
+COLUMN	student_answers	question_id	bigint	false
+COLUMN	student_answers	selected_answer_id	bigint	true
+COLUMN	student_answers	student_response	json	true
+COLUMN	subscription_plans	active	bit	false
+COLUMN	subscription_plans	code	varchar(30)	false
+COLUMN	subscription_plans	duration_days	integer	false
+COLUMN	subscription_plans	name	varchar(255)	false
+COLUMN	subscription_plans	price	decimal(15,2)	false
+COLUMN	tags	id	bigint	false
+COLUMN	tags	name	varchar(100)	false
+COLUMN	tags	slug	varchar(100)	false
+COLUMN	user_badges	badge_id	bigint	false
+COLUMN	user_badges	earned_at	datetime(6)	true
+COLUMN	user_badges	user_id	bigint	false
+COLUMN	user_chapter_progress	chapter_id	bigint	false
+COLUMN	user_chapter_progress	completed_at	datetime(6)	true
+COLUMN	user_chapter_progress	id	bigint	false
+COLUMN	user_chapter_progress	is_completed	bit	false
+COLUMN	user_chapter_progress	user_id	bigint	false
+COLUMN	user_lesson_progress	current_time_seconds	integer	false
+COLUMN	user_lesson_progress	id	bigint	false
+COLUMN	user_lesson_progress	is_completed	bit	false
+COLUMN	user_lesson_progress	lesson_id	bigint	false
+COLUMN	user_lesson_progress	updated_at	TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP	true
+COLUMN	user_lesson_progress	user_id	bigint	false
+COLUMN	user_quiz_attempts	attempt_date	TIMESTAMP DEFAULT CURRENT_TIMESTAMP	true
+COLUMN	user_quiz_attempts	id	bigint	false
+COLUMN	user_quiz_attempts	is_passed	bit	false
+COLUMN	user_quiz_attempts	quiz_id	bigint	false
+COLUMN	user_quiz_attempts	score	integer	false
+COLUMN	user_quiz_attempts	user_id	bigint	false
+COLUMN	user_roles	role_id	bigint	false
+COLUMN	user_roles	user_id	bigint	false
+COLUMN	user_streaks	current_streak	integer	true
+COLUMN	user_streaks	last_activity_date	date	true
+COLUMN	user_streaks	longest_streak	integer	true
+COLUMN	user_streaks	user_id	bigint	false
+COLUMN	user_subscriptions	expires_at	datetime(6)	false
+COLUMN	user_subscriptions	plan_code	varchar(30)	false
+COLUMN	user_subscriptions	started_at	datetime(6)	false
+COLUMN	user_subscriptions	trial_used	bit	false
+COLUMN	user_subscriptions	user_id	bigint	false
+COLUMN	users	avatar_url	varchar(2048)	true
+COLUMN	users	created_at	datetime(6)	true
+COLUMN	users	email	varchar(255)	false
+COLUMN	users	full_name	varchar(255)	false
+COLUMN	users	id	bigint	false
+COLUMN	users	password_hash	varchar(255)	false
+COLUMN	users	referral_code	varchar(50)	true
+COLUMN	users	status	enum ('ACTIVE','BANNED','DELETED','DISABLE','INACTIVE','LOCKED','PENDING','SUSPENDED')	false
+COLUMN	users	total_learning_points	integer	true
+COLUMN	users	updated_at	datetime(6)	true
+COLUMN	verification_tokens	created_at	datetime(6)	true
+COLUMN	verification_tokens	expiry_date	datetime(6)	false
+COLUMN	verification_tokens	id	bigint	false
+COLUMN	verification_tokens	is_used	bit	false
+COLUMN	verification_tokens	token	varchar(255)	false
+COLUMN	verification_tokens	token_type	varchar(50)	false
+COLUMN	verification_tokens	user_id	bigint	false
+COLUMN	vocabularies	audio_url	varchar(500)	true
+COLUMN	vocabularies	hanzi	varchar(255)	false
+COLUMN	vocabularies	id	bigint	false
+COLUMN	vocabularies	image_url	varchar(500)	true
+COLUMN	vocabularies	lesson_id	bigint	false
+COLUMN	vocabularies	order_index	integer	false
+COLUMN	vocabularies	pinyin	varchar(255)	false
+COLUMN	vocabularies	vietnamese_meaning	varchar(255)	false
+FOREIGN_KEY	answers	question_id	questions	id
+FOREIGN_KEY	assignment_submissions	assignment_id	assignments	id
+FOREIGN_KEY	assignment_submissions	user_id	users	id
+FOREIGN_KEY	assignments	lesson_id	lessons	id
+FOREIGN_KEY	categories	parent_id	categories	id
+FOREIGN_KEY	certificates	course_id	courses	id
+FOREIGN_KEY	certificates	user_id	users	id
+FOREIGN_KEY	chapters	course_id	courses	id
+FOREIGN_KEY	coupons	created_by	users	id
+FOREIGN_KEY	course_enrollments	course_id	courses	id
+FOREIGN_KEY	course_enrollments	user_id	users	id
+FOREIGN_KEY	course_reviews	course_id	courses	id
+FOREIGN_KEY	course_reviews	user_id	users	id
+FOREIGN_KEY	course_tags	course_id	courses	id
+FOREIGN_KEY	course_tags	tag_id	tags	id
+FOREIGN_KEY	courses	category_id	categories	id
+FOREIGN_KEY	courses	teacher_id	users	id
+FOREIGN_KEY	feedback_answer_options	answer_id	feedback_answers	id
+FOREIGN_KEY	feedback_answer_options	option_id	feedback_options	id
+FOREIGN_KEY	feedback_answers	question_id	feedback_questions	id
+FOREIGN_KEY	feedback_answers	submission_id	feedback_submissions	id
+FOREIGN_KEY	feedback_options	question_id	feedback_questions	id
+FOREIGN_KEY	feedback_questions	form_id	feedback_forms	id
+FOREIGN_KEY	feedback_submissions	form_id	feedback_forms	id
+FOREIGN_KEY	invoices	coupon_id	coupons	id
+FOREIGN_KEY	invoices	course_id	courses	id
+FOREIGN_KEY	invoices	user_id	users	id
+FOREIGN_KEY	lesson_documents	lesson_id	lessons	id
+FOREIGN_KEY	lesson_progress	lesson_id	lessons	id
+FOREIGN_KEY	lesson_progress	user_id	users	id
+FOREIGN_KEY	lesson_qa	lesson_id	lessons	id
+FOREIGN_KEY	lesson_qa	parent_id	lesson_qa	id
+FOREIGN_KEY	lesson_qa	user_id	users	id
+FOREIGN_KEY	lessons	chapter_id	chapters	id
+FOREIGN_KEY	notifications	user_id	users	id
+FOREIGN_KEY	oauth_accounts	user_id	users	id
+FOREIGN_KEY	oauth_authorization_codes	user_id	users	id
+FOREIGN_KEY	payments	invoice_id	invoices	id
+FOREIGN_KEY	questions	quiz_id	quizzes	id
+FOREIGN_KEY	quiz_attempts	quiz_id	quizzes	id
+FOREIGN_KEY	quiz_attempts	user_id	users	id
+FOREIGN_KEY	quizzes	chapter_id	chapters	id
+FOREIGN_KEY	quizzes	course_id	courses	id
+FOREIGN_KEY	quizzes	lesson_id	lessons	id
+FOREIGN_KEY	quizzes	teacher_id	users	id
+FOREIGN_KEY	referrals	referred_user_id	users	id
+FOREIGN_KEY	referrals	referrer_id	users	id
+FOREIGN_KEY	refunds	payment_id	payments	id
+FOREIGN_KEY	refunds	processed_by	users	id
+FOREIGN_KEY	refunds	user_id	users	id
+FOREIGN_KEY	reports	reporter_id	users	id
+FOREIGN_KEY	reports	resolved_by	users	id
+FOREIGN_KEY	role_permissions	permission_id	permissions	id
+FOREIGN_KEY	role_permissions	role_id	roles	id
+FOREIGN_KEY	sentence_patterns	lesson_id	lessons	id
+FOREIGN_KEY	sentence_patterns	vocabulary_id	vocabularies	id
+FOREIGN_KEY	student_answers	attempt_id	quiz_attempts	id
+FOREIGN_KEY	student_answers	question_id	questions	id
+FOREIGN_KEY	student_answers	selected_answer_id	answers	id
+FOREIGN_KEY	user_badges	badge_id	badges	id
+FOREIGN_KEY	user_badges	user_id	users	id
+FOREIGN_KEY	user_chapter_progress	chapter_id	chapters	id
+FOREIGN_KEY	user_chapter_progress	user_id	users	id
+FOREIGN_KEY	user_lesson_progress	lesson_id	lessons	id
+FOREIGN_KEY	user_lesson_progress	user_id	users	id
+FOREIGN_KEY	user_quiz_attempts	quiz_id	quizzes	id
+FOREIGN_KEY	user_quiz_attempts	user_id	users	id
+FOREIGN_KEY	user_roles	role_id	roles	id
+FOREIGN_KEY	user_roles	user_id	users	id
+FOREIGN_KEY	user_streaks	user_id	users	id
+FOREIGN_KEY	verification_tokens	user_id	users	id
+FOREIGN_KEY	vocabularies	lesson_id	lessons	id
+PRIMARY_KEY	answers	id
+PRIMARY_KEY	assignment_submissions	id
+PRIMARY_KEY	assignments	id
+PRIMARY_KEY	audit_logs	id
+PRIMARY_KEY	authentication_settings	id
+PRIMARY_KEY	badges	id
+PRIMARY_KEY	categories	id
+PRIMARY_KEY	certificates	id
+PRIMARY_KEY	chapters	id
+PRIMARY_KEY	coupons	id
+PRIMARY_KEY	course_enrollments	id
+PRIMARY_KEY	course_reviews	id
+PRIMARY_KEY	course_tags	course_id,tag_id
+PRIMARY_KEY	courses	id
+PRIMARY_KEY	feedback_answer_options	answer_id,option_id
+PRIMARY_KEY	feedback_answers	id
+PRIMARY_KEY	feedback_forms	id
+PRIMARY_KEY	feedback_options	id
+PRIMARY_KEY	feedback_publication_lock	id
+PRIMARY_KEY	feedback_questions	id
+PRIMARY_KEY	feedback_submissions	id
+PRIMARY_KEY	feedback_visits	id
+PRIMARY_KEY	invoices	id
+PRIMARY_KEY	learning_activity_daily	id
+PRIMARY_KEY	lesson_documents	id
+PRIMARY_KEY	lesson_progress	id
+PRIMARY_KEY	lesson_qa	id
+PRIMARY_KEY	lessons	id
+PRIMARY_KEY	notifications	id
+PRIMARY_KEY	oauth_accounts	id
+PRIMARY_KEY	oauth_authorization_codes	id
+PRIMARY_KEY	payments	id
+PRIMARY_KEY	permissions	id
+PRIMARY_KEY	questions	id
+PRIMARY_KEY	quiz_attempts	id
+PRIMARY_KEY	quizzes	id
+PRIMARY_KEY	referrals	id
+PRIMARY_KEY	refunds	id
+PRIMARY_KEY	reports	id
+PRIMARY_KEY	role_permissions	permission_id,role_id
+PRIMARY_KEY	roles	id
+PRIMARY_KEY	sentence_patterns	id
+PRIMARY_KEY	student_answers	id
+PRIMARY_KEY	subscription_plans	code
+PRIMARY_KEY	tags	id
+PRIMARY_KEY	user_badges	badge_id,user_id
+PRIMARY_KEY	user_chapter_progress	id
+PRIMARY_KEY	user_lesson_progress	id
+PRIMARY_KEY	user_quiz_attempts	id
+PRIMARY_KEY	user_roles	role_id,user_id
+PRIMARY_KEY	user_streaks	user_id
+PRIMARY_KEY	user_subscriptions	user_id
+PRIMARY_KEY	users	id
+PRIMARY_KEY	verification_tokens	id
+PRIMARY_KEY	vocabularies	id
+UNIQUE	feedback_answers	submission_id,question_id
+UNIQUE	feedback_forms	active_slot
+UNIQUE	feedback_submissions	form_id,single_user_id
+UNIQUE	feedback_visits	form_id,user_id
+UNIQUE	learning_activity_daily	user_id,activity_date
+UNIQUE	lesson_progress	user_id,lesson_id
+UNIQUE	oauth_accounts	provider,provider_user_id
+UNIQUE	user_chapter_progress	user_id,chapter_id
+UNIQUE	user_lesson_progress	user_id,lesson_id
