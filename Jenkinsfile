@@ -6,12 +6,6 @@ pipeline {
         disableConcurrentBuilds()
     }
     triggers { pollSCM('H/5 * * * *') }
-    parameters {
-        booleanParam(name: 'NGINX_ONLY', defaultValue: false,
-            description: 'Deploy only Nginx; otherwise deploy backend and Nginx using the EC2 .env IMAGE_TAG.')
-        booleanParam(name: 'BUILD_MYSQL_IMAGE', defaultValue: false,
-            description: 'Build, verify and push MySQL only. Never upgrade or reset MySQL on EC2.')
-    }
     environment {
         IMAGE_TAG = "${BUILD_NUMBER}"
         MYSQL_IMAGE_TAG = 'ci-validation-only'
@@ -56,7 +50,7 @@ pipeline {
             }
         }
         stage('VERIFY_FRESH_MYSQL_SCHEMA') {
-            when { expression { params.BUILD_MYSQL_IMAGE == true } }
+            // when { expression { params.BUILD_MYSQL_IMAGE == true } }
             steps {
                 timeout(time: 10, unit: 'MINUTES') {
                     sh '''
