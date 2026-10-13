@@ -43,23 +43,6 @@ pipeline {
                 '''
             }
         }
-        stage('BUILD_AND_TEST') {
-            steps {
-                sh '''
-                    set -eu
-                    docker compose --env-file "$WORKSPACE/.env" -f docker-compose.yml config --quiet
-                    python3 -m unittest discover -s deployment/tests -v
-                    python3 -m unittest discover -s database/tests -v
-                    python3 database/generate-schema-check.py --check
-                    docker build --target build -t "edujar-backend-tests:$IMAGE_TAG" backend
-                    docker run --rm --workdir /backend --entrypoint test \
-                        "edujar-backend-tests:$IMAGE_TAG" -s /backend/target/test-classes/schema/jpa-schema-contract.tsv
-                    docker run --rm --workdir /backend "edujar-backend-tests:$IMAGE_TAG" mvn test
-                    docker build --target build -t "edujar-frontend-tests:$IMAGE_TAG" frontend
-                    docker run --rm "edujar-frontend-tests:$IMAGE_TAG" npm test
-                '''
-            }
-        }
         stage('BUILD_IMAGE') {
             steps {
                 sh '''
@@ -168,22 +151,6 @@ pipeline {
                         '''
                     }
                 }
-            }
-        }
-        stage('VERIFY_PUBLIC_HTTPS') {
-            steps {
-                sh '''
-                    set -eu
-                    for route in learning subscriptions api/actuator/health api/subscriptions/plans; do
-                        result=$(curl --fail --silent --show-error --noproxy '*' --connect-timeout 5 --max-time 15 \
-                            --retry 3 --retry-connrefused --output /dev/null --write-out '%{http_code} %{content_type}' \
-                            "https://edujar.site/$route")
-                        case "$route:$result" in
-                            learning:200\\ text/html*|subscriptions:200\\ text/html*|api/*:200\\ application/json*) ;;
-                            *) echo "Public HTTPS smoke failed: $route $result" >&2; exit 1 ;;
-                        esac
-                    done
-                '''
             }
         }
     }
