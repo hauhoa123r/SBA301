@@ -12,13 +12,6 @@ pipeline {
         pollSCM('H/5 * * * *')
     }
 
-    parameters {
-        booleanParam(name: 'NGINX_ONLY', defaultValue: false,
-                     description: 'Chi build va deploy frontend')
-        booleanParam(name: 'BUILD_MYSQL_IMAGE', defaultValue: false,
-                     description: 'Build va push MySQL image khi can')
-    }
-
     environment {
         IMAGE_TAG = "${BUILD_NUMBER}"
         SERVER_IP = '16.178.47.5'
@@ -26,6 +19,7 @@ pipeline {
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 checkout scm
@@ -35,31 +29,28 @@ pipeline {
         stage('Build & Test') {
             steps {
                 sh '''
-                    set -e
+                    set -eu
+
                     cd backend
                     mvn clean verify
                 '''
-            }
-            when {
-                expression { !params.NGINX_ONLY }
             }
         }
 
         stage('Build Docker Images') {
             steps {
                 sh '''
-                    set -e
+                    set -eu
 
-                    if [ "$NGINX_ONLY" = "true" ]; then
-                        docker build -t devhoa/chinese-nginx:$IMAGE_TAG ./frontend
-                    else
-                        docker build -t devhoa/chinese-backend:$IMAGE_TAG ./backend
-                        docker build -t devhoa/chinese-nginx:$IMAGE_TAG ./frontend
-                    fi
+                    echo "Building backend image: $IMAGE_TAG"
+                    docker build \
+                        -t devhoa/chinese-backend:$IMAGE_TAG \
+                        ./backend
 
-                    if [ "$BUILD_MYSQL_IMAGE" = "true" ]; then
-                        docker build -t devhoa/chinese-mysql:$IMAGE_TAG ./database
-                    fi
+                    echo "Building nginx image: $IMAGE_TAG"
+                    docker build \
+                        -t devhoa/chinese-nginx:$IMAGE_TAG \
+                        ./frontend
                 '''
             }
         }
@@ -74,61 +65,107 @@ pipeline {
                     )
                 ]) {
                     sh '''
-                        set -e
-                        echo "$DOCKER_TOKEN" | docker login \
-                            -u "$DOCKER_USERNAME" --password-stdin
+                        set -eu
+                        set +x
 
-                        if [ "$NGINX_ONLY" = "true" ]; then
-                            docker push devhoa/chinese-nginx:$IMAGE_TAG
-                        else
-                            docker push devhoa/chinese-backend:$IMAGE_TAG
-                            docker push devhoa/chinese-nginx:$IMAGE_TAG
-                        fi
+                        printf '%s' "$DOCKER_TOKEN" | \
+                            docker login \
+                                -u "$DOCKER_USERNAME" \
+                                --password-stdin
 
-                        if [ "$BUILD_MYSQL_IMAGE" = "true" ]; then
-                            docker push devhoa/chinese-mysql:$IMAGE_TAG
-                        fi
+                        docker push devhoa/chinese-backend:$IMAGE_TAG
+                        docker push devhoa/chinese-nginx:$IMAGE_TAG
                     '''
                 }
             }
         }
 
-        
-stage('Deploy EC2') {
-    steps {
-        withCredentials([
-            sshUserPrivateKey(
-                credentialsId: 'azure-server-ssh',
-                keyFileVariable: 'SSH_KEY',
-                usernameVariable: 'SSH_USER'
-            )
-        ]) {
-            sh '''
-                set -e
+        stage('Deploy EC2') {
+            steps {
+                withCredentials([
+                    sshUserPrivateKey(
+                        credentialsId: 'azure-server-ssh',
+                        keyFileVariable: 'SSH_KEY',
+                        usernameVariable: 'SSH_USER'
+                    )
+                ]) {
+                    sh '''
+                        set -eu
 
-                ssh -o BatchMode=yes \
-                    -o StrictHostKeyChecking=yes \
-                    -i "$SSH_KEY" \
-                    "$SSH_USER@$SERVER_IP" \
-                    "cd '$DEPLOY_PATH' && \
-                     IMAGE_TAG='$IMAGE_TAG' docker compose --env-file .env pull backend nginx && \
-                     IMAGE_TAG='$IMAGE_TAG' docker compose --env-file .env up -d --no-deps --force-recreate backend nginx"
-            '''
+                        ssh \
+                            -o BatchMode=yes \
+                            -o ConnectTimeout=15 \
+                            -o StrictHostKeyChecking=yes \
+                            -i "$SSH_KEY" \
+                            "$SSH_USER@$SERVER_IP" \
+                            "set -e
+                             cd '$DEPLOY_PATH'
+
+                             export IMAGE_TAG='$IMAGE_TAG'
+
+                             echo 'Pulling Docker images...'
+                             docker compose --env-file .env pull \
+                                 backend nginx
+
+                             echo 'Deploying containers...'
+                             docker compose --env-file .env up \
+                                 -d --no-deps --force-recreate \
+                                 backend nginx
+
+                             echo 'Deployment status:'
+                             docker compose --env-file .env ps \
+                                 backend nginx"
+                    '''
+                }
+            }
         }
-    }
-}
 
+        stage('Verify Deployment') {
+            steps {
+                withCredentials([
+                    sshUserPrivateKey(
+                        credentialsId: 'azure-server-ssh',
+                        keyFileVariable: 'SSH_KEY',
+                        usernameVariable: 'SSH_USER'
+                    )
+                ]) {
+                    sh '''
+                        set -eu
+
+                        ssh \
+                            -o BatchMode=yes \
+                            -o ConnectTimeout=15 \
+                            -o StrictHostKeyChecking=yes \
+                            -i "$SSH_KEY" \
+                            "$SSH_USER@$SERVER_IP" \
+                            "set -e
+                             cd '$DEPLOY_PATH'
+
+                             test \\"\\$(docker inspect chinese-backend --format '{{.State.Running}}')\\" = true
+                             test \\"\\$(docker inspect chinese-nginx --format '{{.State.Running}}')\\" = true
+
+                             echo 'Backend and Nginx are running.'
+                             docker ps --filter name=chinese-backend \
+                                       --filter name=chinese-nginx"
+                    '''
+                }
+            }
+        }
     }
 
     post {
         success {
-            echo 'CI/CD SUCCESS'
+            echo "CI/CD SUCCESS - VERSION: ${IMAGE_TAG}"
         }
+
         failure {
-            echo 'CI/CD FAILED'
+            echo "CI/CD FAILED - BUILD: ${BUILD_NUMBER}"
         }
+
         always {
-            sh 'docker logout || true'
+            sh '''
+                docker logout >/dev/null 2>&1 || true
+            '''
         }
     }
 }
