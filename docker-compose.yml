@@ -1,6 +1,6 @@
 services:
   mysql:
-    image: devhoa/chinese-mysql:${MYSQL_IMAGE_TAG:-${IMAGE_TAG:-latest}}
+    image: devhoa/chinese-mysql:${MYSQL_IMAGE_TAG:?MYSQL_IMAGE_TAG must be pinned independently}
     build:
       context: ./database
       dockerfile: Dockerfile
@@ -33,7 +33,7 @@ services:
       start_period: 30s
 
   backend:
-    image: devhoa/chinese-backend:${IMAGE_TAG:-latest}
+    image: devhoa/chinese-backend:${BACKEND_IMAGE_TAG:-${IMAGE_TAG:?IMAGE_TAG is required}}
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -92,9 +92,15 @@ services:
 
     restart: unless-stopped
 
-  
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://127.0.0.1:8081/actuator/health | grep -q '\"status\":\"UP\"'"]
+      interval: 10s
+      timeout: 5s
+      retries: 18
+      start_period: 40s
+
   nginx:
-    image: devhoa/chinese-nginx:${IMAGE_TAG:-latest}
+    image: devhoa/chinese-nginx:${NGINX_IMAGE_TAG:-${IMAGE_TAG:?IMAGE_TAG is required}}
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -119,6 +125,12 @@ services:
       - chinese-net
 
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "nginx -t && wget -q --no-check-certificate --header='Host: edujar.site' --spider https://127.0.0.1/"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
 volumes:
   mysql_data:
 networks:

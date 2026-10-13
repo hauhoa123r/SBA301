@@ -132,12 +132,14 @@ Ghi nhận image ID/digest để đối chiếu sau pull. MYSQL_IMAGE_TAG phải
 
 ## Jenkins
 
+Quản lý release hiện tại dùng version file không có secret, digest pin và DB approval riêng; xem [RELEASES.md](../docs/deployment/RELEASES.md). Không cần sửa image tags trong `.env` EC2 khi Jenkins deploy ứng dụng.
+
 1. Đưa thay đổi vào branch/build nguồn theo quy trình của bạn; agent không tự push.
 2. Build với **BUILD_MYSQL_IMAGE=true**, **NGINX_ONLY=true**. MySQL build/push dùng BUILD_NUMBER, override pin của env Jenkins rõ ràng.
 3. VERIFY_FRESH_MYSQL_SCHEMA tạo network/container mới riêng, không publish MySQL host port hoặc mount production volume. Chờ app-user TCP healthy sau init, chạy verifier độc lập rồi JpaSchemaContractTest trong Maven/Java 17 build image. Sau đó chạy fresh-mysql-regression.sh: xác nhận init-complete/healthy/không restart/không init shell script; kiểm tra verifier từ chối thiếu bảng và thiếu cột trên chính DB test. Database contract mount read-only. Chỉ push DB image khi tất cả checks đạt và image ID khớp container đã kiểm chứng; cleanup chỉ test container có label/token khớp và anonymous volume của nó.
-4. Jenkins **không pull/up/reset MySQL EC2**. Dùng BUILD_NUMBER/image ID mới và reset **chỉ test volume** khi bạn quyết định bỏ dữ liệu thử nghiệm.
-5. Lưu `MYSQL_IMAGE_TAG=<BUILD_NUMBER_DB_DA_KIEM_CHUNG>` trong `.env` EC2, giữ credentials/public URLs; không in toàn `.env`.
-6. Sau DB verification, chạy Jenkins NGINX_ONLY=false, BUILD_MYSQL_IMAGE=false để deploy backend/nginx. App tag có thể khác DB tag; app rollout --no-deps không recreate MySQL.
+4. Jenkins mặc định **không pull/up/reset MySQL EC2**. BUILD_MYSQL_IMAGE chỉ build/test/push; DB rollout cần DEPLOY_MYSQL_IMAGE=true và approval riêng sau backup/migrations review. Pipeline không reset volume.
+5. Deployer giữ MySQL pin trong `deployment/versions.json` trên EC2, chỉ cập nhật DB entry khi upgrade đã được approval và healthy/schema checks đạt. Không ghi đè `.env` hoặc yêu cầu sửa secret file để đổi image version.
+6. Normal app release dùng NGINX_ONLY=false, BUILD_MYSQL_IMAGE=false, DEPLOY_MYSQL_IMAGE=false. App tag có thể khác DB tag; app rollout --no-deps không recreate MySQL và sẽ chặn nếu schema hiện hữu không tương thích backend mới.
 
 Backend vẫn ddl-auto=none; không bật update/create để che image/schema cũ.
 

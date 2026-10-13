@@ -5,17 +5,28 @@ pipeline {
     options {
         skipDefaultCheckout(true)
         timestamps()
+        disableConcurrentBuilds()
+    }
+
+    triggers {
+        pollSCM('H/5 * * * *')
     }
 
     parameters {
-        booleanParam(name: 'NGINX_ONLY', defaultValue: true,
-            description: 'Rebuild and deploy only Nginx for HTTPS recovery; unchecked also deploys backend. MySQL is never redeployed.')
+        booleanParam(name: 'NGINX_ONLY', defaultValue: false,
+            description: 'Emergency Nginx-only release; normal releases deploy backend and Nginx.')
         booleanParam(name: 'BUILD_MYSQL_IMAGE', defaultValue: false,
             description: 'Build, validate on an isolated database, and push the MySQL image. Does not reset or redeploy the EC2 database.')
+        booleanParam(name: 'DEPLOY_MYSQL_IMAGE', defaultValue: false,
+            description: 'Request a separate approved MySQL image upgrade. Requires BUILD_MYSQL_IMAGE, backup, reviewed migrations and an interactive DB approval.')
     }
 
     environment {
         IMAGE_TAG = "${BUILD_NUMBER}"
+        BACKEND_IMAGE_TAG = "${BUILD_NUMBER}"
+        NGINX_IMAGE_TAG = "${BUILD_NUMBER}"
+        MYSQL_IMAGE_TAG = 'ci-validation-only'
+        DB_APPROVERS = 'sba301-db-admins'
         SERVER_IP = '16.178.47.5'
         DEPLOY_PATH = 'apps/SBA301'
         APP_SERVICES = "${params.NGINX_ONLY == false ? 'backend nginx' : 'nginx'}"
@@ -34,6 +45,10 @@ pipeline {
                     set -eu
                     docker --version
                     docker compose version
+                    python3 --version
+                    if [ "${DEPLOY_MYSQL_IMAGE:-false}" = true ]; then
+                        test "${BUILD_MYSQL_IMAGE:-false}" = true
+                    fi
                     echo "BUILD_NUMBER=$BUILD_NUMBER"
                     echo "IMAGE_TAG=$IMAGE_TAG"
                     whoami
@@ -69,11 +84,28 @@ pipeline {
             }
         }
 
+        stage('TEST_BEFORE_RELEASE') {
+            steps {
+                sh '''
+                    set -eu
+                    python3 -m unittest discover -s deployment/tests -v
+                    python3 -m unittest discover -s database/tests -v
+                    python3 database/generate-schema-check.py --check
+                    docker build --target build -t "edujar-backend-tests:$IMAGE_TAG" backend
+                    docker run --rm "edujar-backend-tests:$IMAGE_TAG" mvn test
+                    docker build --target build -t "edujar-frontend-tests:$IMAGE_TAG" frontend
+                    docker run --rm "edujar-frontend-tests:$IMAGE_TAG" npm test
+                '''
+            }
+        }
+
         stage('BUILD_IMAGE') {
             steps {
                 sh '''
                     set -eu
                     rm -f "$WORKSPACE/.mysql-schema-verified"
+                    rm -f "$WORKSPACE/.release/db-approval.json"
+                    mkdir -p "$WORKSPACE/.release"
                     echo "Building image tag: $IMAGE_TAG"
 
                     docker compose \
@@ -86,12 +118,10 @@ pipeline {
                         docker image inspect "devhoa/chinese-mysql:$IMAGE_TAG" --format '{{.Id}}'
                     fi
 
-                    expected_config_sha=$(sha256sum frontend/nginx.conf | cut -d ' ' -f 1)
-                    image_config_sha=$(docker run --rm --entrypoint sha256sum \
-                        "devhoa/chinese-nginx:$IMAGE_TAG" /etc/nginx/conf.d/default.conf | cut -d ' ' -f 1)
-                    test "$image_config_sha" = "$expected_config_sha"
-                    printf '%s\\n' "$expected_config_sha" > "$WORKSPACE/.nginx-config-sha256"
-                    docker image inspect "devhoa/chinese-nginx:$IMAGE_TAG" --format '{{.Id}}' > "$WORKSPACE/.nginx-image-id"
+                    record_services="$APP_SERVICES"
+                    if [ "${BUILD_MYSQL_IMAGE:-false}" = true ]; then record_services="$record_services mysql"; fi
+                    python3 deployment/release.py record-build --tag "$IMAGE_TAG" \
+                        --services $record_services --out "$WORKSPACE/.release/built-images.json"
                 '''
             }
         }
@@ -191,9 +221,47 @@ pipeline {
             }
         }
 
+        stage('PREPARE_RELEASE') {
+            steps {
+                sh '''
+                    set -eu
+                    python3 deployment/release.py prepare-release \
+                        --build-record "$WORKSPACE/.release/built-images.json" \
+                        --out "$WORKSPACE/.release/release.json"
+                '''
+                archiveArtifacts artifacts: '.release/release.json', fingerprint: true
+            }
+        }
+
+        stage('APPROVE_DATABASE_UPGRADE') {
+            when { expression { params.DEPLOY_MYSQL_IMAGE == true } }
+            steps {
+                timeout(time: 1, unit: 'HOURS') {
+                    script {
+                        def approval = input(
+                            message: "Upgrade MySQL image to ${env.IMAGE_TAG} on its EXISTING volume? Confirm backup, tested reviewed migrations and maintenance window. Init SQL will NOT migrate it.",
+                            ok: 'Approve database upgrade',
+                            submitter: env.DB_APPROVERS,
+                            submitterParameter: 'APPROVED_BY',
+                            parameters: [string(name: 'BACKUP_REFERENCE', defaultValue: '', description: 'Verified backup reference (for example s3://bucket/key); no credentials.')]
+                        )
+                        if (!(approval.BACKUP_REFERENCE ==~ /[A-Za-z0-9_:\/.-]{1,256}/)) {
+                            error('A valid verified backup reference is required')
+                        }
+                        writeFile file: '.release/db-approval.json', text: groovy.json.JsonOutput.toJson([
+                            release_tag: env.IMAGE_TAG,
+                            approved_by: approval.APPROVED_BY,
+                            backup_reference: approval.BACKUP_REFERENCE
+                        ])
+                        archiveArtifacts artifacts: '.release/db-approval.json', fingerprint: true
+                    }
+                }
+            }
+        }
+
         stage('CONNECT_SERVER') {
             steps {
-                timeout(time: 10, unit: 'MINUTES') {
+                timeout(time: 20, unit: 'MINUTES') {
                     withCredentials([
                         sshUserPrivateKey(
                             credentialsId: 'azure-server-ssh',
@@ -204,40 +272,48 @@ pipeline {
                         sh '''
                             set -eu
 
+                            deployed=false
+                            rollback_after_external_failure() {
+                                status=$?
+                                trap - EXIT
+                                if [ "$status" -ne 0 ] && [ "$deployed" = true ]; then
+                                    ssh -o BatchMode=yes -o ConnectTimeout=15 -o StrictHostKeyChecking=yes \
+                                        -i "$SSH_KEY" "$SSH_USER@$SERVER_IP" \
+                                        "cd '$DEPLOY_PATH' && python3 deployment/releases/$IMAGE_TAG/release.py rollback --root . --payload deployment/releases/$IMAGE_TAG --expected-tag '$IMAGE_TAG' $nginx_only_arg" \
+                                        || echo 'Application rollback failed; operator intervention required' >&2
+                                fi
+                                exit "$status"
+                            }
+                            trap rollback_after_external_failure EXIT
+                            trap 'exit 1' HUP INT TERM
+
                             ssh \
                                 -o BatchMode=yes \
                                 -o ConnectTimeout=15 \
                                 -o StrictHostKeyChecking=yes \
                                 -i "$SSH_KEY" \
                                 "$SSH_USER@$SERVER_IP" \
-                                "mkdir -p '$DEPLOY_PATH/monitoring' '$DEPLOY_PATH/deployment/acme'"
+                                "mkdir -p '$DEPLOY_PATH/deployment/releases/$IMAGE_TAG'"
 
                             scp \
                                 -o BatchMode=yes \
                                 -o ConnectTimeout=15 \
                                 -o StrictHostKeyChecking=yes \
                                 -i "$SSH_KEY" \
-                                docker-compose.yml \
-                                "$SSH_USER@$SERVER_IP:$DEPLOY_PATH/"
-
-                            scp \
-                                -o BatchMode=yes \
-                                -o ConnectTimeout=15 \
-                                -o StrictHostKeyChecking=yes \
-                                -i "$SSH_KEY" \
-                                monitoring/prometheus.yml \
-                                "$SSH_USER@$SERVER_IP:$DEPLOY_PATH/monitoring/"
-
-                            scp \
-                                -o BatchMode=yes \
-                                -o ConnectTimeout=15 \
-                                -o StrictHostKeyChecking=yes \
-                                -i "$SSH_KEY" \
+                                "$WORKSPACE/.release/release.json" \
+                                deployment/release.py \
+                                deployment/compose.production.yml \
                                 deployment/verify-nginx-https.sh \
-                                "$SSH_USER@$SERVER_IP:$DEPLOY_PATH/deployment/"
+                                database/check-schema.sql \
+                                "$SSH_USER@$SERVER_IP:$DEPLOY_PATH/deployment/releases/$IMAGE_TAG/"
 
-                            expected_image_id=$(cat "$WORKSPACE/.nginx-image-id")
-                            expected_config_sha=$(cat "$WORKSPACE/.nginx-config-sha256")
+                            if [ "${DEPLOY_MYSQL_IMAGE:-false}" = true ]; then
+                                scp -o BatchMode=yes -o ConnectTimeout=15 -o StrictHostKeyChecking=yes \
+                                    -i "$SSH_KEY" "$WORKSPACE/.release/db-approval.json" \
+                                    "$SSH_USER@$SERVER_IP:$DEPLOY_PATH/deployment/releases/$IMAGE_TAG/"
+                            fi
+                            nginx_only_arg=''
+                            if [ "${NGINX_ONLY:-false}" = true ]; then nginx_only_arg='--nginx-only'; fi
 
                             ssh \
                                 -o BatchMode=yes \
@@ -247,47 +323,15 @@ pipeline {
                                 "$SSH_USER@$SERVER_IP" \
                                 "set -eu;
                                  cd '$DEPLOY_PATH';
-                                 export IMAGE_TAG='$IMAGE_TAG';
-                                 test -f docker-compose.yml;
-                                 test -s .env;
-
-                                 docker compose --env-file .env -f docker-compose.yml config --quiet;
-
-                                 docker compose --env-file .env -f docker-compose.yml pull $APP_SERVICES;
-
-                                 docker image inspect 'devhoa/chinese-nginx:$IMAGE_TAG' --format '{{.Id}}' | grep -Fx '$expected_image_id';
-
-                                 docker compose --env-file .env -f docker-compose.yml run --rm --no-deps --entrypoint nginx nginx -t;
-
-                                 if [ '$APP_SERVICES' = 'backend nginx' ]; then
-                                     docker compose --env-file .env -f docker-compose.yml up -d --no-build --no-deps --wait --wait-timeout 180 backend;
+                                 if [ '${DEPLOY_MYSQL_IMAGE:-false}' = 'true' ]; then
+                                     python3 deployment/releases/$IMAGE_TAG/release.py deploy-database --root . --payload deployment/releases/$IMAGE_TAG --manifest deployment/releases/$IMAGE_TAG/release.json --approval deployment/releases/$IMAGE_TAG/db-approval.json;
                                  fi;
-
-                                 docker compose --env-file .env -f docker-compose.yml up -d --no-build --no-deps --force-recreate --wait --wait-timeout 180 nginx;
-
-                                 sh deployment/verify-nginx-https.sh 'devhoa/chinese-nginx:$IMAGE_TAG' '$expected_image_id' '$expected_config_sha';
-
-                                 docker compose --env-file .env -f docker-compose.yml ps"
+                                 python3 deployment/releases/$IMAGE_TAG/release.py deploy --root . --payload deployment/releases/$IMAGE_TAG --manifest deployment/releases/$IMAGE_TAG/release.json $nginx_only_arg"
+                            deployed=true
+                            python3 deployment/release.py smoke-public
                         '''
                     }
                 }
-            }
-        }
-
-        stage('VERIFY_PUBLIC_HTTPS') {
-            steps {
-                sh '''
-                    set -eu
-                    for route in learning subscriptions; do
-                        result=$(curl --fail --silent --show-error --noproxy '*' --connect-timeout 5 --max-time 15 \
-                            --retry 5 --retry-connrefused --retry-delay 2 --retry-max-time 45 \
-                            --output /dev/null --write-out '%{http_code} %{content_type}' "https://edujar.site/$route")
-                        case "$result" in
-                            '200 text/html'|'200 text/html;'*) ;;
-                            *) echo "Public HTTPS /$route failed: $result" >&2; exit 1 ;;
-                        esac
-                    done
-                '''
             }
         }
 
@@ -313,6 +357,7 @@ pipeline {
                 rm -f "$WORKSPACE/.env"
                 rm -f "$WORKSPACE/.nginx-config-sha256" "$WORKSPACE/.nginx-image-id"
                 rm -f "$WORKSPACE/.mysql-schema-verified"
+                rm -f "$WORKSPACE/.release/built-images.json" "$WORKSPACE/.release/release.json" "$WORKSPACE/.release/db-approval.json"
             '''
         }
     }
