@@ -126,7 +126,7 @@ def validate(sql, run, client):
         raise AssertionError("Final DDL differs:\n" + "\n".join(difflib.unified_diff(
             expected[next(t for t in expected if actual.get(t) != expected[t])].splitlines(),
             actual[next(t for t in expected if actual.get(t) != expected[t])].splitlines(), lineterm="")))
-    assert len(actual) == 56
+    assert len(actual) == 59
     guard = run(client + ["chinese_online_learning"], input=(DB / "tests/check-schema.sql").read_bytes()).stdout.decode().strip()
     assert not guard, guard
     counts = {t:int(query(f"SELECT COUNT(*) FROM `{t}`;")) for t in actual}
@@ -151,6 +151,8 @@ def validate(sql, run, client):
                   "user_streaks", "user_lesson_progress", "user_chapter_progress", "user_quiz_attempts", "referrals",
                   "notifications", "reports", "audit_logs", "coupons", "feedback_forms", "feedback_submissions"):
         assert counts[table] == 0, "Unexpected transactional/personal seed: " + table
+    assert counts["user_learning_rules"] == counts["user_feature_usage"] == 0
+    assert query("SELECT id,minute_thresholds FROM learning_analytics_settings;") == "1\t5,10,15"
     for table, parent in (("chapters", "course_id"), ("lessons", "chapter_id")):
         assert not query(f"SELECT `{parent}` FROM `{table}` GROUP BY `{parent}` HAVING MIN(order_index)<>1 OR MAX(order_index)<>COUNT(*) OR COUNT(DISTINCT order_index)<>COUNT(*);")
     assert query("SELECT COUNT(*) FROM lessons WHERE video_url LIKE 'https://cdn.chineselearning.vn/%';") == "0"
@@ -284,6 +286,7 @@ def main():
         if args.compare_legacy:
             for name in LEGACY_CHAIN:
                 verify(); run(client,input=(LEGACY_DIR/name).read_bytes())
+            verify(); run(client,input=(DB/"migrations/20261019_learning_analytics.sql").read_bytes())
             reference = snapshot(sql)
             reference_content = content_snapshot(sql)
             verify()

@@ -698,6 +698,36 @@ UNION ALL
 SELECT 'audit_logs', 'method', 'varchar,char,text,mediumtext,longtext', 1, 10, 0, 0
 UNION ALL
 SELECT 'audit_logs', 'user_agent', 'varchar,char,text,mediumtext,longtext', 0, 500, 0, 0
+UNION ALL
+SELECT 'learning_analytics_settings', 'id', 'int', 1, 0, 0, 0
+UNION ALL
+SELECT 'learning_analytics_settings', 'minute_thresholds', 'varchar,char,text,mediumtext,longtext', 1, 100, 0, 0
+UNION ALL
+SELECT 'user_learning_rules', 'user_id', 'bigint', 1, 0, 0, 0
+UNION ALL
+SELECT 'user_learning_rules', 'course_id', 'bigint', 1, 0, 0, 0
+UNION ALL
+SELECT 'user_learning_rules', 'daily_minutes', 'int', 1, 0, 0, 0
+UNION ALL
+SELECT 'user_learning_rules', 'lessons_per_day', 'int', 1, 0, 0, 0
+UNION ALL
+SELECT 'user_learning_rules', 'enabled', 'tinyint', 1, 0, 0, 0
+UNION ALL
+SELECT 'user_learning_rules', 'features', 'varchar,char,text,mediumtext,longtext', 1, 150, 0, 0
+UNION ALL
+SELECT 'user_learning_rules', 'last_run_date', 'date', 0, 0, 0, 0
+UNION ALL
+SELECT 'user_learning_rules', 'updated_by', 'bigint', 1, 0, 0, 0
+UNION ALL
+SELECT 'user_learning_rules', 'updated_at', 'datetime,timestamp', 1, 0, 0, 0
+UNION ALL
+SELECT 'user_feature_usage', 'user_id', 'bigint', 1, 0, 0, 0
+UNION ALL
+SELECT 'user_feature_usage', 'activity_date', 'date', 1, 0, 0, 0
+UNION ALL
+SELECT 'user_feature_usage', 'feature', 'varchar,char,text,mediumtext,longtext', 1, 30, 0, 0
+UNION ALL
+SELECT 'user_feature_usage', 'access_count', 'bigint', 1, 0, 0, 0
 ), expected_keys(kind, table_name, columns_list, ref_table, ref_columns) AS (
 SELECT 'FOREIGN KEY', 'answers', 'question_id', 'questions', 'id'
 UNION ALL
@@ -974,6 +1004,20 @@ UNION ALL
 SELECT 'UNIQUE', 'user_chapter_progress', 'chapter_id,user_id', '', ''
 UNION ALL
 SELECT 'UNIQUE', 'user_lesson_progress', 'lesson_id,user_id', '', ''
+UNION ALL
+SELECT 'PRIMARY KEY', 'learning_analytics_settings', 'id', '', ''
+UNION ALL
+SELECT 'PRIMARY KEY', 'user_learning_rules', 'user_id', '', ''
+UNION ALL
+SELECT 'FOREIGN KEY', 'user_learning_rules', 'user_id', 'users', 'id'
+UNION ALL
+SELECT 'FOREIGN KEY', 'user_learning_rules', 'course_id', 'courses', 'id'
+UNION ALL
+SELECT 'FOREIGN KEY', 'user_learning_rules', 'updated_by', 'users', 'id'
+UNION ALL
+SELECT 'PRIMARY KEY', 'user_feature_usage', 'activity_date,feature,user_id', '', ''
+UNION ALL
+SELECT 'FOREIGN KEY', 'user_feature_usage', 'user_id', 'users', 'id'
 UNION ALL
 SELECT 'FOREIGN KEY', 'feedback_submissions', 'user_id', 'users', 'id'
 UNION ALL
@@ -1295,4 +1339,13 @@ SELECT 'index mismatch: quiz_attempts.idx_learning_attempt_user_quiz'
 WHERE NOT EXISTS (SELECT 1 FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='quiz_attempts' AND INDEX_NAME='idx_learning_attempt_user_quiz' GROUP BY TABLE_NAME,INDEX_NAME HAVING GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX)='user_id,quiz_id,is_passed,id')
 UNION ALL
 SELECT 'index mismatch: refresh_sessions.idx_refresh_sessions_expiry'
-WHERE NOT EXISTS (SELECT 1 FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='refresh_sessions' AND INDEX_NAME='idx_refresh_sessions_expiry' GROUP BY TABLE_NAME,INDEX_NAME HAVING GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX)='expires_at');
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='refresh_sessions' AND INDEX_NAME='idx_refresh_sessions_expiry' GROUP BY TABLE_NAME,INDEX_NAME HAVING GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX)='expires_at')
+UNION ALL
+SELECT 'index mismatch: learning_activity_daily.idx_learning_activity_date'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='learning_activity_daily' AND INDEX_NAME='idx_learning_activity_date' GROUP BY TABLE_NAME,INDEX_NAME HAVING GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX)='activity_date,user_id')
+UNION ALL
+SELECT 'index mismatch: user_learning_rules.idx_learning_rules_schedule'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='user_learning_rules' AND INDEX_NAME='idx_learning_rules_schedule' GROUP BY TABLE_NAME,INDEX_NAME HAVING GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX)='enabled,last_run_date')
+UNION ALL
+SELECT 'index mismatch: user_feature_usage.idx_feature_usage_date'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='user_feature_usage' AND INDEX_NAME='idx_feature_usage_date' GROUP BY TABLE_NAME,INDEX_NAME HAVING GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX)='activity_date,feature');

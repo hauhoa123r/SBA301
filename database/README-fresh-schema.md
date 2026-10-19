@@ -5,7 +5,7 @@ Từ 19/10/2026, Docker chỉ chạy hai SQL theo thứ tự:
 1. `schema.sql` → `/docker-entrypoint-initdb.d/01-schema.sql`: cấu trúc cuối cùng, không DROP, INSERT hay ALTER lịch sử.
 2. `data.sql` → `/docker-entrypoint-initdb.d/02-data.sql`: seed sạch, không chứa học viên/giao dịch/token mẫu.
 
-MySQL 8, InnoDB, utf8mb4_unicode_ci. Snapshot có 56 bảng, 163 index (gồm 56 primary key), 79 foreign key và 30 unique constraint. Mọi khóa và index nằm trong CREATE TABLE; FK được tạo theo thứ tự phụ thuộc, không tắt kiểm tra FK.
+MySQL 8, InnoDB, utf8mb4_unicode_ci. Snapshot có 59 bảng, gồm ba bảng cấu hình/thống kê học tập mới. Mọi khóa và index nằm trong CREATE TABLE; FK được tạo theo thứ tự phụ thuộc, không tắt kiểm tra FK. Chi tiết bản bổ sung: [dashboard và điều phối hoạt động](../docs/deployment/LEARNING_ANALYTICS.md).
 
 Gói học chỉ còn Free miễn phí 3 ngày và Premium 99.000đ/30 ngày. Quyền học dựa trên gói còn hiệu lực hoặc quyền mua khóa cũ. Ba khóa Sales, cà phê và hỏi đường được giữ riêng: 5 chương, 10 bài gốc (6/2/2), 116 từ vựng, 36 mẫu câu, 10 quiz, 99 câu hỏi và 393 đáp án. Các cột catalog/published/purchased_at được giữ để tương thích schema/dữ liệu đã tồn tại.
 

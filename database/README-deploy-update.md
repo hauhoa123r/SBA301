@@ -1,5 +1,7 @@
 # Database đang có dữ liệu
 
+Bản dashboard học tập và trang điều phối admin cần migration bổ sung `database/migrations/20261019_learning_analytics.sql` trước backend mới. Xem [hướng dẫn cấu hình và triển khai](../docs/deployment/LEARNING_ANALYTICS.md) cho Jenkins, Docker, Compose, `.env`, Spring và Nginx.
+
 `schema.sql` và `data.sql` chỉ dùng để khởi tạo database mới. Không import chúng để nâng cấp database chứa học viên, invoice, payment, enrollment hoặc progress. Không reset database/volume. Thay image MySQL không tự chạy SQL init trên volume cũ.
 
 Nguồn migration trước refactor được giữ nguyên nội dung trong [deployment/legacy-sql](../deployment/legacy-sql/README.md). Không còn được Docker COPY vào thư mục init. Baseline `20261012_deploy_update.sql` có DELETE và prerequisite user ID 4; không được coi đó là migration production an toàn mặc định. `oauth2_migration.sql` không re-runnable và trùng các đối tượng đã có trong schema mới.

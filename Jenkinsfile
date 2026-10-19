@@ -109,6 +109,17 @@ pipeline {
                     sh '''
                         set -eu
 
+                        # The deployment directory and .env are managed on EC2.
+                        # Upgrade its DB with database/migrations/20261019_learning_analytics.sql
+                        # and sync Compose/guard files before deploying this release.
+                        ssh \
+                            -o BatchMode=yes \
+                            -o ConnectTimeout=15 \
+                            -o StrictHostKeyChecking=yes \
+                            -i "$SSH_KEY" \
+                            "$SSH_USER@$SERVER_IP" \
+                            "cd '$DEPLOY_PATH' && sh deployment/verify-mysql-schema.sh database/tests/check-schema.sql"
+
                         ssh \
                             -o BatchMode=yes \
                             -o ConnectTimeout=15 \

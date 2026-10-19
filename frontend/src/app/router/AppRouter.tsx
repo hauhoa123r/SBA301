@@ -25,6 +25,10 @@ import { VerifyEmailPage } from "@/pages/verify-email";
 
 import { MainLayout } from "./MainLayout";
 import { RoleRoute } from "./RoleRoute";
+const LearningAnalyticsPage = lazy(() => import("@/pages/admin-dashboard/LearningAnalyticsPage")
+  .then((module) => ({ default: module.LearningAnalyticsPage })));
+const ActivityLabPage = lazy(() => import("@/pages/admin-dashboard/ActivityLabPage")
+  .then((module) => ({ default: module.ActivityLabPage })));
 const AdminDashboardPage = lazy(() => import("@/pages/admin-dashboard/AdminDashboardPage")
   .then((module) => ({ default: module.AdminDashboardPage })));
 const AssignmentReviewPage = lazy(() => import("@/pages/admin-dashboard/AssignmentReviewPage")
@@ -48,6 +52,8 @@ export function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="admin/learning-analytics" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải thống kê học tập…</div>}><LearningAnalyticsPage /></Suspense></RoleRoute>} />
+        <Route path="admin/activity-lab" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải điều phối hoạt động…</div>}><ActivityLabPage /></Suspense></RoleRoute>} />
         <Route path="admin/feedback" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải feedback…</div>}><FeedbackManagementPage /></Suspense></RoleRoute>} />
         <Route path="admin/feedback/statistics" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải thống kê…</div>}><FeedbackStatisticsPage /></Suspense></RoleRoute>} />
         <Route path="admin/dashboard" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải Dashboard…</div>}><AdminDashboardPage /></Suspense></RoleRoute>} />
