@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent, type FocusEvent, type SubmitEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FaFacebookF, FaGoogle } from "react-icons/fa";
+import { FaGoogle } from "react-icons/fa";
 import { Eye, EyeOff, Zap } from "lucide-react";
 import { login } from "../api/authApi";
 import { useAuth } from "../model/useAuth";
@@ -35,10 +35,6 @@ const LoginView = () => {
     const loginWithGoogle = () => {
         rememberOAuthReturnTo();
         window.location.assign("/api/oauth2/authorization/google");
-    };
-    const loginWithFacebook = () => {
-        rememberOAuthReturnTo();
-        window.location.assign("/api/oauth2/authorization/facebook");
     };
 
 
@@ -121,7 +117,7 @@ const LoginView = () => {
                                 </p>
                             </div>
 
-                            <div className="grid gap-3 sm:grid-cols-2">
+                            <div className="grid gap-3">
                                 <button
                                     type="button"
                                     onClick={loginWithGoogle}
@@ -129,14 +125,6 @@ const LoginView = () => {
                                 >
                                     <FaGoogle className="h-4 w-4 text-social-google" />
                                     Google
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={loginWithFacebook}
-                                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-brand-accent/20 bg-brand-light px-4 py-3 text-sm font-semibold text-brand-white transition hover:border-brand-accent/50 hover:bg-brand-accent/10"
-                                >
-                                    <FaFacebookF className="h-4 w-4 text-social-facebook" />
-                                    Facebook
                                 </button>
                             </div>
 

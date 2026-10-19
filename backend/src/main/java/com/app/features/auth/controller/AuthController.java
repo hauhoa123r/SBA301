@@ -29,12 +29,16 @@ import java.util.Map;
 public class AuthController {
     private final AuthService userServiceImpl;
     private final PasswordService passwordServiceImpl;
+    private final com.app.features.auth.service.RefreshSessionService refreshSessions;
+    private final com.app.security.jwt.RefreshCookie refreshCookie;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest user){
         log.info("Login request received, email={}", user.getEmail());
         TokenResponse loginResponse = userServiceImpl.login(user);
-        return ResponseEntity.ok(loginResponse);
+        refreshSessions.register(loginResponse.refreshToken());
+        return ResponseEntity.ok().header(org.springframework.http.HttpHeaders.SET_COOKIE,
+                refreshCookie.header(loginResponse.refreshToken())).body(loginResponse);
     }
 
     @PostMapping("/register")

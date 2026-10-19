@@ -36,6 +36,15 @@ class SubscriptionServiceTest {
     }
 
     @Test
+    void listsOnlyFreeAndPremiumEvenIfLegacyStandardRemainsActive() {
+        var free = new SubscriptionPlanEntity(); free.setCode("FREE_TRIAL");
+        var premium = new SubscriptionPlanEntity(); premium.setCode("PREMIUM");
+        var standard = new SubscriptionPlanEntity(); standard.setCode("STANDARD");
+        when(plans.findByActiveTrueOrderByPriceAsc()).thenReturn(List.of(free, premium, standard));
+        assertEquals(List.of("FREE_TRIAL", "PREMIUM"), service.listPlans().stream().map(SubscriptionPlanEntity::getCode).toList());
+    }
+
+    @Test
     void trialGrantsThreeDaysAndCannotBeClaimedAgain() {
         var status=service.startTrial(7L);
         assertTrue(status.active()); assertFalse(status.trialAvailable());

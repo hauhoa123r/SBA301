@@ -18,7 +18,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-// Requires a MySQL schema initialized from database/chinese_online_learning.sql.
+// Requires a MySQL schema initialized from database/schema.sql and database/data.sql.
 // Test fixtures are rolled back by DataJpaTest; no schema or seed scripts run here.
 @DataJpaTest(properties = {"spring.jpa.hibernate.ddl-auto=none", "spring.jpa.show-sql=false"})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)

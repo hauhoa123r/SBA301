@@ -33,6 +33,9 @@ public class PaymentCreationServiceImpl implements PaymentCreationService {
         if (SubscriptionService.FREE_TRIAL.equals(plan.getCode()) || plan.getPrice().signum() <= 0) {
             throw new BadRequestException("Dùng chức năng học thử để kích hoạt gói miễn phí.");
         }
+        if (!SubscriptionService.PREMIUM.equals(plan.getCode())) {
+            throw new BadRequestException("Gói này đã ngừng bán. Vui lòng chọn Premium.");
+        }
         UserEntity user = paymentUserRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + userId));
         InvoiceEntity invoice = invoiceConverter.toPendingSubscriptionInvoice(user, plan);

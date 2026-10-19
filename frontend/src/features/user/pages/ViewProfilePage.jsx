@@ -61,7 +61,6 @@ export default function ViewProfilePage() {
         setProfile(data);
         setUser((prev) => {
             const nextUser = { ...prev, ...data };
-            localStorage.setItem("user", JSON.stringify(nextUser));
             return nextUser;
         });
     }, [setUser]);

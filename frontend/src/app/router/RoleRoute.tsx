@@ -10,8 +10,10 @@ interface RoleRouteProps {
 }
 
 export function RoleRoute({ children, requiredRole }: RoleRouteProps) {
-    const { user } = useAuth();
+    const { user, initializing } = useAuth();
     const location = useLocation();
+
+    if (initializing) return <div role="status">Đang kiểm tra phiên đăng nhập…</div>;
 
     const access = resolveRouteAccess(user, requiredRole);
 

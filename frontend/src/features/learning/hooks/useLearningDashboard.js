@@ -52,7 +52,6 @@ export default function useLearningDashboard({
                     setStats(previous => ({ ...previous, completedActivities: progress.completedActivities, totalActivities: progress.totalActivities }));
                 }
             } catch (requestError) {
-                console.error("Error fetching owned learning courses", requestError);
                 if (active) {
                     setCourse(null);
                     setError(

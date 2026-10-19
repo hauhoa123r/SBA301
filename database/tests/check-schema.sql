@@ -469,6 +469,18 @@ SELECT 'referrals', 'reward_granted', 'bit,tinyint', 0, 0, 0, 0
 UNION ALL
 SELECT 'referrals', 'status', 'enum,varchar,char', 1, 0, 0, 0
 UNION ALL
+SELECT 'refresh_sessions', 'expires_at', 'datetime,timestamp', 1, 0, 0, 0
+UNION ALL
+SELECT 'refresh_sessions', 'id', 'varchar,char,text,mediumtext,longtext', 1, 36, 0, 0
+UNION ALL
+SELECT 'refresh_sessions', 'revoked', 'bit,tinyint', 1, 0, 0, 0
+UNION ALL
+SELECT 'refresh_sessions', 'rotated_at', 'datetime,timestamp', 0, 0, 0, 0
+UNION ALL
+SELECT 'refresh_sessions', 'token_hash', 'varchar,char,text,mediumtext,longtext', 1, 64, 0, 0
+UNION ALL
+SELECT 'refresh_sessions', 'user_id', 'bigint', 1, 0, 0, 0
+UNION ALL
 SELECT 'refunds', 'amount', 'decimal', 1, 0, 15, 2
 UNION ALL
 SELECT 'refunds', 'created_at', 'datetime,timestamp', 0, 0, 0, 0
@@ -781,6 +793,8 @@ SELECT 'FOREIGN KEY', 'referrals', 'referred_user_id', 'users', 'id'
 UNION ALL
 SELECT 'FOREIGN KEY', 'referrals', 'referrer_id', 'users', 'id'
 UNION ALL
+SELECT 'FOREIGN KEY', 'refresh_sessions', 'user_id', 'users', 'id'
+UNION ALL
 SELECT 'FOREIGN KEY', 'refunds', 'payment_id', 'payments', 'id'
 UNION ALL
 SELECT 'FOREIGN KEY', 'refunds', 'processed_by', 'users', 'id'
@@ -904,6 +918,8 @@ UNION ALL
 SELECT 'PRIMARY KEY', 'quizzes', 'id', '', ''
 UNION ALL
 SELECT 'PRIMARY KEY', 'referrals', 'id', '', ''
+UNION ALL
+SELECT 'PRIMARY KEY', 'refresh_sessions', 'id', '', ''
 UNION ALL
 SELECT 'PRIMARY KEY', 'refunds', 'id', '', ''
 UNION ALL
@@ -1045,4 +1061,238 @@ WHERE NOT EXISTS (
     SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE()
       AND TABLE_NAME='lesson_progress' AND COLUMN_NAME='position_seconds'
       AND DATA_TYPE='int' AND IS_NULLABLE='NO' AND COLUMN_DEFAULT='0'
-);
+)
+UNION ALL
+SELECT 'enum mismatch: assignment_submissions.status missing GRADED'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='assignment_submissions' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''GRADED''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: assignment_submissions.status missing NEEDS_REVISION'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='assignment_submissions' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''NEEDS_REVISION''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: assignment_submissions.status missing SUBMITTED'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='assignment_submissions' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''SUBMITTED''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: badges.requirement_type missing HSK_PASSED'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='badges' AND COLUMN_NAME='requirement_type' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''HSK_PASSED''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: badges.requirement_type missing LESSON_COMPLETED'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='badges' AND COLUMN_NAME='requirement_type' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''LESSON_COMPLETED''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: badges.requirement_type missing QUIZ_PASSED'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='badges' AND COLUMN_NAME='requirement_type' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''QUIZ_PASSED''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: badges.requirement_type missing STREAK_DAYS'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='badges' AND COLUMN_NAME='requirement_type' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''STREAK_DAYS''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: coupons.discount_type missing FIXED_AMOUNT'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='coupons' AND COLUMN_NAME='discount_type' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''FIXED_AMOUNT''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: coupons.discount_type missing PERCENTAGE'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='coupons' AND COLUMN_NAME='discount_type' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''PERCENTAGE''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: courses.status missing DRAFT'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='courses' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''DRAFT''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: courses.status missing HIDDEN'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='courses' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''HIDDEN''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: courses.status missing PENDING'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='courses' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''PENDING''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: courses.status missing PUBLISHED'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='courses' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''PUBLISHED''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: feedback_questions.type missing DROPDOWN'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='feedback_questions' AND COLUMN_NAME='type' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''DROPDOWN''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: feedback_questions.type missing LIKERT'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='feedback_questions' AND COLUMN_NAME='type' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''LIKERT''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: feedback_questions.type missing LONG_TEXT'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='feedback_questions' AND COLUMN_NAME='type' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''LONG_TEXT''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: feedback_questions.type missing MULTIPLE_CHOICE'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='feedback_questions' AND COLUMN_NAME='type' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''MULTIPLE_CHOICE''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: feedback_questions.type missing NUMBER'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='feedback_questions' AND COLUMN_NAME='type' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''NUMBER''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: feedback_questions.type missing RATING'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='feedback_questions' AND COLUMN_NAME='type' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''RATING''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: feedback_questions.type missing SHORT_TEXT'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='feedback_questions' AND COLUMN_NAME='type' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''SHORT_TEXT''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: feedback_questions.type missing SINGLE_CHOICE'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='feedback_questions' AND COLUMN_NAME='type' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''SINGLE_CHOICE''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: feedback_questions.type missing YES_NO'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='feedback_questions' AND COLUMN_NAME='type' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''YES_NO''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: invoices.status missing CANCELLED'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='invoices' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''CANCELLED''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: invoices.status missing EXPIRED'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='invoices' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''EXPIRED''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: invoices.status missing FAILED'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='invoices' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''FAILED''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: invoices.status missing PAID'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='invoices' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''PAID''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: invoices.status missing PENDING'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='invoices' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''PENDING''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: invoices.status missing REFUNDED'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='invoices' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''REFUNDED''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: oauth_accounts.provider missing FACEBOOK'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='oauth_accounts' AND COLUMN_NAME='provider' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''FACEBOOK''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: oauth_accounts.provider missing GOOGLE'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='oauth_accounts' AND COLUMN_NAME='provider' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''GOOGLE''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: payments.provider missing MOMO'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='payments' AND COLUMN_NAME='provider' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''MOMO''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: payments.provider missing PAYOS'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='payments' AND COLUMN_NAME='provider' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''PAYOS''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: payments.provider missing STRIPE'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='payments' AND COLUMN_NAME='provider' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''STRIPE''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: payments.provider missing VNPAY'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='payments' AND COLUMN_NAME='provider' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''VNPAY''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: payments.provider missing ZALOPAY'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='payments' AND COLUMN_NAME='provider' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''ZALOPAY''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: payments.status missing CANCELLED'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='payments' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''CANCELLED''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: payments.status missing CREATED'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='payments' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''CREATED''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: payments.status missing EXPIRED'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='payments' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''EXPIRED''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: payments.status missing FAILED'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='payments' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''FAILED''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: payments.status missing SUCCESS'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='payments' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''SUCCESS''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: questions.question_type missing FILL_IN_BLANK'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='questions' AND COLUMN_NAME='question_type' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''FILL_IN_BLANK''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: questions.question_type missing LISTENING_CHOICE'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='questions' AND COLUMN_NAME='question_type' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''LISTENING_CHOICE''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: questions.question_type missing MATCHING'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='questions' AND COLUMN_NAME='question_type' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''MATCHING''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: questions.question_type missing MULTIPLE_CHOICE'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='questions' AND COLUMN_NAME='question_type' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''MULTIPLE_CHOICE''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: questions.question_type missing SINGLE_CHOICE'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='questions' AND COLUMN_NAME='question_type' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''SINGLE_CHOICE''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: questions.question_type missing SPEAKING'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='questions' AND COLUMN_NAME='question_type' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''SPEAKING''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: quiz_attempts.status missing CHEATING_SUSPECTED'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='quiz_attempts' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''CHEATING_SUSPECTED''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: quiz_attempts.status missing DOING'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='quiz_attempts' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''DOING''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: quiz_attempts.status missing SUBMITTED'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='quiz_attempts' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''SUBMITTED''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: referrals.status missing PURCHASED'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='referrals' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''PURCHASED''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: referrals.status missing REGISTERED'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='referrals' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''REGISTERED''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: refunds.status missing APPROVED'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='refunds' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''APPROVED''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: refunds.status missing PENDING'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='refunds' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''PENDING''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: refunds.status missing PROCESSED'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='refunds' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''PROCESSED''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: refunds.status missing REJECTED'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='refunds' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''REJECTED''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: reports.status missing DISMISSED'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='reports' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''DISMISSED''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: reports.status missing INVESTIGATING'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='reports' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''INVESTIGATING''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: reports.status missing PENDING'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='reports' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''PENDING''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: reports.status missing RESOLVED'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='reports' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''RESOLVED''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: reports.target_type missing COMMENT'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='reports' AND COLUMN_NAME='target_type' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''COMMENT''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: reports.target_type missing COURSE'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='reports' AND COLUMN_NAME='target_type' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''COURSE''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: reports.target_type missing REVIEW'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='reports' AND COLUMN_NAME='target_type' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''REVIEW''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: reports.target_type missing USER'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='reports' AND COLUMN_NAME='target_type' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''USER''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: users.status missing ACTIVE'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='users' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''ACTIVE''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: users.status missing BANNED'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='users' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''BANNED''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: users.status missing DELETED'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='users' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''DELETED''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: users.status missing DISABLE'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='users' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''DISABLE''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: users.status missing INACTIVE'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='users' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''INACTIVE''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: users.status missing LOCKED'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='users' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''LOCKED''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: users.status missing PENDING'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='users' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''PENDING''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: users.status missing SUSPENDED'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='users' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''SUSPENDED''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'index mismatch: users.idx_dashboard_users_created'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='users' AND INDEX_NAME='idx_dashboard_users_created' GROUP BY TABLE_NAME,INDEX_NAME HAVING GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX)='created_at')
+UNION ALL
+SELECT 'index mismatch: invoices.idx_dashboard_invoices_month'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='invoices' AND INDEX_NAME='idx_dashboard_invoices_month' GROUP BY TABLE_NAME,INDEX_NAME HAVING GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX)='status,updated_at,amount')
+UNION ALL
+SELECT 'index mismatch: invoices.idx_dashboard_invoices_plan'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='invoices' AND INDEX_NAME='idx_dashboard_invoices_plan' GROUP BY TABLE_NAME,INDEX_NAME HAVING GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX)='status,subscription_plan_code,amount')
+UNION ALL
+SELECT 'index mismatch: invoices.idx_dashboard_invoices_course'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='invoices' AND INDEX_NAME='idx_dashboard_invoices_course' GROUP BY TABLE_NAME,INDEX_NAME HAVING GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX)='status,course_id,subscription_plan_code,amount')
+UNION ALL
+SELECT 'index mismatch: course_enrollments.idx_dashboard_enrollment_date'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='course_enrollments' AND INDEX_NAME='idx_dashboard_enrollment_date' GROUP BY TABLE_NAME,INDEX_NAME HAVING GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX)='enrolled_at,course_id')
+UNION ALL
+SELECT 'index mismatch: quiz_attempts.idx_learning_attempt_user_quiz'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='quiz_attempts' AND INDEX_NAME='idx_learning_attempt_user_quiz' GROUP BY TABLE_NAME,INDEX_NAME HAVING GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX)='user_id,quiz_id,is_passed,id')
+UNION ALL
+SELECT 'index mismatch: refresh_sessions.idx_refresh_sessions_expiry'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='refresh_sessions' AND INDEX_NAME='idx_refresh_sessions_expiry' GROUP BY TABLE_NAME,INDEX_NAME HAVING GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX)='expires_at');

@@ -133,7 +133,7 @@ COLUMN	invoices	created_at	datetime(6)	true
 COLUMN	invoices	discount_amount	decimal(15,2)	true
 COLUMN	invoices	id	bigint	false
 COLUMN	invoices	original_amount	decimal(15,2)	false
-COLUMN	invoices	status	enum ('CANCELLED','FAILED','PAID','PENDING','REFUNDED')	false
+COLUMN	invoices	status	enum ('CANCELLED','EXPIRED','FAILED','PAID','PENDING','REFUNDED')	false
 COLUMN	invoices	subscription_duration_days	integer	true
 COLUMN	invoices	subscription_plan_code	varchar(30)	true
 COLUMN	invoices	updated_at	datetime(6)	true
@@ -194,7 +194,7 @@ COLUMN	payments	id	bigint	false
 COLUMN	payments	invoice_id	bigint	false
 COLUMN	payments	provider	enum ('MOMO','PAYOS','STRIPE','VNPAY','ZALOPAY')	false
 COLUMN	payments	raw_response	json	true
-COLUMN	payments	status	enum ('CANCELLED','CREATED','FAILED','SUCCESS')	false
+COLUMN	payments	status	enum ('CANCELLED','CREATED','EXPIRED','FAILED','SUCCESS')	false
 COLUMN	payments	transaction_id	varchar(150)	false
 COLUMN	permissions	code	varchar(100)	false
 COLUMN	permissions	id	bigint	false
@@ -232,6 +232,12 @@ COLUMN	referrals	referred_user_id	bigint	false
 COLUMN	referrals	referrer_id	bigint	false
 COLUMN	referrals	reward_granted	bit	true
 COLUMN	referrals	status	enum ('PURCHASED','REGISTERED')	false
+COLUMN	refresh_sessions	expires_at	datetime(6)	false
+COLUMN	refresh_sessions	id	varchar(36)	false
+COLUMN	refresh_sessions	revoked	bit	false
+COLUMN	refresh_sessions	rotated_at	datetime(6)	true
+COLUMN	refresh_sessions	token_hash	varchar(64)	false
+COLUMN	refresh_sessions	user_id	bigint	false
 COLUMN	refunds	amount	decimal(15,2)	false
 COLUMN	refunds	created_at	datetime(6)	true
 COLUMN	refunds	id	bigint	false
@@ -381,6 +387,7 @@ FOREIGN_KEY	quizzes	lesson_id	lessons	id
 FOREIGN_KEY	quizzes	teacher_id	users	id
 FOREIGN_KEY	referrals	referred_user_id	users	id
 FOREIGN_KEY	referrals	referrer_id	users	id
+FOREIGN_KEY	refresh_sessions	user_id	users	id
 FOREIGN_KEY	refunds	payment_id	payments	id
 FOREIGN_KEY	refunds	processed_by	users	id
 FOREIGN_KEY	refunds	user_id	users	id
@@ -443,6 +450,7 @@ PRIMARY_KEY	questions	id
 PRIMARY_KEY	quiz_attempts	id
 PRIMARY_KEY	quizzes	id
 PRIMARY_KEY	referrals	id
+PRIMARY_KEY	refresh_sessions	id
 PRIMARY_KEY	refunds	id
 PRIMARY_KEY	reports	id
 PRIMARY_KEY	role_permissions	permission_id,role_id

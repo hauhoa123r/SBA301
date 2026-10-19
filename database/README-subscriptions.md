@@ -1,29 +1,9 @@
-# Gói học và nội dung mới — 28/09/2026
+# Gói học Free và Premium
 
-Standard: 699.000đ/30 ngày. Premium: 899.000đ/30 ngày, hiện có cùng quyền học; tính năng bổ sung sẽ cập nhật sau. Free Trial đang cấu hình 3 ngày, mỗi tài khoản một lần. Cả ba gói mở mọi khóa đã xuất bản trong thời hạn gói.
+Mục Gói học chỉ còn Free miễn phí 3 ngày và Premium 99.000đ/30 ngày. Gói còn hiệu lực mở toàn bộ khóa đã xuất bản. Cà phê, hỏi đường và Sales vẫn là ba khóa riêng, lần lượt 2, 2 và 6 bài học. Standard ngừng bán; hóa đơn và quyền học cũ vẫn được giữ.
 
-## Database đang có dữ liệu
+Học thử mỗi tài khoản một lần. Mua gói trả phí bắt đầu khi payOS xác nhận; gia hạn cộng thời gian vào gói trả phí còn hiệu lực. Không tự động trừ tiền. Quyền mua khóa cũ theo `legacy_access` vẫn được giữ; lưu tiến độ không tự cấp quyền vĩnh viễn.
 
-Từ bản cập nhật 12/10/2026, dùng một file `20261012_deploy_update.sql` để cập nhật subscription, khóa đọc, dọn dữ liệu mẫu và các migration backend mới. Xem `README-deploy-update.md` để biết thứ tự, điều kiện xóa và cách chạy. Sao lưu trước khi chạy; không chạy `chinese_online_learning.sql` trên database đang sử dụng vì file này xóa và tạo lại database.
+Database mới dùng `schema.sql` rồi `data.sql`. Database đang sử dụng chỉ chạy [20261019_free_premium_plans.sql](../deployment/legacy-sql/20261019_free_premium_plans.sql), rồi khởi động lại ứng dụng để nhận mã mới. Script cập nhật Free/Premium và tắt Standard; không gộp, xóa hoặc chuyển bài học. Không import lại schema/seed lên database đang sử dụng. Không chạy migration course-purchase hoặc restore ba gói cũ. Giá thanh toán lấy từ database, vì vậy database cũ cần migration để áp dụng giá 99.000đ.
 
-## Khởi tạo mới
-
-Dockerfile tự chạy schema, `DataChinese.sql` rồi `20261012_deploy_update.sql`. Nếu khởi tạo thủ công, chạy cùng thứ tự đó.
-
-## Quyền học
-
-- Quyền mua khóa học trước lần chuyển đổi được giữ bằng `course_enrollments.legacy_access`.
-- Bản ghi tiến độ mới có `legacy_access = FALSE`, nên lưu tiến độ không kéo dài quyền truy cập sau khi gói hết hạn.
-- Gói trả phí bắt đầu khi payOS xác nhận. Gia hạn gói trả phí cộng 30 ngày từ ngày hết hạn nếu còn hiệu lực. Chuyển từ dùng thử sang trả phí tính 30 ngày từ lúc thanh toán.
-- Hóa đơn lưu mã gói, giá và số ngày lúc mua. Callback lặp không cấp thêm ngày. Không tự động trừ tiền gia hạn.
-- Chỉ API học có kiểm tra quyền mới trả video, tài liệu, bài đọc và câu hỏi. API chi tiết khóa công khai chỉ trả đề cương.
-
-## Hai khóa bổ sung
-
-“Tiếng Trung tại quán cà phê” và “Tiếng Trung hỏi đường và đi lại”: mỗi khóa có 2 bài đọc, 12 từ vựng, 6 mẫu câu, 6 câu hỏi có giải thích. Thời lượng 30 phút/khóa là thời gian tự học dự kiến, không phải thời lượng video.
-
-## Kiểm thử
-
-Chạy Maven với `-Dtest=*Test test` để chạy các bài kiểm thử đơn vị. Đặt `RUN_MYSQL_INTEGRATION_TESTS=true` để chạy thêm kiểm thử MySQL; các fixture trong các lớp `*IntegrationTest` được rollback.
-
-Không chạy toàn bộ `mvn test` trên database đang dùng: dự án có các lớp cũ tên `BackendApplicationTests` chứa thao tác nhập lại seed.
+Regression test subscription sở hữu fixture plan riêng trong transaction rollback, độc lập với seed bán hàng mới. Chạy bộ kiểm chứng database riêng theo README-fresh-schema.md.

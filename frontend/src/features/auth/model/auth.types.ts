@@ -38,16 +38,15 @@ export interface AuthMessageResponse {
 export interface AuthSession {
   user: SupportedUser;
   accessToken?: string;
-  refreshToken?: string;
 }
 
 export interface OAuthSession {
   user: SupportedUser;
   accessToken: string;
-  refreshToken: string;
 }
 
 export interface AuthContextValue {
+  initializing: boolean;
   user: SupportedUser | null;
   setUser: Dispatch<SetStateAction<SupportedUser | null>>;
 }

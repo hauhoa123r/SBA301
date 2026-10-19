@@ -1,24 +1,27 @@
 import { useState } from "react";
+import { toast } from "react-toastify";
 import { Menu, X } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { logout, useAuth, UserProfileMenu } from "@/features/auth";
 import { BrandLogo } from "@/shared/ui";
 import { NAV_LINKS } from "../model/navigation";
 import { hasRole } from "@/entities/user";
+import { getAuthVersion } from "@/shared/api/authMemory";
 import MobileMenu from "./MobileMenu";
 
 export function Header() {
     const [openMobile, setOpenMobile] = useState(false);
-    const { user, setUser } = useAuth();
+    const { user } = useAuth();
     const navigate = useNavigate();
 
     const handleLogout = async () => {
+        const request = logout();
+        const version = getAuthVersion();
         try {
-            await logout();
+            if (!await request && version === getAuthVersion()) toast.warning("Đã đăng xuất trên thiết bị. Chưa xác nhận thu hồi phiên trên máy chủ; sẽ thử lại khi có mạng hoặc khi bạn quay lại trang.");
         } finally {
-            setUser(null);
             setOpenMobile(false);
-            void navigate("/login", { replace: true });
+            if (version === getAuthVersion()) void navigate("/login", { replace: true });
         }
     };
 

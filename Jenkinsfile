@@ -31,8 +31,19 @@ pipeline {
                 sh '''
                     set -eu
 
+                    python3 database/generate-schema-check.py --check
                     cd backend
                     mvn clean verify
+                '''
+            }
+        }
+
+        stage('Fresh MySQL Initialization') {
+            steps {
+                sh '''
+                    set -eu
+                    # Own image/container, tmpfs datadir, loopback test port; no production volumes.
+                    python3 database/tests/fresh_initialization.py --docker --backend
                 '''
             }
         }

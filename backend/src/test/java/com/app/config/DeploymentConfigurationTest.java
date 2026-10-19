@@ -31,8 +31,7 @@ class DeploymentConfigurationTest {
                 "FRONTEND_VERIFY_EMAIL_URL", "http://192.0.2.1/verify-email",
                 "FRONTEND_PAYMENT_RESULT_URL", "http://192.0.2.1/payment/result",
                 "OAUTH2_FRONTEND_REDIRECT_URI", "https://example.org/oauth/callback"));
-        for (String name : new String[]{"GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET",
-                "FACEBOOK_CLIENT_ID", "FACEBOOK_CLIENT_SECRET"}) {
+        for (String name : new String[]{"GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET"}) {
             env.put(name, "test-only");
         }
         env.putAll(provider);

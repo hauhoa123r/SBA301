@@ -1,5 +1,7 @@
 # SECURITY AUDIT REPORT — learning_platform
 
+> Cập nhật 19/10/2026: đăng nhập Facebook đã được gỡ khỏi frontend, backend và cấu hình triển khai. Hiện chỉ hỗ trợ Google và email/mật khẩu. Các mô tả Facebook bên dưới ghi lại phạm vi audit lịch sử; liên kết tài khoản cũ được giữ để tương thích dữ liệu.
+
 Ngày: 12/10/2026, Asia/Saigon. Scope: monolith tại repository SBA301; backend Spring MVC, service/repository/DTO, cấu hình và automated tests. Không kiểm thử hay deploy production.
 
 Baseline source commit: `5a25feb789d155cc667ff6dd8d161e07e3845cd4`; các evidence “trước sửa” dùng số dòng ở snapshot đó. Source/test hiện tại và JSON matrix ghi vị trí sau sửa. Các thay đổi riêng ở docker-compose.yml và frontend/nginx*.conf trong lúc audit được giữ nguyên.
@@ -155,7 +157,7 @@ Red regression trước sửa: 79 cases, **9 failures**, 0 errors trên H2. Các
 ### SEC-08 — Test mặc định chạy DROP DATABASE/schema/seed trên datasource cấu hình
 
 - Severity: **High**.
-- Evidence trước sửa: `backend/src/test/java/com/app/BackendApplicationTests.java:22`; `database/chinese_online_learning.sql:1`.
+- Evidence trước sửa: `backend/src/test/java/com/app/BackendApplicationTests.java:22`; `deployment/legacy-sql/chinese_online_learning.sql:1`.
 - Nguyên nhân/khả năng khai thác: SpringBootTest cũ tự chạy script schema có DROP DATABASE và seed. Nếu cấu hình datasource thật để chạy suite, dữ liệu thật có thể bị xóa. Baseline thất bại ở bootstrap nên script này KHÔNG được chạy trong audit.
 - HTTP/local reproducer: Static review importDataChineseSql và script schema; không tái hiện hành động phá hoại.
 - Giải pháp: Gỡ importer khỏi automated smoke test. Ba smoke test dùng security-test profile H2. InMemoryDatabaseGuard dừng bootstrap nếu host environment override URL thành database ngoài bộ nhớ. Schema/seed production giữ nguyên.

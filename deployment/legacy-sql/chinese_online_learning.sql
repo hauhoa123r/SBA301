@@ -142,6 +142,7 @@ CREATE TABLE courses (
     teacher_id BIGINT NOT NULL,
     category_id BIGINT NULL,
     title VARCHAR(255) NOT NULL,
+    catalog_code VARCHAR(30) NULL,
     description TEXT,
     price DECIMAL(15, 2) NOT NULL DEFAULT 0,
     thumbnail_url VARCHAR(500),
@@ -150,7 +151,8 @@ CREATE TABLE courses (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_courses_teacher FOREIGN KEY (teacher_id) REFERENCES users(id),
     CONSTRAINT fk_courses_category FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL,
-    CONSTRAINT chk_courses_price_nonnegative CHECK (price >= 0)
+    CONSTRAINT chk_courses_price_nonnegative CHECK (price >= 0),
+    CONSTRAINT uk_course_catalog_code UNIQUE (catalog_code)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE course_tags (
@@ -178,6 +180,7 @@ CREATE TABLE lessons (
     content TEXT NULL,
     duration_seconds INT DEFAULT 0,
     order_index INT NOT NULL,
+    published BOOLEAN NOT NULL DEFAULT TRUE,
     CONSTRAINT uk_chapter_lesson_order UNIQUE (chapter_id, order_index),
     CONSTRAINT fk_lessons_chapter FOREIGN KEY (chapter_id) REFERENCES chapters(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -280,6 +283,7 @@ CREATE TABLE course_enrollments (
     user_id BIGINT NOT NULL,
     course_id BIGINT NOT NULL,
     enrolled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    purchased_at TIMESTAMP NULL,
     completed_at TIMESTAMP NULL,
     legacy_access BOOLEAN NOT NULL DEFAULT FALSE,
     CONSTRAINT uk_user_course UNIQUE (user_id, course_id),
@@ -428,7 +432,7 @@ CREATE TABLE invoices (
     original_amount DECIMAL(15, 2) NOT NULL, -- Giá gốc tại thời điểm mua
     discount_amount DECIMAL(15, 2) DEFAULT 0, -- Số tiền được giảm
     amount DECIMAL(15, 2) NOT NULL, -- Giá cuối cùng phải thanh toán
-    status ENUM('PENDING', 'PAID', 'FAILED', 'CANCELLED', 'REFUNDED') NOT NULL DEFAULT 'PENDING',
+    status ENUM('PENDING', 'PAID', 'FAILED', 'CANCELLED', 'REFUNDED', 'EXPIRED') NOT NULL DEFAULT 'PENDING',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_invoices_user FOREIGN KEY (user_id) REFERENCES users(id),
@@ -442,7 +446,7 @@ CREATE TABLE payments (
     provider ENUM('VNPAY', 'MOMO', 'PAYOS', 'ZALOPAY', 'STRIPE') NOT NULL,
     transaction_id VARCHAR(150) NOT NULL,
     amount DECIMAL(15, 2) NOT NULL,
-    status ENUM('CREATED', 'SUCCESS', 'FAILED', 'CANCELLED') NOT NULL,
+    status ENUM('CREATED', 'SUCCESS', 'FAILED', 'CANCELLED', 'EXPIRED') NOT NULL,
     raw_response JSON NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT uk_payments_transaction UNIQUE (provider, transaction_id),
@@ -721,3 +725,14 @@ CREATE INDEX idx_categories_slug ON categories(slug);
 CREATE INDEX idx_assignments_lesson ON assignments(lesson_id);
 CREATE INDEX idx_coupons_code ON coupons(code);
 CREATE INDEX idx_lesson_qa_thread ON lesson_qa(lesson_id, parent_id);
+
+CREATE TABLE IF NOT EXISTS refresh_sessions (
+    id VARCHAR(36) NOT NULL PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    token_hash VARCHAR(64) NOT NULL,
+    expires_at DATETIME(6) NOT NULL,
+    rotated_at DATETIME(6) NULL,
+    revoked BIT NOT NULL DEFAULT b'0',
+    INDEX idx_refresh_sessions_expiry (expires_at),
+    CONSTRAINT fk_refresh_sessions_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;

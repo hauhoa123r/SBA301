@@ -1,0 +1,8 @@
+*
+!Dockerfile
+!schema.sql
+!data.sql
+!tests/
+!tests/check-schema.sql
+!verify-schema.sh
+!my.cnf

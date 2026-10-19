@@ -38,12 +38,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @org.springframework.test.context.ContextConfiguration(initializers = com.app.security.support.InMemoryDatabaseGuard.class)
 @Transactional
 class SecurityAuditIntegrationTest {
+    private org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder authPost(String path) throws Exception {
+        var response = mvc.perform(get("/api/auth/csrf")).andExpect(status().isOk()).andReturn().getResponse();
+        String token = new com.fasterxml.jackson.databind.ObjectMapper().readTree(response.getContentAsString()).get("token").asText();
+        return post(path).header("Origin", "http://localhost:5173").cookie(response.getCookie("XSRF-TOKEN"))
+                .header("X-XSRF-TOKEN", token);
+    }
     @Autowired MockMvc mvc;
     @Autowired EntityManager em;
     @Autowired JwtService jwt;
     @Autowired UserRepository users;
     @Autowired UserProfileService profiles;
     @Autowired OAuthAuthorizationCodeService oauthCodes;
+    @Autowired org.springframework.security.oauth2.client.registration.ClientRegistrationRepository oauthClients;
     @Autowired VerificationTokenService verification;
     @MockitoBean MailService mail;
     private UserEntity alice, bob, admin;
@@ -147,12 +154,12 @@ class SecurityAuditIntegrationTest {
         em.flush(); em.clear(); String saved = em.find(UserEntity.class, alice.getId()).getPasswordHash();
         assertNotEquals("NewPassword1", saved); assertTrue(new BCryptPasswordEncoder().matches("NewPassword1", saved));
         mvc.perform(get("/api/auth/me").header("Authorization", oldAccess)).andExpect(status().isUnauthorized());
-        mvc.perform(post("/api/auth/refresh").contentType("application/json").content("{\"refreshToken\":\"" + oldRefresh + "\"}"))
+        mvc.perform(authPost("/api/auth/refresh").contentType("application/json").content("{\"refreshToken\":\"" + oldRefresh + "\"}"))
             .andExpect(status().isUnauthorized());
     }
     @Test void oauthMarkerCannotBeUsedAsLoginPassword() throws Exception {
         alice.setPasswordHash("{oauth}"); em.flush();
-        mvc.perform(post("/api/auth/login").contentType("application/json").content("{\"email\":\"alice@example.test\",\"password\":\"{oauth}\"}"))
+        mvc.perform(authPost("/api/auth/login").contentType("application/json").content("{\"email\":\"alice@example.test\",\"password\":\"{oauth}\"}"))
             .andExpect(status().isUnauthorized());
     }
     @Test void registrationHashesPasswordAndCannotAssignAdmin() throws Exception {
@@ -177,9 +184,9 @@ class SecurityAuditIntegrationTest {
     @Test void validOAuthCodeExchangesOnceAndInvalidCodeIs401() throws Exception {
         String code = oauthCodes.create(alice); em.flush();
         String body = "{\"code\":\"" + code + "\"}";
-        mvc.perform(post("/api/auth/oauth/exchange").contentType("application/json").content(body))
+        mvc.perform(authPost("/api/auth/oauth/exchange").contentType("application/json").content(body))
             .andExpect(status().isOk()).andExpect(jsonPath("user.id").value(alice.getId())).andExpect(jsonPath("accessToken").isString());
-        mvc.perform(post("/api/auth/oauth/exchange").contentType("application/json").content(body)).andExpect(status().isUnauthorized());
+        mvc.perform(authPost("/api/auth/oauth/exchange").contentType("application/json").content(body)).andExpect(status().isUnauthorized());
     }
     @Test void sessionCookieAloneCannotAuthorizeApiMutation() throws Exception {
         var context = SecurityContextHolder.createEmptyContext();
@@ -217,9 +224,19 @@ class SecurityAuditIntegrationTest {
         String access = bearer(alice), refresh = jwt.createRefreshToken(alice);
         alice.setStatus(com.app.features.model.enums.UserStatus.DISABLE); em.flush();
         mvc.perform(get("/api/auth/me").header("Authorization", access)).andExpect(status().isUnauthorized());
-        mvc.perform(post("/api/auth/refresh").contentType("application/json").content("{\"refreshToken\":\"" + refresh + "\"}"))
+        mvc.perform(authPost("/api/auth/refresh").contentType("application/json").content("{\"refreshToken\":\"" + refresh + "\"}"))
             .andExpect(status().isUnauthorized());
     }
+    @Test void facebookLoginAndCallbackAreUnavailable() throws Exception {
+        assertNull(oauthClients.findByRegistrationId("facebook"));
+        assertNotNull(oauthClients.findByRegistrationId("google"));
+        mvc.perform(get("/api/oauth2/authorization/facebook")).andExpect(status().is4xxClientError());
+        mvc.perform(get("/login/oauth2/code/facebook").param("code", "retired-code").param("state", "retired-state"))
+            .andExpect(status().is4xxClientError());
+        assertEquals(3, count("UserEntity"));
+        assertEquals(0, count("OAuthAuthorizationCodeEntity"));
+    }
+
     @Test void oauthHandshakeRetainsStateWithoutAuthorizingApiByCookie() throws Exception {
         var result = mvc.perform(get("/api/oauth2/authorization/google")).andExpect(status().isFound()).andReturn();
         var session = (MockHttpSession) result.getRequest().getSession(false);
@@ -244,7 +261,7 @@ class SecurityAuditIntegrationTest {
     }
     @Test void legacyPasswordIsMigratedAfterSuccessfulLogin() throws Exception {
         alice.setPasswordHash("Password1"); em.flush();
-        mvc.perform(post("/api/auth/login").contentType("application/json").content("{\"email\":\"alice@example.test\",\"password\":\"Password1\"}"))
+        mvc.perform(authPost("/api/auth/login").contentType("application/json").content("{\"email\":\"alice@example.test\",\"password\":\"Password1\"}"))
             .andExpect(status().isOk());
         em.flush(); em.clear(); String saved = em.find(UserEntity.class, alice.getId()).getPasswordHash();
         assertNotEquals("Password1", saved); assertTrue(new BCryptPasswordEncoder().matches("Password1", saved));
@@ -290,7 +307,7 @@ class SecurityAuditIntegrationTest {
     }
     @Test void logoutRequiresPost() throws Exception {
         mvc.perform(get("/api/auth/logout").header("Authorization", bearer(alice))).andExpect(status().isForbidden());
-        mvc.perform(post("/api/auth/logout").header("Authorization", bearer(alice))).andExpect(status().isNoContent());
+        mvc.perform(authPost("/api/auth/logout").header("Authorization", bearer(alice))).andExpect(status().isNoContent());
     }
     @Test void oauthInitiationCannotBypassIpLimiterByShortCircuitingFilterChain() throws Exception {
         for (int attempt = 0; attempt < 60; attempt++) {

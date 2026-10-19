@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { toast } from "react-toastify";
 import { ChevronDown, LogOut, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { logout } from "../api/authApi";
 import { useAuth } from "../model/useAuth";
 import { hasRole } from "@/entities/user";
+import { getAuthVersion } from "@/shared/api/authMemory";
 
 interface UserProfileMenuProps {
     variant?: "pill" | "icon";
@@ -11,7 +13,7 @@ interface UserProfileMenuProps {
 
 export default function UserProfileMenu({ variant = "pill" }: UserProfileMenuProps) {
     const [open, setOpen] = useState(false);
-    const { user, setUser } = useAuth();
+    const { user } = useAuth();
     const navigate = useNavigate();
 
     const displayName = user?.fullName || user?.name || user?.username || "Người dùng";
@@ -21,12 +23,13 @@ export default function UserProfileMenu({ variant = "pill" }: UserProfileMenuPro
     const isIcon = variant === "icon";
 
     const handleLogout = async () => {
+        const request = logout();
+        const version = getAuthVersion();
         try {
-            await logout();
+            if (!await request && version === getAuthVersion()) toast.warning("Đã đăng xuất trên thiết bị. Chưa xác nhận thu hồi phiên trên máy chủ; sẽ thử lại khi có mạng hoặc khi bạn quay lại trang.");
         } finally {
-            setUser(null);
             setOpen(false);
-            void navigate("/login", { replace: true });
+            if (version === getAuthVersion()) void navigate("/login", { replace: true });
         }
     };
 

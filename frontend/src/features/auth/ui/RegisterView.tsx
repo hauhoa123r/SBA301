@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent, type FocusEvent, type SubmitEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaFacebookF, FaGoogle } from "react-icons/fa";
+import { FaGoogle } from "react-icons/fa";
 import { Lock, Mail, User, UserPlus, Zap } from "lucide-react";
 import { showApiErrorToast, showSuccessToast } from "@/shared/utils";
 import { register } from "../api/authApi";
@@ -33,9 +33,6 @@ export default function RegisterView() {
     const navigate = useNavigate();
     const registerWithGoogle = () => {
         window.location.assign("/api/oauth2/authorization/google");
-    };
-    const registerWithFacebook = () => {
-        window.location.assign("/api/oauth2/authorization/facebook");
     };
     const [formData, setFormData] = useState<RegisterFormData>({
         fullName: "",
@@ -155,14 +152,10 @@ export default function RegisterView() {
                                 </p>
                             </div>
 
-                            <div className="grid gap-3 sm:grid-cols-2">
+                            <div className="grid gap-3">
                                 <button type="button" onClick={registerWithGoogle} className={socialButtonClass}>
                                     <FaGoogle className="h-4 w-4 text-social-google" />
                                     Google
-                                </button>
-                                <button type="button" onClick={registerWithFacebook} className={socialButtonClass}>
-                                    <FaFacebookF className="h-4 w-4 text-social-facebook" />
-                                    Facebook
                                 </button>
                             </div>
 

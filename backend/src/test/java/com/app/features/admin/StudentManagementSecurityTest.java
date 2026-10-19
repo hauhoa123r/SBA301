@@ -28,6 +28,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(StudentManagementController.class)
 @Import({SecurityConfig.class, JwtAuthenticationFilter.class, RestAccessDeniedHandler.class, RestAuthenticationEntryPoint.class, SecurityErrorResponseWriter.class})
 class StudentManagementSecurityTest {
+    @MockitoBean com.app.config.properties.CorsProperties corsProperties;
+    @MockitoBean com.app.features.auth.service.RefreshSessionService refreshSessions;
+    @MockitoBean com.app.security.jwt.RefreshCookie refreshCookie;
     @Autowired MockMvc mvc;
     @MockitoBean StudentManagementService service;
     @MockitoBean JwtService jwtService;

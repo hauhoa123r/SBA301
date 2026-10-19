@@ -114,7 +114,7 @@ class JenkinsDeploymentTest(unittest.TestCase):
             write("scp", '#!/bin/sh\nprintf "scp %s\\n" "$*" >> "$FIXTURE/calls"\n')
             for name in ("deploy-app.sh", "verify-mysql-schema.sh"):
                 write("deployment/" + name, (ROOT / "deployment" / name).read_text())
-            write("deployment/check-schema.sql", (ROOT / "database/check-schema.sql").read_text())
+            write("deployment/check-schema.sql", (ROOT / "database/tests/check-schema.sql").read_text())
             write("deployment/verify-nginx-https.sh", (ROOT / "deployment/verify-nginx-https.sh").read_text() if real_https else '''#!/bin/sh
 printf 'https %s\n' "$*" >> "$FIXTURE/calls"
 test "$MODE" != https_error
@@ -212,7 +212,7 @@ exec sh "$FIXTURE/case.sh"
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertIn("sh deployment/deploy-app.sh 'backend nginx'", calls)
         scp = next(line for line in calls.splitlines() if line.startswith("scp "))
-        self.assertIn("database/check-schema.sql", scp)
+        self.assertIn("database/tests/check-schema.sql", scp)
         self.assertNotIn(".env", scp)
         self.assertNotIn("docker-compose", scp)
         self.assertNotIn("release.py", calls)

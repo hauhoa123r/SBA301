@@ -17,7 +17,8 @@ class ContractResourceTest(unittest.TestCase):
         self.database = self.root / "database"
         self.database.mkdir()
         for name in ("generate-schema-check.py", "jpa-schema-contract.tsv",
-                     "native-schema-contract.tsv", "check-schema.sql"):
+                     "native-schema-contract.tsv", "tests/check-schema.sql"):
+            (self.database / name).parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT / "database" / name, self.database / name)
         self.resource = self.root / "backend/src/test/resources/schema/jpa-schema-contract.tsv"
         self.resource.parent.mkdir(parents=True)
@@ -49,21 +50,21 @@ class ContractResourceTest(unittest.TestCase):
 
     def test_generator_syncs_bytes_without_changing_sql_or_source_contract(self):
         contract_before = (self.database / "jpa-schema-contract.tsv").read_bytes()
-        sql_before = (self.database / "check-schema.sql").read_bytes()
+        sql_before = (self.database / "tests/check-schema.sql").read_bytes()
         self.resource.write_text("stale copy\n")
         result = self.generate()
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertEqual(contract_before, self.resource.read_bytes())
         self.assertEqual(contract_before, (self.database / "jpa-schema-contract.tsv").read_bytes())
-        self.assertEqual(sql_before, (self.database / "check-schema.sql").read_bytes())
+        self.assertEqual(sql_before, (self.database / "tests/check-schema.sql").read_bytes())
         self.assertEqual(0, self.generate("--check").returncode)
 
     def test_generator_recreates_missing_sql_and_test_resource(self):
-        expected_sql = (self.database / "check-schema.sql").read_text()
-        (self.database / "check-schema.sql").unlink()
+        expected_sql = (self.database / "tests/check-schema.sql").read_text()
+        (self.database / "tests/check-schema.sql").unlink()
         self.resource.unlink()
         result = self.generate()
         self.assertEqual(0, result.returncode, result.stderr)
-        self.assertEqual(expected_sql, (self.database / "check-schema.sql").read_text())
+        self.assertEqual(expected_sql, (self.database / "tests/check-schema.sql").read_text())
         self.assertEqual((self.database / "jpa-schema-contract.tsv").read_bytes(), self.resource.read_bytes())
         self.assertEqual(0, self.generate("--check").returncode)

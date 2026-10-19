@@ -75,7 +75,6 @@ public class AuthServiceImpl implements AuthService {
     private boolean matchesPassword(String password, String storedPassword) {
         return PasswordHashing.matches(password, storedPassword);
     }
-
     @Override
     @Transactional
     public LoginResponse register(RegisterRequest request) {

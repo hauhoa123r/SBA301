@@ -15,7 +15,7 @@ Trang và API dành cho người dùng chỉ lấy đợt hiện hành. Lịch s
 
 ## Database và quy tắc nhất quán
 
-Migration bổ sung: `database/20261013_feedback.sql`. Tám bảng:
+Migration bổ sung: `deployment/legacy-sql/20261013_feedback.sql`. Tám bảng:
 
 | Bảng | Mục đích |
 | --- | --- |
@@ -111,14 +111,14 @@ Database hiện có cần hoàn tất baseline/migration cũ của dự án. Áp
 Từ thư mục gốc, với Docker Compose:
 
 ```bash
-docker compose cp ./database/20261013_feedback.sql mysql:/tmp/20261013_feedback.sql
+docker compose cp ./deployment/legacy-sql/20261013_feedback.sql mysql:/tmp/20261013_feedback.sql
 docker compose exec mysql mysql --default-character-set=utf8mb4 -u root -p --execute="SOURCE /tmp/20261013_feedback.sql" chinese_online_learning
 ```
 
 Với MySQL client ngoài Docker:
 
 ```bash
-mysql --default-character-set=utf8mb4 -u root -p --execute="SOURCE P:/Project/SBA301/database/20261013_feedback.sql" chinese_online_learning
+mysql --default-character-set=utf8mb4 -u root -p --execute="SOURCE P:/Project/SBA301/deployment/legacy-sql/20261013_feedback.sql" chinese_online_learning
 ```
 
 Chạy trên database `chinese_online_learning` hiện có. File chỉ bổ sung bảng, khóa và singleton; chạy lại giữ dữ liệu đã thu thập. Theo quy trình deploy hiện có, sao lưu và dừng backend trong lúc cập nhật; DDL MySQL tự commit. Dockerfile database đã thêm bước `04-feedback.sql` sau schema, data và file deploy 20261012 cho volume mới. Không chạy lại schema gốc trên database hiện hữu.
@@ -174,4 +174,4 @@ Frontend mới:
 
 Frontend tích hợp trong `frontend/src/app/router/AppRouter.tsx`, `frontend/src/pages/home/ui/HomePage.tsx`, `frontend/src/pages/admin-dashboard/ManagementShell.tsx`, `AdminDashboardPage.tsx`, `AssignmentReviewPage.tsx`.
 
-Database/tài liệu: `database/20261013_feedback.sql`, `database/Dockerfile`, `database/README-deploy-update.md`, tài liệu này.
+Database/tài liệu: `deployment/legacy-sql/20261013_feedback.sql`, `database/Dockerfile`, `database/README-deploy-update.md`, tài liệu này.

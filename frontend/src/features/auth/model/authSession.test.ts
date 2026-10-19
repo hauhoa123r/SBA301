@@ -3,6 +3,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   AUTH_STORAGE_KEYS,
   getStoredUser,
+  clearAuthSession,
+  persistLoginSession,
   parseLoginResponse,
   parseOAuthResponse,
 } from "./authSession";
@@ -39,6 +41,7 @@ describe("supported authentication sessions", () => {
   beforeEach(() => {
     vi.stubGlobal("localStorage", new MemoryStorage());
     vi.stubGlobal("sessionStorage", new MemoryStorage());
+    clearAuthSession();
   });
 
   afterEach(() => {
@@ -96,10 +99,26 @@ describe("supported authentication sessions", () => {
     expect(localStorage.getItem(AUTH_STORAGE_KEYS.refreshToken)).toBeNull();
   });
 
-  it("restores an admin session and accepts admin OAuth responses", () => {
+  it("ignores persisted credentials and accepts admin OAuth without a refresh token in JSON", () => {
     localStorage.setItem(AUTH_STORAGE_KEYS.user, JSON.stringify({ id: 1, roles: ["ROLE_ADMIN"] }));
     localStorage.setItem(AUTH_STORAGE_KEYS.accessToken, "access-token");
-    expect(getStoredUser()).toMatchObject({ id: 1, role: "ADMIN", roles: ["ADMIN"] });
-    expect(parseOAuthResponse({ accessToken: "access", refreshToken: "refresh", user: { roles: ["ADMIN"] } }).user.roles).toEqual(["ADMIN"]);
+    expect(getStoredUser()).toBeNull();
+    expect(parseOAuthResponse({ accessToken: "access", user: { roles: ["ADMIN"] } }).user.roles).toEqual(["ADMIN"]);
+  });
+
+  it("keeps tokens and user only in memory and preserves preferences during migration and logout", () => {
+    localStorage.setItem("theme", "dark");
+    sessionStorage.setItem("language", "vi");
+    sessionStorage.setItem("token", "legacy-access");
+    persistLoginSession(parseLoginResponse({ accessToken: "access", user: { id: 1, roles: ["ADMIN"] } }));
+    expect(getStoredUser()?.id).toBe(1);
+    expect(localStorage.getItem("token")).toBeNull();
+    expect(localStorage.getItem("refreshToken")).toBeNull();
+    expect(localStorage.getItem("user")).toBeNull();
+    expect(sessionStorage.getItem("token")).toBeNull();
+    clearAuthSession();
+    expect(getStoredUser()).toBeNull();
+    expect(localStorage.getItem("theme")).toBe("dark");
+    expect(sessionStorage.getItem("language")).toBe("vi");
   });
 });

@@ -46,6 +46,8 @@ export default function OAuthCallbackView() {
     let active = true;
     void exchangeOnce(code)
       .then((response) => {
+        exchanges.delete(code);
+        if (!active) return;
         const session = parseOAuthResponse(response);
         persistOAuthSession(session);
         setUser(session.user);

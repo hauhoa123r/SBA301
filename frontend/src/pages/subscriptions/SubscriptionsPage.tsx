@@ -21,7 +21,7 @@ export function SubscriptionsPage() {
   useEffect(() => {
     let active = true;
     void getSubscriptionPlans().then(data => {
-      if (active) { setPlans(data); setError(""); }
+      if (active) { setPlans(data.filter(plan => plan.code === "FREE_TRIAL" || plan.code === "PREMIUM")); setError(""); }
     }).catch((failure: unknown) => {
       if (active) setError(getApiErrorMessage(failure, "Không thể tải các gói học. Vui lòng thử lại."));
     }).finally(() => { if (active) setLoading(false); });
@@ -61,7 +61,7 @@ export function SubscriptionsPage() {
       {status && (
         <div className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-brand-accent/25 bg-brand-cardBg p-5">
           <div>
-            <p className="font-bold">{status.active ? `Gói ${status.planCode === "FREE_TRIAL" ? "Free Trial" : status.planCode} đang hoạt động` : "Chưa có gói học còn hiệu lực"}</p>
+            <p className="font-bold">{status.active ? `Gói ${status.planCode === "FREE_TRIAL" ? "Free" : status.planCode} đang hoạt động` : "Chưa có gói học còn hiệu lực"}</p>
             {status.expiresAt && <p className="mt-1 text-sm text-brand-textSecondary">{status.active ? "Có hiệu lực đến" : "Gói trước đã hết hạn lúc"} {new Date(status.expiresAt).toLocaleString("vi-VN")}</p>}
           </div>
           {(status.active || status.legacyCourseIds.length > 0) && <Link to="/learning" className="inline-flex items-center gap-2 font-bold text-brand-accentSoft">Vào học <ArrowRight size={18} /></Link>}
@@ -70,21 +70,20 @@ export function SubscriptionsPage() {
       {(error || statusError) && <div role="alert" className="mt-6 rounded-xl border border-status-danger/30 p-4 text-status-danger">{error || statusError}{plans.length === 0 && <button onClick={() => setRetry(value => value + 1)} className="ml-3 underline">Thử lại</button>}</div>}
 
       {loading ? <p role="status" className="py-16 text-center">Đang tải gói học…</p> : (
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        <div className="mx-auto mt-12 grid max-w-4xl gap-6 md:grid-cols-2">
           {plans.map(plan => {
             const trial = plan.code === "FREE_TRIAL";
             const premium = plan.code === "PREMIUM";
             const trialUsed = trial && status?.trialAvailable === false;
             const busy = pending === plan.code;
             return (
-              <article key={plan.code} className={`flex flex-col rounded-3xl border p-6 sm:p-8 ${plan.code === "STANDARD" ? "border-brand-accent bg-brand-accent/15 ring-1 ring-brand-accent" : premium ? "border-amber-400/60 bg-brand-cardBg" : "border-brand-border bg-brand-cardBg"}`}>
-                <div className="flex items-center justify-between"><h2 className="text-sm font-extrabold uppercase tracking-[0.2em]">{plan.name}</h2>{premium ? <Crown className="text-amber-400" /> : <BookOpen className="text-brand-accentSoft" />}</div>
+              <article key={plan.code} className={`flex flex-col rounded-3xl border p-6 sm:p-8 ${premium ? "border-brand-accent bg-brand-accent/15 ring-1 ring-brand-accent" : "border-brand-border bg-brand-cardBg"}`}>
+                <div className="flex items-center justify-between"><h2 className="text-sm font-extrabold uppercase tracking-[0.2em]">{trial ? "Free" : plan.name}</h2>{premium ? <Crown className="text-amber-400" /> : <BookOpen className="text-brand-accentSoft" />}</div>
                 <p className="mt-7 text-4xl font-black">{formatVndCurrency(plan.price)}</p>
                 <p className="mt-2 text-sm text-brand-textSecondary">{trial ? `Học thử ${plan.durationDays} ngày` : `${plan.durationDays} ngày truy cập`}</p>
                 <ul className="my-8 space-y-4 text-sm leading-6 text-brand-textSecondary">
                   {["Truy cập toàn bộ khóa học", "Từ vựng và mẫu câu thực hành", "Bài kiểm tra và lưu tiến độ", trial ? "Mỗi tài khoản được dùng thử một lần" : "Bao gồm khóa mới trong thời hạn gói"].map(text => <li key={text} className="flex gap-3"><Check size={18} className="mt-1 shrink-0 text-brand-accentSoft" />{text}</li>)}
                 </ul>
-                {premium && <p className="mb-6 rounded-xl bg-amber-400/10 p-3 text-xs leading-6 text-amber-200">Hiện tại quyền truy cập giống Standard. Các tính năng bổ sung cho Premium sẽ được cập nhật sau.</p>}
                 <button type="button" onClick={() => void selectPlan(plan)} disabled={Boolean(pending) || statusLoading || trialUsed || Boolean(user && statusError)} className="mt-auto inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-brand-accent px-4 py-3 font-bold text-white transition hover:bg-brand-accentHover disabled:cursor-not-allowed disabled:opacity-50">{busy && <LoaderCircle size={18} className="animate-spin" />}{trialUsed ? "Đã sử dụng quyền học thử" : busy ? "Đang xử lý…" : trial ? "Bắt đầu học thử" : status?.active && status.planCode !== "FREE_TRIAL" ? `Gia hạn / chọn ${plan.name}` : `Đăng ký ${plan.name}`}</button>
               </article>
             );

@@ -149,7 +149,7 @@ class TransactionTest(unittest.TestCase):
         (self.root / "docker-compose.yml").write_text("services: {}\n")
         for name in ("compose.production.yml", "verify-nginx-https.sh"):
             shutil.copyfile(ROOT / "deployment" / name, self.payload / name)
-        shutil.copyfile(ROOT / "database/check-schema.sql", self.payload / "check-schema.sql")
+        shutil.copyfile(ROOT / "database/tests/check-schema.sql", self.payload / "check-schema.sql")
         self.secret_bytes = (self.root / ".env").read_bytes()
         self.engine = FakeEngine(self.root, self.payload)
         self.patch = patch.object(release, "command", side_effect=self.engine.command)

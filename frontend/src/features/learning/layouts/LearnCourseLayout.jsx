@@ -89,7 +89,6 @@ export default function LearnCourseLayout() {
                 setProgressError("");
 
             } catch (err) {
-                console.error("Failed to fetch owned course details:", err);
                 if (!isMounted) return;
 
                 if (err.response?.status === 403) {
@@ -183,7 +182,6 @@ export default function LearnCourseLayout() {
             const courseProgress = await enqueue(() => updateLessonProgress(course.id, lessonId, !completedLessons.has(lessonId)));
             applyProgress(courseProgress);
         } catch (error) {
-            console.error("Failed to save lesson progress:", error);
             if (String(course.id) === String(currentCourseId.current))
                 setProgressError(error.response?.data?.message || "Không thể lưu tiến độ bài học. Vui lòng thử lại.");
         } finally {

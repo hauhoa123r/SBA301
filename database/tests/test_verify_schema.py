@@ -30,7 +30,7 @@ class VerifierRegressionTest(unittest.TestCase):
         self.verifier = (ROOT / "database/verify-schema.sh").read_text()
         self.write("verify.sh", self.verifier.replace(
             "/usr/local/share/edujar/check-schema.sql", '"$FIXTURE/check-schema.sql"'))
-        shutil.copyfile(ROOT / "database/check-schema.sql", self.fixture / "check-schema.sql")
+        shutil.copyfile(ROOT / "database/tests/check-schema.sql", self.fixture / "check-schema.sql")
         self.write("mysql", """#!/bin/sh
 cat >/dev/null
 case "${MYSQL_TEST_CASE:-valid}" in
@@ -176,31 +176,33 @@ if [ -n "$MYSQL_ONETIME_PASSWORD" ]; then :; fi
 
     def push_script(self):
         source = (ROOT / "Jenkinsfile").read_text()
-        stage = source.split("stage('PUSH_IMAGE')", 1)[1].split("stage('CONNECT_SERVER')", 1)[0]
+        stage = source.split("stage('Push Docker Hub')", 1)[1].split("stage('Deploy EC2')", 1)[0]
         block = re.search(r"sh\s+'''(.*?)'''", stage, re.S).group(1)
         # Decode the Groovy escapes used by these shell blocks.
         return re.sub(r"\\(\\|n|\n)", lambda m: {"\\": "\\", "n": "\n", "\n": ""}[m[1]], block)
 
     def assert_mysql_not_pushed(self):
         calls = (self.fixture / "docker-calls").read_text()
-        self.assertNotIn("push mysql", calls)
+        self.assertNotRegex(calls, r"(?m)^.*\bpush\b.*mysql")
+        self.assertIn("push devhoa/chinese-backend:test-build", calls)
+        self.assertIn("push devhoa/chinese-nginx:test-build", calls)
 
-    def test_push_without_verification_receipt_fails(self):
+    def test_application_push_without_mysql_receipt_never_publishes_mysql(self):
         result = self.run_shell(self.push_script())
-        self.assertNotEqual(0, result.returncode)
+        self.assertEqual(0, result.returncode, result.stderr)
         self.assert_mysql_not_pushed()
 
-    def test_push_of_different_image_fails(self):
+    def test_application_push_with_stale_mysql_receipt_never_publishes_mysql(self):
         self.write(".mysql-schema-verified", "sha256:old-image\n")
         result = self.run_shell(self.push_script())
-        self.assertNotEqual(0, result.returncode)
+        self.assertEqual(0, result.returncode, result.stderr)
         self.assert_mysql_not_pushed()
 
-    def test_push_of_verified_image_passes(self):
+    def test_application_push_with_mysql_receipt_never_publishes_mysql(self):
         self.write(".mysql-schema-verified", "sha256:validated\n")
         result = self.run_shell(self.push_script())
         self.assertEqual(0, result.returncode, result.stderr)
-        self.assertIn("push mysql", (self.fixture / "docker-calls").read_text())
+        self.assert_mysql_not_pushed()
 
     def test_mysql_disabled_does_not_require_receipt_or_push_mysql(self):
         result = self.run_shell(self.push_script(), BUILD_MYSQL_IMAGE="false")

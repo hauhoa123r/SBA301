@@ -30,6 +30,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest({FeedbackController.class, AdminFeedbackController.class})
 @Import({SecurityConfig.class, JwtAuthenticationFilter.class, RestAccessDeniedHandler.class, RestAuthenticationEntryPoint.class, SecurityErrorResponseWriter.class})
 class FeedbackSecurityTest {
+    @MockitoBean com.app.config.properties.CorsProperties corsProperties;
+    @MockitoBean com.app.features.auth.service.RefreshSessionService refreshSessions;
+    @MockitoBean com.app.security.jwt.RefreshCookie refreshCookie;
     @Autowired MockMvc mvc;
     @MockitoBean FeedbackService service;
     @MockitoBean UserRepository users;

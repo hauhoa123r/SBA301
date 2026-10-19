@@ -177,7 +177,7 @@ Không chạy native SQL trên MySQL ở audit này. Các unit/H2 tests đạt k
 
 Do đó local init sạch có thể đầy đủ bảng nhưng EC2 volume cũ còn schema cũ. Backend mới với `ddl-auto=none` vẫn có thể khởi động và health 200, đến API query mới fail. MySQL SELECT 1 healthcheck cũng không kiểm tra subscription tables.
 
-Không chạy schema gốc lên production: `database/chinese_online_learning.sql:1` có `DROP DATABASE`. Baseline `20261012_deploy_update.sql` cũng có cleanup dữ liệu và prerequisite user 4 (`:13–21`); không mặc định toàn bộ baseline là migration không mất dữ liệu. Hướng dẫn `README-deploy-update.md:19–27` yêu cầu review/backup và lưu ý DDL auto-commit.
+Không chạy schema gốc lên production: `deployment/legacy-sql/chinese_online_learning.sql:1` có `DROP DATABASE`. Baseline `20261012_deploy_update.sql` cũng có cleanup dữ liệu và prerequisite user 4 (`:13–21`); không mặc định toàn bộ baseline là migration không mất dữ liệu. Hướng dẫn `README-deploy-update.md:19–27` yêu cầu review/backup và lưu ý DDL auto-commit.
 
 ### `.env.example` và profile
 
@@ -245,7 +245,7 @@ Cơ chế được tìm thấy là `Jenkinsfile`:
 |---|---|
 | Finding | Jenkins không migrate/check schema; init scripts chỉ phục vụ volume mới |
 | Severity | High |
-| File | `Jenkinsfile`; `database/Dockerfile`; `backend/src/main/resources/application.properties`; `database/20261012_deploy_update.sql` |
+| File | `Jenkinsfile`; `database/Dockerfile`; `backend/src/main/resources/application.properties`; `deployment/legacy-sql/20261012_deploy_update.sql` |
 | Line | Jenkins 154–160; Dockerfile 3–6; properties 10; SQL 644–680,1027 |
 | Evidence | Plans cần bảng subscription_plans; stats cần user_subscriptions; legacy cần legacy_access; progress cần position_seconds |
 | Local behavior | Compile/H2 tests đạt; H2 tự tạo schema, không kiểm chứng migration MySQL |
@@ -403,7 +403,7 @@ Expected: hai Compose fixture pass, example hiện tại fail. Offline Maven dù
 | P0 | EC2 cert mount/listener/effective Compose/image | Sửa theo nginx -t/state/ports; nếu file source đúng thì phục hồi runtime/image/mount, không sửa backend để xử lý TCP refused |
 | P0 | `Jenkinsfile` | Preflight cert readability/SNI, validate image/config trước rollout; lưu release tag/digest/config và có rollback backend/nginx |
 | P1 | `.env.example` | Bổ sung MYSQL_ROOT_PASSWORD, bỏ duplicate; cập nhật hướng dẫn HTTPS/CORS/callback domain đồng bộ deployment hiện tại |
-| P1 | `Jenkinsfile`, migration workflow; `database/20261012_deploy_update.sql` chỉ sau review | Thêm schema/version gate cho volume cũ. Test migration trên copy database; tránh tự chạy toàn baseline cleanup với production data |
+| P1 | `Jenkinsfile`, migration workflow; `deployment/legacy-sql/20261012_deploy_update.sql` chỉ sau review | Thêm schema/version gate cho volume cũ. Test migration trên copy database; tránh tự chạy toàn baseline cleanup với production data |
 | P1 | `docker-compose.yml` | Backend healthcheck và Nginx readiness có HTTPS đúng SNI; depends_on service_healthy. Không dùng healthcheck mà fail do endpoint/auth không phù hợp |
 | P1 | Environment EC2/Jenkins ngoài repo | Bảo đảm cùng yêu cầu public HTTPS và DB credential hiện hữu; secret ổn định, không tự đổi JWT secret hoặc reset user/volume để thử |
 | P2 | `frontend/src/features/learning/hooks/useLearningDashboard.js` | Normalize error, giữ request stage/status/code; hỗ trợ retry rõ ràng. Có thể giữ partial stats khi detail/progress fail nếu UX cho phép |
@@ -507,7 +507,7 @@ OPTIONS 403 không tự chứng minh same-origin GET bị chặn; đối chiếu
 ```bash
 docker exec chinese-backend sh -c '
   printf "profile=%s port=%s db_user=%s\n" "$SPRING_PROFILES_ACTIVE" "$SERVER_PORT" "$DB_USERNAME"
-  for name in DB_PASSWORD JWT_SECRET GOOGLE_CLIENT_ID GOOGLE_CLIENT_SECRET FACEBOOK_CLIENT_ID FACEBOOK_CLIENT_SECRET OAUTH2_FRONTEND_REDIRECT_URI CORS_ALLOWED_ORIGINS FRONTEND_VERIFY_EMAIL_URL FRONTEND_PAYMENT_RESULT_URL; do
+  for name in DB_PASSWORD JWT_SECRET GOOGLE_CLIENT_ID GOOGLE_CLIENT_SECRET OAUTH2_FRONTEND_REDIRECT_URI CORS_ALLOWED_ORIGINS FRONTEND_VERIFY_EMAIL_URL FRONTEND_PAYMENT_RESULT_URL; do
     if printenv "$name" | grep -q .; then printf "%s=PRESENT\n" "$name"; else printf "%s=MISSING_OR_EMPTY\n" "$name"; fi
   done
   printf "cors=%s\noauth_landing=%s\nverify_url=%s\npayment_url=%s\n" "$CORS_ALLOWED_ORIGINS" "$OAUTH2_FRONTEND_REDIRECT_URI" "$FRONTEND_VERIFY_EMAIL_URL" "$FRONTEND_PAYMENT_RESULT_URL"
@@ -557,7 +557,7 @@ Cần bổ sung: timestamp/release Jenkins của lỗi; nginx/backend state/rest
    ```
 
    Chạy từng lệnh và dừng nếu exit code khác 0; tên backup theo timestamp và `set -C` tránh ghi đè dump trong container. Không ghi đè backup cũ. Không đọc dump trong terminal/chat; dump có thông tin nhạy cảm. `test -s` chỉ xác nhận file không rỗng, không thay thế restore test. Kiểm tra exit code dump/copy và bảo quản backup theo chính sách vận hành.
-4. Nếu schema thiếu: test migration trên copy dữ liệu và review cleanup trong `database/20261012_deploy_update.sql`. Baseline có deletes và DDL auto-commit, không đảm bảo nguyên vẹn toàn bộ dữ liệu; nếu yêu cầu giữ mọi dữ liệu production, chuẩn bị migration giới hạn subscription/learning không cleanup, với quyền legacy/backfill rõ ràng. Không tự chạy baseline chỉ vì build có file đó. Nếu baseline đã áp dụng chỉ bổ sung migration còn thiếu, như feedback theo `README-deploy-update.md:46`. Tạm dừng ghi app theo maintenance window khi operator thực hiện migration; kiểm tra schema/row counts/legacy entitlement trước mở lại. DDL partial failure phải được xử lý, không giả định ROLLBACK hoàn tác tất cả.
+4. Nếu schema thiếu: test migration trên copy dữ liệu và review cleanup trong `deployment/legacy-sql/20261012_deploy_update.sql`. Baseline có deletes và DDL auto-commit, không đảm bảo nguyên vẹn toàn bộ dữ liệu; nếu yêu cầu giữ mọi dữ liệu production, chuẩn bị migration giới hạn subscription/learning không cleanup, với quyền legacy/backfill rõ ràng. Không tự chạy baseline chỉ vì build có file đó. Nếu baseline đã áp dụng chỉ bổ sung migration còn thiếu, như feedback theo `README-deploy-update.md:46`. Tạm dừng ghi app theo maintenance window khi operator thực hiện migration; kiểm tra schema/row counts/legacy entitlement trước mở lại. DDL partial failure phải được xử lý, không giả định ROLLBACK hoàn tác tất cả.
 5. Build/test app trên CI với Java 17, Node 22 đúng Docker; tag immutable cho backend/nginx, chạy Nginx config preflight với cert mount thật, validate env presence kín. Stage functional/schema checks trước rollout. Không cập nhật MySQL image nếu sửa app không yêu cầu.
 6. Deploy backend/nginx cùng release đã kiểm chứng, **giữ MySQL container/volume**. Ví dụ chỉ sau schema/env/cert gates, trong đúng project/deploy directory:
 

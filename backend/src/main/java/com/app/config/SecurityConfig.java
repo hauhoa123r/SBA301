@@ -5,6 +5,11 @@ import com.app.security.handler.RestAuthenticationEntryPoint;
 import com.app.security.jwt.JwtAuthenticationFilter;
 import com.app.security.oauth.config.OAuth2SecurityConfigurer;
 import jakarta.servlet.http.HttpServletResponse;
+import com.app.config.properties.CorsProperties;
+import com.app.features.auth.service.RefreshSessionService;
+import com.app.security.jwt.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.web.csrf.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,18 +30,20 @@ import com.app.security.handler.SecurityErrorResponseWriter;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+    private static final String LOGOUT_FAILURE = SecurityConfig.class.getName() + ".logoutFailure";
 
     private static final String[] PUBLIC_AUTH_ENDPOINTS = {
             "/api/auth/login",
             "/api/auth/register",
             "/api/auth/refresh",
+            "/api/auth/csrf",
             "/api/auth/forgot-password",
             "/api/auth/reset-password",
             "/api/auth/verify-token",
             "/api/auth/verify-email",
             "/api/auth/oauth/exchange",
-            "/api/oauth2/authorization/**",
-            "/login/oauth2/code/**"
+            "/api/oauth2/authorization/google",
+            "/login/oauth2/code/google"
     };
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -45,6 +52,11 @@ public class SecurityConfig {
     private final OAuth2SecurityConfigurer oauth2SecurityConfigurer;
     private final AuthenticationAttemptLimiter attempts;
     private final SecurityErrorResponseWriter responseWriter;
+    private final CorsProperties corsProperties;
+    private final RefreshSessionService refreshSessions;
+    private final RefreshCookie refreshCookie;
+    @Value("${app.auth.cookie-secure:true}") private boolean cookieSecure;
+    @Value("${app.auth.cookie-same-site:Lax}") private String cookieSameSite;
 
     @Bean
     static AuthenticationAttemptLimiter authenticationAttemptLimiter() {
@@ -53,8 +65,14 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        CookieCsrfTokenRepository csrfRepository = new CookieCsrfTokenRepository();
+        csrfRepository.setCookiePath(RefreshCookie.PATH);
+        csrfRepository.setCookieCustomizer(cookie -> cookie.httpOnly(true).secure(cookieSecure).sameSite(cookieSameSite));
         http.cors(Customizer.withDefaults())
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.csrfTokenRepository(csrfRepository)
+                        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+                        .requireCsrfProtectionMatcher(new AuthCookieRequestMatcher()))
+                .addFilterBefore(new AuthOriginFilter(corsProperties), CsrfFilter.class)
                 // OAuth still keeps its authorization request in HttpSession. API identity is request-scoped.
                 .securityContext(context -> context.securityContextRepository(new RequestAttributeSecurityContextRepository()))
                 .exceptionHandling(exceptions -> exceptions
@@ -67,12 +85,25 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutRequestMatcher(request -> HttpMethod.POST.matches(request.getMethod())
                                 && "/api/auth/logout".equals(request.getRequestURI().substring(request.getContextPath().length())))
+                        .addLogoutHandler((request, response, authentication) -> {
+                            try {
+                                refreshSessions.revoke(refreshCookie.read(request));
+                                refreshCookie.clear(response);
+                            } catch (RuntimeException ex) {
+                                // Preserve the cookie for retry. An /error dispatch would mask this as 401.
+                                request.setAttribute(LOGOUT_FAILURE, Boolean.TRUE);
+                            }
+                        })
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
                         .deleteCookies("JSESSIONID")
-                        .logoutSuccessHandler((request, response, authentication) ->
-                                response.setStatus(HttpServletResponse.SC_NO_CONTENT)
-                        )
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            if (Boolean.TRUE.equals(request.getAttribute(LOGOUT_FAILURE))) {
+                                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                                response.setContentType("application/json");
+                                response.getWriter().write("{\"status\":500,\"message\":\"Server logout could not be confirmed. Please retry.\"}");
+                            } else response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                        })
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()

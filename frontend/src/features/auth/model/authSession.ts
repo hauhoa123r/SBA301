@@ -1,4 +1,5 @@
 import { isUser, toSupportedUser, type SupportedUser } from "@/entities/user";
+import { clearMemorySession, getAuthState, setMemorySession, setMemoryUser } from "@/shared/api/authMemory";
 import type { AuthMessageResponse, AuthSession, OAuthSession } from "./auth.types";
 
 export const AUTH_STORAGE_KEYS = {
@@ -43,7 +44,6 @@ export function parseLoginResponse(value: unknown): AuthSession {
   return {
     user,
     accessToken: readOptionalString(firstTruthy([value.token, data?.token, value.accessToken, data?.accessToken])),
-    refreshToken: readOptionalString(firstTruthy([value.refreshToken, data?.refreshToken])),
   };
 }
 
@@ -51,13 +51,12 @@ export function parseOAuthResponse(value: unknown): OAuthSession {
   if (!isRecord(value)) throw new Error("Invalid OAuth response");
 
   const accessToken = readOptionalString(value.accessToken);
-  const refreshToken = readOptionalString(value.refreshToken);
-  if (!accessToken || !refreshToken || !isUser(value.user)) {
+  if (!accessToken || !isUser(value.user)) {
     throw new Error("OAuth response does not contain a complete session");
   }
 
   const user = requireSupportedUser(value.user);
-  return { accessToken, refreshToken, user };
+  return { accessToken, user };
 }
 
 export function readMessageResponse(value: unknown): AuthMessageResponse {
@@ -65,61 +64,38 @@ export function readMessageResponse(value: unknown): AuthMessageResponse {
   return { message: typeof value.message === "string" ? value.message : undefined };
 }
 
+// Remove only known legacy authentication keys. Preferences remain untouched.
+export function migrateLegacyAuthStorage(): void {
+  for (const name of ["localStorage", "sessionStorage"] as const) {
+    try {
+      for (const key of [AUTH_STORAGE_KEYS.user, AUTH_STORAGE_KEYS.accessToken, AUTH_STORAGE_KEYS.refreshToken]) {
+        globalThis[name].removeItem(key);
+      }
+    } catch { /* Browsers may deny storage; authentication remains in memory. */ }
+  }
+}
+
 export function getStoredUser(): SupportedUser | null {
-  const savedUser = localStorage.getItem(AUTH_STORAGE_KEYS.user);
-  const accessToken = localStorage.getItem(AUTH_STORAGE_KEYS.accessToken);
-  const refreshToken = localStorage.getItem(AUTH_STORAGE_KEYS.refreshToken);
-  const hasSession = accessToken ? accessToken : refreshToken;
-
-  if (!savedUser || !hasSession) {
-    clearAuthSession();
-    return null;
-  }
-
-  try {
-    const parsed: unknown = JSON.parse(savedUser);
-    const user = toSupportedUser(parsed);
-    if (user) {
-      persistUser(user);
-      return user;
-    }
-  } catch {
-    // Invalid persisted JSON is handled by clearing the cached user below.
-  }
-
-  clearAuthSession();
-  return null;
+  migrateLegacyAuthStorage();
+  return getAuthState().user;
 }
 
 export function persistUser(user: SupportedUser | null): void {
-  if (user) {
-    localStorage.setItem(AUTH_STORAGE_KEYS.user, JSON.stringify(user));
-  } else {
-    localStorage.removeItem(AUTH_STORAGE_KEYS.user);
-  }
+  setMemoryUser(user);
 }
 
 export function persistLoginSession(session: AuthSession): void {
-  persistUser(session.user);
-  if (session.accessToken) {
-    localStorage.setItem(AUTH_STORAGE_KEYS.accessToken, session.accessToken);
-  }
-  if (session.refreshToken) {
-    localStorage.setItem(AUTH_STORAGE_KEYS.refreshToken, session.refreshToken);
-  } else {
-    localStorage.removeItem(AUTH_STORAGE_KEYS.refreshToken);
-  }
+  if (!session.accessToken) throw new Error("Login response does not contain an access token");
+  migrateLegacyAuthStorage();
+  setMemorySession(session.accessToken, session.user, true);
 }
 
 export function persistOAuthSession(session: OAuthSession): void {
-  localStorage.setItem(AUTH_STORAGE_KEYS.accessToken, session.accessToken);
-  localStorage.setItem(AUTH_STORAGE_KEYS.refreshToken, session.refreshToken);
-  persistUser(session.user);
+  persistLoginSession(session);
 }
 
 export function clearAuthSession(): void {
-  localStorage.removeItem(AUTH_STORAGE_KEYS.user);
-  localStorage.removeItem(AUTH_STORAGE_KEYS.accessToken);
-  localStorage.removeItem(AUTH_STORAGE_KEYS.refreshToken);
-  sessionStorage.removeItem(AUTH_STORAGE_KEYS.oauthReturnTo);
+  clearMemorySession();
+  migrateLegacyAuthStorage();
+  try { sessionStorage.removeItem(AUTH_STORAGE_KEYS.oauthReturnTo); } catch { /* Storage may be unavailable. */ }
 }

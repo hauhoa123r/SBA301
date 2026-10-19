@@ -36,7 +36,14 @@ public class JwtService {
     }
 
     public String createAccessToken(UserEntity user) { return create(user, accessTtl, "access"); }
-    public String createRefreshToken(UserEntity user) { return create(user, refreshTtl, "refresh"); }
+    public String createRefreshToken(UserEntity user) {
+        return createRefreshToken(user, java.util.UUID.randomUUID().toString(), Instant.now().plus(refreshTtl));
+    }
+
+    public String createRefreshToken(UserEntity user, String sessionId, Instant expiresAt) {
+        return builder(user, "refresh").id(java.util.UUID.randomUUID().toString())
+                .claim("sid", sessionId).expiration(Date.from(expiresAt)).signWith(key).compact();
+    }
 
     public Claims parse(String token) {
         return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload();
@@ -65,6 +72,10 @@ public class JwtService {
     }
 
     private String create(UserEntity user, Duration ttl, String type) {
+        return builder(user, type).expiration(Date.from(Instant.now().plus(ttl))).signWith(key).compact();
+    }
+
+    private io.jsonwebtoken.JwtBuilder builder(UserEntity user, String type) {
         Instant now = Instant.now();
         List<String> roles = SupportedRolePolicy.supportedRoleNames(user);
 
@@ -74,9 +85,6 @@ public class JwtService {
                 .claim("roles", roles)
                 .claim("type", type)
                 .claim("pwd", credentialStamp(user))
-                .issuedAt(Date.from(now))
-                .expiration(Date.from(now.plus(ttl)))
-                .signWith(key)
-                .compact();
+                .issuedAt(Date.from(now));
     }
 }

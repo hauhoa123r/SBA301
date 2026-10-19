@@ -41,7 +41,7 @@ class PaymentCreationServiceImplTest {
 
     @Test
     void createsGatewayPaymentForServerPricedPlan() {
-        SubscriptionPlanEntity plan = plan("PREMIUM", 899000);
+        SubscriptionPlanEntity plan = plan("PREMIUM", 99000);
         when(subscriptions.requirePlan("PREMIUM")).thenReturn(plan);
         when(users.findById(7L)).thenReturn(Optional.of(new UserEntity()));
         when(invoices.save(any())).thenAnswer(call -> { InvoiceEntity invoice = call.getArgument(0); invoice.setId(8L); return invoice; });
@@ -51,8 +51,19 @@ class PaymentCreationServiceImplTest {
         ArgumentCaptor<PaymentEntity> payment = ArgumentCaptor.forClass(PaymentEntity.class);
         verify(payments).save(payment.capture());
         assertEquals("12345678", payment.getValue().getTransactionId());
-        assertEquals(BigDecimal.valueOf(899000), payment.getValue().getAmount());
+        assertEquals(BigDecimal.valueOf(99000), payment.getValue().getAmount());
         assertEquals("PREMIUM", payment.getValue().getInvoice().getSubscriptionPlanCode());
+        assertEquals(30, payment.getValue().getInvoice().getSubscriptionDurationDays());
+        ArgumentCaptor<InvoiceEntity> invoice = ArgumentCaptor.forClass(InvoiceEntity.class);
+        verify(gateway).createPayment(any(), invoice.capture(), eq("INV-8"));
+        assertEquals(BigDecimal.valueOf(99000), invoice.getValue().getAmount());
+    }
+
+    @Test
+    void rejectsNewStandardPaymentsEvenIfOldPlanIsStillActive() {
+        when(subscriptions.requirePlan("STANDARD")).thenReturn(plan("STANDARD",699000));
+        assertThrows(BadRequestException.class, () -> service.createPayment(new PaymentCreateRequest("STANDARD",null),7L));
+        verifyNoInteractions(gateway,invoices,payments,users);
     }
 
     @Test

@@ -20,6 +20,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class SubscriptionService {
     public static final String FREE_TRIAL = "FREE_TRIAL";
+    public static final String PREMIUM = "PREMIUM";
     private final SubscriptionPlanRepository plans;
     private final UserSubscriptionRepository subscriptions;
     private final PaymentUserRepository users;
@@ -30,7 +31,9 @@ public class SubscriptionService {
                          boolean trialAvailable, List<Long> legacyCourseIds) {}
 
     public List<SubscriptionPlanEntity> listPlans() {
-        return plans.findByActiveTrueOrderByPriceAsc();
+        return plans.findByActiveTrueOrderByPriceAsc().stream()
+                .filter(plan -> FREE_TRIAL.equals(plan.getCode()) || PREMIUM.equals(plan.getCode()))
+                .toList();
     }
 
     public SubscriptionPlanEntity requirePlan(String code) {

@@ -7,6 +7,7 @@ import com.app.features.model.enums.CourseStatus;
 import com.app.features.subscriptions.service.SubscriptionService;
 import com.app.features.subscriptions.repository.UserSubscriptionRepository;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -27,6 +28,21 @@ class SubscriptionIntegrationTest {
     @Autowired SubscriptionService service;
     @Autowired CourseAccessService access;
     @Autowired UserSubscriptionRepository subscriptions;
+
+    @BeforeEach
+    void legacyPlanFixtures() {
+        // Include retired Standard explicitly to verify compatibility with existing subscriptions.
+        for (String code : java.util.List.of("FREE_TRIAL", "STANDARD", "PREMIUM")) {
+            SubscriptionPlanEntity plan = new SubscriptionPlanEntity();
+            plan.setCode(code);
+            plan.setName("Legacy test " + code);
+            plan.setPrice(java.math.BigDecimal.ZERO);
+            plan.setDurationDays(code.equals("FREE_TRIAL") ? 3 : 30);
+            plan.setActive(true);
+            em.getEntityManager().merge(plan);
+        }
+        em.flush();
+    }
 
     @Test
     void trialPersistsAndProgressEnrollmentDoesNotKeepAccessAfterExpiry() {
