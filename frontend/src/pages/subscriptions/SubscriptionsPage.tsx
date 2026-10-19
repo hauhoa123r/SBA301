@@ -18,6 +18,7 @@ export function SubscriptionsPage() {
   const [error, setError] = useState("");
   const [retry, setRetry] = useState(0);
   const submitting = useRef(false);
+  const hasActivePaidPlan = Boolean(user && status?.active && status.planCode && status.planCode !== "FREE_TRIAL");
   useEffect(() => {
     let active = true;
     void getSubscriptionPlans().then(data => {
@@ -58,7 +59,7 @@ export function SubscriptionsPage() {
         <p className="mt-5 text-base leading-7 text-brand-textSecondary">Tự do khám phá mọi khóa học đã xuất bản, học từ vựng, luyện mẫu câu và làm bài kiểm tra trong thời hạn gói.</p>
       </div>
 
-      {status && (
+      {status && !hasActivePaidPlan && (
         <div className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-brand-accent/25 bg-brand-cardBg p-5">
           <div>
             <p className="font-bold">{status.active ? `Gói ${status.planCode === "FREE_TRIAL" ? "Free" : status.planCode} đang hoạt động` : "Chưa có gói học còn hiệu lực"}</p>
@@ -84,13 +85,19 @@ export function SubscriptionsPage() {
                 <ul className="my-8 space-y-4 text-sm leading-6 text-brand-textSecondary">
                   {["Truy cập toàn bộ khóa học", "Từ vựng và mẫu câu thực hành", "Bài kiểm tra và lưu tiến độ", trial ? "Mỗi tài khoản được dùng thử một lần" : "Bao gồm khóa mới trong thời hạn gói"].map(text => <li key={text} className="flex gap-3"><Check size={18} className="mt-1 shrink-0 text-brand-accentSoft" />{text}</li>)}
                 </ul>
-                <button type="button" onClick={() => void selectPlan(plan)} disabled={Boolean(pending) || statusLoading || trialUsed || Boolean(user && statusError)} className="mt-auto inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-brand-accent px-4 py-3 font-bold text-white transition hover:bg-brand-accentHover disabled:cursor-not-allowed disabled:opacity-50">{busy && <LoaderCircle size={18} className="animate-spin" />}{trialUsed ? "Đã sử dụng quyền học thử" : busy ? "Đang xử lý…" : trial ? "Bắt đầu học thử" : status?.active && status.planCode !== "FREE_TRIAL" ? `Gia hạn / chọn ${plan.name}` : `Đăng ký ${plan.name}`}</button>
+                {premium && hasActivePaidPlan ? (
+                  <button type="button" disabled className="mt-auto inline-flex min-h-12 cursor-default items-center justify-center gap-2 rounded-xl border border-brand-accent/30 bg-brand-accent/20 px-4 py-3 font-bold text-brand-accentSoft">
+                    <Check size={18} aria-hidden="true" />Đang sử dụng gói học này
+                  </button>
+                ) : (
+                  <button type="button" onClick={() => void selectPlan(plan)} disabled={Boolean(pending) || statusLoading || trialUsed || Boolean(user && statusError)} className="mt-auto inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-brand-accent px-4 py-3 font-bold text-white transition hover:bg-brand-accentHover disabled:cursor-not-allowed disabled:opacity-50">{busy && <LoaderCircle size={18} className="animate-spin" />}{trialUsed ? "Đã sử dụng quyền học thử" : busy ? "Đang xử lý…" : trial ? "Bắt đầu học thử" : `Đăng ký ${plan.name}`}</button>
+                )}
               </article>
             );
           })}
         </div>
       )}
-      <p className="mx-auto mt-8 max-w-3xl text-center text-sm leading-7 text-brand-textSecondary">Gói trả phí bắt đầu khi thanh toán được xác nhận. Nếu gói trả phí hiện tại còn hạn, thời gian mới được cộng tiếp vào ngày hết hạn. Thanh toán từng lần, không tự động gia hạn.</p>
+      <p className="mx-auto mt-8 max-w-3xl text-center text-sm leading-7 text-brand-textSecondary">Gói trả phí bắt đầu khi thanh toán được xác nhận. Thanh toán từng lần, không tự động gia hạn.</p>
       <div className="mt-6 text-center"><Link to="/courses" className="font-semibold text-brand-accentSoft underline underline-offset-4">Khám phá các khóa học</Link></div>
     </main>
   );
