@@ -309,7 +309,7 @@ SELECT 'Gặp lễ tân',NULL,1,'https://res.cloudinary.com/rir6b8kp/video/uploa
 WHERE NOT EXISTS (SELECT 1 FROM `lessons` WHERE `chapter_id` <=> @seed_chapters_1 AND `order_index` <=> 1);
 SET @seed_lessons_1 = (SELECT id FROM `lessons` WHERE `chapter_id` <=> @seed_chapters_1 AND `order_index` <=> 1);
 INSERT INTO `lessons` (`title`,`content`,`published`,`video_url`,`chapter_id`,`order_index`,`duration_seconds`)
-SELECT 'Giới thiệu tên, vị trí, công việc',NULL,1,'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051322/c%C3%A1i_ph%E1%BA%A7n_phi%C3%AAn_%C3%A2m_ti%E1%BA%BFng_vi%E1%BB%87t_b_mgsgze.mp4',@seed_chapters_2,1,900
+SELECT 'Giới thiệu tên, vị trí, công việc',NULL,1,'https://res.cloudinary.com/rir6b8kp/video/upload/v1792413441/c%C3%A1i_ph%E1%BA%A7n_phi%C3%AAn_%C3%A2m_ti%E1%BA%BFng_vi%E1%BB%87t_b_mgsgze.mp4',@seed_chapters_2,1,900
 WHERE NOT EXISTS (SELECT 1 FROM `lessons` WHERE `chapter_id` <=> @seed_chapters_2 AND `order_index` <=> 1);
 SET @seed_lessons_3 = (SELECT id FROM `lessons` WHERE `chapter_id` <=> @seed_chapters_2 AND `order_index` <=> 1);
 INSERT INTO `lessons` (`title`,`content`,`published`,`video_url`,`chapter_id`,`order_index`,`duration_seconds`)
@@ -333,11 +333,11 @@ SELECT 'Gặp đồng nghiệp',NULL,1,'https://res.cloudinary.com/rir6b8kp/vide
 WHERE NOT EXISTS (SELECT 1 FROM `lessons` WHERE `chapter_id` <=> @seed_chapters_1 AND `order_index` <=> 3);
 SET @seed_lessons_35 = (SELECT id FROM `lessons` WHERE `chapter_id` <=> @seed_chapters_1 AND `order_index` <=> 3);
 INSERT INTO `lessons` (`title`,`content`,`published`,`video_url`,`chapter_id`,`order_index`,`duration_seconds`)
-SELECT 'Hỏi thông tin cá nhân của khách hàng',NULL,1,'https://res.cloudinary.com/rir6b8kp/video/upload/v1783833897/video1_r1i65s.mp4',@seed_chapters_3,1,780
+SELECT 'Hỏi thông tin cá nhân của khách hàng',NULL,1,'https://res.cloudinary.com/rir6b8kp/video/upload/v1792413972/video1_r1i65s.mp4',@seed_chapters_3,1,780
 WHERE NOT EXISTS (SELECT 1 FROM `lessons` WHERE `chapter_id` <=> @seed_chapters_3 AND `order_index` <=> 1);
 SET @seed_lessons_5 = (SELECT id FROM `lessons` WHERE `chapter_id` <=> @seed_chapters_3 AND `order_index` <=> 1);
 INSERT INTO `lessons` (`title`,`content`,`published`,`video_url`,`chapter_id`,`order_index`,`duration_seconds`)
-SELECT 'Giới thiệu công ty',NULL,1,'https://res.cloudinary.com/rir6b8kp/video/upload/v1784136039/B%E1%BB%91i_c%E1%BA%A3nh_Sau_khi_gi%E1%BB%9Bi_thi%E1%BB%87u_b_rknava.mp4',@seed_chapters_2,2,960
+SELECT 'Giới thiệu công ty',NULL,1,'https://res.cloudinary.com/rir6b8kp/video/upload/v1792413699/B%E1%BB%91i_c%E1%BA%A3nh_Sau_khi_gi%E1%BB%9Bi_thi%E1%BB%87u_b_rknava.mp4',@seed_chapters_2,2,960
 WHERE NOT EXISTS (SELECT 1 FROM `lessons` WHERE `chapter_id` <=> @seed_chapters_2 AND `order_index` <=> 2);
 SET @seed_lessons_4 = (SELECT id FROM `lessons` WHERE `chapter_id` <=> @seed_chapters_2 AND `order_index` <=> 2);
 INSERT INTO `course_tags` (`course_id`,`tag_id`)

@@ -116,9 +116,9 @@ INSERT INTO lessons (id, chapter_id, title, video_url, duration_seconds, order_i
 (1, 1, 'Gặp lễ tân', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1791816899/B%E1%BB%91i_c%E1%BA%A3nh_H%C3%B4m_nay_l%C3%A0_ng%C3%A0y_%C4%91%E1%BA%A7u_qqe6xj.mp4', 720, 1),
 (2, 1, 'Gặp trưởng nhóm', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1791818172/phi%C3%AAn_%C3%A2m_ti%E1%BA%BFng_vi%E1%BB%87t_n%E1%BB%AFa_gvmbku.mp4', 840, 2),
 (35, 1, 'Gặp đồng nghiệp', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1791818261/ti%C3%AAng_trung_pinyin_v%E1%BB%9Bi_phi_eexi8e.mp4', 900, 3),
-(3, 2, 'Giới thiệu tên, vị trí, công việc', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784051322/c%C3%A1i_ph%E1%BA%A7n_phi%C3%AAn_%C3%A2m_ti%E1%BA%BFng_vi%E1%BB%87t_b_mgsgze.mp4', 900, 1),
-(4, 2, 'Giới thiệu công ty', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1784136039/B%E1%BB%91i_c%E1%BA%A3nh_Sau_khi_gi%E1%BB%9Bi_thi%E1%BB%87u_b_rknava.mp4', 960, 2),
-(5, 3, 'Hỏi thông tin cá nhân của khách hàng', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1783833897/video1_r1i65s.mp4', 780, 1);
+(3, 2, 'Giới thiệu tên, vị trí, công việc', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1792413441/c%C3%A1i_ph%E1%BA%A7n_phi%C3%AAn_%C3%A2m_ti%E1%BA%BFng_vi%E1%BB%87t_b_mgsgze.mp4', 900, 1),
+(4, 2, 'Giới thiệu công ty', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1792413699/B%E1%BB%91i_c%E1%BA%A3nh_Sau_khi_gi%E1%BB%9Bi_thi%E1%BB%87u_b_rknava.mp4', 960, 2),
+(5, 3, 'Hỏi thông tin cá nhân của khách hàng', 'https://res.cloudinary.com/rir6b8kp/video/upload/v1792413972/video1_r1i65s.mp4', 780, 1);
 
 -- 20. course_enrollments
 INSERT INTO course_enrollments (id, user_id, course_id, enrolled_at, completed_at, legacy_access) VALUES
