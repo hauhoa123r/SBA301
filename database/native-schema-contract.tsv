@@ -5,6 +5,28 @@ COLUMN	audit_logs	endpoint	varchar(255)	false
 COLUMN	audit_logs	ip_address	varchar(45)	false
 COLUMN	audit_logs	method	varchar(10)	false
 COLUMN	audit_logs	user_agent	varchar(500)	true
+COLUMN	learning_analytics_settings	id	int	false
+COLUMN	learning_analytics_settings	minute_thresholds	varchar(100)	false
+PRIMARY_KEY	learning_analytics_settings	id
+COLUMN	user_learning_rules	user_id	bigint	false
+COLUMN	user_learning_rules	course_id	bigint	false
+COLUMN	user_learning_rules	daily_minutes	int	false
+COLUMN	user_learning_rules	lessons_per_day	int	false
+COLUMN	user_learning_rules	enabled	tinyint	false
+COLUMN	user_learning_rules	features	varchar(150)	false
+COLUMN	user_learning_rules	last_run_date	date	true
+COLUMN	user_learning_rules	updated_by	bigint	false
+COLUMN	user_learning_rules	updated_at	timestamp	false
+PRIMARY_KEY	user_learning_rules	user_id
+FOREIGN_KEY	user_learning_rules	user_id	users	id
+FOREIGN_KEY	user_learning_rules	course_id	courses	id
+FOREIGN_KEY	user_learning_rules	updated_by	users	id
+COLUMN	user_feature_usage	user_id	bigint	false
+COLUMN	user_feature_usage	activity_date	date	false
+COLUMN	user_feature_usage	feature	varchar(30)	false
+COLUMN	user_feature_usage	access_count	bigint	false
+PRIMARY_KEY	user_feature_usage	user_id,activity_date,feature
+FOREIGN_KEY	user_feature_usage	user_id	users	id
 FOREIGN_KEY	feedback_submissions	user_id	users	id
 FOREIGN_KEY	feedback_visits	form_id	feedback_forms	id
 FOREIGN_KEY	feedback_visits	user_id	users	id

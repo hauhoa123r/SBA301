@@ -65,9 +65,11 @@ public class StudentManagementRepository {
         return rows(em.createNativeQuery("""
             SELECT a.id, COALESCE(u.full_name, 'Admin'), a.action, CAST(a.before_data AS CHAR), CAST(a.after_data AS CHAR), UNIX_TIMESTAMP(a.created_at)
             FROM audit_logs a LEFT JOIN users u ON u.id = a.user_id
-            WHERE a.endpoint = :endpoint AND a.action IN ('STUDENT_STATUS', 'SUBSCRIPTION_GRANT', 'SUBSCRIPTION_REVOKE')
+            WHERE (a.endpoint = :endpoint AND a.action IN ('STUDENT_STATUS', 'SUBSCRIPTION_GRANT', 'SUBSCRIPTION_REVOKE'))
+               OR (a.endpoint = :activityEndpoint AND a.action IN ('ADMIN_ACCOUNT_CREATE','ACTIVITY_RULE_UPDATE','ACTIVITY_RUN','ADMIN_FEEDBACK_SUBMIT'))
             ORDER BY a.id DESC
-            """).setParameter("endpoint", "/api/admin/students/" + id).setMaxResults(50)).stream()
+            """).setParameter("endpoint", "/api/admin/students/" + id)
+            .setParameter("activityEndpoint", "/api/admin/activity-lab/users/" + id).setMaxResults(50)).stream()
             .map(r -> new History(number(r[0]), (String) r[1], (String) r[2], (String) r[3], (String) r[4], instant(r[5]))).toList();
     }
     private Student student(Object[] r, Instant now) {

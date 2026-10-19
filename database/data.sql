@@ -2982,4 +2982,6 @@ SET @seed_answers_201 = (SELECT id FROM `answers` WHERE `question_id` <=> @seed_
 
 -- Subscription tables remain for historical compatibility, without sale plans or fake purchases.
 -- No tokens, invoices, payments, subscriptions, enrollments, learner progress or personal data.
+-- Daily learning threshold configuration.
+INSERT IGNORE INTO learning_analytics_settings(id,minute_thresholds) VALUES(1,'5,10,15');
 COMMIT;

@@ -63,7 +63,7 @@ protected_ids() {
 }
 protected_before=$(protected_ids)
 if [ "$services" = 'backend nginx' ]; then
-    sh deployment/verify-mysql-schema.sh deployment/check-schema.sql
+    sh deployment/verify-mysql-schema.sh database/tests/check-schema.sql
 fi
 compose pull $services
 nginx_id=$(docker image inspect "$nginx_ref" --format '{{.Id}}')

@@ -227,6 +227,7 @@ CREATE TABLE `learning_activity_daily` (
   `activity_count` bigint NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_learning_activity_day` (`user_id`,`activity_date`),
+  KEY `idx_learning_activity_date` (`activity_date`,`user_id`),
   CONSTRAINT `fk_learning_activity_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -777,4 +778,43 @@ CREATE TABLE `student_answers` (
   CONSTRAINT `fk_sa_answer` FOREIGN KEY (`selected_answer_id`) REFERENCES `answers` (`id`) ON DELETE SET NULL,
   CONSTRAINT `fk_sa_attempt` FOREIGN KEY (`attempt_id`) REFERENCES `quiz_attempts` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_sa_question` FOREIGN KEY (`question_id`) REFERENCES `questions` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `learning_analytics_settings` (
+  `id` int NOT NULL,
+  `minute_thresholds` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '5,10,15',
+  PRIMARY KEY (`id`),
+  CONSTRAINT `chk_analytics_singleton` CHECK ((`id` = 1))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `user_learning_rules` (
+  `user_id` bigint NOT NULL,
+  `course_id` bigint NOT NULL,
+  `daily_minutes` int NOT NULL DEFAULT '5',
+  `lessons_per_day` int NOT NULL DEFAULT '1',
+  `enabled` tinyint(1) NOT NULL DEFAULT '0',
+  `features` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `last_run_date` date DEFAULT NULL,
+  `updated_by` bigint NOT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`user_id`),
+  KEY `idx_learning_rules_schedule` (`enabled`,`last_run_date`),
+  KEY `fk_learning_rule_course` (`course_id`),
+  KEY `fk_learning_rule_actor` (`updated_by`),
+  CONSTRAINT `fk_learning_rule_actor` FOREIGN KEY (`updated_by`) REFERENCES `users` (`id`),
+  CONSTRAINT `fk_learning_rule_course` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`),
+  CONSTRAINT `fk_learning_rule_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `chk_learning_rule_lessons` CHECK ((`lessons_per_day` between 0 and 20)),
+  CONSTRAINT `chk_learning_rule_minutes` CHECK ((`daily_minutes` between 1 and 180))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `user_feature_usage` (
+  `user_id` bigint NOT NULL,
+  `activity_date` date NOT NULL,
+  `feature` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `access_count` bigint NOT NULL DEFAULT '0',
+  PRIMARY KEY (`user_id`,`activity_date`,`feature`),
+  KEY `idx_feature_usage_date` (`activity_date`,`feature`),
+  CONSTRAINT `fk_feature_usage_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `chk_feature_access_count` CHECK ((`access_count` >= 0))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

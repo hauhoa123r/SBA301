@@ -105,6 +105,9 @@ WHERE NOT EXISTS (
         ("course_enrollments", "idx_dashboard_enrollment_date", "enrolled_at,course_id"),
         ("quiz_attempts", "idx_learning_attempt_user_quiz", "user_id,quiz_id,is_passed,id"),
         ("refresh_sessions", "idx_refresh_sessions_expiry", "expires_at"),
+        ("learning_activity_daily", "idx_learning_activity_date", "activity_date,user_id"),
+        ("user_learning_rules", "idx_learning_rules_schedule", "enabled,last_run_date"),
+        ("user_feature_usage", "idx_feature_usage_date", "activity_date,feature"),
     ):
         extra.append("SELECT " + literal(f"index mismatch: {table}.{name}")
                      + "\nWHERE NOT EXISTS (SELECT 1 FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE()"
