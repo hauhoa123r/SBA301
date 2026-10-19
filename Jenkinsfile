@@ -32,6 +32,7 @@ pipeline {
                     set -eu
 
                     python3 database/generate-schema-check.py --check
+                    python3 -m unittest discover -s database/tests -p 'test_fresh_initialization_reporting.py' -v
                     cd backend
                     mvn clean verify
                 '''
@@ -45,6 +46,11 @@ pipeline {
                     # Own image/container, tmpfs datadir, loopback test port; no production volumes.
                     python3 database/tests/fresh_initialization.py --docker --backend
                 '''
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'backend/target/edujar-consolidated-*/*.log,backend/target/edujar-consolidated-*/*.json,backend/target/surefire-reports/TEST-*-consolidated-*.xml', allowEmptyArchive: true
+                }
             }
         }
 

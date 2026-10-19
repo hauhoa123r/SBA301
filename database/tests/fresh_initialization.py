@@ -205,7 +205,9 @@ def backend_checks(target, port, password, data_dir, tests_pattern=None):
                MAIL_PROVIDER="smtp", MAIL_FROM_EMAIL="isolated@seed.invalid", SMTP_HOST="127.0.0.1", SMTP_PORT="9",
                SMTP_AUTH="false", SMTP_STARTTLS_ENABLE="false", SMTP_USERNAME="", SMTP_PASSWORD="",
                MANAGEMENT_HEALTH_MAIL_ENABLED="false",
-               PAYOS_CLIENT_ID="", PAYOS_API_KEY="", PAYOS_CHECKSUM_KEY="",
+               # Webhook signature verification is local and needs a nonempty test key.
+               # An empty env value overrides payos.checksum-key in the security-test profile.
+               PAYOS_CLIENT_ID="", PAYOS_API_KEY="", PAYOS_CHECKSUM_KEY="security-test-checksum-key",
                PAYOS_CREATE_PAYMENT_URL="http://127.0.0.1:9/payment-requests", PAYOS_PAYMENT_REQUEST_URL="http://127.0.0.1:9/payment-requests")
     mvn = ["mvn.cmd" if os.name == "nt" else "mvn"]
     cache = os.environ.get("MAVEN_TEST_CACHE")
@@ -222,7 +224,7 @@ def backend_checks(target, port, password, data_dir, tests_pattern=None):
     reports = [ET.parse(p).getroot() for p in (ROOT / "backend/target/surefire-reports").glob("TEST-*-"+suffix+".xml")]
     summary = {key:sum(int(r.get(key,0)) for r in reports) for key in ("tests","failures","errors","skipped")}
     (target / "maven-summary.json").write_text(json.dumps(summary,indent=2),encoding="utf-8")
-    assert reports and result.returncode == 0 and summary["failures"] == summary["errors"] == 0, str(target / "maven.log")
+    check_maven_result(result.returncode, reports, summary, target / "maven.log")
     with (target / "package.log").open("wb") as log:
         result = subprocess.run(mvn + ["-DskipTests", "package"], cwd=ROOT / "backend", env=env,
                                 stdout=log, stderr=subprocess.STDOUT, timeout=300)
@@ -249,6 +251,22 @@ def backend_checks(target, port, password, data_dir, tests_pattern=None):
         finally:
             process.terminate(); process.wait(timeout=30)
     return dict(tests=summary, spring_boot="PASS: Hibernate validate and HTTP health UP")
+
+
+def check_maven_result(returncode, reports, summary, log_path):
+    if reports and returncode == 0 and summary["failures"] == summary["errors"] == 0:
+        return
+    print(f"Fresh MySQL backend tests FAILED: Maven exit={returncode}, summary={summary}", flush=True)
+    for report in reports:
+        for case in report.findall("testcase"):
+            for failure in list(case.findall("failure")) + list(case.findall("error")):
+                print(f"FAILED {case.get('classname', report.get('name', ''))}.{case.get('name', '')}: "
+                      f"{failure.get('message', '')}", flush=True)
+                if failure.text:
+                    print(failure.text[:6000], flush=True)
+    print(f"Last 100 lines of {log_path}:", flush=True)
+    print("\n".join(log_path.read_text(encoding="utf-8", errors="replace").splitlines()[-100:]), flush=True)
+    raise RuntimeError(f"Fresh MySQL backend tests failed; see {log_path}")
 
 
 def main():
