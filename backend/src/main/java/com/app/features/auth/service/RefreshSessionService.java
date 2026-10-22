@@ -32,9 +32,14 @@ public class RefreshSessionService {
     @Transactional
     public void register(String rawToken) {
         Claims claims = claims(rawToken);
+        // Serialize session creation with admin deletion; a login completed just before deletion
+        // must not register a new usable/unrevoked session after revocation has finished.
+        UserEntity user = users.findByIdForUpdate(Long.valueOf(claims.getSubject())).orElseThrow(RefreshSessionService::invalid);
+        if (user.getStatus() != UserStatus.ACTIVE || !SupportedRolePolicy.hasSupportedRole(user)
+                || !jwt.matchesCredentials(claims,user)) throw invalid();
         var session = new RefreshSessionEntity();
         session.setId(claims.get("sid", String.class));
-        session.setUser(users.getReferenceById(Long.valueOf(claims.getSubject())));
+        session.setUser(user);
         session.setTokenHash(hash(rawToken));
         session.setExpiresAt(claims.getExpiration().toInstant());
         sessions.save(session);

@@ -6,9 +6,11 @@ import "./adminDashboard.css";
 export function ManagementShell({ title, children }: { title: string; children: ReactNode }) {
   return <div className="admin-shell">
     <aside className="admin-sidebar"><Link to="/admin/dashboard" className="admin-brand">Chinese Learning</Link>
-      <nav aria-label="Điều hướng quản trị"><NavLink to="/admin/dashboard">Dashboard</NavLink><NavLink to="/admin/students">Học viên</NavLink>
+      <nav aria-label="Điều hướng quản trị"><NavLink to="/admin/dashboard">Tổng quan</NavLink><NavLink to="/admin/students">Học viên</NavLink>
+        <NavLink to="/admin/courses">Khóa học</NavLink><NavLink to="/admin/registration-analytics">Đăng ký tài khoản</NavLink><NavLink to="/admin/payments">Thanh toán</NavLink>
         <NavLink to="/admin/learning-analytics">Hoạt động học tập</NavLink><NavLink to="/admin/subscription-plans">Gói học</NavLink><NavLink to="/admin/assignments">Chấm bài tập</NavLink><NavLink to="/admin/auth-settings">Cài đặt đăng ký</NavLink>
-        <NavLink to="/admin/feedback" end>Feedback</NavLink><NavLink to="/admin/feedback/statistics">Thống kê feedback</NavLink></nav></aside>
+        <NavLink to="/admin/feedback" end>Feedback</NavLink><NavLink to="/admin/feedback/statistics">Thống kê feedback</NavLink>
+        <NavLink to="/admin/catalog-dashboard">Thống kê gói và danh mục</NavLink></nav></aside>
     <main className="admin-main"><header className="admin-header"><div><p className="admin-eyebrow">QUẢN TRỊ HỆ THỐNG</p><h1>{title}</h1></div>
       <div className="admin-header-actions"><Link className="admin-button" to="/admin/dashboard">Dashboard</Link><UserProfileMenu /></div></header>
       {children}

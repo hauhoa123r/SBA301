@@ -9,11 +9,16 @@ public final class LearningAnalytics {
     public record Settings(@NotNull @Size(min=1, max=12) List<@NotNull @Min(1) @Max(1440) Integer> minutes) {}
     public record Threshold(int minutes, long users) {}
     public record Day(LocalDate date, long users, long watchSeconds, List<Threshold> thresholds) {}
-    public record Course(long id, String title, long enrolled, long started, long completedLessonUsers) {}
+    public record Course(long id, String title, long enrolled, long started, long completedLessonUsers,
+                         long uniqueStudents, long courseCompletionCount, java.math.BigDecimal startRate) {}
+    public record Summary(long totalEnrollments,long uniqueEnrolledStudents,long studentsStarted,
+                          long studentsCompletedLesson,long courseCompletions) {}
+    public record EnrollmentDay(LocalDate date,long enrollments) {}
     public record Learner(long id, String fullName, String email, long watchSeconds, long activities) {}
     public record Feature(String feature, long users, long accesses) {}
     public record Report(String timezone, Settings settings, List<Day> days, List<Course> courses,
-                         List<Learner> learners, long totalLearners, int page, List<Feature> features) {}
+                         List<Learner> learners, long totalLearners, int page, List<Feature> features,
+                         Summary summary,List<EnrollmentDay> enrollmentTrend,boolean includeLab) {}
     public record CreateAccount(@NotBlank @Size(max=255) String fullName,
         @NotBlank @Email @Size(max=255) String email, @NotBlank @Size(min=12, max=72) String password,
         @NotBlank @Size(max=500) String reason) {}

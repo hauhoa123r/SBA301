@@ -23,6 +23,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 import java.math.BigDecimal;
 import com.app.exception.BadRequestException;
@@ -39,11 +40,26 @@ class PaymentCallbackServiceImplTest {
     void subscriptionPaymentActivatesOnlyOnceEvenWhenCallbacksRepeatOrArriveOutOfOrder() {
         var fixture = new SubscriptionCallbackFixture();
         fixture.service.applyVerifiedResult(PaymentProvider.PAYOS, fixture.result(true, true), Map.of("amount", 699000));
+        var firstConfirmation = fixture.payment.getPaidAt(); assertNotNull(firstConfirmation);
         fixture.service.applyVerifiedResult(PaymentProvider.PAYOS, fixture.result(true, true), Map.of("amountPaid", 699000));
         fixture.service.applyVerifiedResult(PaymentProvider.PAYOS, fixture.result(true, false), Map.of());
         verify(fixture.subscriptions, times(1)).activatePaidInvoice(fixture.invoice);
         verifyNoInteractions(fixture.enrollments);
         assertEquals(InvoiceStatus.PAID, fixture.invoice.getStatus());
+        assertEquals(firstConfirmation,fixture.payment.getPaidAt());
+    }
+
+    @Test void legacyCourseCallbackUsesPendingSnapshotAfterCatalogPriceChanges() {
+        var fixture = new SubscriptionCallbackFixture();
+        fixture.invoice.setSubscriptionPlanCode(null);
+        var user = new UserEntity(); user.setId(7L); fixture.invoice.setUser(user);
+        var course = new CourseEntity(); course.setId(8L); course.setPrice(new BigDecimal("999000")); fixture.invoice.setCourse(course);
+        assertThrows(BadRequestException.class,()->fixture.service.applyVerifiedResult(PaymentProvider.PAYOS,fixture.result(true,true),Map.of("amount",999000)));
+        fixture.service.applyVerifiedResult(PaymentProvider.PAYOS,fixture.result(true,true),Map.of("amount",699000));
+        assertEquals(new BigDecimal("699000"),fixture.payment.getAmount());
+        assertNotNull(fixture.payment.getPaidAt());
+        verify(fixture.enrollments).grantLegacyAccess(7L,8L);
+        verifyNoInteractions(fixture.subscriptions);
     }
 
     @Test
@@ -71,6 +87,7 @@ class PaymentCallbackServiceImplTest {
         final SubscriptionService subscriptions = mock(SubscriptionService.class);
         final ICourseEnrollmentRepository enrollments = mock(ICourseEnrollmentRepository.class);
         final InvoiceEntity invoice = new InvoiceEntity();
+        final PaymentEntity payment = new PaymentEntity();
         final PaymentCallbackServiceImpl service;
 
         SubscriptionCallbackFixture() {
@@ -80,7 +97,6 @@ class PaymentCallbackServiceImplTest {
             invoice.setSubscriptionPlanCode("STANDARD");
             invoice.setSubscriptionDurationDays(30);
             invoice.setStatus(InvoiceStatus.PENDING);
-            PaymentEntity payment = new PaymentEntity();
             payment.setInvoice(invoice);
             payment.setAmount(new BigDecimal("699000"));
             when(payments.findFirstByProviderAndTransactionIdOrderByIdDesc(PaymentProvider.PAYOS, "123"))
@@ -88,7 +104,7 @@ class PaymentCallbackServiceImplTest {
             when(invoices.findByIdForUpdate(100L)).thenReturn(Optional.of(invoice));
             service = new PaymentCallbackServiceImpl(mock(PayOSService.class), invoices, payments, enrollments,
                     new InvoiceConverter(new ModelMapper(), mock(ICouponRepository.class)),
-                    mock(PaymentConverter.class), mock(EntityManager.class), subscriptions);
+                    new PaymentConverter(new ModelMapper()), mock(EntityManager.class), subscriptions);
         }
 
         PaymentVerifyResponse result(boolean valid, boolean success) {
@@ -166,7 +182,7 @@ class PaymentCallbackServiceImplTest {
                 mock(SubscriptionService.class)
         );
 
-        Map<String, String> params = Map.of("orderCode", "175000000000009");
+        Map<String, String> params = Map.of("orderCode", "175000000000009", "amount", "100");
         PaymentVerifyResponse response = new PaymentVerifyResponse(
                 true,
                 true,
@@ -186,6 +202,7 @@ class PaymentCallbackServiceImplTest {
         PaymentEntity payment = new PaymentEntity();
         payment.setId(9L);
         payment.setInvoice(invoice);
+        payment.setAmount(new BigDecimal("100"));
 
         when(payOSService.verifyCallback(params)).thenReturn(response);
         when(paymentRepository.findFirstByProviderAndTransactionIdOrderByIdDesc(

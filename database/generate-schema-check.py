@@ -99,6 +99,8 @@ WHERE NOT EXISTS (
                              + literal("'" + value + "'") + ",COLUMN_TYPE)>0)))")
     for table, name, columns in (
         ("users", "idx_dashboard_users_created", "created_at"),
+        ("payments", "idx_payments_status_paid", "status,paid_at"),
+        ("audit_logs", "idx_audit_target_action", "endpoint,action"),
         ("invoices", "idx_dashboard_invoices_month", "status,updated_at,amount"),
         ("invoices", "idx_dashboard_invoices_plan", "status,subscription_plan_code,amount"),
         ("invoices", "idx_dashboard_invoices_course", "status,course_id,subscription_plan_code,amount"),

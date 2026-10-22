@@ -16,7 +16,8 @@ CREATE TABLE `audit_logs` (
   `user_agent` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `idx_audit_logs_search` (`action`,`created_at`)
+  KEY `idx_audit_logs_search` (`action`,`created_at`),
+  KEY `idx_audit_target_action` (`endpoint`,`action`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `authentication_settings` (
@@ -527,9 +528,11 @@ CREATE TABLE `payments` (
   `status` enum('CREATED','SUCCESS','FAILED','CANCELLED','EXPIRED') COLLATE utf8mb4_unicode_ci NOT NULL,
   `raw_response` json DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `paid_at` datetime(6) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_payments_transaction` (`provider`,`transaction_id`),
   KEY `fk_payments_invoice` (`invoice_id`),
+  KEY `idx_payments_status_paid` (`status`,`paid_at`),
   CONSTRAINT `fk_payments_invoice` FOREIGN KEY (`invoice_id`) REFERENCES `invoices` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

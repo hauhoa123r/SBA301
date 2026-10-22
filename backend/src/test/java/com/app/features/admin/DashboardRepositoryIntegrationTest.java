@@ -165,7 +165,15 @@ class DashboardRepositoryIntegrationTest {
         invoice.setUser(user); invoice.setCourse(course); invoice.setOriginalAmount(new BigDecimal("1200"));
         invoice.setDiscountAmount(new BigDecimal("1200").subtract(new BigDecimal(amount)));
         invoice.setAmount(new BigDecimal(amount)); invoice.setStatus(status);
-        return em.persist(invoice);
+        em.persistAndFlush(invoice);
+        if (status == InvoiceStatus.PAID) {
+            var payment = new PaymentEntity(); payment.setInvoice(invoice);
+            payment.setProvider(com.app.features.model.enums.PaymentProvider.PAYOS);
+            payment.setTransactionId(UUID.randomUUID().toString()); payment.setAmount(invoice.getAmount());
+            payment.setStatus(com.app.features.model.enums.PaymentStatus.SUCCESS); payment.setPaidAt(now.minusSeconds(60));
+            em.persistAndFlush(payment);
+        }
+        return invoice;
     }
     private void subscription(UserEntity user, String code, Instant start, Instant end) {
         UserSubscriptionEntity subscription = new UserSubscriptionEntity();

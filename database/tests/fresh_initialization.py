@@ -191,7 +191,7 @@ def validate(sql, run, client):
                 data_sha256=hashlib.sha256((DB / "data.sql").read_bytes()).hexdigest(), seed_replay="PASS")
 
 
-def backend_checks(target, port, password, data_dir, tests_pattern=None):
+def backend_checks(target, port, password, data_dir, tests_pattern=None, reuse_forks=False):
     env = os.environ.copy()
     java_home = os.environ.get("JAVA_HOME", "C:/Program Files/Java/jdk-17" if os.name == "nt" else "")
     if java_home:
@@ -221,7 +221,7 @@ def backend_checks(target, port, password, data_dir, tests_pattern=None):
     tests = tests_pattern or ("*Test" if os.name == "nt" and isinstance(data_dir, Path) else "*Test,!RefreshSessionMySqlTest")
     with (target / "maven.log").open("wb") as log:
         result = subprocess.run(mvn + ["-Dsurefire.reportNameSuffix="+suffix, "-Dtest="+tests,
-                                       "-DreuseForks=false", "test"], cwd=ROOT / "backend", env=env,
+                                       "-DreuseForks="+str(reuse_forks).lower(), "test"], cwd=ROOT / "backend", env=env,
                                 stdout=log, stderr=subprocess.STDOUT, timeout=1200)
     reports = [ET.parse(p).getroot() for p in (ROOT / "backend/target/surefire-reports").glob("TEST-*-"+suffix+".xml")]
     summary = {key:sum(int(r.get(key,0)) for r in reports) for key in ("tests","failures","errors","skipped")}
@@ -287,6 +287,7 @@ def main():
             for name in LEGACY_CHAIN:
                 verify(); run(client,input=(LEGACY_DIR/name).read_bytes())
             verify(); run(client,input=(DB/"migrations/20261019_learning_analytics.sql").read_bytes())
+            verify(); run(client,input=(DB/"migrations/20261022_admin_dashboard.sql").read_bytes())
             reference = snapshot(sql)
             reference_content = content_snapshot(sql)
             verify()

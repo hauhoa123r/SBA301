@@ -26,10 +26,10 @@ export function useAdminResource<T>(url: string) {
   const [result, setResult] = useState<{ key: string; data?: T; error?: string }>({ key: "" });
   const key = `${url}#${revision}`;
   useEffect(() => {
-    let active = true;
-    axiosClient.get<T>(url).then(({ data }) => { if (active) setResult({ key, data }); })
-      .catch((error: unknown) => { if (active) setResult({ key, error: getApiErrorMessage(error) }); });
-    return () => { active = false; };
+    const controller = new AbortController();
+    axiosClient.get<T>(url, { signal: controller.signal }).then(({ data }) => { if (!controller.signal.aborted) setResult({ key, data }); })
+      .catch((error: unknown) => { if (!controller.signal.aborted) setResult({ key, error: getApiErrorMessage(error) }); });
+    return () => controller.abort();
   }, [url, key]);
   return { loading: result.key !== key, data: result.key === key ? result.data : undefined,
     error: result.key === key ? result.error : undefined, refresh: () => setRevision(value => value + 1) };

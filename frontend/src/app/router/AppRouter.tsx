@@ -31,6 +31,10 @@ const ActivityLabPage = lazy(() => import("@/pages/admin-dashboard/ActivityLabPa
   .then((module) => ({ default: module.ActivityLabPage })));
 const AdminDashboardPage = lazy(() => import("@/pages/admin-dashboard/AdminDashboardPage")
   .then((module) => ({ default: module.AdminDashboardPage })));
+const OverviewDashboardPage = lazy(() => import("@/pages/admin-dashboard/OverviewDashboardPage").then(m => ({ default: m.OverviewDashboardPage })));
+const CourseManagementPage = lazy(() => import("@/pages/admin-dashboard/AdminDashboardPage").then(m => ({ default: m.CourseManagementPage })));
+const RegistrationAnalyticsPage = lazy(() => import("@/pages/admin-dashboard/RegistrationAnalyticsPage").then(m => ({ default: m.RegistrationAnalyticsPage })));
+const PaymentAnalyticsPage = lazy(() => import("@/pages/admin-dashboard/PaymentAnalyticsPage").then(m => ({ default: m.PaymentAnalyticsPage })));
 const AssignmentReviewPage = lazy(() => import("@/pages/admin-dashboard/AssignmentReviewPage")
   .then((module) => ({ default: module.AssignmentReviewPage })));
 const StudentManagementPage = lazy(() => import("@/pages/admin-dashboard/StudentManagementPage")
@@ -56,7 +60,11 @@ export function AppRouter() {
         <Route path="admin/activity-lab" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải điều phối hoạt động…</div>}><ActivityLabPage /></Suspense></RoleRoute>} />
         <Route path="admin/feedback" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải feedback…</div>}><FeedbackManagementPage /></Suspense></RoleRoute>} />
         <Route path="admin/feedback/statistics" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải thống kê…</div>}><FeedbackStatisticsPage /></Suspense></RoleRoute>} />
-        <Route path="admin/dashboard" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải Dashboard…</div>}><AdminDashboardPage /></Suspense></RoleRoute>} />
+        <Route path="admin/dashboard" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải Dashboard…</div>}><OverviewDashboardPage /></Suspense></RoleRoute>} />
+        <Route path="admin/catalog-dashboard" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải danh mục…</div>}><AdminDashboardPage /></Suspense></RoleRoute>} />
+        <Route path="admin/courses" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải khóa học…</div>}><CourseManagementPage /></Suspense></RoleRoute>} />
+        <Route path="admin/registration-analytics" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải đăng ký…</div>}><RegistrationAnalyticsPage /></Suspense></RoleRoute>} />
+        <Route path="admin/payments" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải thanh toán…</div>}><PaymentAnalyticsPage /></Suspense></RoleRoute>} />
         <Route path="admin/assignments" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải bài nộp…</div>}><AssignmentReviewPage /></Suspense></RoleRoute>} />
         <Route path="admin/students" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải học viên…</div>}><StudentManagementPage /></Suspense></RoleRoute>} />
         <Route path="admin/students/:id" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải học viên…</div>}><StudentDetailPage /></Suspense></RoleRoute>} />

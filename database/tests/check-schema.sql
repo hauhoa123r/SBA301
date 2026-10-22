@@ -389,6 +389,8 @@ SELECT 'payments', 'id', 'bigint', 1, 0, 0, 0
 UNION ALL
 SELECT 'payments', 'invoice_id', 'bigint', 1, 0, 0, 0
 UNION ALL
+SELECT 'payments', 'paid_at', 'datetime,timestamp', 0, 0, 0, 0
+UNION ALL
 SELECT 'payments', 'provider', 'enum,varchar,char', 1, 0, 0, 0
 UNION ALL
 SELECT 'payments', 'raw_response', 'json', 0, 0, 0, 0
@@ -1322,6 +1324,12 @@ WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DA
 UNION ALL
 SELECT 'index mismatch: users.idx_dashboard_users_created'
 WHERE NOT EXISTS (SELECT 1 FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='users' AND INDEX_NAME='idx_dashboard_users_created' GROUP BY TABLE_NAME,INDEX_NAME HAVING GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX)='created_at')
+UNION ALL
+SELECT 'index mismatch: payments.idx_payments_status_paid'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='payments' AND INDEX_NAME='idx_payments_status_paid' GROUP BY TABLE_NAME,INDEX_NAME HAVING GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX)='status,paid_at')
+UNION ALL
+SELECT 'index mismatch: audit_logs.idx_audit_target_action'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='audit_logs' AND INDEX_NAME='idx_audit_target_action' GROUP BY TABLE_NAME,INDEX_NAME HAVING GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX)='endpoint,action')
 UNION ALL
 SELECT 'index mismatch: invoices.idx_dashboard_invoices_month'
 WHERE NOT EXISTS (SELECT 1 FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='invoices' AND INDEX_NAME='idx_dashboard_invoices_month' GROUP BY TABLE_NAME,INDEX_NAME HAVING GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX)='status,updated_at,amount')

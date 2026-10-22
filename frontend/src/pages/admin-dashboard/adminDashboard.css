@@ -101,3 +101,13 @@
 .admin-header-actions { flex-wrap: wrap; }
 .admin-management-form label.admin-toggle { display: flex; align-items: center; gap: 12px; margin: 20px 0; font-size: 15px; }
 .admin-management-form .admin-toggle input { margin: 0; width: 20px; height: 20px; accent-color: #2f80b7; }
+.admin-filters input:not([type=checkbox]) { display: block; color: #f8fafc; background: #08213b; border: 1px solid #2f80b7; border-radius: 8px; padding: 9px; margin-top: 5px; max-width: 100%; }
+.admin-filters .admin-search input { border: 0; margin: 0; }
+.admin-check { display: flex; gap: 8px; align-items: center; padding: 10px 0; }
+.admin-cards { margin-bottom: 22px; }
+.admin-danger { border-color: #fda4af; color: #fda4af; margin-bottom: 16px; }
+.admin-dialog form { margin: 20px 0; }
+.admin-dialog label { display: block; margin-bottom: 16px; }
+.admin-dialog dd { overflow-wrap: anywhere; min-width: 0; }
+.admin-sidebar { overflow-y: auto; }
+.admin-shell :focus-visible { outline: 2px solid #93c5fd; outline-offset: 3px; }

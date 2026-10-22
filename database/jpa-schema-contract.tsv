@@ -192,6 +192,7 @@ COLUMN	payments	amount	decimal(15,2)	false
 COLUMN	payments	created_at	datetime(6)	true
 COLUMN	payments	id	bigint	false
 COLUMN	payments	invoice_id	bigint	false
+COLUMN	payments	paid_at	datetime(6)	true
 COLUMN	payments	provider	enum ('MOMO','PAYOS','STRIPE','VNPAY','ZALOPAY')	false
 COLUMN	payments	raw_response	json	true
 COLUMN	payments	status	enum ('CANCELLED','CREATED','EXPIRED','FAILED','SUCCESS')	false

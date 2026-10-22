@@ -27,6 +27,7 @@ public class StudentManagementService {
     private final SubscriptionPlanRepository plans;
     private final AdminAuditRepository audit;
     private final Clock clock;
+    private final com.app.features.auth.repository.RefreshSessionRepository refreshSessions;
     private static final Instant MAX_EXPIRY = Instant.parse("2038-01-19T03:14:07Z");
 
     public StudentPage list(String search, String status, String subscription, int page) {
@@ -42,6 +43,19 @@ public class StudentManagementService {
         if (student == null) throw new ResourceNotFoundException("Không tìm thấy học viên.");
         return new Detail(student, students.courses(id), students.history(id));
     }
+    @Transactional public Detail delete(Long id, ReasonRequest request, AuditContext context) {
+        if (id.equals(context.actorId())) throw new BadRequestException("Không được tự xóa tài khoản quản trị.");
+        var user = lockStudent(id);
+        if (user.getStatus() == UserStatus.DELETED) return detail(id);
+        var before = Map.of("status", user.getStatus().name());
+        user.setStatus(UserStatus.DELETED);
+        users.saveAndFlush(user);
+        refreshSessions.revokeAllForUser(id);
+        students.disableActivityRules(id);
+        audit.write(context, "STUDENT_DELETE", target(id), before,
+            Map.of("status", "DELETED", "targetId", id), request.reason());
+        return detail(id);
+    }
     @Transactional public Detail changeStatus(Long id, StatusRequest request, AuditContext context) {
         var user = lockStudent(id);
         UserStatus next = UserStatus.valueOf(request.status());
@@ -54,7 +68,8 @@ public class StudentManagementService {
         return detail(id);
     }
     @Transactional public Detail grant(Long id, GrantRequest request, AuditContext context) {
-        lockStudent(id);
+        if (lockStudent(id).getStatus() == UserStatus.DELETED)
+            throw new BadRequestException("Không cấp gói cho tài khoản đã xóa.");
         var plan = plans.findByCodeAndActiveTrue(request.planCode()).orElseThrow(() -> new BadRequestException("Gói học không tồn tại hoặc đã ngừng bán."));
         if (SubscriptionService.FREE_TRIAL.equals(plan.getCode())) throw new BadRequestException("Không cấp lại gói học thử qua quản trị.");
         var subscription = subscriptions.findByUserIdForUpdate(id).orElse(null);
