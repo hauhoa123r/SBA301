@@ -7,11 +7,10 @@ import "./learningAnalytics.css";
 import { DateControls, Metric, ValueChart } from "@/features/admin-dashboard/analytics";
 import { defaultDates, type LearningReport } from "@/features/admin-dashboard/analyticsModel";
 
-interface Day { date: string; users: number; watchSeconds: number; thresholds: { minutes: number; users: number }[] }
 interface Report extends LearningReport {
-  settings: { minutes: number[] }; days: Day[];
+  settings: { minutes: number[] };
   learners: { id: number; fullName: string; email: string; watchSeconds: number; activities: number }[];
-  totalLearners: number; features: { feature: string; users: number; accesses: number }[];
+  features: { feature: string; users: number; accesses: number }[];
 }
 export function LearningAnalyticsPage() {
   const today = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Ho_Chi_Minh" });

@@ -8,21 +8,33 @@ import { ManagementShell, ResourceStatus } from "./ManagementShell";
 
 export function OverviewDashboardPage() {
   const [dates, setDates] = useState(defaultDates);
+  const today = defaultDates().to;
   const query = new URLSearchParams({ from: dates.from, to: dates.to, mode: dates.mode, includeLab: String(dates.includeLab) });
   const learningQuery = new URLSearchParams({ from: dates.from, to: dates.to, includeLab: String(dates.includeLab) });
+  const todayQuery = new URLSearchParams({ from: today, to: today, includeLab: String(dates.includeLab) });
   const registrations = useAdminResource<RegistrationReport>(`/api/admin/registration-analytics?${query}`);
   const learning = useAdminResource<LearningReport>(`/api/admin/learning-analytics?${learningQuery}`);
+  const todayLearning = useAdminResource<LearningReport>(`/api/admin/learning-analytics?${todayQuery}`);
   const payments = useAdminResource<PaymentReport>(`/api/admin/payments?from=${dates.from}&to=${dates.to}&mode=${dates.mode}&size=1`);
   const r = registrations.data; const l = learning.data; const p = payments.data;
+  const todayActivity = todayLearning.data?.days.find(day => day.date === today);
+  function refresh() {
+    registrations.refresh(); learning.refresh(); todayLearning.refresh(); payments.refresh();
+  }
   return <ManagementShell title="Tổng quan Edujar">
     <DateControls value={dates} onChange={setDates} lab hourly maxDays={93} />
-    <p className="admin-note">Đăng ký và giao dịch theo khoảng chọn. KPI học tập là toàn bộ lịch sử của nhóm học viên đã chọn; tổng doanh thu là toàn bộ giao dịch SUCCESS. Tổng người dùng gồm các vai trò, loại tài khoản đã xóa.</p>
-    <ResourceStatus {...registrations} retry={registrations.refresh} /><ResourceStatus {...learning} retry={learning.refresh} /><ResourceStatus {...payments} retry={payments.refresh} />
+    <button type="button" className="admin-button" onClick={refresh} disabled={registrations.loading || learning.loading || todayLearning.loading || payments.loading}>Làm mới dữ liệu</button>
+    <p className="admin-note">Đăng ký và giao dịch theo khoảng chọn. Chỉ số ghi danh và bắt đầu học dùng toàn bộ lịch sử của nhóm học viên đã chọn; tổng doanh thu là toàn bộ giao dịch SUCCESS. Tổng người dùng gồm các vai trò, loại tài khoản đã xóa.</p>
+    <p className="admin-note">Active = học viên có thời gian xem video hoặc thao tác học đã lưu trong ngày, mỗi người tính một lần/ngày theo giờ Việt Nam. Chỉ tính STUDENT, loại ADMIN; mặc định loại tài khoản có dấu vết Activity Lab. Số active hôm nay luôn theo ngày hiện tại; biểu đồ active luôn hiển thị theo ngày trong khoảng chọn.</p>
+    <ResourceStatus {...registrations} retry={registrations.refresh} /><ResourceStatus {...learning} retry={learning.refresh} /><ResourceStatus {...todayLearning} retry={todayLearning.refresh} /><ResourceStatus {...payments} retry={payments.refresh} />
     <div className="admin-cards">
+      {todayActivity && <Metric title="Học viên active hôm nay" value={todayActivity.users} detail={`${today} · Giờ Việt Nam`} />}
+      {l && <Metric title="Học viên active trong khoảng" value={l.totalLearners} detail="Mỗi học viên tính một lần trong toàn khoảng chọn" />}
       {r && <><Metric title="Tổng người dùng" value={r.totalUsers} /><Metric title="Đăng ký mới trong khoảng" value={r.total} /></>}
       {l && <><Metric title="Học viên đã ghi danh" value={l.summary.uniqueEnrolledStudents} /><Metric title="Học viên đã bắt đầu học" value={l.summary.studentsStarted} /></>}
       {p && <><Metric title="Thanh toán thành công trong khoảng" value={p.successfulPayments} /><section className="admin-card"><h2>Tổng doanh thu</h2><strong className="admin-card-value">{formatMoney(p.totalRevenue)}</strong><p className="admin-card-detail">Doanh thu gộp từ SUCCESS</p></section></>}
     </div>
+    {l && <ValueChart title="Học viên active theo ngày (DAU)" rows={l.days.map(day => ({ label: day.date, value: day.users }))} />}
     <div className="admin-grid">
       {r && <ValueChart title="Xu hướng đăng ký" rows={r.buckets.map(v => ({ label: v.label, value: v.count }))} />}
       {l && <><ValueChart title="Ghi danh theo khóa · toàn bộ lịch sử" rows={l.courses.map(c => ({ label: c.title, value: c.enrolled }))} />

@@ -9,6 +9,8 @@ export interface RegistrationReport {
   buckets: { label: string; count: number }[]; hourlySignals: { hour: string; count: number }[]; notes: string[];
 }
 export interface LearningReport {
+  days: { date: string; users: number; watchSeconds: number; thresholds: { minutes: number; users: number }[] }[];
+  totalLearners: number;
   summary: { totalEnrollments: number; uniqueEnrolledStudents: number; studentsStarted: number; studentsCompletedLesson: number; courseCompletions: number };
   courses: { id: number; title: string; enrolled: number; uniqueStudents: number; started: number; completedLessonUsers: number; courseCompletionCount: number; startRate: number | null }[];
   enrollmentTrend: { date: string; enrollments: number }[];
