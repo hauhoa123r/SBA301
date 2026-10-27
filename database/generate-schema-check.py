@@ -110,6 +110,8 @@ WHERE NOT EXISTS (
         ("learning_activity_daily", "idx_learning_activity_date", "activity_date,user_id"),
         ("user_learning_rules", "idx_learning_rules_schedule", "enabled,last_run_date"),
         ("user_feature_usage", "idx_feature_usage_date", "activity_date,feature"),
+        ("contact_messages", "idx_contact_created", "created_at,id"),
+        ("contact_messages", "idx_contact_status_created", "status,created_at,id"),
     ):
         extra.append("SELECT " + literal(f"index mismatch: {table}.{name}")
                      + "\nWHERE NOT EXISTS (SELECT 1 FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE()"

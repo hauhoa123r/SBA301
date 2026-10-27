@@ -46,6 +46,17 @@ COLUMN	chapters	course_id	bigint	false
 COLUMN	chapters	id	bigint	false
 COLUMN	chapters	order_index	integer	false
 COLUMN	chapters	title	varchar(255)	false
+COLUMN	contact_messages	created_at	datetime(6)	false
+COLUMN	contact_messages	email	varchar(254)	false
+COLUMN	contact_messages	full_name	varchar(100)	false
+COLUMN	contact_messages	id	bigint	false
+COLUMN	contact_messages	message	varchar(5000)	false
+COLUMN	contact_messages	replied_at	datetime(6)	true
+COLUMN	contact_messages	replied_by	bigint	true
+COLUMN	contact_messages	reply_text	varchar(5000)	true
+COLUMN	contact_messages	status	enum ('NEW','RESOLVED')	false
+COLUMN	contact_messages	topic	varchar(100)	false
+COLUMN	contact_messages	user_id	bigint	true
 COLUMN	coupons	code	varchar(50)	false
 COLUMN	coupons	created_at	datetime(6)	true
 COLUMN	coupons	created_by	bigint	false
@@ -423,6 +434,7 @@ PRIMARY_KEY	badges	id
 PRIMARY_KEY	categories	id
 PRIMARY_KEY	certificates	id
 PRIMARY_KEY	chapters	id
+PRIMARY_KEY	contact_messages	id
 PRIMARY_KEY	coupons	id
 PRIMARY_KEY	course_enrollments	id
 PRIMARY_KEY	course_reviews	id

@@ -9,6 +9,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface ILearningActivityDailyRepository extends JpaRepository<LearningActivityDailyEntity, Long> {
+    @Query("select a.activityDate from LearningActivityDailyEntity a where a.userId = :userId "
+        + "and a.activityDate <= :today and (a.watchSeconds > 0 or a.activityCount > 0) order by a.activityDate")
+    List<LocalDate> findActiveDates(@Param("userId") Long userId, @Param("today") LocalDate today);
     interface Day { LocalDate getDate(); long getWatchSeconds(); long getActivityCount(); }
 
     @Query("""

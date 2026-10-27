@@ -821,3 +821,25 @@ CREATE TABLE `user_feature_usage` (
   CONSTRAINT `fk_feature_usage_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `chk_feature_access_count` CHECK ((`access_count` >= 0))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `contact_messages` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `full_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `topic` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `message` varchar(5000) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'NEW',
+  `created_at` datetime(6) NOT NULL,
+  `user_id` bigint DEFAULT NULL,
+  `reply_text` varchar(5000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `replied_at` datetime(6) DEFAULT NULL,
+  `replied_by` bigint DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_contact_created` (`created_at`,`id`),
+  KEY `idx_contact_status_created` (`status`,`created_at`,`id`),
+  KEY `idx_contact_user` (`user_id`),
+  KEY `fk_contact_reply_actor` (`replied_by`),
+  CONSTRAINT `fk_contact_reply_actor` FOREIGN KEY (`replied_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_contact_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `chk_contact_status` CHECK ((`status` in (_utf8mb4'NEW',_utf8mb4'RESOLVED')))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

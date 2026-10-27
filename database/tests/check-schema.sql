@@ -97,6 +97,28 @@ SELECT 'chapters', 'order_index', 'int', 1, 0, 0, 0
 UNION ALL
 SELECT 'chapters', 'title', 'varchar,char,text,mediumtext,longtext', 1, 255, 0, 0
 UNION ALL
+SELECT 'contact_messages', 'created_at', 'datetime,timestamp', 1, 0, 0, 0
+UNION ALL
+SELECT 'contact_messages', 'email', 'varchar,char,text,mediumtext,longtext', 1, 254, 0, 0
+UNION ALL
+SELECT 'contact_messages', 'full_name', 'varchar,char,text,mediumtext,longtext', 1, 100, 0, 0
+UNION ALL
+SELECT 'contact_messages', 'id', 'bigint', 1, 0, 0, 0
+UNION ALL
+SELECT 'contact_messages', 'message', 'varchar,char,text,mediumtext,longtext', 1, 5000, 0, 0
+UNION ALL
+SELECT 'contact_messages', 'replied_at', 'datetime,timestamp', 0, 0, 0, 0
+UNION ALL
+SELECT 'contact_messages', 'replied_by', 'bigint', 0, 0, 0, 0
+UNION ALL
+SELECT 'contact_messages', 'reply_text', 'varchar,char,text,mediumtext,longtext', 0, 5000, 0, 0
+UNION ALL
+SELECT 'contact_messages', 'status', 'enum,varchar,char', 1, 0, 0, 0
+UNION ALL
+SELECT 'contact_messages', 'topic', 'varchar,char,text,mediumtext,longtext', 1, 100, 0, 0
+UNION ALL
+SELECT 'contact_messages', 'user_id', 'bigint', 0, 0, 0, 0
+UNION ALL
 SELECT 'coupons', 'code', 'varchar,char,text,mediumtext,longtext', 1, 50, 0, 0
 UNION ALL
 SELECT 'coupons', 'created_at', 'datetime,timestamp', 0, 0, 0, 0
@@ -895,6 +917,8 @@ SELECT 'PRIMARY KEY', 'certificates', 'id', '', ''
 UNION ALL
 SELECT 'PRIMARY KEY', 'chapters', 'id', '', ''
 UNION ALL
+SELECT 'PRIMARY KEY', 'contact_messages', 'id', '', ''
+UNION ALL
 SELECT 'PRIMARY KEY', 'coupons', 'id', '', ''
 UNION ALL
 SELECT 'PRIMARY KEY', 'course_enrollments', 'id', '', ''
@@ -1130,6 +1154,12 @@ UNION ALL
 SELECT 'enum mismatch: badges.requirement_type missing STREAK_DAYS'
 WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='badges' AND COLUMN_NAME='requirement_type' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''STREAK_DAYS''',COLUMN_TYPE)>0)))
 UNION ALL
+SELECT 'enum mismatch: contact_messages.status missing NEW'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='contact_messages' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''NEW''',COLUMN_TYPE)>0)))
+UNION ALL
+SELECT 'enum mismatch: contact_messages.status missing RESOLVED'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='contact_messages' AND COLUMN_NAME='status' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''RESOLVED''',COLUMN_TYPE)>0)))
+UNION ALL
 SELECT 'enum mismatch: coupons.discount_type missing FIXED_AMOUNT'
 WHERE NOT EXISTS (SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='coupons' AND COLUMN_NAME='discount_type' AND (DATA_TYPE IN ('varchar','char') OR (DATA_TYPE='enum' AND LOCATE('''FIXED_AMOUNT''',COLUMN_TYPE)>0)))
 UNION ALL
@@ -1356,4 +1386,10 @@ SELECT 'index mismatch: user_learning_rules.idx_learning_rules_schedule'
 WHERE NOT EXISTS (SELECT 1 FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='user_learning_rules' AND INDEX_NAME='idx_learning_rules_schedule' GROUP BY TABLE_NAME,INDEX_NAME HAVING GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX)='enabled,last_run_date')
 UNION ALL
 SELECT 'index mismatch: user_feature_usage.idx_feature_usage_date'
-WHERE NOT EXISTS (SELECT 1 FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='user_feature_usage' AND INDEX_NAME='idx_feature_usage_date' GROUP BY TABLE_NAME,INDEX_NAME HAVING GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX)='activity_date,feature');
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='user_feature_usage' AND INDEX_NAME='idx_feature_usage_date' GROUP BY TABLE_NAME,INDEX_NAME HAVING GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX)='activity_date,feature')
+UNION ALL
+SELECT 'index mismatch: contact_messages.idx_contact_created'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='contact_messages' AND INDEX_NAME='idx_contact_created' GROUP BY TABLE_NAME,INDEX_NAME HAVING GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX)='created_at,id')
+UNION ALL
+SELECT 'index mismatch: contact_messages.idx_contact_status_created'
+WHERE NOT EXISTS (SELECT 1 FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='contact_messages' AND INDEX_NAME='idx_contact_status_created' GROUP BY TABLE_NAME,INDEX_NAME HAVING GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX)='status,created_at,id');

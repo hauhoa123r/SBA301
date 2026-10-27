@@ -126,7 +126,7 @@ def validate(sql, run, client):
         raise AssertionError("Final DDL differs:\n" + "\n".join(difflib.unified_diff(
             expected[next(t for t in expected if actual.get(t) != expected[t])].splitlines(),
             actual[next(t for t in expected if actual.get(t) != expected[t])].splitlines(), lineterm="")))
-    assert len(actual) == 59
+    assert len(actual) == 60
     guard = run(client + ["chinese_online_learning"], input=(DB / "tests/check-schema.sql").read_bytes()).stdout.decode().strip()
     assert not guard, guard
     counts = {t:int(query(f"SELECT COUNT(*) FROM `{t}`;")) for t in actual}
@@ -286,6 +286,8 @@ def main():
                 verify(); run(client,input=(LEGACY_DIR/name).read_bytes())
             verify(); run(client,input=(DB/"migrations/20261019_learning_analytics.sql").read_bytes())
             verify(); run(client,input=(DB/"migrations/20261022_admin_dashboard.sql").read_bytes())
+            verify(); run(client + ["chinese_online_learning"],input=(DB/"migrations/20261027_contact_messages.sql").read_bytes())
+            verify(); run(client + ["chinese_online_learning"],input=(DB/"migrations/20261027_contact_replies.sql").read_bytes())
             reference = snapshot(sql)
             reference_content = content_snapshot(sql)
             verify()
