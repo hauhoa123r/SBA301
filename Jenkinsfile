@@ -1,199 +1,95 @@
-
 pipeline {
     agent any
-
     options {
         skipDefaultCheckout(true)
         timestamps()
         disableConcurrentBuilds()
     }
-
-    triggers {
-        pollSCM('H/5 * * * *')
+    triggers { pollSCM('H/5 * * * *') }
+    parameters {
+        booleanParam(name: 'DEPLOY_SINGAPORE', defaultValue: false,
+                     description: 'Explicit release: push application images and deploy Singapore. Default CI is read-only on EC2.')
     }
-
     environment {
-        IMAGE_TAG = "${BUILD_NUMBER}"
-        SERVER_IP = '16.178.47.5'
-        DEPLOY_PATH = 'apps/SBA301'
+        SERVER_IP = '54.169.83.95'
+        DEPLOY_PATH = '/home/ubuntu/.edujar-migration/final-20261024'
+        SSH_CREDENTIAL_ID = 'edujar-singapore-ssh'
     }
-
     stages {
-
         stage('Checkout') {
             steps {
                 checkout scm
-            }
-        }
-
-        stage('Build & Test') {
-            steps {
-                sh '''
-                    set -eu
-
-                    python3 database/generate-schema-check.py --check
-                    python3 -m unittest discover -s database/tests -p 'test_fresh_initialization_reporting.py' -v
-                    cd backend
-                    mvn clean verify
-                '''
-            }
-        }
-
-        stage('Fresh MySQL Initialization') {
-            steps {
-                sh '''
-                    set -eu
-                    # Own image/container, tmpfs datadir, loopback test port; no production volumes.
-                    python3 database/tests/fresh_initialization.py --docker --backend
-                '''
-            }
-            post {
-                always {
-                    archiveArtifacts artifacts: 'backend/target/edujar-consolidated-*/*.log,backend/target/edujar-consolidated-*/*.json,backend/target/surefire-reports/TEST-*-consolidated-*.xml', allowEmptyArchive: true
+                script {
+                    env.RELEASE_REVISION = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+                    env.IMAGE_TAG = "sg-${env.RELEASE_REVISION.take(12)}-${env.BUILD_NUMBER}"
                 }
             }
         }
-
-        stage('Build Docker Images') {
+        stage('Build and Test') {
             steps {
                 sh '''
                     set -eu
-
-                    echo "Building backend image: $IMAGE_TAG"
-                    docker build \
-                        -t devhoa/chinese-backend:$IMAGE_TAG \
-                        ./backend
-
-                    echo "Building nginx image: $IMAGE_TAG"
-                    docker build \
-                        -t devhoa/chinese-nginx:$IMAGE_TAG \
-                        ./frontend
+                    python3 database/generate-schema-check.py --check
+                    python3 -m unittest scripts.tests.test_singapore_deploy -v
+                    (cd backend && mvn clean verify)
+                    docker build --platform linux/amd64 --label "org.opencontainers.image.revision=$RELEASE_REVISION" -t "devhoa/chinese-backend:$IMAGE_TAG" backend
+                    docker build --platform linux/amd64 --label "org.opencontainers.image.revision=$RELEASE_REVISION" -t "devhoa/chinese-nginx:$IMAGE_TAG" frontend
                 '''
             }
         }
-
-        stage('Push Docker Hub') {
+        stage('Verify Singapore Access') {
             steps {
-                withCredentials([
-                    usernamePassword(
-                        credentialsId: 'dockerhub-credentials',
-                        usernameVariable: 'DOCKER_USERNAME',
-                        passwordVariable: 'DOCKER_TOKEN'
-                    )
-                ]) {
+                withCredentials([sshUserPrivateKey(credentialsId: env.SSH_CREDENTIAL_ID,
+                                                   keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
                     sh '''
                         set -eu
                         set +x
-
-                        printf '%s' "$DOCKER_TOKEN" | \
-                            docker login \
-                                -u "$DOCKER_USERNAME" \
-                                --password-stdin
-
-                        docker push devhoa/chinese-backend:$IMAGE_TAG
-                        docker push devhoa/chinese-nginx:$IMAGE_TAG
+                        test "$SSH_USER" = ubuntu
+                        test -s scripts/singapore-known_hosts
+                        scp -F /dev/null -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$WORKSPACE/scripts/singapore-known_hosts" -i "$SSH_KEY" scripts/deploy-singapore.py database/tests/check-schema.sql "$SSH_USER@$SERVER_IP:$DEPLOY_PATH/"
+                        ssh -F /dev/null -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$WORKSPACE/scripts/singapore-known_hosts" -i "$SSH_KEY" "$SSH_USER@$SERVER_IP" "python3 '$DEPLOY_PATH/deploy-singapore.py' --check-only --guard '$DEPLOY_PATH/check-schema.sql'"
                     '''
                 }
             }
         }
-
-        stage('Deploy EC2') {
+        stage('Push Application Images') {
+            when { expression { params.DEPLOY_SINGAPORE } }
             steps {
-                withCredentials([
-                    sshUserPrivateKey(
-                        credentialsId: 'azure-server-ssh',
-                        keyFileVariable: 'SSH_KEY',
-                        usernameVariable: 'SSH_USER'
-                    )
-                ]) {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials',
+                                                   usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_TOKEN')]) {
                     sh '''
                         set -eu
-
-                        # The deployment directory and .env are managed on EC2.
-                        # Upgrade its DB with database/migrations/20261019_learning_analytics.sql
-                        # and sync Compose/guard files before deploying this release.
-                        ssh \
-                            -o BatchMode=yes \
-                            -o ConnectTimeout=15 \
-                            -o StrictHostKeyChecking=yes \
-                            -i "$SSH_KEY" \
-                            "$SSH_USER@$SERVER_IP" \
-                            "cd '$DEPLOY_PATH' && sh scripts/verify-mysql-schema.sh database/tests/check-schema.sql"
-
-                        ssh \
-                            -o BatchMode=yes \
-                            -o ConnectTimeout=15 \
-                            -o StrictHostKeyChecking=yes \
-                            -i "$SSH_KEY" \
-                            "$SSH_USER@$SERVER_IP" \
-                            "set -e
-                             cd '$DEPLOY_PATH'
-
-                             export IMAGE_TAG='$IMAGE_TAG'
-
-                             echo 'Pulling Docker images...'
-                             docker compose --env-file .env pull \
-                                 backend nginx
-
-                             echo 'Deploying containers...'
-                             docker compose --env-file .env up \
-                                 -d --no-deps --force-recreate \
-                                 backend nginx
-
-                             echo 'Deployment status:'
-                             docker compose --env-file .env ps \
-                                 backend nginx"
+                        set +x
+                        export DOCKER_CONFIG=$(mktemp -d)
+                        trap 'docker logout >/dev/null 2>&1 || true; rm -f "$DOCKER_CONFIG/config.json"; rmdir "$DOCKER_CONFIG" 2>/dev/null || true' EXIT
+                        printf '%s' "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
+                        docker push "devhoa/chinese-backend:$IMAGE_TAG"
+                        docker push "devhoa/chinese-nginx:$IMAGE_TAG"
                     '''
                 }
             }
         }
-
-        stage('Verify Deployment') {
+        stage('Deploy Singapore Applications') {
+            when { expression { params.DEPLOY_SINGAPORE } }
             steps {
-                withCredentials([
-                    sshUserPrivateKey(
-                        credentialsId: 'azure-server-ssh',
-                        keyFileVariable: 'SSH_KEY',
-                        usernameVariable: 'SSH_USER'
-                    )
-                ]) {
+                withCredentials([sshUserPrivateKey(credentialsId: env.SSH_CREDENTIAL_ID,
+                                                   keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
                     sh '''
                         set -eu
-
-                        ssh \
-                            -o BatchMode=yes \
-                            -o ConnectTimeout=15 \
-                            -o StrictHostKeyChecking=yes \
-                            -i "$SSH_KEY" \
-                            "$SSH_USER@$SERVER_IP" \
-                            "set -e
-                             cd '$DEPLOY_PATH'
-
-                             test \\"\\$(docker inspect chinese-backend --format '{{.State.Running}}')\\" = true
-                             test \\"\\$(docker inspect chinese-nginx --format '{{.State.Running}}')\\" = true
-
-                             echo 'Backend and Nginx are running.'
-                             docker ps --filter name=chinese-backend \
-                                       --filter name=chinese-nginx"
+                        set +x
+                        ssh -F /dev/null -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$WORKSPACE/scripts/singapore-known_hosts" -i "$SSH_KEY" "$SSH_USER@$SERVER_IP" "python3 '$DEPLOY_PATH/deploy-singapore.py' --guard '$DEPLOY_PATH/check-schema.sql' --backend-image 'devhoa/chinese-backend:$IMAGE_TAG' --nginx-image 'devhoa/chinese-nginx:$IMAGE_TAG' --revision '$RELEASE_REVISION'"
                     '''
                 }
             }
         }
-    }
-
-    post {
-        success {
-            echo "CI/CD SUCCESS - VERSION: ${IMAGE_TAG}"
-        }
-
-        failure {
-            echo "CI/CD FAILED - BUILD: ${BUILD_NUMBER}"
-        }
-
-        always {
-            sh '''
-                docker logout >/dev/null 2>&1 || true
-            '''
+        stage('Verify Public HTTPS') {
+            steps {
+                sh '''
+                    set -eu
+                    curl --fail --silent --show-error --output /dev/null https://edujar.site/
+                    curl --fail --silent --show-error https://edujar.site/api/actuator/health | grep -q '"status":"UP"'
+                '''
+            }
         }
     }
 }
