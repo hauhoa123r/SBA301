@@ -21,16 +21,19 @@ export const subscriptionLabels: Record<string, string> = { NONE: "Chưa có gó
 export function dateTime(value: string | null) {
   return value ? new Date(value).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }) : "—";
 }
-export function useAdminResource<T>(url: string) {
+export function useAdminResource<T>(url: string, { keepOnRefresh = false }: { keepOnRefresh?: boolean } = {}) {
   const [revision, setRevision] = useState(0);
-  const [result, setResult] = useState<{ key: string; data?: T; error?: string }>({ key: "" });
+  const [result, setResult] = useState<{ key: string; url: string; data?: T; error?: string }>({ key: "", url: "" });
   const key = `${url}#${revision}`;
   useEffect(() => {
     const controller = new AbortController();
-    axiosClient.get<T>(url, { signal: controller.signal }).then(({ data }) => { if (!controller.signal.aborted) setResult({ key, data }); })
-      .catch((error: unknown) => { if (!controller.signal.aborted) setResult({ key, error: getApiErrorMessage(error) }); });
+    axiosClient.get<T>(url, { signal: controller.signal }).then(({ data }) => { if (!controller.signal.aborted) setResult({ key, url, data }); })
+      .catch((error: unknown) => { if (!controller.signal.aborted) setResult({ key, url, error: getApiErrorMessage(error) }); });
     return () => controller.abort();
   }, [url, key]);
-  return { loading: result.key !== key, data: result.key === key ? result.data : undefined,
+  // Read-only views can retain an identical query while refreshing. Mutation
+  // forms keep their existing invalidation behavior after saving/revoking.
+  // New filters/pages never display rows from a different result set.
+  return { loading: result.key !== key, data: result.key === key || (keepOnRefresh && result.url === url) ? result.data : undefined,
     error: result.key === key ? result.error : undefined, refresh: () => setRevision(value => value + 1) };
 }

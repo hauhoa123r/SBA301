@@ -4,14 +4,12 @@ import HeroSection from "./HeroSection";
 import StatsBar from "./StatsBar";
 import TestimonialsSection from "./TestimonialsSection";
 import { Link } from "react-router-dom";
-import { FeedbackBanner } from "@/features/feedback/FeedbackBanner";
 
 export function HomePage() {
     return (
         <div className="user-ui-scope overflow-x-clip">
             <HeroSection />
             <StatsBar />
-            <FeedbackBanner />
             <FeaturesSection />
             <section className="mx-auto max-w-5xl px-6 py-12 text-center">
                 <p className="text-sm font-bold uppercase tracking-widest text-brand-accentSoft">Free · Premium 99.000đ</p>

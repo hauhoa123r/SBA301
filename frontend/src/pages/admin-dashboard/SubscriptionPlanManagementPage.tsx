@@ -38,6 +38,7 @@ function PlanForm({ plan, onSaved, close }: { plan: Plan | null; onSaved: () => 
 }
 export function SubscriptionPlanManagementPage() {
   const resource = useAdminResource<Plan[]>("/api/admin/subscription-plans");
+  const visiblePlans = resource.data?.filter(plan => plan.code !== "STANDARD") ?? [];
   const [selected, setSelected] = useState<Plan | null | undefined>(undefined);
   const [message, setMessage] = useState("");
   return <ManagementShell title="Quản lý gói học">
@@ -47,8 +48,8 @@ export function SubscriptionPlanManagementPage() {
     {selected !== undefined && <PlanForm key={selected?.code ?? "new"} plan={selected} close={() => setSelected(undefined)} onSaved={() => { setSelected(undefined); setMessage("Đã lưu gói học."); resource.refresh(); }} />}
     <ResourceStatus {...resource} retry={resource.refresh} />
     {resource.data && <section className="admin-panel"><div className="admin-table-scroll"><table><thead><tr><th>Mã / Tên</th><th>Giá</th><th>Thời hạn</th><th>Trạng thái</th><th /></tr></thead>
-      <tbody>{resource.data.map(plan => <tr key={plan.code}><td><strong>{plan.name}</strong><small className="admin-secondary">{plan.code}</small></td><td>{formatMoney(plan.price)}</td><td>{plan.durationDays} ngày</td>
+      <tbody>{visiblePlans.map(plan => <tr key={plan.code}><td><strong>{plan.name}</strong><small className="admin-secondary">{plan.code}</small></td><td>{formatMoney(plan.price)}</td><td>{plan.durationDays} ngày</td>
         <td>{plan.active ? "Đang cung cấp" : "Ngừng cung cấp"}</td><td><button className="admin-button" onClick={() => { setSelected(plan); setMessage(""); }}>Chỉnh sửa</button></td></tr>)}</tbody></table></div>
-      {!resource.data.length && <p className="admin-empty">Chưa có gói học.</p>}</section>}
+      {!visiblePlans.length && <p className="admin-empty">Chưa có gói học hiển thị.</p>}</section>}
   </ManagementShell>;
 }

@@ -4,6 +4,7 @@ import { axiosClient, getApiErrorMessage } from "@/shared/api";
 import { accountLabels, dateTime, subscriptionLabels, useAdminResource, type Plan, type StudentDetail, type StudentPage } from "@/features/admin-dashboard/management";
 import { ManagementShell, ResourceStatus } from "./ManagementShell";
 import { AdminDialog } from "@/features/admin-dashboard/analytics";
+import { StatusBadge } from "@/features/admin-dashboard/StatusBadge";
 
 export function StudentManagementPage() {
   const [input, setInput] = useState("");
@@ -24,7 +25,7 @@ export function StudentManagementPage() {
     {resource.data && <section className="admin-panel"><h2>{resource.data.totalElements} học viên</h2>
       <div className="admin-table-scroll"><table><thead><tr><th>Học viên</th><th>Tài khoản</th><th>Gói học</th><th>Hết hạn</th><th>Khóa đã học / hoàn thành</th><th /></tr></thead>
         <tbody>{resource.data.content.map(student => <tr key={student.id}><td className="admin-course-name"><strong>{student.fullName}</strong><small className="admin-secondary">{student.email}</small></td>
-          <td>{accountLabels[student.status] ?? student.status}</td><td>{student.subscription.planName ?? "—"}<small className="admin-secondary">{subscriptionLabels[student.subscription.state]}</small></td>
+          <td><StatusBadge status={student.status} label={accountLabels[student.status]} /></td><td>{student.subscription.planName ?? "—"}<small className="admin-secondary">{subscriptionLabels[student.subscription.state]}</small></td>
           <td>{dateTime(student.subscription.expiresAt)}</td><td>{student.enrolledCourses} / {student.completedCourses}</td><td><Link className="admin-button" to={`/admin/students/${student.id}`}>Quản lý</Link></td></tr>)}</tbody></table></div>
       {!resource.data.content.length && <p className="admin-empty">Không có học viên phù hợp.</p>}
       <div className="admin-pagination"><span>Trang {page + 1}/{Math.max(1, resource.data.totalPages)}</span><div>

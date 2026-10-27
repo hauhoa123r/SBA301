@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { lazy, Suspense } from "react";
 
 import LearnCourseLayout from "@/features/learning/layouts/LearnCourseLayout.jsx";
@@ -25,18 +25,12 @@ import { VerifyEmailPage } from "@/pages/verify-email";
 
 import { MainLayout } from "./MainLayout";
 import { RoleRoute } from "./RoleRoute";
-const LearningAnalyticsPage = lazy(() => import("@/pages/admin-dashboard/LearningAnalyticsPage")
-  .then((module) => ({ default: module.LearningAnalyticsPage })));
-const ActivityLabPage = lazy(() => import("@/pages/admin-dashboard/ActivityLabPage")
-  .then((module) => ({ default: module.ActivityLabPage })));
+const AdminRouteLayout = lazy(() => import("@/features/admin-dashboard/AdminRouteLayout").then(m => ({ default: m.AdminRouteLayout })));
 const AdminDashboardPage = lazy(() => import("@/pages/admin-dashboard/AdminDashboardPage")
   .then((module) => ({ default: module.AdminDashboardPage })));
 const OverviewDashboardPage = lazy(() => import("@/pages/admin-dashboard/OverviewDashboardPage").then(m => ({ default: m.OverviewDashboardPage })));
-const CourseManagementPage = lazy(() => import("@/pages/admin-dashboard/AdminDashboardPage").then(m => ({ default: m.CourseManagementPage })));
-const RegistrationAnalyticsPage = lazy(() => import("@/pages/admin-dashboard/RegistrationAnalyticsPage").then(m => ({ default: m.RegistrationAnalyticsPage })));
+const EnrollmentManagementPage = lazy(() => import("@/pages/admin-dashboard/EnrollmentManagementPage").then(m => ({ default: m.EnrollmentManagementPage })));
 const PaymentAnalyticsPage = lazy(() => import("@/pages/admin-dashboard/PaymentAnalyticsPage").then(m => ({ default: m.PaymentAnalyticsPage })));
-const AssignmentReviewPage = lazy(() => import("@/pages/admin-dashboard/AssignmentReviewPage")
-  .then((module) => ({ default: module.AssignmentReviewPage })));
 const StudentManagementPage = lazy(() => import("@/pages/admin-dashboard/StudentManagementPage")
   .then((module) => ({ default: module.StudentManagementPage })));
 const StudentDetailPage = lazy(() => import("@/pages/admin-dashboard/StudentManagementPage")
@@ -49,30 +43,26 @@ const FeedbackManagementPage = lazy(() => import("@/pages/admin-dashboard/Feedba
   .then((module) => ({ default: module.FeedbackManagementPage })));
 const FeedbackStatisticsPage = lazy(() => import("@/pages/admin-dashboard/FeedbackStatisticsPage")
   .then((module) => ({ default: module.FeedbackStatisticsPage })));
-const FeedbackPage = lazy(() => import("@/pages/feedback/FeedbackPage")
-  .then((module) => ({ default: module.FeedbackPage })));
 
 export function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="admin/learning-analytics" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải thống kê học tập…</div>}><LearningAnalyticsPage /></Suspense></RoleRoute>} />
-        <Route path="admin/activity-lab" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải điều phối hoạt động…</div>}><ActivityLabPage /></Suspense></RoleRoute>} />
-        <Route path="admin/feedback" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải feedback…</div>}><FeedbackManagementPage /></Suspense></RoleRoute>} />
-        <Route path="admin/feedback/statistics" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải thống kê…</div>}><FeedbackStatisticsPage /></Suspense></RoleRoute>} />
-        <Route path="admin/dashboard" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải Dashboard…</div>}><OverviewDashboardPage /></Suspense></RoleRoute>} />
-        <Route path="admin/catalog-dashboard" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải danh mục…</div>}><AdminDashboardPage /></Suspense></RoleRoute>} />
-        <Route path="admin/courses" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải khóa học…</div>}><CourseManagementPage /></Suspense></RoleRoute>} />
-        <Route path="admin/registration-analytics" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải đăng ký…</div>}><RegistrationAnalyticsPage /></Suspense></RoleRoute>} />
-        <Route path="admin/payments" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải thanh toán…</div>}><PaymentAnalyticsPage /></Suspense></RoleRoute>} />
-        <Route path="admin/assignments" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải bài nộp…</div>}><AssignmentReviewPage /></Suspense></RoleRoute>} />
-        <Route path="admin/students" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải học viên…</div>}><StudentManagementPage /></Suspense></RoleRoute>} />
-        <Route path="admin/students/:id" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải học viên…</div>}><StudentDetailPage /></Suspense></RoleRoute>} />
-        <Route path="admin/subscription-plans" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải gói học…</div>}><SubscriptionPlanManagementPage /></Suspense></RoleRoute>} />
-        <Route path="admin/auth-settings" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải cài đặt…</div>}><AuthenticationSettingsPage /></Suspense></RoleRoute>} />
+        <Route path="admin" element={<RoleRoute requiredRole="ADMIN"><Suspense fallback={<div role="status" className="p-8">Đang tải không gian quản trị…</div>}><AdminRouteLayout /></Suspense></RoleRoute>}>
+          <Route path="feedback" element={<FeedbackManagementPage />} />
+          <Route path="feedback/statistics" element={<FeedbackStatisticsPage />} />
+          <Route path="dashboard" element={<OverviewDashboardPage />} />
+          <Route path="catalog-dashboard" element={<AdminDashboardPage />} />
+          <Route path="enrollments" element={<EnrollmentManagementPage />} />
+          <Route path="payments" element={<PaymentAnalyticsPage />} />
+          <Route path="students" element={<StudentManagementPage />} />
+          <Route path="students/:id" element={<StudentDetailPage />} />
+          <Route path="subscription-plans" element={<SubscriptionPlanManagementPage />} />
+          <Route path="auth-settings" element={<AuthenticationSettingsPage />} />
+        </Route>
         <Route element={<MainLayout />}>
           <Route index element={<HomePage />} />
-          <Route path="feedback" element={<Suspense fallback={<div role="status" className="p-8">Đang tải khảo sát…</div>}><FeedbackPage /></Suspense>} />
+          <Route path="feedback" element={<Navigate to="/contact" replace />} />
           <Route path="courses" element={<CourseListPage />} />
           <Route path="subscriptions" element={<SubscriptionsPage />} />
           <Route path="courses/:id" element={<CourseDetailPage />} />

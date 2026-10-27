@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Bell, ChevronDown, Flame, LayoutGrid, Menu } from "lucide-react";
+import { ChevronDown, LayoutGrid, Menu } from "lucide-react";
+import { NotificationCenter } from "@/features/notifications/NotificationCenter";
+import { StreakBadge } from "@/features/notifications/LearningEngagement";
 import { UserProfileMenu } from "@/features/auth";
 import { BrandLogo as HeroLogo } from "@/shared/ui";
 
@@ -84,18 +86,8 @@ export default function StartLearningHeader({
             </div>
 
             <div className="flex items-center gap-3">
-                <div className="hidden items-center gap-2 rounded-full border border-status-warning/20 bg-status-warning/10 px-3 py-2 text-sm font-bold text-status-warningSoft sm:flex">
-                    <Flame className="h-4 w-4" />
-                    0
-                </div>
-                <button
-                    type="button"
-                    className="relative grid h-10 w-10 place-items-center rounded-xl border border-brand-accent/20 bg-brand-light text-brand-textMutedLight transition hover:border-brand-accent/50 hover:text-brand-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accent"
-                    aria-label="Thông báo, hiện có 0 thông báo mới"
-                >
-                    <Bell className="h-4 w-4" />
-                    <span aria-hidden="true" className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-status-danger px-1 text-[11px] font-black text-brand-white">0</span>
-                </button>
+                <StreakBadge />
+                <NotificationCenter />
                 <UserProfileMenu variant="icon" />
             </div>
         </header>
