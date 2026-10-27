@@ -31,8 +31,8 @@ export const CONTACT_METHODS = [
 
 export const CONTACT_TOPICS = [
     "Hỗ trợ khóa học",
-    "Lộ trình học HSK",
-    "Luyện phát âm",
     "Gói đăng ký và thanh toán",
     "Sự cố kỹ thuật",
+    "Góp ý về website",
+    "Khác",
 ];

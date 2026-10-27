@@ -1,21 +1,15 @@
-import { type ReactNode } from "react";
-import { Link, NavLink } from "react-router-dom";
-import UserProfileMenu from "@/features/auth/ui/UserProfileMenu";
+import { useContext, type ReactNode } from "react";
+import { AdminLayout } from "@/features/admin-dashboard/AdminLayout";
+import { AdminWorkspaceContext } from "@/features/admin-dashboard/AdminWorkspaceContext";
+import { AdminLoading } from "@/features/admin-dashboard/AdminSkeleton";
 import "./adminDashboard.css";
 
 export function ManagementShell({ title, children }: { title: string; children: ReactNode }) {
-  return <div className="admin-shell">
-    <aside className="admin-sidebar"><Link to="/admin/dashboard" className="admin-brand">Chinese Learning</Link>
-      <nav aria-label="Điều hướng quản trị"><NavLink to="/admin/dashboard">Dashboard</NavLink><NavLink to="/admin/students">Học viên</NavLink>
-        <NavLink to="/admin/learning-analytics">Hoạt động học tập</NavLink><NavLink to="/admin/subscription-plans">Gói học</NavLink><NavLink to="/admin/assignments">Chấm bài tập</NavLink><NavLink to="/admin/auth-settings">Cài đặt đăng ký</NavLink>
-        <NavLink to="/admin/feedback" end>Feedback</NavLink><NavLink to="/admin/feedback/statistics">Thống kê feedback</NavLink></nav></aside>
-    <main className="admin-main"><header className="admin-header"><div><p className="admin-eyebrow">QUẢN TRỊ HỆ THỐNG</p><h1>{title}</h1></div>
-      <div className="admin-header-actions"><Link className="admin-button" to="/admin/dashboard">Dashboard</Link><UserProfileMenu /></div></header>
-      {children}
-    </main>
-  </div>;
+  const inWorkspace = useContext(AdminWorkspaceContext);
+  if (inWorkspace) return <div className="admin-page-view" aria-label={title}>{children}</div>;
+  return <AdminLayout title={title}>{children}</AdminLayout>;
 }
-export function ResourceStatus({ loading, error, retry }: { loading: boolean; error?: string; retry: () => void }) {
-  return <>{loading && <p className="admin-loading" role="status">Đang tải dữ liệu…</p>}
+export function ResourceStatus({ loading, error, retry, data, kind = "table" }: { loading: boolean; error?: string; retry: () => void; data?: unknown; kind?: "table" | "chart" | "page" | "compact" }) {
+  return <>{loading && (data !== undefined ? <p className="admin-refresh-status" role="status">Đang cập nhật dữ liệu…</p> : <AdminLoading kind={kind} />)}
     {error && <div className="admin-error" role="alert"><p>{error}</p><button className="admin-button" onClick={retry}>Thử lại</button></div>}</>;
 }

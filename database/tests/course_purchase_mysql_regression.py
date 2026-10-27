@@ -63,7 +63,7 @@ def main():
         assert Path(sql("SELECT @@datadir")).resolve() == data.resolve()
         for name in ("chinese_online_learning.sql", "DataChinese.sql", "20261012_deploy_update.sql",
                      "20261013_feedback.sql", "20261018_refresh_sessions.sql"):
-            run(client, input=(ROOT / "deployment/legacy-sql" / name).read_bytes())
+            run(client, input=(ROOT / "database/legacy" / name).read_bytes())
         # Simulate an existing pre-migration database, with historical purchases and an active subscription.
         sql("""USE chinese_online_learning;
             INSERT INTO courses(teacher_id,title,price,status) SELECT MIN(id),'Historical purchase sentinel',499000,'PUBLISHED' FROM users;
@@ -82,7 +82,7 @@ def main():
             SELECT user_id,plan_code,started_at,expires_at,trial_used FROM user_subscriptions ORDER BY user_id;
         """
         before = sql(snapshot_sql)
-        migration = (ROOT / "deployment/legacy-sql/20261018_course_purchases.sql").read_bytes()
+        migration = (ROOT / "database/legacy/20261018_course_purchases.sql").read_bytes()
         run(client, input=migration)
         first = sql("""USE chinese_online_learning;
             SELECT catalog_code,price,(SELECT COUNT(*) FROM lessons l JOIN chapters ch ON ch.id=l.chapter_id

@@ -30,7 +30,7 @@ def main():
         old_users = query("SELECT * FROM users WHERE email<>'catalog-instructor@seed.invalid' ORDER BY id;")
         expected_titles = {"Tiếng Trung tại quán cà phê": 2, "Tiếng Trung hỏi đường và đi lại": 2,
                            "Tiếng Trung giao tiếp cho Nhân viên Sales (Cơ bản)": 6}
-        migration = (ROOT / "deployment/legacy-sql/20261019_restore_three_courses.sql").read_bytes()
+        migration = (ROOT / "database/legacy/20261019_restore_three_courses.sql").read_bytes()
         first = None
         for _ in range(2):
             verify()

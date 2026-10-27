@@ -80,7 +80,7 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
         if (!verifyResponse.valid()) {
             throw new BadRequestException("Kết quả thanh toán chưa được xác thực.");
         }
-        if (verifyResponse.success() && invoice.getSubscriptionPlanCode() != null) {
+        if (verifyResponse.success()) {
             Object amount = details.containsKey("amountPaid") ? details.get("amountPaid") : details.get("amount");
             try {
                 if (amount == null || new BigDecimal(amount.toString()).compareTo(payment.getAmount()) != 0) {

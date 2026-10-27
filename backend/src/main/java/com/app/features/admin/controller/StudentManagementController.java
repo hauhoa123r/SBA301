@@ -19,6 +19,9 @@ public class StudentManagementController {
         return noStore(service.list(search, status, subscription, page));
     }
     @GetMapping("/students/{id}") public ResponseEntity<Detail> detail(@PathVariable Long id) { return noStore(service.detail(id)); }
+    @DeleteMapping("/students/{id}") public ResponseEntity<Detail> delete(@PathVariable Long id, @Valid @RequestBody ReasonRequest body, HttpServletRequest request) {
+        return noStore(service.delete(id, body, context(request)));
+    }
     @PatchMapping("/students/{id}/status") public ResponseEntity<Detail> status(@PathVariable Long id, @Valid @RequestBody StatusRequest body, HttpServletRequest request) {
         return noStore(service.changeStatus(id, body, context(request)));
     }

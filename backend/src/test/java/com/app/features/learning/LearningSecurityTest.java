@@ -37,6 +37,7 @@ class LearningSecurityTest {
     @MockitoBean ILearningService service;
     @MockitoBean ILearningProgressService progress;
     @MockitoBean LearningActivityService activities;
+    @MockitoBean LearningStreakService streaks;
     @MockitoBean AssignmentReviewService reviews;
     @MockitoBean JwtService jwtService;
     @MockitoBean UserRepository users;

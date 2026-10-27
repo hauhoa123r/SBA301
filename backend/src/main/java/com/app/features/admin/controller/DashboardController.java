@@ -12,6 +12,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import com.app.features.admin.service.CoursePriceService;
 
 @RestController
 @RequestMapping(ApiPath.API_ADMIN_DASHBOARD)
@@ -19,6 +25,13 @@ import org.springframework.web.bind.annotation.RestController;
 @PreAuthorize("hasRole('ADMIN')")
 public class DashboardController {
     private final DashboardService service;
+    private final CoursePriceService prices;
+
+    @PatchMapping("/courses/{id}/price")
+    public ResponseEntity<java.util.Map<String,Object>> price(@PathVariable Long id,
+            @Valid @RequestBody CoursePriceService.PriceRequest body, HttpServletRequest request) {
+        return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(prices.update(id,body,LearningAnalyticsController.context(request)));
+    }
 
     @GetMapping
     public ResponseEntity<DashboardResponse> dashboard(@RequestParam(defaultValue = "all") String period,

@@ -36,6 +36,7 @@ class DashboardSecurityTest {
     @MockitoBean com.app.security.jwt.RefreshCookie refreshCookie;
     @Autowired MockMvc mvc;
     @MockitoBean DashboardService service;
+    @MockitoBean com.app.features.admin.service.CoursePriceService prices;
     @MockitoBean JwtService jwtService;
     @MockitoBean UserRepository users;
     @MockitoBean OAuth2SecurityConfigurer oauthConfigurer;

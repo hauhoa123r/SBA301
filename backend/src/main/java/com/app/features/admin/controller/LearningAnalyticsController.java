@@ -17,9 +17,10 @@ public class LearningAnalyticsController {
     private final LearningAnalyticsService service;
     @GetMapping public ResponseEntity<Report> report(@RequestParam(required=false) LocalDate from,
         @RequestParam(required=false) LocalDate to, @RequestParam(defaultValue="0") int page,
-        @RequestParam(defaultValue="0") int minimumMinutes,@RequestParam(defaultValue="") String search) {
+        @RequestParam(defaultValue="0") int minimumMinutes,@RequestParam(defaultValue="") String search,
+        @RequestParam(defaultValue="false") boolean includeLab) {
         LocalDate end=to==null?service.today():to;
-        return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(service.report(from==null?end.minusDays(6):from,end,page,minimumMinutes,search));
+        return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(service.report(from==null?end.minusDays(6):from,end,page,minimumMinutes,search,includeLab));
     }
     @PutMapping("/settings") public ResponseEntity<Settings> settings(@Valid @RequestBody Settings body,HttpServletRequest request) {
         return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(service.saveSettings(body,context(request)));

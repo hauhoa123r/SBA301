@@ -99,6 +99,8 @@ WHERE NOT EXISTS (
                              + literal("'" + value + "'") + ",COLUMN_TYPE)>0)))")
     for table, name, columns in (
         ("users", "idx_dashboard_users_created", "created_at"),
+        ("payments", "idx_payments_status_paid", "status,paid_at"),
+        ("audit_logs", "idx_audit_target_action", "endpoint,action"),
         ("invoices", "idx_dashboard_invoices_month", "status,updated_at,amount"),
         ("invoices", "idx_dashboard_invoices_plan", "status,subscription_plan_code,amount"),
         ("invoices", "idx_dashboard_invoices_course", "status,course_id,subscription_plan_code,amount"),
@@ -108,6 +110,8 @@ WHERE NOT EXISTS (
         ("learning_activity_daily", "idx_learning_activity_date", "activity_date,user_id"),
         ("user_learning_rules", "idx_learning_rules_schedule", "enabled,last_run_date"),
         ("user_feature_usage", "idx_feature_usage_date", "activity_date,feature"),
+        ("contact_messages", "idx_contact_created", "created_at,id"),
+        ("contact_messages", "idx_contact_status_created", "status,created_at,id"),
     ):
         extra.append("SELECT " + literal(f"index mismatch: {table}.{name}")
                      + "\nWHERE NOT EXISTS (SELECT 1 FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE()"

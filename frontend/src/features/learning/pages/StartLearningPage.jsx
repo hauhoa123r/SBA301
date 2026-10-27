@@ -4,6 +4,8 @@ import LearningGreeting from "../components/start-learning/LearningGreeting";
 import LearningMessage from "../components/start-learning/LearningMessage";
 import LearningViewContent from "../components/start-learning/LearningViewContent";
 import useLearningDashboard from "../hooks/useLearningDashboard";
+import LearningProfileView from "./learning-profile-view";
+import { NotificationCenter } from "@/features/notifications/NotificationCenter";
 
 export default function StartLearningPage() {
     const {
@@ -18,6 +20,8 @@ export default function StartLearningPage() {
         setEnrolledCourses,
     });
 
+    if (activeView === "notifications") return <NotificationCenter fullPage />;
+    if (activeView === "profile") return <LearningProfileView course={course} stats={stats} />;
     if (loading && !stats) {
         return (
             <div role="status" aria-live="polite" className="flex min-h-[400px] flex-col items-center justify-center gap-3">

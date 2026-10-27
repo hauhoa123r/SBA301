@@ -5,6 +5,7 @@ import { initializeAuth } from "@/shared/api/axiosClient";
 import { retryPendingLogout } from "../api/authApi";
 import { AuthContext } from "./AuthContext";
 import { migrateLegacyAuthStorage } from "./authSession";
+import { DailyStudyCheck } from "@/features/notifications/DailyStudyCheck";
 
 export interface AuthProviderProps { children: ReactNode; }
 
@@ -27,6 +28,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
   const value = useMemo(() => ({ user, setUser, initializing }), [user, setUser, initializing]);
   return <AuthContext.Provider value={value}>
+    <DailyStudyCheck userId={user?.id} student={!!user?.roles.includes("STUDENT") && !user.roles.includes("ADMIN")} />
     {initializing ? <div role="status" className="p-6 text-center">Đang kiểm tra phiên đăng nhập…</div> : children}
   </AuthContext.Provider>;
 }

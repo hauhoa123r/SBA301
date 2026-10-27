@@ -58,5 +58,8 @@ public class PaymentEntity {
     @Column(name = "created_at", insertable = false, updatable = false)
     private Instant createdAt;
 
+    @Column(name = "paid_at", columnDefinition = "datetime(6)")
+    private Instant paidAt;
+
 
 }

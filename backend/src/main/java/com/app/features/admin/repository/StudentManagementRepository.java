@@ -28,6 +28,10 @@ public class StudentManagementRepository {
         return number(em.createNativeQuery("SELECT COUNT(*) FROM users u WHERE u.id = :id AND " + STUDENT)
             .setParameter("id", id).getSingleResult()) == 1;
     }
+    public void disableActivityRules(Long id) {
+        em.createNativeQuery("UPDATE user_learning_rules SET enabled=FALSE WHERE user_id=:id")
+            .setParameter("id",id).executeUpdate();
+    }
     public void insertPlan(com.app.features.model.SubscriptionPlanEntity plan) {
         // Assigned plan codes must INSERT, never merge over a concurrently created offer.
         em.persist(plan); em.flush();
@@ -35,7 +39,7 @@ public class StudentManagementRepository {
     public StudentPage list(String search, String status, String subscription, int page, Instant now) {
         String filter = STUDENT + """
             AND (:search = '' OR u.full_name LIKE :pattern ESCAPE '!' OR u.email LIKE :pattern ESCAPE '!')
-            AND (:status = '' OR u.status = :status)
+            AND ((:status = '' AND u.status <> 'DELETED') OR u.status = :status)
             AND (:subscription = ''
               OR (:subscription = 'NONE' AND s.user_id IS NULL)
               OR (:subscription = 'ACTIVE' AND s.started_at <= :now AND s.expires_at > :now)
@@ -65,7 +69,7 @@ public class StudentManagementRepository {
         return rows(em.createNativeQuery("""
             SELECT a.id, COALESCE(u.full_name, 'Admin'), a.action, CAST(a.before_data AS CHAR), CAST(a.after_data AS CHAR), UNIX_TIMESTAMP(a.created_at)
             FROM audit_logs a LEFT JOIN users u ON u.id = a.user_id
-            WHERE (a.endpoint = :endpoint AND a.action IN ('STUDENT_STATUS', 'SUBSCRIPTION_GRANT', 'SUBSCRIPTION_REVOKE'))
+            WHERE (a.endpoint = :endpoint AND a.action IN ('STUDENT_STATUS', 'STUDENT_DELETE', 'SUBSCRIPTION_GRANT', 'SUBSCRIPTION_REVOKE'))
                OR (a.endpoint = :activityEndpoint AND a.action IN ('ADMIN_ACCOUNT_CREATE','ACTIVITY_RULE_UPDATE','ACTIVITY_RUN','ADMIN_FEEDBACK_SUBMIT'))
             ORDER BY a.id DESC
             """).setParameter("endpoint", "/api/admin/students/" + id)

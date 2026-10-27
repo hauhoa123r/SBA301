@@ -3,6 +3,8 @@ import { Link, useParams } from "react-router-dom";
 import { axiosClient, getApiErrorMessage } from "@/shared/api";
 import { accountLabels, dateTime, subscriptionLabels, useAdminResource, type Plan, type StudentDetail, type StudentPage } from "@/features/admin-dashboard/management";
 import { ManagementShell, ResourceStatus } from "./ManagementShell";
+import { AdminDialog } from "@/features/admin-dashboard/analytics";
+import { StatusBadge } from "@/features/admin-dashboard/StatusBadge";
 
 export function StudentManagementPage() {
   const [input, setInput] = useState("");
@@ -23,7 +25,7 @@ export function StudentManagementPage() {
     {resource.data && <section className="admin-panel"><h2>{resource.data.totalElements} học viên</h2>
       <div className="admin-table-scroll"><table><thead><tr><th>Học viên</th><th>Tài khoản</th><th>Gói học</th><th>Hết hạn</th><th>Khóa đã học / hoàn thành</th><th /></tr></thead>
         <tbody>{resource.data.content.map(student => <tr key={student.id}><td className="admin-course-name"><strong>{student.fullName}</strong><small className="admin-secondary">{student.email}</small></td>
-          <td>{accountLabels[student.status] ?? student.status}</td><td>{student.subscription.planName ?? "—"}<small className="admin-secondary">{subscriptionLabels[student.subscription.state]}</small></td>
+          <td><StatusBadge status={student.status} label={accountLabels[student.status]} /></td><td>{student.subscription.planName ?? "—"}<small className="admin-secondary">{subscriptionLabels[student.subscription.state]}</small></td>
           <td>{dateTime(student.subscription.expiresAt)}</td><td>{student.enrolledCourses} / {student.completedCourses}</td><td><Link className="admin-button" to={`/admin/students/${student.id}`}>Quản lý</Link></td></tr>)}</tbody></table></div>
       {!resource.data.content.length && <p className="admin-empty">Không có học viên phù hợp.</p>}
       <div className="admin-pagination"><span>Trang {page + 1}/{Math.max(1, resource.data.totalPages)}</span><div>
@@ -80,7 +82,7 @@ function AccessForm({ detail, plans, onSaved }: { detail: StudentDetail; plans: 
   </form>;
 }
 
-const actionLabels: Record<string, string> = { STUDENT_STATUS: "Đổi trạng thái tài khoản", SUBSCRIPTION_GRANT: "Cấp / gia hạn gói", SUBSCRIPTION_REVOKE: "Thu hồi gói" };
+const actionLabels: Record<string, string> = { STUDENT_DELETE: "Xóa mềm tài khoản", STUDENT_STATUS: "Đổi trạng thái tài khoản", SUBSCRIPTION_GRANT: "Cấp / gia hạn gói", SUBSCRIPTION_REVOKE: "Thu hồi gói" };
 function historyText(json: string) {
   try {
     const data = JSON.parse(json) as { reason?: string; value?: { status?: string; planCode?: string; expiresAt?: string } };
@@ -93,6 +95,7 @@ export function StudentDetailPage() {
   const resource = useAdminResource<StudentDetail>(`/api/admin/students/${id}`);
   const plans = useAdminResource<Plan[]>("/api/admin/subscription-plans");
   const [message, setMessage] = useState("");
+  const [deleting, setDeleting] = useState(false);
   const detail = resource.data;
   return <ManagementShell title="Chi tiết học viên">
     <Link className="admin-button mb-5" to="/admin/students">← Danh sách học viên</Link>
@@ -104,7 +107,9 @@ export function StudentDetailPage() {
         <p>Bắt đầu: {dateTime(detail.student.subscription.startedAt)} · Hết hạn: {dateTime(detail.student.subscription.expiresAt)}</p></div>
     </section>
       <ResourceStatus {...plans} retry={plans.refresh} />
-      {plans.data && <AccessForm key={`${id}-${detail.student.status}-${detail.student.subscription.expiresAt}`} detail={detail} plans={plans.data} onSaved={() => { setMessage("Đã lưu thay đổi và lịch sử quản trị."); resource.refresh(); }} />}
+      {plans.data && detail.student.status !== "DELETED" && <AccessForm key={`${id}-${detail.student.status}-${detail.student.subscription.expiresAt}`} detail={detail} plans={plans.data} onSaved={() => { setMessage("Đã lưu thay đổi và lịch sử quản trị."); resource.refresh(); }} />}
+      {detail.student.status !== "DELETED" && <button className="admin-button admin-danger" onClick={() => setDeleting(true)}>Xóa tài khoản học viên</button>}
+      {deleting && <DeleteStudent id={detail.student.id} name={detail.student.fullName} close={() => setDeleting(false)} saved={() => { setDeleting(false); setMessage("Đã xóa mềm và thu hồi phiên làm mới. Lịch sử học và thanh toán được giữ lại."); resource.refresh(); }} />}
       <section className="admin-panel"><h2>Khóa học đã tham gia ({detail.courses.length})</h2><div className="admin-table-scroll"><table><thead><tr><th>Khóa học</th><th>Tham gia</th><th>Hoàn thành</th><th>Quyền mua riêng</th></tr></thead>
         <tbody>{detail.courses.map(course => <tr key={course.id}><td>{course.title}</td><td>{dateTime(course.enrolledAt)}</td><td>{dateTime(course.completedAt)}</td><td>{course.legacyAccess ? "Có" : "Theo gói học"}</td></tr>)}</tbody></table></div>
         {!detail.courses.length && <p className="admin-empty">Học viên chưa bắt đầu khóa học nào.</p>}</section>
@@ -113,4 +118,18 @@ export function StudentDetailPage() {
         {!detail.history.length && <p className="admin-empty">Chưa có thay đổi quản trị. Hiển thị tối đa 50 thay đổi gần nhất.</p>}</section>
     </>}
   </ManagementShell>;
+}
+
+function DeleteStudent({ id, name, close, saved }: { id: number; name: string; close: () => void; saved: () => void }) {
+  const [reason, setReason] = useState(""); const [busy, setBusy] = useState(false); const [error, setError] = useState("");
+  async function submit(e: FormEvent) {
+    e.preventDefault(); setBusy(true); setError("");
+    try { await axiosClient.delete(`/api/admin/students/${id}`, { data: { reason } }); saved(); }
+    catch (e) { setError(getApiErrorMessage(e)); } finally { setBusy(false); }
+  }
+  return <AdminDialog title={`Xác nhận xóa tài khoản · ${name}`} close={() => { if (!busy) close(); }}>
+    <p>Tài khoản sẽ ngừng đăng nhập và sử dụng token. Lịch sử học tập, hóa đơn, thanh toán và Feedback được lưu giữ. Không thể mở lại qua thao tác khóa/mở khóa.</p>
+    <form onSubmit={e => void submit(e)}><label>Lý do xóa<textarea required maxLength={500} value={reason} onChange={e => setReason(e.target.value)} disabled={busy} /></label>
+      <button className="admin-button admin-danger" disabled={busy || !reason.trim()}>{busy ? "Đang xóa…" : "Xác nhận xóa mềm"}</button>{error && <p role="alert" className="admin-error">{error}</p>}</form>
+  </AdminDialog>;
 }

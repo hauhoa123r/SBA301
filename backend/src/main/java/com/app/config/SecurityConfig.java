@@ -111,6 +111,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/actuator/health", "/actuator/prometheus").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/subscriptions/plans").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/feedback/current").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/contact").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/feedback/current/participation").hasAnyRole("STUDENT", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/feedback/current/start", "/api/feedback/current/submissions").hasAnyRole("STUDENT", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/courses", "/api/courses/{id}").permitAll()
@@ -120,6 +121,10 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers(PUBLIC_AUTH_ENDPOINTS).permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/notifications/recommendation", "/api/learning/streak").hasRole("STUDENT")
+                        .requestMatchers(HttpMethod.GET, "/api/notifications").hasAnyRole("STUDENT", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/notifications/read", "/api/notifications/*/read").hasAnyRole("STUDENT", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/notifications/daily-study").hasRole("STUDENT")
                         .requestMatchers(HttpMethod.GET, "/api/auth/me").hasAnyRole("STUDENT", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/users/*", "/api/users/*/orders",
                                 "/api/learning/activity", "/api/learning/stats", "/api/learning/courses/*",

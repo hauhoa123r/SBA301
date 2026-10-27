@@ -176,7 +176,8 @@ if [ -n "$MYSQL_ONETIME_PASSWORD" ]; then :; fi
 
     def push_script(self):
         source = (ROOT / "Jenkinsfile").read_text()
-        stage = source.split("stage('Push Docker Hub')", 1)[1].split("stage('Deploy EC2')", 1)[0]
+        stage = source.split("stage('Push Application Images')", 1)[1].split(
+            "stage('Deploy Singapore Applications')", 1)[0]
         block = re.search(r"sh\s+'''(.*?)'''", stage, re.S).group(1)
         # Decode the Groovy escapes used by these shell blocks.
         return re.sub(r"\\(\\|n|\n)", lambda m: {"\\": "\\", "n": "\n", "\n": ""}[m[1]], block)

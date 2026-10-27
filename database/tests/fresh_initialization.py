@@ -22,7 +22,7 @@ import xml.etree.ElementTree as ET
 from private_mysql import private_mysql, ROOT
 
 DB = ROOT / "database"
-LEGACY_DIR = ROOT / "deployment/legacy-sql"
+LEGACY_DIR = ROOT / "database/legacy"
 LEGACY_CHAIN = ("chinese_online_learning.sql", "DataChinese.sql", "20261012_deploy_update.sql",
                 "20261013_feedback.sql", "20261018_refresh_sessions.sql")
 
@@ -126,7 +126,7 @@ def validate(sql, run, client):
         raise AssertionError("Final DDL differs:\n" + "\n".join(difflib.unified_diff(
             expected[next(t for t in expected if actual.get(t) != expected[t])].splitlines(),
             actual[next(t for t in expected if actual.get(t) != expected[t])].splitlines(), lineterm="")))
-    assert len(actual) == 59
+    assert len(actual) == 60
     guard = run(client + ["chinese_online_learning"], input=(DB / "tests/check-schema.sql").read_bytes()).stdout.decode().strip()
     assert not guard, guard
     counts = {t:int(query(f"SELECT COUNT(*) FROM `{t}`;")) for t in actual}
@@ -191,7 +191,7 @@ def validate(sql, run, client):
                 data_sha256=hashlib.sha256((DB / "data.sql").read_bytes()).hexdigest(), seed_replay="PASS")
 
 
-def backend_checks(target, port, password, data_dir, tests_pattern=None):
+def backend_checks(target, port, password, data_dir, tests_pattern=None, reuse_forks=False):
     env = os.environ.copy()
     java_home = os.environ.get("JAVA_HOME", "C:/Program Files/Java/jdk-17" if os.name == "nt" else "")
     if java_home:
@@ -213,15 +213,13 @@ def backend_checks(target, port, password, data_dir, tests_pattern=None):
                PAYOS_CREATE_PAYMENT_URL="http://127.0.0.1:9/payment-requests", PAYOS_PAYMENT_REQUEST_URL="http://127.0.0.1:9/payment-requests")
     mvn = ["mvn.cmd" if os.name == "nt" else "mvn"]
     cache = os.environ.get("MAVEN_TEST_CACHE")
-    if not cache and (ROOT / ".deployment-check/m2").is_dir():
-        cache = str(ROOT / ".deployment-check/m2")
     if cache: mvn += ["-o", "-Dmaven.repo.local=" + cache]
     suffix = "consolidated-" + uuid.uuid4().hex
     # The native RefreshSession test explicitly verifies a Windows datadir. Run it in native mode only.
     tests = tests_pattern or ("*Test" if os.name == "nt" and isinstance(data_dir, Path) else "*Test,!RefreshSessionMySqlTest")
     with (target / "maven.log").open("wb") as log:
         result = subprocess.run(mvn + ["-Dsurefire.reportNameSuffix="+suffix, "-Dtest="+tests,
-                                       "-DreuseForks=false", "test"], cwd=ROOT / "backend", env=env,
+                                       "-DreuseForks="+str(reuse_forks).lower(), "test"], cwd=ROOT / "backend", env=env,
                                 stdout=log, stderr=subprocess.STDOUT, timeout=1200)
     reports = [ET.parse(p).getroot() for p in (ROOT / "backend/target/surefire-reports").glob("TEST-*-"+suffix+".xml")]
     summary = {key:sum(int(r.get(key,0)) for r in reports) for key in ("tests","failures","errors","skipped")}
@@ -287,6 +285,9 @@ def main():
             for name in LEGACY_CHAIN:
                 verify(); run(client,input=(LEGACY_DIR/name).read_bytes())
             verify(); run(client,input=(DB/"migrations/20261019_learning_analytics.sql").read_bytes())
+            verify(); run(client,input=(DB/"migrations/20261022_admin_dashboard.sql").read_bytes())
+            verify(); run(client + ["chinese_online_learning"],input=(DB/"migrations/20261027_contact_messages.sql").read_bytes())
+            verify(); run(client + ["chinese_online_learning"],input=(DB/"migrations/20261027_contact_replies.sql").read_bytes())
             reference = snapshot(sql)
             reference_content = content_snapshot(sql)
             verify()

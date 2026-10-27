@@ -63,6 +63,7 @@ public class PaymentConverter {
 
         payment.setProvider(provider);
         payment.setStatus(verifyResponse.success() ? PaymentStatus.SUCCESS : PaymentStatus.FAILED);
+        if (verifyResponse.success() && payment.getPaidAt() == null) payment.setPaidAt(java.time.Instant.now());
         payment.setRawResponse(rawResponse);
     }
 }

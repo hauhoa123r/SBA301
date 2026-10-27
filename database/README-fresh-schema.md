@@ -5,7 +5,7 @@ Từ 19/10/2026, Docker chỉ chạy hai SQL theo thứ tự:
 1. `schema.sql` → `/docker-entrypoint-initdb.d/01-schema.sql`: cấu trúc cuối cùng, không DROP, INSERT hay ALTER lịch sử.
 2. `data.sql` → `/docker-entrypoint-initdb.d/02-data.sql`: seed sạch, không chứa học viên/giao dịch/token mẫu.
 
-MySQL 8, InnoDB, utf8mb4_unicode_ci. Snapshot có 59 bảng, gồm ba bảng cấu hình/thống kê học tập mới. Mọi khóa và index nằm trong CREATE TABLE; FK được tạo theo thứ tự phụ thuộc, không tắt kiểm tra FK. Chi tiết bản bổ sung: [dashboard và điều phối hoạt động](../docs/deployment/LEARNING_ANALYTICS.md).
+MySQL 8, InnoDB, utf8mb4_unicode_ci. Mọi khóa và index nằm trong CREATE TABLE; FK được tạo theo thứ tự phụ thuộc, không tắt kiểm tra FK. Schema guard kiểm tra cấu trúc tương ứng với source code hiện tại.
 
 Gói học chỉ còn Free miễn phí 3 ngày và Premium 99.000đ/30 ngày. Quyền học dựa trên gói còn hiệu lực hoặc quyền mua khóa cũ. Ba khóa Sales, cà phê và hỏi đường được giữ riêng: 5 chương, 10 bài gốc (6/2/2), 116 từ vựng, 36 mẫu câu, 10 quiz, 99 câu hỏi và 393 đáp án. Các cột catalog/published/purchased_at được giữ để tương thích schema/dữ liệu đã tồn tại.
 
@@ -37,4 +37,4 @@ Jenkins cần Python 3, Docker, Java 17 và Maven; thêm bước build/init/seed
 
 `tests/check-schema.sql` là SQL SELECT chỉ đọc, không phải SQL init. Nó được sinh từ hai contract TSV, kiểm tra mapping, khóa, giá trị enum và index quan trọng. Docker cài nó ngoài init ở `/usr/local/share/edujar/check-schema.sql`. Verifier `verify-schema.sh` giữ subshell để không làm thay đổi shell state của entrypoint/caller.
 
-Nguồn SQL lịch sử được bảo toàn ở [deployment/legacy-sql](../deployment/legacy-sql/README.md), không nằm trong build context. Không xóa nguồn upgrade khi chưa kiểm chứng migration trên bản sao database thật. Xem [hướng dẫn nâng cấp](README-deploy-update.md) và [báo cáo kiểm chứng](../docs/database/SQL_CONSOLIDATION_REPORT.md).
+Nguồn SQL lịch sử được bảo toàn ở [database/legacy](legacy/README.md), bị loại khỏi Docker build context. Không xóa nguồn upgrade khi chưa kiểm chứng migration trên bản sao database thật. Xem [hướng dẫn nâng cấp](README-deploy-update.md).

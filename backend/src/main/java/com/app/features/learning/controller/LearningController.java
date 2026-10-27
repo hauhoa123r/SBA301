@@ -40,6 +40,13 @@ public class LearningController {
     private final ILearningService learningService;
     private final ILearningProgressService learningProgressService;
     private final LearningActivityService learningActivityService;
+    private final com.app.features.learning.service.LearningStreakService streaks;
+
+    @GetMapping("/streak")
+    public ResponseEntity<com.app.features.learning.service.LearningStreakService.Streak> streak(Authentication authentication) {
+        return ResponseEntity.ok().cacheControl(org.springframework.http.CacheControl.noStore())
+            .body(streaks.get(authenticatedUserId(authentication)));
+    }
 
     @PutMapping("/courses/{courseId}/lessons/{lessonId}/playback")
     public LessonPlaybackResponse savePlayback(@PathVariable Long courseId, @PathVariable Long lessonId,
