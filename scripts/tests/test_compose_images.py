@@ -1,6 +1,5 @@
 """Read-only checks of the real Compose configuration; no Docker engine needed.
 
-The former release transaction tests are preserved in docs/deployment/archive.
 """
 import json
 import os

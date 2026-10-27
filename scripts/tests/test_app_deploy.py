@@ -29,7 +29,7 @@ printf '%s\n' "$*" >> "$FIXTURE/calls"
 printf '%s\n' "${COMPOSE_FILE:-}" >> "$FIXTURE/compose-files"
 case "$*" in
   'inspect chinese-nginx --format '*config_files*)
-    printf '%s\n' "$FIXTURE/docker-compose.yml,$FIXTURE/monitoring.yml,$FIXTURE/deployment/releases/21/compose.production.yml" ;;
+    printf '%s\n' "$FIXTURE/docker-compose.yml,$FIXTURE/monitoring.yml,$FIXTURE/scripts/releases/21/compose.production.yml" ;;
   inspect*com.docker.compose.project*) echo production-sba301 ;;
   'inspect chinese-backend --format {{.Image}}')
     if [ "$MODE" = wrong_image ]; then echo wrong-image; else echo backend-image-22; fi ;;
@@ -113,14 +113,14 @@ class JenkinsDeploymentTest(unittest.TestCase):
             write("ssh", '#!/bin/sh\nprintf "ssh %s\\n" "$*" >> "$FIXTURE/calls"\n')
             write("scp", '#!/bin/sh\nprintf "scp %s\\n" "$*" >> "$FIXTURE/calls"\n')
             for name in ("deploy-app.sh", "verify-mysql-schema.sh"):
-                write("deployment/" + name, (ROOT / "deployment" / name).read_text())
+                write("scripts/" + name, (ROOT / "scripts" / name).read_text())
             write("database/tests/check-schema.sql", (ROOT / "database/tests/check-schema.sql").read_text())
-            write("deployment/verify-nginx-https.sh", (ROOT / "deployment/verify-nginx-https.sh").read_text() if real_https else '''#!/bin/sh
+            write("scripts/verify-nginx-https.sh", (ROOT / "scripts/verify-nginx-https.sh").read_text() if real_https else '''#!/bin/sh
 printf 'https %s\n' "$*" >> "$FIXTURE/calls"
 test "$MODE" != https_error
 ''')
             write("case.sh", shell_blocks("VERIFY_PUBLIC_HTTPS")[0] if public else shell_blocks("CONNECT_SERVER")[0] if connect else
-                  'exec sh deployment/deploy-app.sh "$APP_SERVICES"\n')
+                  'exec sh scripts/deploy-app.sh "$APP_SERVICES"\n')
             bootstrap = '''
 if command -v cygpath >/dev/null 2>&1; then FIXTURE=$(cygpath -u "$1"); else FIXTURE=$1; fi
 export FIXTURE
@@ -210,7 +210,7 @@ exec sh "$FIXTURE/case.sh"
     def test_jenkins_uploads_only_checks_and_scripts(self):
         result, calls, _ = self.run_workflow(connect=True)
         self.assertEqual(0, result.returncode, result.stderr)
-        self.assertIn("sh deployment/deploy-app.sh 'backend nginx'", calls)
+        self.assertIn("sh scripts/deploy-app.sh 'backend nginx'", calls)
         scp = next(line for line in calls.splitlines() if line.startswith("scp "))
         self.assertIn("database/tests/check-schema.sql", scp)
         self.assertNotIn(".env", scp)
@@ -244,8 +244,8 @@ exec sh "$FIXTURE/case.sh"
 
     def test_shell_syntax(self):
         scripts = shell_blocks() + [(ROOT / name).read_text() for name in (
-            "deployment/deploy-app.sh", "deployment/verify-mysql-schema.sh",
-            "deployment/verify-nginx-https.sh", "database/verify-schema.sh",
+            "scripts/deploy-app.sh", "scripts/verify-mysql-schema.sh",
+            "scripts/verify-nginx-https.sh", "database/verify-schema.sh",
             "database/tests/fresh-mysql-regression.sh")]
         for number, script in enumerate(scripts):
             with self.subTest(script=number):

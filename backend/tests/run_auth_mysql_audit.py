@@ -19,7 +19,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--mysql-bin", default="C:/Program Files/MySQL/MySQL Server 8.0/bin")
     parser.add_argument("--java-home", default="C:/Program Files/Java/jdk-17")
-    parser.add_argument("--maven-cache", default="D:/SBA301/.deployment-check/m2")
+    parser.add_argument("--maven-cache", default=str(Path.home() / ".m2" / "repository"))
     parser.add_argument("--with-browser", action="store_true", help="Also run isolated Chrome + H2 session lifecycle suite")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
@@ -76,15 +76,15 @@ def main():
                     time.sleep(0.5)
             assert ready, "Private MySQL did not start"
             base, count = re.subn(r"CREATE TABLE IF NOT EXISTS refresh_sessions \(.*?\) ENGINE=InnoDB;", "",
-                                 (root / "deployment/legacy-sql/chinese_online_learning.sql").read_text(encoding="utf-8"), flags=re.S)
+                                 (root / "database/legacy/chinese_online_learning.sql").read_text(encoding="utf-8"), flags=re.S)
             assert count == 1
             run(client, input=base.encode("utf-8"))
             for name in ("DataChinese.sql", "20261012_deploy_update.sql", "20261013_feedback.sql"):
-                run(client, input=(root / "deployment/legacy-sql" / name).read_bytes())
+                run(client, input=(root / "database/legacy" / name).read_bytes())
             assert query("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='chinese_online_learning' AND table_name='refresh_sessions'") == "0"
             checksum = "USE chinese_online_learning; CHECKSUM TABLE users,courses,course_enrollments,lesson_progress;"
             before = query(checksum)
-            migration = (root / "deployment/legacy-sql/20261018_refresh_sessions.sql").read_bytes()
+            migration = (root / "database/legacy/20261018_refresh_sessions.sql").read_bytes()
             run(client, input=migration)
             sentinel = str(uuid.uuid4())
             query("USE chinese_online_learning; INSERT INTO refresh_sessions(id,user_id,token_hash,expires_at) "

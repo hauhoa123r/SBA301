@@ -118,7 +118,7 @@ pipeline {
                             -o StrictHostKeyChecking=yes \
                             -i "$SSH_KEY" \
                             "$SSH_USER@$SERVER_IP" \
-                            "cd '$DEPLOY_PATH' && sh deployment/verify-mysql-schema.sh database/tests/check-schema.sql"
+                            "cd '$DEPLOY_PATH' && sh scripts/verify-mysql-schema.sh database/tests/check-schema.sql"
 
                         ssh \
                             -o BatchMode=yes \

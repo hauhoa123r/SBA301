@@ -21,7 +21,7 @@ saved_ifs=$IFS
 IFS=,
 for file in $files; do
     case "$file" in
-        */deployment/releases/*/compose.production.yml|*/deployment/compose.production.yml) continue ;;
+        */scripts/releases/*/compose.production.yml|*/scripts/compose.production.yml|*/deployment/releases/*/compose.production.yml|*/deployment/compose.production.yml) continue ;;
     esac
     test -f "$file"
     COMPOSE_FILE=${COMPOSE_FILE:+$COMPOSE_FILE:}$file
@@ -63,7 +63,7 @@ protected_ids() {
 }
 protected_before=$(protected_ids)
 if [ "$services" = 'backend nginx' ]; then
-    sh deployment/verify-mysql-schema.sh database/tests/check-schema.sql
+    sh scripts/verify-mysql-schema.sh database/tests/check-schema.sql
 fi
 compose pull $services
 nginx_id=$(docker image inspect "$nginx_ref" --format '{{.Id}}')
@@ -89,7 +89,7 @@ if [ "$services" = 'backend nginx' ]; then
 fi
 compose up -d --no-build --no-deps --force-recreate --wait --wait-timeout 180 nginx
 test "$(docker inspect chinese-nginx --format '{{.State.Status}}')" = running
-sh deployment/verify-nginx-https.sh "$nginx_ref" "$nginx_id" "$nginx_sha"
+sh scripts/verify-nginx-https.sh "$nginx_ref" "$nginx_id" "$nginx_sha"
 test "$(protected_ids)" = "$protected_before" || {
     echo 'A protected database/monitoring/backend container changed unexpectedly' >&2
     exit 1

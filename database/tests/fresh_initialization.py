@@ -22,7 +22,7 @@ import xml.etree.ElementTree as ET
 from private_mysql import private_mysql, ROOT
 
 DB = ROOT / "database"
-LEGACY_DIR = ROOT / "deployment/legacy-sql"
+LEGACY_DIR = ROOT / "database/legacy"
 LEGACY_CHAIN = ("chinese_online_learning.sql", "DataChinese.sql", "20261012_deploy_update.sql",
                 "20261013_feedback.sql", "20261018_refresh_sessions.sql")
 
@@ -213,8 +213,6 @@ def backend_checks(target, port, password, data_dir, tests_pattern=None, reuse_f
                PAYOS_CREATE_PAYMENT_URL="http://127.0.0.1:9/payment-requests", PAYOS_PAYMENT_REQUEST_URL="http://127.0.0.1:9/payment-requests")
     mvn = ["mvn.cmd" if os.name == "nt" else "mvn"]
     cache = os.environ.get("MAVEN_TEST_CACHE")
-    if not cache and (ROOT / ".deployment-check/m2").is_dir():
-        cache = str(ROOT / ".deployment-check/m2")
     if cache: mvn += ["-o", "-Dmaven.repo.local=" + cache]
     suffix = "consolidated-" + uuid.uuid4().hex
     # The native RefreshSession test explicitly verifies a Windows datadir. Run it in native mode only.

@@ -23,26 +23,17 @@ package-lock.json
 .vscode
 
 .env.*
-!.env.example
 *.pem
 *.key
 *.p12
 *.jks
 **/secrets/
-deployment/acme/
+acme/
 .deployment-check/
 !frontend/package-lock.json
 __pycache__/
 .release/
-deployment/releases/
-deployment/versions.json
-deployment/versions.previous.json
-deployment/.release.lock
-
-.env
-.env.*
-!.env.example.env.example
-.env
-
-# Keep the sanitized environment template reviewable.
-!.env.example
+scripts/releases/
+scripts/versions.json
+scripts/versions.previous.json
+scripts/.release.lock
