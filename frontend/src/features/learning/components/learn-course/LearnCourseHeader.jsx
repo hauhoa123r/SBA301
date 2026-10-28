@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft, Focus, PanelLeft, Minimize2 } from "lucide-react";
 import { UserProfileMenu } from "@/features/auth";
+import { BrandLogo } from "@/shared/ui";
 import { NotificationCenter } from "@/features/notifications/NotificationCenter";
 import ProgressBar from "./ProgressBar";
 
@@ -8,7 +9,7 @@ export default function LearnCourseHeader({ course, progress, sidebarOpen, onSid
     return <header className="workspace-topbar">
         <div className="workspace-topbar-start">
             <Link to="/learning" className="workspace-brand" aria-label="Edujar — trở về góc học tập">
-                <span className="workspace-brand-mark" aria-hidden="true">学</span><strong>Edujar<span>.</span></strong>
+                <BrandLogo />
             </Link>
             <button type="button" className="workspace-icon-button" onClick={onSidebarToggle}
                 aria-controls="learn-course-navigation" aria-expanded={sidebarOpen}

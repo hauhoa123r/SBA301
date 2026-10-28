@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { NotFoundPage } from "@/pages/not-found";
+import { BrandLogo } from "@/shared/ui";
 import LearnCourseHeader from "../components/learn-course/LearnCourseHeader";
 import LearnCourseSidebar from "../components/learn-course/LearnCourseSidebar";
 import { useWorkspaceViewport } from "../hooks/useWorkspaceViewport";
@@ -122,7 +123,7 @@ export default function LearnCourseLayout() {
     if (loading) {
         return (
             <div className="learning-workspace workspace-loading" role="status" aria-label="Đang tải nội dung khóa học" aria-busy="true">
-                <div className="workspace-loading-top"><span className="workspace-brand-mark">学</span><strong>Edujar</strong><span>Đang chuẩn bị bài học…</span></div>
+                <div className="workspace-loading-top"><BrandLogo /><span>Đang chuẩn bị bài học…</span></div>
                 <div className="workspace-loading-body"><div className="workspace-skeleton workspace-skeleton-nav" /><div><div className="workspace-skeleton workspace-skeleton-title" /><div className="workspace-skeleton workspace-skeleton-video" /><div className="workspace-skeleton workspace-skeleton-title" /></div></div>
             </div>
         );
