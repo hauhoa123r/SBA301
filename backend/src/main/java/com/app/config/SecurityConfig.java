@@ -111,7 +111,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/actuator/health", "/actuator/prometheus").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/subscriptions/plans").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/feedback/current").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/contact").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/contact").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/feedback/current/participation").hasAnyRole("STUDENT", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/feedback/current/start", "/api/feedback/current/submissions").hasAnyRole("STUDENT", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/courses", "/api/courses/{id}").permitAll()

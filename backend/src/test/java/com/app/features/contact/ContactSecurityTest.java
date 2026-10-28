@@ -39,12 +39,29 @@ class ContactSecurityTest {
     @MockitoBean OAuth2SecurityConfigurer oauth;
     @MockitoBean ClientRegistrationRepository registrations;
 
-    @Test void guestCanSendButReceiptDoesNotExposePersonalData() throws Exception {
-        when(service.submit(any())).thenReturn(new Receipt(123L));
+    private org.springframework.test.web.servlet.request.RequestPostProcessor signedIn(long id, String roleName) {
+        var principal = new com.app.features.model.UserEntity(); principal.setId(id);
+        var role = new com.app.features.model.RoleEntity(); role.setName(roleName); principal.getRoles().add(role);
+        when(users.findByIdWithRoles(id)).thenReturn(java.util.Optional.of(principal));
+        return authentication(org.springframework.security.authentication.UsernamePasswordAuthenticationToken.authenticated(principal, null,
+            List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + roleName))));
+    }
+    @Test void guestCannotSendEvenWithAValidPayload() throws Exception {
         mvc.perform(post("/api/contact").contentType("application/json").content(BODY))
+            .andExpect(status().isUnauthorized());
+        verifyNoInteractions(service);
+    }
+    @Test void signedInUserCanSendButReceiptDoesNotExposePersonalData() throws Exception {
+        when(service.submit(any(), eq(12L))).thenReturn(new Receipt(123L));
+        mvc.perform(post("/api/contact").with(signedIn(12L, "ADMIN")).contentType("application/json").content(BODY))
             .andExpect(status().isCreated()).andExpect(header().string("Cache-Control", "no-store"))
             .andExpect(content().json("{\"id\":123}", true));
-        verify(service).submit(argThat(body -> body.email().equals("user@example.test")));
+        verify(service).submit(argThat(body -> body.email().equals("user@example.test")), eq(12L));
+    }
+    @Test void authenticationWithoutAnApplicationUserCannotSubmit() throws Exception {
+        mvc.perform(post("/api/contact").with(user("unmapped").roles("STUDENT")).contentType("application/json").content(BODY))
+            .andExpect(status().isUnauthorized());
+        verifyNoInteractions(service);
     }
     @Test void feedbackOwnershipComesFromAuthenticatedPrincipalNotSubmittedEmail() throws Exception {
         var principal=new com.app.features.model.UserEntity();principal.setId(7L);
@@ -85,18 +102,18 @@ class ContactSecurityTest {
         for (String body : List.of("{}", BODY.replace("user@example.test", "invalid-email"),
                 BODY.replace("Cần hỗ trợ", " "), BODY.replace("Cần hỗ trợ", "x".repeat(5001)),
                 BODY.replace("Người dùng", "x".repeat(101)))) {
-            mvc.perform(post("/api/contact").contentType("application/json").content(body)).andExpect(status().isBadRequest());
+            mvc.perform(post("/api/contact").with(signedIn(8L, "STUDENT")).contentType("application/json").content(body)).andExpect(status().isBadRequest());
         }
         verifyNoInteractions(service);
     }
-    @Test void repeatedGuestRequestsAreThrottledBeforeWriting() throws Exception {
-        when(service.submit(any())).thenReturn(new Receipt(1L));
-        for (int i = 0; i < 5; i++) mvc.perform(post("/api/contact").with(request -> { request.setRemoteAddr("192.0.2.20"); return request; })
+    @Test void repeatedSignedInRequestsAreThrottledBeforeWriting() throws Exception {
+        when(service.submit(any(), eq(7L))).thenReturn(new Receipt(1L));
+        for (int i = 0; i < 5; i++) mvc.perform(post("/api/contact").with(signedIn(7L, "STUDENT")).with(request -> { request.setRemoteAddr("192.0.2.20"); return request; })
             .contentType("application/json").content(BODY)).andExpect(status().isCreated());
-        mvc.perform(post("/api/contact").with(request -> { request.setRemoteAddr("192.0.2.20"); return request; })
+        mvc.perform(post("/api/contact").with(signedIn(7L, "STUDENT")).with(request -> { request.setRemoteAddr("192.0.2.20"); return request; })
             .contentType("application/json").content(BODY)).andExpect(status().isTooManyRequests())
             .andExpect(header().string("Retry-After", "600"));
-        verify(service, times(5)).submit(any());
+        verify(service, times(5)).submit(any(), eq(7L));
     }
     @Test void adminCanFilterAndUpdateAndResponsesCannotBeCached() throws Exception {
         when(service.inbox(Status.NEW, null, 0)).thenReturn(new Inbox(List.of(), 0, 0, 0, 0));

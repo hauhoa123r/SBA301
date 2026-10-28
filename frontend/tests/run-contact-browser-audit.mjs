@@ -23,7 +23,7 @@ async function until(fn, label) {
 const port = await freePort(), chromePort = await freePort(), base = `http://127.0.0.1:${port}`;
 const vite = spawn(process.execPath, [resolve(frontend, "node_modules/vite/bin/vite.js"), "--host", "127.0.0.1", "--port", String(port), "--strictPort"], { cwd: frontend, windowsHide: true, stdio: "ignore" });
 const chrome = spawn(process.env.CONTACT_AUDIT_CHROME ?? "C:/Program Files/Google/Chrome/Application/chrome.exe", ["--headless=new", "--no-sandbox", "--disable-gpu", "--disable-background-networking", "--disable-component-update", "--no-first-run", `--remote-debugging-port=${chromePort}`, `--user-data-dir=${profile}`, "about:blank"], { windowsHide: true, stdio: "ignore" });
-let socket, admin = false, sendCode = 201, submissions = 0, status = "NEW", visual = false;
+let socket, admin = false, signedIn = false, sendCode = 201, submissions = 0, status = "NEW", visual = false;
 const errors = [], submitted = [], evidence = [];
 const legacyRequests = [];
 const taxonomy = [
@@ -49,7 +49,9 @@ const maliciousText = '<img src=x onerror="window.contactXss=true"> Góp ý ti�
 function fixture(url, method, body) {
   const path = url.pathname;
   if (path === "/api/auth/csrf") return [200, { token: "local-fixture" }];
-  if (path === "/api/auth/refresh") return admin ? [200, { accessToken: "local-fixture", user: { id: 1, fullName: "Fixture admin", email: "admin@example.test", roles: ["ADMIN"] } }] : [401, {}];
+  const session = { accessToken: "local-fixture", user: { id: admin ? 1 : 7, fullName: admin ? "Fixture admin" : "Người dùng", email: admin ? "admin@example.test" : "sender@example.test", roles: [admin ? "ADMIN" : "STUDENT"] } };
+  if (path === "/api/auth/login" && method === "POST") { signedIn = true; return [200, session]; }
+  if (path === "/api/auth/refresh") return admin || signedIn ? [200, session] : [401, {}];
   if (path === "/api/feedback/current") return [200, null];
   if (path === "/api/contact" && method === "POST") { submissions++; submitted.push(JSON.parse(body)); return [sendCode, sendCode === 201 ? { id: 1 } : { message: "Fixture failure" }]; }
   if (path === "/api/admin/contact-messages/1/status" && method === "PATCH") { status = JSON.parse(body).status; return [200, {}]; }
@@ -90,10 +92,24 @@ try {
   const text = () => evaluate("document.body.innerText");
   async function click(label) { assert.equal(await evaluate(`(()=>{const b=[...document.querySelectorAll('button')].find(b=>b.textContent.trim()===${JSON.stringify(label)});if(!b)return false;b.click();return true})()`), true, label); }
   async function fill() { await evaluate(`(()=>{document.querySelector('#contact-name').value=' Người dùng ';document.querySelector('#contact-email').value='sender@example.test';document.querySelector('#contact-message').value=' Nội dung tiếng Việt 中文 ';return true})()`); }
+  async function controlledInput(selector, value) { await evaluate(`(()=>{const n=document.querySelector(${JSON.stringify(selector)});Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(n,${JSON.stringify(value)});n.dispatchEvent(new Event('input',{bubbles:true}));})()`); }
   await send("Page.enable"); await send("Runtime.enable");
   await send("Fetch.enable", { patterns: [{ urlPattern: `${base}/api/*` }] });
   await send("Page.navigate", { url: base + "/contact" });
   await until(() => evaluate("!!document.querySelector('#contact-message')"), "Contact form");
+  await until(() => evaluate("!!document.querySelector('a[href=\"/login?returnTo=%2Fcontact\"]')"), "Guest login prompt");
+  assert.equal(await evaluate("document.querySelector('#contact-message').matches(':disabled') && document.querySelector('form button[type=submit]').matches(':disabled')"), true);
+  await evaluate("document.querySelector('form').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));");
+  assert.equal(submissions, 0, "Guest cannot bypass disabled fields through a submit event");
+  await evaluate("document.querySelector('a[href=\"/login?returnTo=%2Fcontact\"]').click()");
+  await until(() => evaluate("location.pathname==='/login' && !!document.querySelector('#login-email')"), "Login route");
+  assert.equal(await evaluate("new URLSearchParams(location.search).get('returnTo')"), "/contact");
+  await controlledInput('#login-email', 'sender@example.test');
+  await controlledInput('#login-password', 'Local-fixture-password-123!');
+  await evaluate("document.querySelector('#login-email').closest('form').requestSubmit()");
+  await until(() => evaluate("location.pathname==='/contact' && !!document.querySelector('#contact-message') && !document.querySelector('#contact-message').matches(':disabled')"), "Return to contact after login");
+  assert.equal(await evaluate("document.querySelector('#contact-name').value"), "Người dùng");
+  assert.equal(await evaluate("document.querySelector('#contact-email').value"), "sender@example.test");
   assert.deepEqual(await evaluate("[...document.querySelector('#contact-topic').options].map(o=>o.textContent)"), taxonomy.map(c => c[1]));
   await click("Gửi tin nhắn"); await sleep(150); assert.equal(submissions, 0);
   await fill(); await click("Gửi tin nhắn");
@@ -105,7 +121,14 @@ try {
   assert.ok(await evaluate("document.querySelector('#contact-message').value.includes('tiếng Việt')"));
   sendCode = 429; await click("Gửi tin nhắn");
   await until(async () => (await text()).includes("10 phút"), "Rate limit message");
-  evidence.push("PASS: guest form validates, posts trimmed fields, resets after success, preserves text on error, and explains throttling.");
+  evidence.push("PASS: guest form and programmatic submit blocked; login returns to /contact; account name/email prefilled; authenticated form validates and sends trimmed fields, resets on success, retains text on errors and explains throttling.");
+  sendCode = 401; signedIn = false;
+  await click("Gửi tin nhắn");
+  await until(() => evaluate("!!document.querySelector('a[href=\"/login?returnTo=%2Fcontact\"]') && document.body.textContent.includes('Phiên đăng nhập đã hết hạn')"), "Expired session requires login again");
+  const afterExpired = submissions;
+  await evaluate("document.querySelector('form').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));");
+  assert.equal(submissions, afterExpired, "Expired session cannot send another message");
+  evidence.push("PASS: expired session clears authorization, disables feedback submission and offers login again.");
   admin = true;
   await send("Page.navigate", { url: base + "/admin/feedback" });
   await until(async () => (await text()).includes(maliciousText), "Admin inbox");

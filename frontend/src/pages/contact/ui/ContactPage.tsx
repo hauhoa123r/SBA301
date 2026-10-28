@@ -1,4 +1,4 @@
-import { MessageCircle, Send } from "lucide-react";
+import { LogIn, MessageCircle, Send } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/features/auth/model/useAuth";
 import { useRef, useState, type FormEvent } from "react";
@@ -7,7 +7,7 @@ import { AnimatedCard, UserReveal, UserStagger } from "@/shared/ui";
 import { CONTACT_METHODS, CONTACT_TOPICS } from "../model/contactContent";
 
 export function ContactPage() {
-    const { user } = useAuth();
+    const { user, initializing } = useAuth();
     const sending = useRef(false);
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState("");
@@ -15,6 +15,7 @@ export function ContactPage() {
     async function submit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
         if (sending.current) return;
+        if (initializing || !user) { setError("Vui lòng đăng nhập để gửi góp ý."); return; }
         const form = event.currentTarget;
         const values = new FormData(form);
         const body = Object.fromEntries(["fullName", "email", "topic", "message"].map(key => {
@@ -26,7 +27,9 @@ export function ContactPage() {
             await axiosClient.post("/api/contact", body, { timeout: 15000 });
             form.reset(); setSuccess(true);
         } catch (e) {
-            setError(getApiErrorStatus(e) === 429 ? "Bạn đã gửi nhiều tin nhắn. Vui lòng thử lại sau 10 phút." : getApiErrorMessage(e));
+            const status = getApiErrorStatus(e);
+            setError(status === 401 ? "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để gửi góp ý."
+                : status === 429 ? "Bạn đã gửi nhiều tin nhắn. Vui lòng thử lại sau 10 phút." : getApiErrorMessage(e));
         } finally { sending.current = false; setBusy(false); }
     }
     return (
@@ -75,10 +78,17 @@ export function ContactPage() {
                             </div>
                         </div>
 
-                        <form className="grid gap-5" onSubmit={event => { void submit(event); }} aria-busy={busy}>
-                            <p className="text-sm leading-6 text-brand-textSecondary">{user ? "Khi Edujar trả lời, bạn sẽ nhận được thông báo trong khu vực học tập." : <>Bạn có thể gửi góp ý không cần tài khoản. <Link className="text-brand-accentSoft underline" to="/login" state={{ from: { pathname: "/contact" } }}>Đăng nhập</Link> trước khi gửi để nhận trả lời qua thông báo.</>}</p>
+                        <form key={user?.id ?? "guest"} className="grid gap-5" onSubmit={event => { void submit(event); }} aria-busy={busy || initializing}>
+                            {initializing ? <p role="status" className="text-sm text-brand-textSecondary">Đang kiểm tra đăng nhập…</p>
+                                : user ? <p className="text-sm leading-6 text-brand-textSecondary">Khi Edujar trả lời, bạn sẽ nhận được thông báo trong khu vực học tập.</p>
+                                : <div className="rounded-xl border border-brand-accent/25 bg-brand-accent/10 p-4">
+                                    <p className="text-sm leading-6 text-brand-textSecondary">Vui lòng đăng nhập để gửi góp ý và nhận thông báo khi Edujar trả lời.</p>
+                                    <Link className="mt-3 inline-flex items-center gap-2 rounded-lg bg-brand-accent px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-accentHover focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-accentSoft" to="/login?returnTo=%2Fcontact"><LogIn size={16} aria-hidden="true" />Đăng nhập để gửi góp ý</Link>
+                                </div>}
                             {success && <p role="status" className="text-brand-accentSoft">Đã gửi phản hồi thành công. Cảm ơn bạn đã góp ý!</p>}
                             {error && <p role="alert" className="text-red-300">{error}</p>}
+                            <fieldset disabled={busy || initializing || !user} className="grid min-w-0 gap-5 disabled:opacity-60">
+                            <legend className="sr-only">Nội dung góp ý</legend>
                             <div className="grid gap-5 md:grid-cols-2">
                                 <div>
                                     <label htmlFor="contact-name" className="mb-2 block text-xs font-semibold uppercase tracking-wider text-brand-textSecondary">
@@ -88,6 +98,7 @@ export function ContactPage() {
                                         type="text"
                                         id="contact-name"
                                         name="fullName"
+                                        defaultValue={user?.fullName ?? ""}
                                         required maxLength={100} disabled={busy}
                                         autoComplete="name"
                                         placeholder="Nguyen Van A"
@@ -102,6 +113,7 @@ export function ContactPage() {
                                         type="email"
                                         id="contact-email"
                                         name="email"
+                                        defaultValue={user?.email ?? ""}
                                         required maxLength={254} disabled={busy}
                                         autoComplete="email"
                                         placeholder="you@example.com"
@@ -139,6 +151,7 @@ export function ContactPage() {
                                 <Send className="h-4 w-4" aria-hidden="true" />
                                 {busy ? "Đang gửi…" : "Gửi tin nhắn"}
                             </button>
+                            </fieldset>
                         </form>
                     </UserReveal>
                 </div>
