@@ -110,14 +110,14 @@ try {
     const toggle = '.workspace-topbar button[aria-controls="learn-course-navigation"]';
     await evaluate(`document.querySelector('${toggle}').focus()`);
     await click(toggle);
-    await wait('document.querySelector("dialog")?.open');
-    await check('document.querySelector("dialog").contains(document.activeElement)', 'Drawer initial focus');
-    for (let i = 0; i < 14; i++) { await key('Tab'); await check('document.querySelector("dialog").contains(document.activeElement)', 'Drawer traps Tab'); }
+    await wait('document.querySelector("#learn-course-navigation")?.open');
+    await check('document.querySelector("#learn-course-navigation").contains(document.activeElement)', 'Drawer initial focus');
+    for (let i = 0; i < 14; i++) { await key('Tab'); await check('document.querySelector("#learn-course-navigation").contains(document.activeElement)', 'Drawer traps Tab'); }
     await key('Tab', 'Tab', 8);
-    await check('document.querySelector("dialog").contains(document.activeElement)', 'Drawer traps Shift+Tab');
+    await check('document.querySelector("#learn-course-navigation").contains(document.activeElement)', 'Drawer traps Shift+Tab');
     await screenshot('after-mobile-drawer');
     await key('Escape');
-    await wait('!document.querySelector("dialog")?.open');
+    await wait('!document.querySelector("#learn-course-navigation")?.open');
     await check(`document.activeElement === document.querySelector('${toggle}')`, 'Drawer restores focus');
     evidence.push('PASS: mobile drawer keyboard focus trap, Escape, focus restoration.');
 

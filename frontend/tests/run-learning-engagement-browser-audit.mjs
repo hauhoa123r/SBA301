@@ -97,11 +97,12 @@ try {
   assert.equal(await evaluate("document.querySelector('.learning-streak-badge span').textContent"),"3");
   assert.equal(await evaluate("document.body.textContent.includes('Kỷ lục: 7 ngày')"),true);
   await until(()=>dailyCreated.get(7)===1,"Daily reminder created");
-  await evaluate("document.querySelector('[aria-controls=\"learning-notification-feed\"]').click();true");
+  await evaluate("document.querySelector('.learning-notifications-trigger').click();true");
   await until(()=>evaluate("document.querySelector('.learning-notice')?.textContent.includes('Lesson next')"),"Notification dropdown loaded");
-  await send("Input.dispatchKeyEvent",{type:"keyDown",key:"Escape",code:"Escape"});
-  assert.equal(await evaluate("document.activeElement?.getAttribute('aria-controls')"),"learning-notification-feed");
-  assert.equal(await evaluate("document.querySelector('.learning-notification-panel')===null"),true);
+  await send("Input.dispatchKeyEvent",{type:"keyDown",key:"Escape",code:"Escape",windowsVirtualKeyCode:27});
+  await until(()=>evaluate("!document.querySelector('dialog.learning-notification-panel')?.open"),"Notification closed");
+  assert.equal(await evaluate("document.activeElement?.classList.contains('learning-notifications-trigger')"),true);
+  assert.equal(await evaluate("!document.querySelector('dialog.learning-notification-panel')?.open"),true);
   await go("/learning#profile","Chuỗi ngày học của bạn");
   await send("Page.reload",{ignoreCache:true});
   await until(()=>requests.filter(r=>r.path==='/api/notifications/daily-study').length>=2,"Repeated session reminder request");
