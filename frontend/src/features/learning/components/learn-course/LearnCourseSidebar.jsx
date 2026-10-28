@@ -1,170 +1,94 @@
-import { Award, Check, ChevronRight, CirclePlay, ClipboardList, Clock3, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Award, Check, ChevronDown, CirclePlay, ClipboardList, FileText, X, BookOpen } from "lucide-react";
 import { chapterAssignments, lessonQuizzes } from "../../shared/learnCourseUtils";
 
-const formatDuration = (seconds) => `${Math.max(1, Math.round(seconds / 60))} phút`;
+const duration = seconds => seconds > 0 ? `${Math.ceil(seconds / 60)} phút` : "Bài học";
 
-export default function LearnCourseSidebar({
-    course,
-    activeChapter,
-    activeLesson,
-    activeQuiz,
-    activeAssignment,
-    chapterStats,
-    completedChapterIds,
-    completedLessons,
-    passedQuizzes,
-    submittedAssignments,
-    mode,
-    onLessonSelect,
-    onQuizSelect,
-    onAssignmentSelect,
-    open = false,
-    onClose,
-}) {
-    const selectLesson = (lessonId) => {
-        onLessonSelect(lessonId);
-        onClose?.();
+export default function LearnCourseSidebar({ course, activeChapter, activeLesson, activeQuiz, activeAssignment,
+    chapterStats, completedChapterIds, completedLessons, passedQuizzes, submittedAssignments,
+    lessonPlayback = [], mode, onLessonSelect, onQuizSelect, onAssignmentSelect, open, onClose, wide, visible }) {
+    // Opening a chapter changes only presentation, never the active lesson.
+    const [expansion, setExpansion] = useState({});
+    const dialog = useRef(null), navigation = useRef(null);
+    const activityKey = `${mode}:${mode === "quiz" ? activeQuiz?.id : mode === "assignment" ? activeAssignment?.id : activeLesson?.id}`;
+    useEffect(() => {
+        if (wide) return;
+        const element = dialog.current;
+        if (open && !element.open) element.showModal();
+        else if (!open && element.open) element.close();
+    }, [open, wide]);
+    useEffect(() => {
+        if (!(wide ? visible : open)) return;
+        const frame = requestAnimationFrame(() => {
+            const current = navigation.current?.querySelector('[aria-current="page"]');
+            const scroller = navigation.current;
+            if (!current || !scroller) return;
+            const item = current.getBoundingClientRect(), bounds = scroller.getBoundingClientRect();
+            if (item.top < bounds.top || item.bottom > bounds.bottom) scroller.scrollTop += item.top - bounds.top - 80;
+        });
+        return () => cancelAnimationFrame(frame);
+    }, [activityKey, open, visible, wide]);
+    const select = (callback, id) => { callback(id); onClose(); };
+    const keepDrawerFocus = event => {
+        if (event.key !== "Tab") return;
+        const buttons = [...event.currentTarget.querySelectorAll("button:not(:disabled)")]
+            .filter(button => !button.closest("[inert]") && button.getClientRects().length);
+        const first = buttons[0], last = buttons[buttons.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
     };
-
-    const selectQuiz = (quizId) => {
-        onQuizSelect(quizId);
-        onClose?.();
-    };
-
-    const selectAssignment = (chapterId) => {
-        onAssignmentSelect(chapterId);
-        onClose?.();
-    };
-
-    return (
-        <>
-            {open && (
-                <button
-                    type="button"
-                    className="fixed inset-x-0 bottom-0 top-[68px] z-30 bg-brand-black/60 backdrop-blur-[2px] lg:hidden"
-                    onClick={onClose}
-                    aria-label="Đóng nội dung khóa học"
-                />
-            )}
-
-            <aside
-                id="learn-course-navigation"
-                aria-label="Nội dung khóa học"
-                className={`learning-course-sidebar group/sidebar fixed bottom-0 left-0 top-[68px] z-40 w-[min(22rem,calc(100vw-2.5rem))] overflow-x-hidden overflow-y-auto border-r border-brand-border bg-brand-panel shadow-2xl shadow-brand-black/30 transition-[width,transform,visibility,box-shadow] duration-300 ease-in-out ${
-                    open ? "visible translate-x-0" : "invisible -translate-x-full"
-                } lg:visible lg:fixed lg:inset-y-0 lg:top-0 lg:z-40 lg:h-screen lg:w-20 lg:translate-x-0 lg:shadow-lg lg:hover:w-[280px] lg:hover:shadow-2xl lg:[&+main]:col-span-full lg:[&+main]:pl-20`}
-            >
-            <button
-                type="button"
-                onClick={onClose}
-                className="absolute right-2 top-2 z-10 grid h-10 w-10 place-items-center rounded-xl border border-brand-border bg-brand-panel text-brand-courseMuted transition hover:border-brand-accent/60 hover:text-brand-white lg:hidden"
-                aria-label="Đóng nội dung khóa học"
-            >
-                <X className="h-5 w-5" />
-            </button>
-
-            <nav className="space-y-2 px-3 pb-6">
-                {course.chapters.map((chapter) => {
-                    const stats = chapterStats[chapter.id];
-                    const isActiveChapter = chapter.id === activeChapter?.id;
-
-                    return (
-                        <div key={chapter.id} className="border-t border-brand-border pt-3 first:border-t-0 first:pt-0">
-                            <button
-                                type="button"
-                                onClick={() => chapter.lessons[0] ? selectLesson(chapter.lessons[0].id) : chapter.quizzes?.[0] && selectQuiz(chapter.quizzes[0].id)}
-                                className="flex w-full items-center gap-3 overflow-hidden rounded-xl px-2 py-3 text-left transition hover:bg-brand-cardBg max-lg:pr-12 lg:px-3"
-                                title={`Chương ${chapter.orderIndex || chapter.order_index}: ${chapter.title}`}
-                            >
-                                <span className="contents lg:grid lg:h-8 lg:w-8 lg:shrink-0 lg:place-items-center">
-                                    <StatusDot active={isActiveChapter} done={completedChapterIds.has(chapter.id)} />
-                                </span>
-                                <span className="flex min-w-0 flex-1 items-center gap-2 whitespace-nowrap transition-[opacity,transform] duration-300 ease-in-out lg:-translate-x-2.5 lg:opacity-0 lg:group-hover/sidebar:translate-x-0 lg:group-hover/sidebar:opacity-100">
-                                    <span className="min-w-0 flex-1 truncate text-sm font-bold">
-                                        Chương {chapter.orderIndex || chapter.order_index}: {chapter.title}
-                                    </span>
-                                    <span className="text-xs font-bold text-brand-learningMuted">{stats.done}/{stats.total}</span>
-                                    <ChevronRight className="h-4 w-4 shrink-0 text-brand-learningMuted" />
-                                </span>
-                            </button>
-
-                            {isActiveChapter && (
-                                <div className="ml-5 mt-1 space-y-1 border-l border-brand-border pl-4 transition-[margin,padding,border-color] duration-300 ease-in-out lg:ml-0 lg:border-transparent lg:pl-0 lg:group-hover/sidebar:ml-5 lg:group-hover/sidebar:border-brand-border lg:group-hover/sidebar:pl-4">
-                                    {chapter.lessons.map((lesson) => (
-                                        <div key={lesson.id} className="space-y-1">
-                                            <SidebarItem
-                                                active={mode === "lesson" && activeLesson?.id === lesson.id}
-                                                done={completedLessons.has(lesson.id)}
-                                                icon={CirclePlay}
-                                                label={`Bài ${lesson.orderIndex || lesson.order_index}: ${lesson.title}`}
-                                                sub={formatDuration(lesson.durationSeconds || lesson.duration_seconds)}
-                                                onClick={() => selectLesson(lesson.id)}
-                                            />
-                                            {lessonQuizzes(lesson).map(quiz => (
-                                                <SidebarItem
-                                                    key={quiz.id}
-                                                    active={mode === "quiz" && activeQuiz?.id === quiz.id}
-                                                    done={passedQuizzes.has(quiz.id)}
-                                                    icon={ClipboardList}
-                                                    label={quiz.title}
-                                                    sub={quiz.timeLimitMinutes ? `${quiz.timeLimitMinutes} phút` : "Không giới hạn"}
-                                                    onClick={() => selectQuiz(quiz.id)}
-                                                />
-                                            ))}
-                                        </div>
-                                    ))}
-                                    {(chapter.quizzes || []).map(quiz => <SidebarItem key={quiz.id} active={activeQuiz?.id === quiz.id}
-                                        done={passedQuizzes.has(quiz.id)} icon={ClipboardList} label={quiz.title}
-                                        sub="Kiểm tra chương" onClick={() => selectQuiz(quiz.id)} />)}
-                                    {chapterAssignments(chapter).map(assignment => (
-                                        <SidebarItem
-                                            key={assignment.id}
-                                            active={mode === "assignment" && activeAssignment?.id === assignment.id}
-                                            done={submittedAssignments.has(assignment.id)}
-                                            icon={Award}
-                                            label={assignment.title}
-                                            sub={submittedAssignments.has(assignment.id) ? "Đã nộp" : "Chưa nộp"}
-                                            highlight
-                                            onClick={() => selectAssignment(assignment.id)}
-                                        />
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    );
-                })}
-                </nav>
-            </aside>
-        </>
-    );
+    const nav = <>
+        <div className="workspace-nav-heading"><div><span className="workspace-eyebrow">LỘ TRÌNH CỦA BẠN</span><h2>Nội dung khóa học</h2><p>{course.chapters.length} chương học</p></div>
+            {!wide && <button type="button" className="workspace-icon-button" onClick={onClose} aria-label="Đóng nội dung khóa học" autoFocus><X size={20} /></button>}
+        </div>
+        <nav ref={navigation} className="workspace-nav-scroll" aria-label="Chương và hoạt động học">
+            {course.chapters.map(chapter => {
+                const stats = chapterStats[chapter.id], isActive = chapter.id === activeChapter?.id;
+                const empty = !chapter.lessons.length && !chapter.quizzes?.length && !chapterAssignments(chapter).length;
+                const preference = expansion[chapter.id];
+                const expanded = !empty && (preference?.activityKey === activityKey ? preference.open : isActive || preference?.open === true);
+                return <section className={`workspace-chapter ${isActive ? "is-current" : ""}`} key={chapter.id}>
+                    <button type="button" className="workspace-chapter-toggle" disabled={empty} aria-expanded={expanded}
+                        aria-controls={`chapter-content-${chapter.id}`} onClick={() => setExpansion(previous => ({ ...previous, [chapter.id]: { open: !expanded, activityKey } }))}>
+                        <span className={`workspace-chapter-number ${completedChapterIds.has(chapter.id) ? "is-done" : ""}`}>{completedChapterIds.has(chapter.id) ? <Check size={16} /> : String(chapter.orderIndex || chapter.order_index).padStart(2, "0")}</span>
+                        <span className="workspace-chapter-label"><strong title={chapter.title}>{chapter.title}</strong><small>{empty ? "Chưa có nội dung" : `${stats.done}/${stats.total} hoạt động hoàn thành`}</small></span>
+                        {!empty && <ChevronDown size={15} className="workspace-chevron" />}
+                    </button>
+                    <div id={`chapter-content-${chapter.id}`} className="workspace-chapter-body" data-open={expanded} inert={!expanded} aria-hidden={!expanded}>
+                        <div><div className="workspace-chapter-items">
+                            {chapter.lessons.map(lesson => {
+                                const playback = lessonPlayback.find(item => item.lessonId === lesson.id);
+                                return <div key={lesson.id}>
+                                    <SidebarItem active={mode === "lesson" && activeLesson?.id === lesson.id} done={completedLessons.has(lesson.id)}
+                                        inProgress={playback?.watchSeconds > 0 || playback?.positionSeconds > 0} icon={lesson.videoUrl ? CirclePlay : FileText}
+                                        label={lesson.title} sub={duration(lesson.durationSeconds || lesson.duration_seconds)}
+                                        onClick={() => select(onLessonSelect, lesson.id)} />
+                                    {lessonQuizzes(lesson).map(quiz => <SidebarItem key={quiz.id} active={mode === "quiz" && activeQuiz?.id === quiz.id} done={passedQuizzes.has(quiz.id)}
+                                        icon={ClipboardList} label={quiz.title} sub={quiz.timeLimitMinutes ? `Trắc nghiệm · ${quiz.timeLimitMinutes} phút` : "Trắc nghiệm"}
+                                        onClick={() => select(onQuizSelect, quiz.id)} />)}
+                                </div>;
+                            })}
+                            {(chapter.quizzes || []).map(quiz => <SidebarItem key={quiz.id} active={mode === "quiz" && activeQuiz?.id === quiz.id} done={passedQuizzes.has(quiz.id)}
+                                icon={ClipboardList} label={quiz.title} sub="Kiểm tra chương" onClick={() => select(onQuizSelect, quiz.id)} />)}
+                            {chapterAssignments(chapter).map(assignment => <SidebarItem key={assignment.id} active={mode === "assignment" && activeAssignment?.id === assignment.id}
+                                done={submittedAssignments.has(assignment.id)} icon={Award} label={assignment.title} sub="Bài tập thực hành" onClick={() => select(onAssignmentSelect, assignment.id)} />)}
+                        </div></div>
+                    </div>
+                </section>;
+            })}
+        </nav>
+        <div className="workspace-nav-footer"><BookOpen size={16} /><span>Từng bài học, thêm một bước tiến.</span></div>
+    </>;
+    return wide ? <aside id="learn-course-navigation" className="workspace-sidebar" aria-label="Nội dung khóa học" inert={!visible} aria-hidden={!visible}>{nav}</aside>
+        : <dialog id="learn-course-navigation" ref={dialog} className="workspace-drawer" aria-label="Nội dung khóa học" onCancel={onClose} onClose={onClose} onKeyDown={keepDrawerFocus}
+            onClick={event => { if (event.target === event.currentTarget) onClose(); }}><div className="workspace-drawer-inner">{nav}</div></dialog>;
 }
 
-function SidebarItem({ active, done, icon: Icon, label, sub, highlight = false, onClick }) {
-    return (
-        <button
-            type="button"
-            onClick={onClick}
-            className={`flex w-full items-start gap-3 overflow-hidden rounded-xl px-2 py-2 text-left transition hover:bg-brand-cardBg lg:px-3 ${active ? "bg-brand-cardBg" : ""}`}
-            title={`${label} — ${sub}`}
-        >
-            <span className={`mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full ${done ? "bg-status-successStrong/15 text-status-successSoft" : highlight ? "bg-status-warningStrong/15 text-status-warningSoft" : "bg-brand-sidebarHover text-brand-accentBright"}`}>
-                {done ? <Check className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
-            </span>
-            <span className="min-w-0 flex-1 whitespace-nowrap transition-[opacity,transform] duration-300 ease-in-out lg:-translate-x-2.5 lg:opacity-0 lg:group-hover/sidebar:translate-x-0 lg:group-hover/sidebar:opacity-100">
-                <span className={`block truncate text-sm font-bold ${highlight ? "text-brand-warning" : "text-brand-white"}`}>{label}</span>
-                <span className="mt-1 flex items-center gap-1 text-xs text-brand-learningMuted">
-                    <Clock3 className="h-3 w-3" />
-                    {sub}
-                </span>
-            </span>
-        </button>
-    );
-}
-
-function StatusDot({ active, done }) {
-    return (
-        <span className={`grid h-4 w-4 shrink-0 place-items-center rounded-full ${done ? "bg-status-success" : active ? "bg-brand-accentBright" : "bg-brand-borderHover"}`}>
-            <span className="h-2 w-2 rounded-full bg-brand-panel" />
-        </span>
-    );
+function SidebarItem({ active, done, inProgress, icon: Icon, label, sub, onClick }) {
+    return <button type="button" onClick={onClick} className={`workspace-lesson ${active ? "is-active" : ""} ${done ? "is-done" : ""}`}
+        aria-current={active ? "page" : undefined} title={`${label} — ${sub}${done ? " — Đã hoàn thành" : inProgress ? " — Đang học" : ""}`}>
+        <span className="workspace-lesson-icon">{done ? <Check size={16} /> : <Icon size={17} />}</span>
+        <span><strong>{label}</strong><small>{sub}{done ? " · Hoàn thành" : inProgress ? " · Đang học" : ""}</small></span>
+        {active && <span className="workspace-current-dot" aria-hidden="true" />}
+    </button>;
 }

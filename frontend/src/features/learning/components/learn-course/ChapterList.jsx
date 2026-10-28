@@ -1,7 +1,8 @@
 import { ChevronRight, Lock } from "lucide-react";
 import ProgressBar from "./ProgressBar";
+import { chapterAssignments } from "../../shared/learnCourseUtils";
 
-export default function ChapterList({ course, activeChapter, chapterStats, onLessonSelect, onQuizSelect }) {
+export default function ChapterList({ course, activeChapter, chapterStats, onLessonSelect, onQuizSelect, onAssignmentSelect }) {
     return (
         <section className="mt-8">
             <h2 className="mb-4 text-base font-bold text-brand-learningLight">Danh sách chương học</h2>
@@ -9,14 +10,15 @@ export default function ChapterList({ course, activeChapter, chapterStats, onLes
                 {course.chapters.map((chapter) => {
                     const stats = chapterStats[chapter.id];
                     const percent = stats.total ? Math.floor((stats.done / stats.total) * 100) : 0;
-                    const locked = !chapter.lessons.length && !chapter.quizzes?.length;
+                    const assignment = chapterAssignments(chapter)[0];
+                    const locked = !chapter.lessons.length && !chapter.quizzes?.length && !assignment;
 
                     return (
                         <button
                             key={chapter.id}
                             type="button"
                             disabled={locked}
-                            onClick={() => chapter.lessons[0] ? onLessonSelect(chapter.lessons[0].id) : onQuizSelect(chapter.quizzes[0].id)}
+                            onClick={() => chapter.lessons[0] ? onLessonSelect(chapter.lessons[0].id) : chapter.quizzes?.[0] ? onQuizSelect(chapter.quizzes[0].id) : onAssignmentSelect?.(assignment.id)}
                             className={`flex w-full items-center gap-4 rounded-2xl border p-4 text-left transition ${
                                 locked
                                     ? "cursor-not-allowed border-brand-mutedPanel bg-brand-panelAlt opacity-50"

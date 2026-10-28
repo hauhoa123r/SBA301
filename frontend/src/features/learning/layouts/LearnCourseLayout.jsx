@@ -3,6 +3,8 @@ import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { NotFoundPage } from "@/pages/not-found";
 import LearnCourseHeader from "../components/learn-course/LearnCourseHeader";
 import LearnCourseSidebar from "../components/learn-course/LearnCourseSidebar";
+import { useWorkspaceViewport } from "../hooks/useWorkspaceViewport";
+import "../components/learn-course/learningWorkspace.css";
 import { getCourseLearningDetails, getCourseProgress, updateLessonProgress, saveLessonPlayback, submitQuiz, submitAssignment } from "../api/learning-api";
 import {
     buildLearningActivities,
@@ -20,6 +22,10 @@ export default function LearnCourseLayout() {
     const [courseNotFound, setCourseNotFound] = useState(false);
     const [loadError, setLoadError] = useState("");
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const [focusMode, setFocusMode] = useState(false);
+    const wide = useWorkspaceViewport();
+    const sidebarVisible = wide && !sidebarCollapsed && !focusMode;
 
     const [completedLessons, setCompletedLessons] = useState(() => new Set());
     const [completedChapterIds, setCompletedChapterIds] = useState(() => new Set());
@@ -113,24 +119,11 @@ export default function LearnCourseLayout() {
         };
     }, [courseId, navigate]);
 
-    useEffect(() => {
-        if (!sidebarOpen) return undefined;
-
-        const handleKeyDown = (event) => {
-            if (event.key === "Escape") setSidebarOpen(false);
-        };
-
-        document.addEventListener("keydown", handleKeyDown);
-        return () => document.removeEventListener("keydown", handleKeyDown);
-    }, [sidebarOpen]);
-
     if (loading) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-brand-darker text-brand-white">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="h-12 w-12 animate-spin rounded-full border-4 border-brand-accent border-t-transparent"></div>
-                    <p className="text-sm font-bold text-brand-textSoft">Đang tải thông tin khóa học...</p>
-                </div>
+            <div className="learning-workspace workspace-loading" role="status" aria-label="Đang tải nội dung khóa học" aria-busy="true">
+                <div className="workspace-loading-top"><span className="workspace-brand-mark">学</span><strong>Edujar</strong><span>Đang chuẩn bị bài học…</span></div>
+                <div className="workspace-loading-body"><div className="workspace-skeleton workspace-skeleton-nav" /><div><div className="workspace-skeleton workspace-skeleton-title" /><div className="workspace-skeleton workspace-skeleton-video" /><div className="workspace-skeleton workspace-skeleton-title" /></div></div>
             </div>
         );
     }
@@ -169,7 +162,7 @@ export default function LearnCourseLayout() {
     const assignmentText = assignmentDrafts[activeAssignment?.id] ?? assignmentSubmission?.text ?? "";
     const setAssignmentText = (text) => setAssignmentDrafts(previous => ({ ...previous, [activeAssignment.id]: text }));
 
-    if (!activeChapter) return <div className="p-8 text-center">Khóa học chưa có nội dung học tập.</div>;
+    if (!activeChapter) return <div className="learning-workspace workspace-empty-course"><h1>Khóa học chưa có nội dung học tập</h1><p>Hãy quay lại khi giảng viên cập nhật bài học mới.</p><button className="workspace-primary-button" onClick={() => navigate("/learning")}>Về góc học tập</button></div>;
     if ((quizId && !activeQuiz) || (assignmentId && !activeAssignment) || (chapterId && !activeAssignment)
         || (lessonId && !allLessons.some(item => item.id === Number(lessonId)))) return <NotFoundPage />;
 
@@ -242,9 +235,18 @@ export default function LearnCourseLayout() {
         });
 
     return (
-        <div className="user-ui-scope min-h-screen bg-brand-darker text-brand-white" style={{ fontFamily: "'Be Vietnam Pro', 'Noto Sans SC', sans-serif" }}>
-            <div className="min-h-screen lg:grid lg:grid-cols-[345px_1fr]">
+        <div className={`learning-workspace user-ui-scope ${sidebarVisible ? "has-sidebar" : ""} ${focusMode ? "is-focus" : ""}`}>
+            <a className="workspace-skip" href="#workspace-content">Đến nội dung bài học</a>
+            <LearnCourseHeader course={course} progress={progress} focusMode={focusMode}
+                onFocusToggle={() => { setFocusMode(value => !value); setSidebarOpen(false); }}
+                sidebarOpen={wide ? sidebarVisible : sidebarOpen}
+                onSidebarToggle={() => {
+                    if (wide) { if (focusMode) { setFocusMode(false); setSidebarCollapsed(false); } else setSidebarCollapsed(value => !value); }
+                    else setSidebarOpen(value => !value);
+                }} />
+            <div className="workspace-body">
                 <LearnCourseSidebar
+                    key={course.id}
                     course={course}
                     activeChapter={activeChapter}
                     activeLesson={activeLesson}
@@ -259,20 +261,18 @@ export default function LearnCourseLayout() {
                     totalActivities={totalActivities}
                     progress={progress}
                     mode={mode}
+                    lessonPlayback={savedProgress?.lessonPlayback}
                     onLessonSelect={goLesson}
                     onQuizSelect={goQuiz}
                     onAssignmentSelect={goAssignment}
                     open={sidebarOpen}
                     onClose={() => setSidebarOpen(false)}
+                    wide={wide}
+                    visible={sidebarVisible}
                 />
 
-                <main className="min-w-0">
-                    <LearnCourseHeader
-                        sidebarOpen={sidebarOpen}
-                        onSidebarToggle={() => setSidebarOpen((current) => !current)}
-                    />
-
-                    <div className="mx-auto max-w-6xl px-5 py-7 md:px-8">
+                <main className="workspace-main" id="workspace-content" tabIndex={-1}>
+                    <div className="workspace-content">
                         <Outlet
                             context={{
                                 answers,
@@ -309,6 +309,9 @@ export default function LearnCourseLayout() {
                                 goQuiz,
                                 previousLesson: allLessons[allLessons.findIndex(item => item.id === activeLesson?.id) - 1],
                                 nextLesson: allLessons[allLessons.findIndex(item => item.id === activeLesson?.id) + 1],
+                                lessonNumber: allLessons.findIndex(item => item.id === activeLesson?.id) + 1,
+                                lessonCount: allLessons.length,
+                                goAssignment,
                             }}
                         />
                     </div>

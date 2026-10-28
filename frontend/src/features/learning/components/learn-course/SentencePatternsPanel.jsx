@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Volume2, Sparkles, MessageCircle } from "lucide-react";
 
-export default function SentencePatternsPanel({ sentencePatterns = [] }) {
+export default function SentencePatternsPanel({ sentencePatterns = [], active = true }) {
     const [playingId, setPlayingId] = useState(null);
     const activePatternIdRef = useRef(null);
     const audioRef = useRef(null);
@@ -27,6 +27,12 @@ export default function SentencePatternsPanel({ sentencePatterns = [] }) {
     }, []);
 
     useEffect(() => {
+        // Stop audio on tab changes without discarding the activity panel.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        if (!active) stopAudio();
+    }, [active, stopAudio]);
+
+    useEffect(() => {
         return () => {
             if (audioRef.current) {
                 audioRef.current.onended = null;
@@ -44,7 +50,7 @@ export default function SentencePatternsPanel({ sentencePatterns = [] }) {
 
     if (!sentencePatterns || sentencePatterns.length === 0) {
         return (
-            <div className="flex h-[400px] flex-col items-center justify-center rounded-2xl border border-brand-border bg-brand-surface p-8 text-center">
+            <div className="workspace-empty">
                 <MessageCircle className="mb-4 h-12 w-12 text-brand-accentSoft/40 animate-pulse" />
                 <h3 className="text-xl font-bold">Chưa có mẫu câu</h3>
                 <p className="mt-2 text-sm text-brand-courseMuted">Bài học này hiện chưa được thiết lập dữ liệu cấu trúc mẫu câu.</p>

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Volume2, RotateCw, Sparkles } from "lucide-react";
 import { UserImage } from "@/shared/ui";
 
-export default function FlashcardsPanel({ vocabularies = [] }) {
+export default function FlashcardsPanel({ vocabularies = [], active = true }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isFlipped, setIsFlipped] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -30,6 +30,12 @@ export default function FlashcardsPanel({ vocabularies = [] }) {
     }, []);
 
     useEffect(() => {
+        // Keep card position while stopping audio from the hidden activity.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        if (!active) stopAudio();
+    }, [active, stopAudio]);
+
+    useEffect(() => {
         return () => {
             if (audioRef.current) {
                 audioRef.current.onended = null;
@@ -47,7 +53,7 @@ export default function FlashcardsPanel({ vocabularies = [] }) {
 
     if (!vocabularies || vocabularies.length === 0) {
         return (
-            <div className="flex h-[400px] flex-col items-center justify-center rounded-2xl border border-brand-border bg-brand-surface p-8 text-center">
+            <div className="workspace-empty">
                 <Sparkles className="mb-4 h-12 w-12 text-brand-accentSoft/40 animate-pulse" />
                 <h3 className="text-xl font-bold">Chưa có từ vựng</h3>
                 <p className="mt-2 text-sm text-brand-courseMuted">Bài học này hiện chưa được thiết lập dữ liệu từ vựng flashcard.</p>
